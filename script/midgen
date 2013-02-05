@@ -4,6 +4,10 @@ use 5.010001;
 use strict;
 use warnings;
 
+BEGIN {
+	$PPI::XS_DISABLE = 1; # Prevent warning
+}
+
 our $VERSION = '0.05';
 use English qw( -no_match_vars ); # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
