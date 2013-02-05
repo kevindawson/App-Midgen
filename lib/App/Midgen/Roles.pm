@@ -24,8 +24,8 @@ has 'core' => (
 );
 has 'debug' => (
 	is  => 'ro',
-	required => 1,
 	isa => Bool,
+	required => 1,
 );
 has 'mojo' => (
 	is  => 'ro',
