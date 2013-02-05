@@ -39,8 +39,8 @@ my %test_requires = ();
 
 # my $package_name;
 my @package_names;
-my @posiable_directories_to_search = ();
-my @directories_to_search          = ();
+# my @posiable_directories_to_search = ();
+# my @directories_to_search          = ();
 
 
 
@@ -55,8 +55,15 @@ sub run {
 	$self->find_package_name();
 	$self->output_top();
 	
-	
-	
+	$self->find_required_modules();
+
+	# $self->remove_children( \%requires ) if ( !$self->{verbose} );
+	# $self->output_requires( 'requires', \%requires );
+
+	print "\n";
+
+
+
 	return;
 }
 
@@ -126,30 +133,126 @@ sub output_top {
 	return;
 }
 
-1;
-__END__
 
+sub find_required_modules {
+	my $self = shift;
 
-# Find required modules
-@posiable_directories_to_search = map { File::Spec->catfile( $cwd, $_ ) } qw( lib bin script);
-@directories_to_search = ();
+	my @posiable_directories_to_search = map { File::Spec->catfile( $self->{cwd}, $_ ) } qw( lib bin script);
+	my @directories_to_search = ();
 
-p @posiable_directories_to_search if $debug;
-for my $directory (@posiable_directories_to_search) {
-	if ( defined -d $directory ) {
-		push @directories_to_search, $directory;
+	p @posiable_directories_to_search if $self->{debug};
+	for my $directory (@posiable_directories_to_search) {
+		if ( defined -d $directory ) {
+			push @directories_to_search, $directory;
+		}
 	}
+	p @directories_to_search;
+
+	try {
+		find( \&requires, @directories_to_search );
+	};
+	# p %requires if $self->{debug};
+
 }
 
-try {
-	find( \&requires, @directories_to_search );
-};
-p %requires if $debug;
-remove_children( \%requires ) if ( !$verbose );
 
-output_requires( 'requires', \%requires );
+sub requires {
+	my $self = shift;
+	say '$_ '.$_;
+	my $document = PPI::Document->new($_);
+	return
+		unless ( defined $document->find('PPI::Statement::Package')
+		|| $document->find('PPI::Token::Comment') =~ /perl/ );
 
-print "\n";
+	if ($self->{verbose}) {
+		say 'looking for requires in: ' . $_;
+	}
+	my @items    = ();
+	my $includes = $document->find('PPI::Statement::Include');
+
+	p $includes if $self->{debug};
+
+	if ($includes) {
+		foreach my $include ( @{$includes} ) {
+			p $include if $self->{debug};
+			next if $include->type eq 'no';
+
+			my @modules = $include->module;
+			p @modules if $self->{debug};
+			if ( !$self->{base_parent} ) {
+				my @base_parent_modules = base_parent( $include->module, $include->content, $include->pragma );
+				if (@base_parent_modules) {
+					@modules = @base_parent_modules;
+				}
+			}
+
+			foreach my $module (@modules) {
+				p $module if $self->{debug};
+
+				if ( !$self->{core} ) {
+					p $module if $self->{debug};
+
+					# hash with core modules to process regardless
+					my $ignore_core = { 'File::Path' => 1, };
+					if ( !$ignore_core->{$module} ) {
+						next if Module::CoreList->first_release($module);
+					}
+				}
+
+				#deal with ''
+				next if $module eq NONE;
+				if ( $module =~ /^$self->{package_name}/sxm ) {
+
+					# don't include our own packages here
+					next;
+				}
+				if ( $module =~ /Mojo/sxm && !$self->{mojo} ) {
+					$module = 'Mojolicious';
+				}
+				if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm ) {
+
+					# mark all Padre core as just Padre, for plugins
+					push @items, 'Padre';
+					$module = 'Padre';
+				} else {
+					push @items, $module;
+				}
+
+				my $mod;
+				my $mod_in_cpan = 0;
+				try {
+					$mod = CPAN::Shell->expand( 'Module', $module );
+
+					if ( $mod->cpan_version ne 'undef' ) {
+
+						# alociate current cpan version against module name
+						# $requires{$module} = $mod->cpan_version;
+						$mod_in_cpan = 1;
+					}
+				}
+				catch {
+					say 'caught ' . $module if $self->{debug};
+					$requires{$module} = 0;
+				}
+				finally {
+					if ($mod_in_cpan) {
+
+						# alociate current cpan version against module name
+						$requires{$module} = $mod->cpan_version;
+					}
+				};
+			}
+		}
+	}
+	push @requires, @items;
+	p @requires if $self->{debug};
+	return;
+}
+
+
+
+1;
+__END__
 
 
 # Find test_required modules
