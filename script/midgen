@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 BEGIN {
-	$PPI::XS_DISABLE = 1; # Prevent warning
+	$PPI::XS_DISABLE = 1; # noise control - Prevent warning
 }
 
 our $VERSION = '0.05';
