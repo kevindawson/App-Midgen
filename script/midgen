@@ -1,0 +1,178 @@
+#!/usr/bin/env perl
+
+use 5.010001;
+use strict;
+use warnings;
+
+our $VERSION = '0.05';
+use English qw( -no_match_vars ); # Avoids regex performance penalty
+local $OUTPUT_AUTOFLUSH = 1;
+
+use Try::Tiny;
+use autodie;
+use Data::Printer {
+	caller_info => 1,
+	colored     => 1,
+};
+
+use FindBin qw($Bin);
+use lib map "$Bin/$_", 'lib', '../lib';
+
+#######
+# Start of Menu
+#######
+use Getopt::Long;
+Getopt::Long::Configure('bundling');
+use Pod::Usage;
+my $help           = 0;
+my $base_parent    = 0;    # 1 true ignore perl base functions
+my $core           = 0;    # show perl core modules as well
+my $verbose        = 0;    # option variable with default value (false)
+my @output         = 'dsl';
+my $mojo           = 0;    # 1 true ignore Mojo detection
+my $noisy_children = 0;    # unwanted noisy children
+my $debug          = 0;    # lots of good stuff here :)
+GetOptions(
+	'verbose|v'        => \$verbose,
+	'core|c'           => \$core,
+	'base|parent|b|p'  => \$base_parent,
+	'help|h|?'         => \$help,
+	'mojo|m'           => \$mojo,
+	'output|o=s'       => \@output,
+	'noisy_children|n' => \$noisy_children,
+	'debug|d' => sub { $core = 1; $verbose = 1; $base_parent = 1; $mojo = 1; $noisy_children = 1; $debug = 1; },
+) or pod2usage(2);
+pod2usage(1) if $help;
+
+p @output if $debug;
+
+
+#######
+# End of Menu
+#######
+
+say 'START';
+
+use App::Midgen;
+
+my $midgen = App::Midgen->new(
+	base_parent    => $base_parent,
+	core           => $core,
+	verbose        => $verbose,
+	output_format  => $output[-1],
+	mojo           => $mojo,
+	noisy_children => $noisy_children,
+	debug          => $debug,
+);
+
+p $midgen if $debug;
+
+#ToDo Add the control flow here
+
+say 'END';
+
+exit(0);
+
+__END__
+
+=pod
+
+=encoding utf8
+
+=head1 NAME
+
+midgen.pl - generate the requires and test requires for Makefile.PL using Module::Install::DSL
+
+=head1 SYNOPSIS
+
+midgen.pl [options]
+
+ Options:
+   -help	brief help message
+   -output	change format
+   -core	show perl core modules
+   -verbose	take a little peek as to what is going on
+   -base	Don't check for base includes
+   -mojo	Don't be Mojo friendly	
+   -debug	lots of stuff
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<--help or -h>
+
+Print a brief help message and exits.
+
+=item B<--output or -o>
+
+By default we do 'dsl' -> Module::Include::DSL
+
+ midgen.pl -o dsl	# Module::Include::DSL
+ midgen.pl -o mi	# Module::Include
+ midgen.pl -o build	# Build.PL
+
+
+=item B<-core or -c>
+
+ * Shows modules that are in Perl core
+ * some modules have a version number eg; constant, Carp
+ * some have a version of 0 eg; strict, English 
+
+=item B<--verbose or -v>
+
+Show file that are being checked
+
+also show contents of base|parent check
+
+=item B<--parent or -p>
+
+alternative  --base or -b
+
+Turn Off - try to include the contents of base|parent modules as well
+
+=item B<--mojo or -m>
+
+Turn Off - the /Mojo/ to Mojolicious catch
+
+=item B<--noisy_children or -n>
+
+ * Show a required modules noisy children, as we find them
+
+=item B<--debug or -d>
+
+equivalent of -cv and some :)
+
+=back
+ 
+=head1 DESCRIPTION
+
+This started out as a way of generating the core for a Module::Install::DSL Makefile.PL, why DSL because it's nice and clean, so now I can generate the contents when I want, rather than as I add new use and require statments, and because adam kicked me :)
+
+Change to root of package and run
+
+ midgen.pl
+
+Now with a GetOps --help or -?
+
+ midgen.pl -?
+
+=head1 AUTHORS
+
+Kevin Dawson E<lt>bowtie@cpan.orgE<gt>
+
+=head2 CONTRIBUTORS
+
+none at present
+
+=head1 COPYRIGHT
+
+Copyright E<copy> 2012-2013 AUTHORS and CONTRIBUTORS as listed above.
+
+=head1 LICENSE
+
+This program is free software; you can redistribute it and/or
+modify it under the same terms as Perl 5 itself.
+
+=cut
+
