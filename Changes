@@ -1,9 +1,16 @@
 Revision history for App-Midgen
 
 {{$NEXT}}
-
  - initial loading [666adbc]
+ - initial loading [acaff42]
+ - first pass of midgen against it's self,  [6a37b2e]
+ - remove cruff [88ceb3c]
+ - first attempt at a Role with the GetOpps Long cmd varibles [61c8e11]
+ - continuity typo [e83a915]
+ - hack of midgen.pl with just the getopp menu system left in place
+   [a4a3f9b]
 
 0.01 2013-02-04
  - Initial release. (BOWTIE)
+ - which is midgen.pl ver 0.05
 
