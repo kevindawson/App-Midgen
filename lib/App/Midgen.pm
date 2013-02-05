@@ -57,7 +57,7 @@ sub run {
 	
 	$self->find_required_modules();
 
-	# $self->remove_children( \%requires ) if ( !$self->{verbose} );
+	$self->remove_children( \%requires ) if ( !$self->{verbose} );
 	# $self->output_requires( 'requires', \%requires );
 
 	print "\n";
@@ -248,6 +248,63 @@ sub requires {
 	p @requires if $self->{debug};
 	return;
 }
+
+
+sub remove_children {
+	my $self = shift;
+	my $required_ref = shift || return;
+	my @sorted_modules;
+	foreach my $module_name ( sort keys %{$required_ref} ) {
+		push @sorted_modules, $module_name;
+	}
+
+	p @sorted_modules if $self->{debug};
+
+	my $n = 0;
+	while ( $sorted_modules[$n] ) {
+
+		my $parent_name  = $sorted_modules[$n];
+		my @p_score      = split /::/, $parent_name;
+		my $parent_score = @p_score;
+
+		my $child_score;
+		if ( ( $n + 1 ) <= $#sorted_modules ) {
+			$n++;
+
+			# Use of implicit split to @_ is deprecated
+			my $child_name = $sorted_modules[$n];
+			$child_score = @{ [ split /::/, $child_name ] };
+		}
+
+		if ( $sorted_modules[$n] =~ /^$sorted_modules[$n-1]::/ ) {
+
+			# Checking for one degree of seperation ie A::B -> A::B::C is ok but A::B::C::D is not
+			if ( ( $parent_score + 1 ) == $child_score ) {
+
+				# Test for same version number
+				if ( $required_ref->{ $sorted_modules[ $n - 1 ] } eq $required_ref->{ $sorted_modules[$n] } ) {
+					say 'delete miscreant noisy children '
+						. $sorted_modules[$n] . ' ver '
+						. $required_ref->{ $sorted_modules[$n] }
+						if $self->{noisy_children};
+					try {
+						delete $required_ref->{ $sorted_modules[$n] };
+						splice( @sorted_modules, $n, 1 );
+						$n--;
+					};
+					p @sorted_modules if $self->{debug};
+				}
+			}
+		}
+		$n++ if ( $n == $#sorted_modules );
+	}
+	return;
+}
+
+
+
+
+
 
 
 
