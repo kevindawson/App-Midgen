@@ -71,6 +71,8 @@ my $midgen = App::Midgen->new(
 
 p $midgen if $debug;
 
+$midgen->run();
+
 #ToDo Add the control flow here
 
 say 'END';
