@@ -55,9 +55,12 @@ sub run {
 	$self->output_top();
 
 	$self->find_required_modules();
-
 	$self->remove_children( \%requires ) if ( !$self->{verbose} );
-	$self->output_requires( 'requires', \%requires );
+	$self->output_body( 'requires', \%requires );
+	
+	$self->find_required_test_modules();
+	$self->output_body( 'test_requires', \%test_requires );
+	$self->output_bottom();
 
 	print "\n";
 
@@ -169,10 +172,34 @@ sub find_required_modules {
 	};
 
 	# p %requires if $self->{debug};
+	return;
+
+}
+#######
+# find_required_modules
+#######
+sub find_required_test_modules {
+	my $self = shift;
+	
+	my @posiable_directories_to_search = File::Spec->catfile( $self->{working_dir}, 't' );
+	my @directories_to_search = ();
+for my $directory (@posiable_directories_to_search) {
+	if ( defined -d $directory ) {
+		push @directories_to_search, $directory;
+	}
+}
+
+try {
+	find( sub { find_makefile_test_requires($self); }, @directories_to_search );
+};
+	
+	return;
 
 }
 
-
+#######
+# find_makefile_requires
+#######
 sub find_makefile_requires {
 	my $self     = shift;
 	my $filename = $_;
@@ -195,19 +222,22 @@ sub find_makefile_requires {
 			next if $include->type eq 'no';
 
 			my @modules = $include->module;
-			p @modules;# if $self->{debug};
+			p @modules if $self->{debug};
 			if ( !$self->{base_parent} ) {
 				my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
 				if (@base_parent_modules) {
 					@modules = @base_parent_modules;
 				}
+				# try{
+					# @modules = $self->base_parent( $include->module, $include->content, $include->pragma );
+				# };
 			}
 
 			foreach my $module (@modules) {
-				p $module;# if $self->{debug};
+				p $module if $self->{debug};
 
 				if ( !$self->{core} ) {
-					p $module;# if $self->{debug};
+					p $module if $self->{debug};
 
 					# hash with core modules to process regardless
 					my $ignore_core = { 'File::Path' => 1, };
@@ -318,7 +348,7 @@ sub remove_children {
 	return;
 }
 
-sub output_requires {
+sub output_body {
 	my $self         = shift;
 	my $title        = shift || 'title missing';
 	my $required_ref = shift || return;
@@ -392,6 +422,120 @@ sub base_parent {
 	return @modules;
 }
 
+sub find_makefile_test_requires {
+	my $self     = shift;
+	my $filename = $_;
+	return if $filename !~ /[.]t|pm$/sxm;
+
+	if ($self->{verbose}) {
+		say 'looking for test_requires in: ' . $filename;
+	}
+	my @items = ();
+
+	# Load a Document from a file
+	my $document = PPI::Document->new($filename);
+	my $ppi_i = $document->find('PPI::Statement::Include');
+
+	if ($ppi_i) {
+		foreach my $include ( @{$ppi_i} ) {
+			next if $include->type eq 'no';
+
+			my @modules = $include->module;
+			if ( !$self->{base_parent} ) {
+				my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
+				if (@base_parent_modules) {
+					@modules = @base_parent_modules;
+				}
+			}
+
+			foreach my $module (@modules) {
+				if ( !$self->{core} ) {
+
+					p $module if $self->{debug};
+
+					# hash with core modules to process regardless
+					# don't ignore Test::More so as to get done_testing mst++
+					my $ignore_core = { 'Test::More' => 1, };
+					if ( !$ignore_core->{$module} ) {
+						next if Module::CoreList->first_release($module);
+					}
+				}
+
+				#deal with ''
+				next if $module eq NONE;
+				if ( $module =~ /^$self->{package_name}/sxm ) {
+
+					# don't include our own packages here
+					next;
+				}
+				if ( $module =~ /Mojo/sxm && !$self->{mojo} ) {
+					$module = 'Mojolicious';
+				}
+				if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm ) {
+
+					# mark all Padre core as just Padre, for plugins
+					push @items, 'Padre';
+					$module = 'Padre';
+				} else {
+					push @items, $module;
+				}
+
+				try {
+					my $mod = CPAN::Shell->expand( 'Module', $module );
+					if ($mod) {
+
+						# next if not defined $mod;
+						if ( $mod->cpan_version && !$requires{$module} ) {
+							$test_requires{$module} = $mod->cpan_version;
+						}
+					} else {
+						$module =~ s/^(\S+)::\S+/$1/;
+						$mod = CPAN::Shell->expand( 'Module', $module );
+						p $mod if $self->{debug};
+
+						if ( $mod->cpan_version && !$requires{$module} ) {
+							$test_requires{$module} = $mod->cpan_version;
+
+						}
+					}
+				};
+			}
+		}
+	}
+	return;
+}
+
+
+sub output_bottom {
+	my $self = shift;
+
+	given ($self->{output_format}) {
+
+		# when ('mi') {
+
+		# }
+		when ('dsl') {
+			if ($self->{verbose}) {
+				print "\n";
+				say '#ToDo you should consider completing the following';
+				say "homepage\t...";
+				say "bugtracker\t...";
+				say "repository\t...";
+			}
+			print "\n";
+			if ( defined -d './share' ) {
+				say 'install_share';
+				print "\n";
+			}
+			say 'no_index directory  qw{ t xt eg share inc privinc }';
+		}
+
+		# when ('build') {
+
+		# }
+	}
+	return;
+}
 
 
 1;
@@ -423,96 +567,7 @@ say 'END';
 
 
 
-sub requires {
-	my $document = PPI::Document->new($_);
-	return
-		unless ( defined $document->find('PPI::Statement::Package')
-		|| $document->find('PPI::Token::Comment') =~ /perl/ );
 
-	if ($verbose) {
-		say 'looking for requires in: ' . $_;
-	}
-	my @items    = ();
-	my $includes = $document->find('PPI::Statement::Include');
-
-	# p $includes if $debug;
-
-	if ($includes) {
-		foreach my $include ( @{$includes} ) {
-			p $include if $debug;
-			next if $include->type eq 'no';
-
-			my @modules = $include->module;
-			p @modules if $debug;
-			if ( !$base_parent ) {
-				my @base_parent_modules = base_parent( $include->module, $include->content, $include->pragma );
-				if (@base_parent_modules) {
-					@modules = @base_parent_modules;
-				}
-			}
-
-			foreach my $module (@modules) {
-				p $module if $debug;
-
-				if ( !$core ) {
-					p $module if $debug;
-
-					# hash with core modules to process regardless
-					my $ignore_core = { 'File::Path' => 1, };
-					if ( !$ignore_core->{$module} ) {
-						next if Module::CoreList->first_release($module);
-					}
-				}
-
-				#deal with ''
-				next if $module eq NONE;
-				if ( $module =~ /^$package_name/sxm ) {
-
-					# don't include our own packages here
-					next;
-				}
-				if ( $module =~ /Mojo/sxm && !$mojo ) {
-					$module = 'Mojolicious';
-				}
-				if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm ) {
-
-					# mark all Padre core as just Padre, for plugins
-					push @items, 'Padre';
-					$module = 'Padre';
-				} else {
-					push @items, $module;
-				}
-
-				my $mod;
-				my $mod_in_cpan = 0;
-				try {
-					$mod = CPAN::Shell->expand( 'Module', $module );
-
-					if ( $mod->cpan_version ne 'undef' ) {
-
-						# alociate current cpan version against module name
-						# $requires{$module} = $mod->cpan_version;
-						$mod_in_cpan = 1;
-					}
-				}
-				catch {
-					say 'caught ' . $module if $debug;
-					$requires{$module} = 0;
-				}
-				finally {
-					if ($mod_in_cpan) {
-
-						# alociate current cpan version against module name
-						$requires{$module} = $mod->cpan_version;
-					}
-				};
-			}
-		}
-	}
-	push @requires, @items;
-	p @requires if $debug;
-	return;
-}
 
 
 sub test_requires {
