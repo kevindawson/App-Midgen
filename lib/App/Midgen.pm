@@ -4,8 +4,7 @@ use v5.10;
 use strict;
 use warnings;
 use Moo;
-
-# with qw( App::Midgen::Roles );
+with qw( App::Midgen::Roles );
 
 our $VERSION = '0.05';
 use English qw( -no_match_vars ); # Avoids regex performance penalty
