@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 our $VERSION = '0.05';
-use English qw( -no_match_vars ); # Avoids regex performance penalty
+use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 use Moo::Role;
@@ -53,10 +53,29 @@ has 'verbose' => (
 #######
 # encapsulated attributes
 #######
+
+# Our best guess as to this packages name
+has 'package_name'=> (
+	is  => 'rw',
+	isa => Str,
+);
+
+# Some package names we found along the way
 has 'package_names' => (
 	is  => 'rw',
 	isa => ArrayRef,
 );
 
+# Some where to store required modules and version info in
+has 'requires' => (
+	is  => 'rw',
+	isa => HashRef,
+);
+
+# Some where to store test_required modules and version info in
+has 'test_requires' => (
+	is  => 'rw',
+	isa => HashRef,
+);
 
 1;
