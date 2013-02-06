@@ -10,43 +10,66 @@ local $OUTPUT_AUTOFLUSH = 1;
 
 use Moo::Role;
 use MooX::Types::MooseLike::Base qw(:all);
+use Carp;
 
 #######
 # options
 #######
 has 'base_parent' => (
 	is  => 'ro',
-	isa => Bool,
+	isa => sub {
+		croak "$_[0] this is not a Bool"
+			unless is_Bool( $_[0] );
+	},
 	required => 1,
 );
 has 'core' => (
 	is  => 'ro',
-	isa => Bool,
+	isa => sub {
+		croak "$_[0] this is not a Bool"
+			unless is_Bool( $_[0] );
+	},
 	required => 1,
 );
 has 'debug' => (
 	is  => 'ro',
-	isa => Bool,
+	isa => sub {
+		croak "$_[0] this is not a Bool"
+			unless is_Bool( $_[0] );
+	},
 	required => 1,
 );
 has 'mojo' => (
 	is  => 'ro',
-	isa => Bool,
+	isa => sub {
+		croak "$_[0] this is not a Bool"
+			unless is_Bool( $_[0] );
+	},
 	required => 1,
 );
 has 'noisy_children' => (
 	is  => 'ro',
-	isa => Bool,
+	isa => sub {
+		croak "$_[0] this is not a Bool"
+			unless is_Bool( $_[0] );
+	},
 	required => 1,
 );
 has 'output_format' => (
-	is => 'ro',
-	isa => Str,
+	is  => 'ro',
+	isa => sub {
+		my $format = { dsl => 1, mi => 1, build => 1, };
+		croak 'not a supported - output format' unless defined $format->{ $_[0] };
+		return;
+	},
 	required => 1,
 );
 has 'verbose' => (
 	is  => 'ro',
-	isa => Bool,
+	isa => sub {
+		croak "$_[0] this is not a Bool"
+			unless is_Bool( $_[0] );
+	},
 	required => 1,
 );
 
@@ -55,7 +78,7 @@ has 'verbose' => (
 #######
 
 # Our best guess as to this packages name
-has 'package_name'=> (
+has 'package_name' => (
 	is  => 'rw',
 	isa => Str,
 );
