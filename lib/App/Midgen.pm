@@ -34,7 +34,7 @@ use constant {
 #ToDo encapsulate these now sort out below
 
 
-my @requires      = ();
+# my @requires      = ();
 my %requires      = ();
 my %test_requires = ();
 
@@ -95,7 +95,7 @@ sub first_package_name {
 		find( sub { find_package_names($self); }, File::Spec->catfile( $self->{working_dir}, 'lib' ) );
 	};
 
-	p @{ $self->{package_names} } if $self->{debug};
+	p $self->{package_names} if $self->{debug};
 
 	# We will assume the first one found is our Package
 	$self->{package_name} = $self->{package_names}[0];
@@ -156,9 +156,8 @@ sub output_header {
 sub find_required_modules {
 	my $self = shift;
 
-	#By default we shell only check lib and script (to bin or not?)
+	# By default we shell only check lib and script (to bin or not?)
 	my @posiable_directories_to_search = map { File::Spec->catfile( $self->{working_dir}, $_ ) } qw( lib script );
-	p @posiable_directories_to_search if $self->{debug};
 
 	my @directories_to_search = ();
 	for my $directory (@posiable_directories_to_search) {
@@ -172,7 +171,6 @@ sub find_required_modules {
 		find( sub { find_makefile_requires($self); }, @directories_to_search );
 	};
 
-	# p %requires if $self->{debug};
 	return;
 
 }
@@ -293,8 +291,8 @@ sub find_makefile_requires {
 			}
 		}
 	}
-	push @requires, @items;
-	p @requires if $self->{debug};
+	# push @requires, @items;
+	# p @requires if $self->{debug};
 	return;
 }
 
@@ -424,6 +422,9 @@ sub base_parent {
 	return @modules;
 }
 
+#######
+# find_makefile_test_requires
+#######
 sub find_makefile_test_requires {
 	my $self     = shift;
 	my $filename = $_;
@@ -492,12 +493,13 @@ sub find_makefile_test_requires {
 						}
 					} else {
 						$module =~ s/^(\S+)::\S+/$1/;
+						# p $module;
 						$mod = CPAN::Shell->expand( 'Module', $module );
 						p $mod if $self->{debug};
 
 						if ( $mod->cpan_version && !$requires{$module} ) {
 							$test_requires{$module} = $mod->cpan_version;
-
+							p $test_requires{$module};
 						}
 					}
 				};
@@ -507,7 +509,9 @@ sub find_makefile_test_requires {
 	return;
 }
 
-
+#######
+# output_footer
+#######
 sub output_footer {
 	my $self = shift;
 
