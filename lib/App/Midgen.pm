@@ -31,12 +31,6 @@ use constant {
 };
 
 
-#ToDo encapsulate these now sort out below
-
-
-
-# my %test_requires = ();
-
 
 #######
 # run
@@ -254,6 +248,7 @@ sub find_makefile_requires {
 			}
 		}
 	}
+
 	# push @requires, @items;
 	# p @requires if $self->{debug};
 	return;
@@ -331,6 +326,7 @@ sub find_makefile_test_requires {
 						}
 					} else {
 						$module =~ s/^(\S+)::\S+/$1/;
+
 						# p $module;
 						$mod = CPAN::Shell->expand( 'Module', $module );
 						p $mod if $self->{debug};
