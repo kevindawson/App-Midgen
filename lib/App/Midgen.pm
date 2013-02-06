@@ -52,15 +52,15 @@ sub run {
 	my $self = shift;
 	$self->initialise();
 	$self->first_package_name();
-	$self->output_top();
+	$self->output_header();
 
 	$self->find_required_modules();
 	$self->remove_children( \%requires ) if ( !$self->{verbose} );
-	$self->output_body( 'requires', \%requires );
+	$self->output_main_body( 'requires', \%requires );
 	
 	$self->find_required_test_modules();
-	$self->output_body( 'test_requires', \%test_requires );
-	$self->output_bottom();
+	$self->output_main_body( 'test_requires', \%test_requires );
+	$self->output_footer();
 
 	print "\n";
 
@@ -123,7 +123,7 @@ sub find_package_names {
 #######
 # first_package_name
 #######
-sub output_top {
+sub output_header {
 	my $self = shift;
 
 	# Let's get the current version of Module::Install::DSL
@@ -348,7 +348,7 @@ sub remove_children {
 	return;
 }
 
-sub output_body {
+sub output_main_body {
 	my $self         = shift;
 	my $title        = shift || 'title missing';
 	my $required_ref = shift || return;
@@ -506,7 +506,7 @@ sub find_makefile_test_requires {
 }
 
 
-sub output_bottom {
+sub output_footer {
 	my $self = shift;
 
 	given ($self->{output_format}) {
