@@ -8,7 +8,31 @@ Revision history for App-Midgen
  - first attempt at a Role with the GetOpps Long cmd varibles [61c8e11]
  - continuity typo [e83a915]
  - hack of midgen.pl with just the getopp menu system left in place
-   [a4a3f9b]
+ - Update Changes [222e453]
+ - Add noise control for PPI::XS test, we can't use it as it has deperated
+   calls [8f6d32e]
+ - tweak comment [0387824]
+ - Starting to convert the guts in to the package [f377d3c]
+ - tweak to set up and then run [90b4c8e]
+ - find_required_modules -> in [26fc34a]
+ - remove_children -> in [cb4dd34]
+ - some encaplisation - sweet [291d158]
+ - encapsulated attributes [5efce18]
+ - add some comments - ie do doc as we go [78435c1]
+ - add base_parent sub back in, opps [adc8fbc]
+ - cooking on gas, as it was, so we are working [722185f]
+ - remove unwanted comments [0ab4148]
+ - remove unwanted comments [3a9ca68]
+ - tidy [a8f4a95]
+ - remove some unwanted code [f0e34ca]
+ - add some encapsulated attribures to store our module and version in
+ - tweak [dccd1be]
+ - more encasulation [e8f7c23]
+ - tidy [f5dc9a9]
+
+ [424929c]
+
+ [a4a3f9b]
 
 0.01 2013-02-04
  - Initial release. (BOWTIE)
