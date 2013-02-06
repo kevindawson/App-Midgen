@@ -51,7 +51,7 @@ has 'verbose' => (
 );
 
 #######
-# encapsulated attributes
+# some encapsulated attributes
 #######
 
 # Our best guess as to this packages name
