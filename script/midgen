@@ -20,7 +20,7 @@ use Data::Printer {
 };
 
 use FindBin qw($Bin);
-use lib map "$Bin/$_", 'lib', '../lib';
+use lib map { "$Bin/$_" } qw( lib ../lib );
 
 #######
 # Start of Menu
