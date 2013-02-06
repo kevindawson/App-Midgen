@@ -4,7 +4,7 @@ use v5.10;
 use strict;
 use warnings;
 use Moo;
-with qw( App::Midgen::Roles );
+# with qw( App::Midgen::Roles );
 
 our $VERSION = '0.05';
 use English qw( -no_match_vars ); # Avoids regex performance penalty
@@ -30,7 +30,7 @@ use constant {
 };
 
 
-#ToDo sort out below
+#ToDo encapsulate these now sort out below
 
 
 my @requires      = ();
@@ -45,10 +45,9 @@ my %test_requires = ();
 
 
 
-
-# End of Menu
 #######
-
+# run
+#######
 sub run {
 	my $self = shift;
 	$self->initialise();
@@ -65,16 +64,15 @@ sub run {
 	return;
 }
 
-
-
+#######
+# initialise
+#######
 sub initialise {
 	my $self = shift;
 
 	# stop rlib from Fing all over cwd
 	$self->{working_dir} = cwd();
-
-	# p $self->{working_dir} if $self->{debug};
-
+	say 'working in dir: '. $self->{working_dir} if $self->{debug};
 
 	# set up cpan bit's as well as checking we are upto date
 	CPAN::HandleConfig->load;
@@ -119,6 +117,9 @@ sub find_package_names {
 	return;
 }
 
+#######
+# first_package_name
+#######
 sub output_top {
 	my $self = shift;
 
@@ -128,6 +129,7 @@ sub output_top {
 	given ( $self->{output_format} ) {
 
 		# when ('mi') {
+		#ToDo add mi to output_top
 		# }
 		when ('dsl') {
 			print "\n";
@@ -138,6 +140,7 @@ sub output_top {
 		}
 
 		# when ('build') {
+		#ToDo add build  to output_top
 		# }
 	}
 	return;
