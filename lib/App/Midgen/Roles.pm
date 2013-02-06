@@ -11,7 +11,9 @@ local $OUTPUT_AUTOFLUSH = 1;
 use Moo::Role;
 use MooX::Types::MooseLike::Base qw(:all);
 
-
+#######
+# options
+#######
 has 'base_parent' => (
 	is  => 'ro',
 	isa => Bool,
@@ -47,5 +49,14 @@ has 'verbose' => (
 	isa => Bool,
 	required => 1,
 );
+
+#######
+# encapsulated attributes
+#######
+has 'package_names' => (
+	is  => 'rw',
+	isa => ArrayRef,
+);
+
 
 1;
