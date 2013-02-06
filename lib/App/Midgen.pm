@@ -34,16 +34,8 @@ use constant {
 #ToDo encapsulate these now sort out below
 
 
-# my @requires      = ();
-my %requires      = ();
-my %test_requires = ();
 
-# my $package_name;
-# my @package_names;
-# my @posiable_directories_to_search = ();
-# my @directories_to_search          = ();
-
-
+# my %test_requires = ();
 
 
 #######
@@ -56,11 +48,11 @@ sub run {
 	$self->output_header();
 
 	$self->find_required_modules();
-	$self->remove_children( \%requires ) if ( !$self->{verbose} );
-	$self->output_main_body( 'requires', \%requires );
+	$self->remove_noisy_children( $self->{requires} ) if ( !$self->{verbose} );
+	$self->output_main_body( 'requires', $self->{requires} );
 
 	$self->find_required_test_modules();
-	$self->output_main_body( 'test_requires', \%test_requires );
+	$self->output_main_body( 'test_requires', $self->{test_requires} );
 	$self->output_footer();
 
 	print "\n";
@@ -103,7 +95,6 @@ sub first_package_name {
 
 	return;
 }
-
 #######
 # first_package_name
 #######
@@ -121,34 +112,6 @@ sub find_package_names {
 	return;
 }
 
-#######
-# first_package_name
-#######
-sub output_header {
-	my $self = shift;
-
-	# Let's get the current version of Module::Install::DSL
-	my $mod = CPAN::Shell->expand( 'Module', 'inc::Module::Install::DSL' );
-
-	given ( $self->{output_format} ) {
-
-		# when ('mi') {
-		#ToDo add mi to output_top
-		# }
-		when ('dsl') {
-			print "\n";
-			say 'use inc::Module::Install::DSL ' . $mod->cpan_version . ';';
-			print "\n";
-			say 'all_from lib/' . $self->{package_name} . '.pm';
-			say 'requires_from lib/' . $self->{package_name} . '.pm';
-		}
-
-		# when ('build') {
-		#ToDo add build  to output_top
-		# }
-	}
-	return;
-}
 
 #######
 # find_required_modules
@@ -279,13 +242,13 @@ sub find_makefile_requires {
 				}
 				catch {
 					say 'caught ' . $module if $self->{debug};
-					$requires{$module} = 0;
+					$self->{requires}{$module} = 0;
 				}
 				finally {
 					if ($mod_in_cpan) {
 
 						# alociate current cpan version against module name
-						$requires{$module} = $mod->cpan_version;
+						$self->{requires}{$module} = $mod->cpan_version;
 					}
 				};
 			}
@@ -296,131 +259,6 @@ sub find_makefile_requires {
 	return;
 }
 
-
-sub remove_children {
-	my $self = shift;
-	my $required_ref = shift || return;
-	my @sorted_modules;
-	foreach my $module_name ( sort keys %{$required_ref} ) {
-		push @sorted_modules, $module_name;
-	}
-
-	p @sorted_modules if $self->{debug};
-
-	my $n = 0;
-	while ( $sorted_modules[$n] ) {
-
-		my $parent_name  = $sorted_modules[$n];
-		my @p_score      = split /::/, $parent_name;
-		my $parent_score = @p_score;
-
-		my $child_score;
-		if ( ( $n + 1 ) <= $#sorted_modules ) {
-			$n++;
-
-			# Use of implicit split to @_ is deprecated
-			my $child_name = $sorted_modules[$n];
-			$child_score = @{ [ split /::/, $child_name ] };
-		}
-
-		if ( $sorted_modules[$n] =~ /^$sorted_modules[$n-1]::/ ) {
-
-			# Checking for one degree of seperation ie A::B -> A::B::C is ok but A::B::C::D is not
-			if ( ( $parent_score + 1 ) == $child_score ) {
-
-				# Test for same version number
-				if ( $required_ref->{ $sorted_modules[ $n - 1 ] } eq $required_ref->{ $sorted_modules[$n] } ) {
-					say 'delete miscreant noisy children '
-						. $sorted_modules[$n] . ' ver '
-						. $required_ref->{ $sorted_modules[$n] }
-						if $self->{noisy_children};
-					try {
-						delete $required_ref->{ $sorted_modules[$n] };
-						splice( @sorted_modules, $n, 1 );
-						$n--;
-					};
-					p @sorted_modules if $self->{debug};
-				}
-			}
-		}
-		$n++ if ( $n == $#sorted_modules );
-	}
-	return;
-}
-
-sub output_main_body {
-	my $self         = shift;
-	my $title        = shift || 'title missing';
-	my $required_ref = shift || return;
-
-	print "\n";
-
-	my $pm_length = 0;
-	foreach my $module_name ( sort keys %{$required_ref} ) {
-		if ( length $module_name > $pm_length ) {
-			$pm_length = length $module_name;
-		}
-	}
-
-	say $title . ' => {' if $self->{output_format} eq 'build';
-
-	foreach my $module_name ( sort keys %{$required_ref} ) {
-		given ( $self->{output_format} ) {
-			when ('mi') {
-				if ( $module_name =~ /^Win32/sxm ) {
-					my $sq_key = "'$module_name'";
-					printf "%s %-*s => '%s' if win32;\n", $title, $pm_length + 2, $sq_key,
-						$required_ref->{$module_name};
-				} else {
-					my $sq_key = "'$module_name'";
-					printf "%s %-*s => '%s';\n", $title, $pm_length + 2, $sq_key, $required_ref->{$module_name};
-				}
-			}
-			when ('dsl') {
-				if ( $module_name =~ /^Win32/sxm ) {
-					printf "%s %-*s %s if win32\n", $title, $pm_length, $module_name, $required_ref->{$module_name};
-				} else {
-					printf "%s %-*s %s\n", $title, $pm_length, $module_name, $required_ref->{$module_name};
-				}
-			}
-			when ('build') {
-				my $sq_key = "'$module_name'";
-				printf "\t %-*s => '%s',\n", $pm_length + 2, $sq_key, $required_ref->{$module_name};
-			}
-		}
-	}
-	say '},' if $self->{output_format} eq 'build';
-	return;
-}
-
-#######
-# base_parent
-#######
-sub base_parent {
-	my $self    = shift;
-	my $module  = shift;
-	my $content = shift;
-	my $pragma  = shift;
-	my @modules = ();
-	if ( $module =~ /base|parent/sxm ) {
-
-		if ( $self->{verbose} ) {
-			say 'Info: check ' . $pragma . ' pragma: ';
-			say $content;
-		}
-
-		$content =~ s/^use (base|parent) //;
-
-		$content =~ s/^qw[\<|\(|\{|\[]\n?\t?\s*//;
-		$content =~ s/\s*[\>|\)|\}|\]];\n?\t?$//;
-		$content =~ s/(\n\t)/, /g;
-
-		@modules = split /, /, $content;
-		push @modules, $module;
-		p @modules if $self->{debug};
-	}
-	return @modules;
-}
 
 #######
 # find_makefile_test_requires
@@ -488,8 +326,8 @@ sub find_makefile_test_requires {
 					if ($mod) {
 
 						# next if not defined $mod;
-						if ( $mod->cpan_version && !$requires{$module} ) {
-							$test_requires{$module} = $mod->cpan_version;
+						if ( $mod->cpan_version && !$self->{requires}{$module} ) {
+							$self->{test_requires}{$module} = $mod->cpan_version;
 						}
 					} else {
 						$module =~ s/^(\S+)::\S+/$1/;
@@ -497,9 +335,9 @@ sub find_makefile_test_requires {
 						$mod = CPAN::Shell->expand( 'Module', $module );
 						p $mod if $self->{debug};
 
-						if ( $mod->cpan_version && !$requires{$module} ) {
-							$test_requires{$module} = $mod->cpan_version;
-							p $test_requires{$module};
+						if ( $mod->cpan_version && !$self->{requires}{$module} ) {
+							$self->{test_requires}{$module} = $mod->cpan_version;
+							p $self->{test_requires}{$module};
 						}
 					}
 				};
@@ -509,6 +347,166 @@ sub find_makefile_test_requires {
 	return;
 }
 
+
+#######
+# base_parent
+#######
+sub base_parent {
+	my $self    = shift;
+	my $module  = shift;
+	my $content = shift;
+	my $pragma  = shift;
+	my @modules = ();
+	if ( $module =~ /base|parent/sxm ) {
+
+		if ( $self->{verbose} ) {
+			say 'Info: check ' . $pragma . ' pragma: ';
+			say $content;
+		}
+
+		$content =~ s/^use (base|parent) //;
+
+		$content =~ s/^qw[\<|\(|\{|\[]\n?\t?\s*//;
+		$content =~ s/\s*[\>|\)|\}|\]];\n?\t?$//;
+		$content =~ s/(\n\t)/, /g;
+
+		@modules = split /, /, $content;
+		push @modules, $module;
+		p @modules if $self->{debug};
+	}
+	return @modules;
+}
+
+#######
+# remove_noisy_children
+#######
+sub remove_noisy_children {
+	my $self = shift;
+	my $required_ref = shift || return;
+	my @sorted_modules;
+	foreach my $module_name ( sort keys %{$required_ref} ) {
+		push @sorted_modules, $module_name;
+	}
+
+	p @sorted_modules if $self->{debug};
+
+	my $n = 0;
+	while ( $sorted_modules[$n] ) {
+
+		my $parent_name  = $sorted_modules[$n];
+		my @p_score      = split /::/, $parent_name;
+		my $parent_score = @p_score;
+
+		my $child_score;
+		if ( ( $n + 1 ) <= $#sorted_modules ) {
+			$n++;
+
+			# Use of implicit split to @_ is deprecated
+			my $child_name = $sorted_modules[$n];
+			$child_score = @{ [ split /::/, $child_name ] };
+		}
+
+		if ( $sorted_modules[$n] =~ /^$sorted_modules[$n-1]::/ ) {
+
+			# Checking for one degree of seperation ie A::B -> A::B::C is ok but A::B::C::D is not
+			if ( ( $parent_score + 1 ) == $child_score ) {
+
+				# Test for same version number
+				if ( $required_ref->{ $sorted_modules[ $n - 1 ] } eq $required_ref->{ $sorted_modules[$n] } ) {
+					say 'delete miscreant noisy children '
+						. $sorted_modules[$n] . ' ver '
+						. $required_ref->{ $sorted_modules[$n] }
+						if $self->{noisy_children};
+					try {
+						delete $required_ref->{ $sorted_modules[$n] };
+						splice( @sorted_modules, $n, 1 );
+						$n--;
+					};
+					p @sorted_modules if $self->{debug};
+				}
+			}
+		}
+		$n++ if ( $n == $#sorted_modules );
+	}
+	return;
+}
+
+
+#######
+# output_header
+#######
+sub output_header {
+	my $self = shift;
+
+	# Let's get the current version of Module::Install::DSL
+	my $mod = CPAN::Shell->expand( 'Module', 'inc::Module::Install::DSL' );
+
+	given ( $self->{output_format} ) {
+
+		# when ('mi') {
+		#ToDo add mi to output_top
+		# }
+		when ('dsl') {
+			print "\n";
+			say 'use inc::Module::Install::DSL ' . $mod->cpan_version . ';';
+			print "\n";
+			say 'all_from lib/' . $self->{package_name} . '.pm';
+			say 'requires_from lib/' . $self->{package_name} . '.pm';
+		}
+
+		# when ('build') {
+		#ToDo add build  to output_top
+		# }
+	}
+	return;
+}
+#######
+# output_main_body
+#######
+sub output_main_body {
+	my $self         = shift;
+	my $title        = shift || 'title missing';
+	my $required_ref = shift || return;
+
+	print "\n";
+
+	my $pm_length = 0;
+	foreach my $module_name ( sort keys %{$required_ref} ) {
+		if ( length $module_name > $pm_length ) {
+			$pm_length = length $module_name;
+		}
+	}
+
+	say $title . ' => {' if $self->{output_format} eq 'build';
+
+	foreach my $module_name ( sort keys %{$required_ref} ) {
+		given ( $self->{output_format} ) {
+			when ('mi') {
+				if ( $module_name =~ /^Win32/sxm ) {
+					my $sq_key = "'$module_name'";
+					printf "%s %-*s => '%s' if win32;\n", $title, $pm_length + 2, $sq_key,
+						$required_ref->{$module_name};
+				} else {
+					my $sq_key = "'$module_name'";
+					printf "%s %-*s => '%s';\n", $title, $pm_length + 2, $sq_key, $required_ref->{$module_name};
+				}
+			}
+			when ('dsl') {
+				if ( $module_name =~ /^Win32/sxm ) {
+					printf "%s %-*s %s if win32\n", $title, $pm_length, $module_name, $required_ref->{$module_name};
+				} else {
+					printf "%s %-*s %s\n", $title, $pm_length, $module_name, $required_ref->{$module_name};
+				}
+			}
+			when ('build') {
+				my $sq_key = "'$module_name'";
+				printf "\t %-*s => '%s',\n", $pm_length + 2, $sq_key, $required_ref->{$module_name};
+			}
+		}
+	}
+	say '},' if $self->{output_format} eq 'build';
+	return;
+}
 #######
 # output_footer
 #######
