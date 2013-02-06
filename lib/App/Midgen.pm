@@ -123,7 +123,7 @@ sub find_package_names {
 sub output_top {
 	my $self = shift;
 
-	# Let's get the Module::Install::DSL current version
+	# Let's get the current version of Module::Install::DSL
 	my $mod = CPAN::Shell->expand( 'Module', 'inc::Module::Install::DSL' );
 
 	given ( $self->{output_format} ) {
@@ -146,14 +146,17 @@ sub output_top {
 	return;
 }
 
-
+#######
+# find_required_modules
+#######
 sub find_required_modules {
 	my $self = shift;
-
+	
+	#By default we shell only check lib and script (to bin or not?)
 	my @posiable_directories_to_search = map { File::Spec->catfile( $self->{working_dir}, $_ ) } qw( lib script );
-	my @directories_to_search = ();
-
 	p @posiable_directories_to_search if $self->{debug};
+	
+	my @directories_to_search = ();
 	for my $directory (@posiable_directories_to_search) {
 		if ( defined -d $directory ) {
 			push @directories_to_search, $directory;
@@ -162,9 +165,7 @@ sub find_required_modules {
 	p @directories_to_search if $self->{debug};
 
 	try {
-		find( sub { requires($self); }, @directories_to_search );
-
-		# find( \&requires, @directories_to_search );
+		find( sub { find_makefile_requires($self); }, @directories_to_search );
 	};
 
 	# p %requires if $self->{debug};
@@ -172,41 +173,41 @@ sub find_required_modules {
 }
 
 
-sub requires {
+sub find_makefile_requires {
 	my $self     = shift;
 	my $filename = $_;
 	my $document = PPI::Document->new($filename);
 	return
 		unless ( defined $document->find('PPI::Statement::Package')
-		|| $document->find('PPI::Token::Comment') =~ /perl/ );
+		|| $document->find('PPI::Token::Comment') =~ /perl$/ );
 
 	if ( $self->{verbose} ) {
-		say 'looking for requires in: ' . $filename;
+		say 'looking for requires in -> ' . $filename;
 	}
 	my @items    = ();
-	my $includes = $document->find('PPI::Statement::Include');
+	my $ppi_i = $document->find('PPI::Statement::Include');
 
-	p $includes if $self->{debug};
+	p $ppi_i if $self->{debug};
 
-	if ($includes) {
-		foreach my $include ( @{$includes} ) {
+	if ($ppi_i) {
+		foreach my $include ( @{$ppi_i} ) {
 			p $include if $self->{debug};
 			next if $include->type eq 'no';
 
 			my @modules = $include->module;
-			p @modules if $self->{debug};
+			p @modules;# if $self->{debug};
 			if ( !$self->{base_parent} ) {
-				my @base_parent_modules = base_parent( $include->module, $include->content, $include->pragma );
+				my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
 				if (@base_parent_modules) {
 					@modules = @base_parent_modules;
 				}
 			}
 
 			foreach my $module (@modules) {
-				p $module if $self->{debug};
+				p $module;# if $self->{debug};
 
 				if ( !$self->{core} ) {
-					p $module if $self->{debug};
+					p $module;# if $self->{debug};
 
 					# hash with core modules to process regardless
 					my $ignore_core = { 'File::Path' => 1, };
@@ -362,7 +363,34 @@ sub output_requires {
 	return;
 }
 
+#######
+# base_parent
+#######
+sub base_parent {
+	my $self = shift;
+	my $module  = shift;
+	my $content = shift;
+	my $pragma  = shift;
+	my @modules = ();
+	if ( $module =~ /base|parent/sxm ) {
 
+		if ($self->{verbose}) {
+			say 'Info: check ' . $pragma . ' pragma: ';
+			say $content;
+		}
+
+		$content =~ s/^use (base|parent) //;
+
+		$content =~ s/^qw[\<|\(|\{|\[]\n?\t?\s*//;
+		$content =~ s/\s*[\>|\)|\}|\]];\n?\t?$//;
+		$content =~ s/(\n\t)/, /g;
+
+		@modules = split /, /, $content;
+		push @modules, $module;
+		p @modules if $self->{debug};
+	}
+	return @modules;
+}
 
 
 
