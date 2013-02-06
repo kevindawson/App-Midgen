@@ -59,7 +59,7 @@ has 'output_format' => (
 	is  => 'ro',
 	isa => sub {
 		my $format = { dsl => 1, mi => 1, build => 1, };
-		croak 'not a supported - output format' unless defined $format->{ $_[0] };
+		croak 'not a supported output format' unless defined $format->{ $_[0] };
 		return;
 	},
 	required => 1,
