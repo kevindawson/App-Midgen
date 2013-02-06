@@ -4,6 +4,7 @@ use v5.10;
 use strict;
 use warnings;
 use Moo;
+
 # with qw( App::Midgen::Roles );
 
 our $VERSION = '0.05';
@@ -57,7 +58,7 @@ sub run {
 	$self->find_required_modules();
 	$self->remove_children( \%requires ) if ( !$self->{verbose} );
 	$self->output_main_body( 'requires', \%requires );
-	
+
 	$self->find_required_test_modules();
 	$self->output_main_body( 'test_requires', \%test_requires );
 	$self->output_footer();
@@ -75,7 +76,7 @@ sub initialise {
 
 	# stop rlib from Fing all over cwd
 	$self->{working_dir} = cwd();
-	say 'working in dir: '. $self->{working_dir} if $self->{debug};
+	say 'working in dir: ' . $self->{working_dir} if $self->{debug};
 
 	# set up cpan bit's as well as checking we are upto date
 	CPAN::HandleConfig->load;
@@ -154,11 +155,11 @@ sub output_header {
 #######
 sub find_required_modules {
 	my $self = shift;
-	
+
 	#By default we shell only check lib and script (to bin or not?)
 	my @posiable_directories_to_search = map { File::Spec->catfile( $self->{working_dir}, $_ ) } qw( lib script );
 	p @posiable_directories_to_search if $self->{debug};
-	
+
 	my @directories_to_search = ();
 	for my $directory (@posiable_directories_to_search) {
 		if ( defined -d $directory ) {
@@ -180,19 +181,19 @@ sub find_required_modules {
 #######
 sub find_required_test_modules {
 	my $self = shift;
-	
+
 	my @posiable_directories_to_search = File::Spec->catfile( $self->{working_dir}, 't' );
 	my @directories_to_search = ();
-for my $directory (@posiable_directories_to_search) {
-	if ( defined -d $directory ) {
-		push @directories_to_search, $directory;
+	for my $directory (@posiable_directories_to_search) {
+		if ( defined -d $directory ) {
+			push @directories_to_search, $directory;
+		}
 	}
-}
 
-try {
-	find( sub { find_makefile_test_requires($self); }, @directories_to_search );
-};
-	
+	try {
+		find( sub { find_makefile_test_requires($self); }, @directories_to_search );
+	};
+
 	return;
 
 }
@@ -211,7 +212,7 @@ sub find_makefile_requires {
 	if ( $self->{verbose} ) {
 		say 'looking for requires in -> ' . $filename;
 	}
-	my @items    = ();
+	my @items = ();
 	my $ppi_i = $document->find('PPI::Statement::Include');
 
 	p $ppi_i if $self->{debug};
@@ -228,8 +229,9 @@ sub find_makefile_requires {
 				if (@base_parent_modules) {
 					@modules = @base_parent_modules;
 				}
+
 				# try{
-					# @modules = $self->base_parent( $include->module, $include->content, $include->pragma );
+				# @modules = $self->base_parent( $include->module, $include->content, $include->pragma );
 				# };
 			}
 
@@ -397,14 +399,14 @@ sub output_main_body {
 # base_parent
 #######
 sub base_parent {
-	my $self = shift;
+	my $self    = shift;
 	my $module  = shift;
 	my $content = shift;
 	my $pragma  = shift;
 	my @modules = ();
 	if ( $module =~ /base|parent/sxm ) {
 
-		if ($self->{verbose}) {
+		if ( $self->{verbose} ) {
 			say 'Info: check ' . $pragma . ' pragma: ';
 			say $content;
 		}
@@ -427,14 +429,14 @@ sub find_makefile_test_requires {
 	my $filename = $_;
 	return if $filename !~ /[.]t|pm$/sxm;
 
-	if ($self->{verbose}) {
+	if ( $self->{verbose} ) {
 		say 'looking for test_requires in: ' . $filename;
 	}
 	my @items = ();
 
 	# Load a Document from a file
 	my $document = PPI::Document->new($filename);
-	my $ppi_i = $document->find('PPI::Statement::Include');
+	my $ppi_i    = $document->find('PPI::Statement::Include');
 
 	if ($ppi_i) {
 		foreach my $include ( @{$ppi_i} ) {
@@ -509,13 +511,13 @@ sub find_makefile_test_requires {
 sub output_footer {
 	my $self = shift;
 
-	given ($self->{output_format}) {
+	given ( $self->{output_format} ) {
 
 		# when ('mi') {
 
 		# }
 		when ('dsl') {
-			if ($self->{verbose}) {
+			if ( $self->{verbose} ) {
 				print "\n";
 				say '#ToDo you should consider completing the following';
 				say "homepage\t...";
