@@ -38,7 +38,7 @@ my %requires      = ();
 my %test_requires = ();
 
 # my $package_name;
-my @package_names;
+# my @package_names;
 # my @posiable_directories_to_search = ();
 # my @directories_to_search          = ();
 
@@ -52,17 +52,15 @@ my @package_names;
 sub run {
 	my $self = shift;
 	$self->initialise();
-	$self->find_package_name();
+	$self->first_package_name();
 	$self->output_top();
-	
+
 	$self->find_required_modules();
 
 	$self->remove_children( \%requires ) if ( !$self->{verbose} );
-	# $self->output_requires( 'requires', \%requires );
+	$self->output_requires( 'requires', \%requires );
 
 	print "\n";
-
-
 
 	return;
 }
@@ -73,8 +71,9 @@ sub initialise {
 	my $self = shift;
 
 	# stop rlib from Fing all over cwd
-	$self->{cwd} = cwd();
-	p $self->{cwd} if $self->{debug};
+	$self->{working_dir} = cwd();
+
+	# p $self->{working_dir} if $self->{debug};
 
 
 	# set up cpan bit's as well as checking we are upto date
@@ -84,28 +83,39 @@ sub initialise {
 	return;
 }
 
-sub find_package_name {
+#######
+# first_package_name
+#######
+sub first_package_name {
 	my $self = shift;
 
 	try {
-		find( \&first_package_name, File::Spec->catfile( $self->{cwd}, 'lib' ) );
+		find( sub { find_package_names($self); }, File::Spec->catfile( $self->{working_dir}, 'lib' ) );
 	};
 
-	p @package_names if $self->{debug};
-	$self->{package_name} = $package_names[0];
+	p @{ $self->{package_names} } if $self->{debug};
+
+	# We will assume the first one found is our Package
+	$self->{package_name} = $self->{package_names}[0];
 	say 'Package: ' . $self->{package_name} if $self->{verbose};
+
 	return;
 }
 
+#######
+# first_package_name
+#######
+sub find_package_names {
+	my $self     = shift;
+	my $filename = $_;
 
-sub first_package_name {
-	my $self = shift;
-	return if $_ !~ /[.]pm$/sxm;
+	# Only check in pm files
+	return if $filename !~ /[.]pm$/sxm;
 
 	# Load a Document from a file
-	my $document = PPI::Document->new($_);
+	my $document = PPI::Document->new($filename);
 	my $ppi_sp   = $document->find('PPI::Statement::Package');
-	push @package_names, $ppi_sp->[0]->namespace;
+	push @{ $self->{package_names} }, $ppi_sp->[0]->namespace;
 	return;
 }
 
@@ -137,7 +147,7 @@ sub output_top {
 sub find_required_modules {
 	my $self = shift;
 
-	my @posiable_directories_to_search = map { File::Spec->catfile( $self->{cwd}, $_ ) } qw( lib bin script);
+	my @posiable_directories_to_search = map { File::Spec->catfile( $self->{working_dir}, $_ ) } qw( lib script );
 	my @directories_to_search = ();
 
 	p @posiable_directories_to_search if $self->{debug};
@@ -146,26 +156,29 @@ sub find_required_modules {
 			push @directories_to_search, $directory;
 		}
 	}
-	p @directories_to_search;
+	p @directories_to_search if $self->{debug};
 
 	try {
-		find( \&requires, @directories_to_search );
+		find( sub { requires($self); }, @directories_to_search );
+
+		# find( \&requires, @directories_to_search );
 	};
+
 	# p %requires if $self->{debug};
 
 }
 
 
 sub requires {
-	my $self = shift;
-	say '$_ '.$_;
-	my $document = PPI::Document->new($_);
+	my $self     = shift;
+	my $filename = $_;
+	my $document = PPI::Document->new($filename);
 	return
 		unless ( defined $document->find('PPI::Statement::Package')
 		|| $document->find('PPI::Token::Comment') =~ /perl/ );
 
-	if ($self->{verbose}) {
-		say 'looking for requires in: ' . $_;
+	if ( $self->{verbose} ) {
+		say 'looking for requires in: ' . $filename;
 	}
 	my @items    = ();
 	my $includes = $document->find('PPI::Statement::Include');
@@ -301,8 +314,50 @@ sub remove_children {
 	return;
 }
 
+sub output_requires {
+	my $self         = shift;
+	my $title        = shift || 'title missing';
+	my $required_ref = shift || return;
 
+	print "\n";
 
+	my $pm_length = 0;
+	foreach my $module_name ( sort keys %{$required_ref} ) {
+		if ( length $module_name > $pm_length ) {
+			$pm_length = length $module_name;
+		}
+	}
+
+	say $title . ' => {' if $self->{output_format} eq 'build';
+
+	foreach my $module_name ( sort keys %{$required_ref} ) {
+		given ( $self->{output_format} ) {
+			when ('mi') {
+				if ( $module_name =~ /^Win32/sxm ) {
+					my $sq_key = "'$module_name'";
+					printf "%s %-*s => '%s' if win32;\n", $title, $pm_length + 2, $sq_key,
+						$required_ref->{$module_name};
+				} else {
+					my $sq_key = "'$module_name'";
+					printf "%s %-*s => '%s';\n", $title, $pm_length + 2, $sq_key, $required_ref->{$module_name};
+				}
+			}
+			when ('dsl') {
+				if ( $module_name =~ /^Win32/sxm ) {
+					printf "%s %-*s %s if win32\n", $title, $pm_length, $module_name, $required_ref->{$module_name};
+				} else {
+					printf "%s %-*s %s\n", $title, $pm_length, $module_name, $required_ref->{$module_name};
+				}
+			}
+			when ('build') {
+				my $sq_key = "'$module_name'";
+				printf "\t %-*s => '%s',\n", $pm_length + 2, $sq_key, $required_ref->{$module_name};
+			}
+		}
+	}
+	say '},' if $self->{output_format} eq 'build';
+	return;
+}
 
 
 
