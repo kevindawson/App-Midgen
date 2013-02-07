@@ -13,7 +13,7 @@ use MooX::Types::MooseLike::Base qw(:all);
 use Carp;
 
 #######
-# options
+# cmd line options
 #######
 has 'base_parent' => (
 	is  => 'ro',
@@ -21,6 +21,7 @@ has 'base_parent' => (
 		croak "$_[0] this is not a Bool"
 			unless is_Bool( $_[0] );
 	},
+	default => sub { 0 },
 	required => 1,
 );
 has 'core' => (
@@ -29,6 +30,7 @@ has 'core' => (
 		croak "$_[0] this is not a Bool"
 			unless is_Bool( $_[0] );
 	},
+	default => sub { 0 },
 	required => 1,
 );
 has 'debug' => (
@@ -37,6 +39,7 @@ has 'debug' => (
 		croak "$_[0] this is not a Bool"
 			unless is_Bool( $_[0] );
 	},
+	default => sub { 0 },
 	required => 1,
 );
 has 'mojo' => (
@@ -45,6 +48,7 @@ has 'mojo' => (
 		croak "$_[0] this is not a Bool"
 			unless is_Bool( $_[0] );
 	},
+	default => sub { 0 },
 	required => 1,
 );
 has 'noisy_children' => (
@@ -53,6 +57,7 @@ has 'noisy_children' => (
 		croak "$_[0] this is not a Bool"
 			unless is_Bool( $_[0] );
 	},
+	default => sub { 0 },
 	required => 1,
 );
 has 'output_format' => (
@@ -62,6 +67,7 @@ has 'output_format' => (
 		croak 'not a supported output format' unless defined $format->{ $_[0] };
 		return;
 	},
+	default => sub { 'dsl' },
 	required => 1,
 );
 has 'verbose' => (
@@ -70,6 +76,7 @@ has 'verbose' => (
 		croak "$_[0] this is not a Bool"
 			unless is_Bool( $_[0] );
 	},
+	default => sub { 0 },
 	required => 1,
 );
 
