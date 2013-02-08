@@ -216,45 +216,15 @@ sub find_makefile_requires {
 				if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm ) {
 
 					# mark all Padre core as just Padre, for plugins
-					# push @items, 'Padre';
 					$module = 'Padre';
 				}
-
-				# else {
-				# push @items, $module;
-				# }
 				
 				$self->store_modules('requires', $module );
 
-				# my $mod;
-				# my $mod_in_cpan = 0;
-				# try {
-					# $mod = CPAN::Shell->expand( 'Module', $module );
-
-					# if ( $mod->cpan_version ne 'undef' ) {
-
-						# # alociate current cpan version against module name
-						# # $requires{$module} = $mod->cpan_version;
-						# $mod_in_cpan = 1;
-					# }
-				# }
-				# catch {
-					# say 'caught ' . $module if $self->{debug};
-					# $self->{requires}{$module} = 0;
-				# }
-				# finally {
-					# if ($mod_in_cpan) {
-
-						# # alociate current cpan version against module name
-						# $self->{requires}{$module} = $mod->cpan_version;
-					# }
-				# };
 			}
 		}
 	}
 
-	# push @requires, @items;
-	# p @requires if $self->{debug};
 	return;
 }
 
