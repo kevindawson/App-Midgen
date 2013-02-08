@@ -213,7 +213,7 @@ sub find_makefile_requires {
 				if ( $module =~ /Mojo/sxm && !$self->{mojo} ) {
 					$module = 'Mojolicious';
 				}
-				if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm ) {
+				if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm && !$self->{padre} ) {
 
 					# mark all Padre core as just Padre, for plugins
 					$module = 'Padre';
@@ -321,7 +321,7 @@ sub thingie {
 		if ( $module =~ /Mojo/sxm && !$self->{mojo} ) {
 			$module = 'Mojolicious';
 		}
-		if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm ) {
+		if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm && !$self->{padre} ) {
 
 			# mark all Padre core as just Padre, for plugins
 			$module = 'Padre';
@@ -362,7 +362,7 @@ sub store_modules {
 		}
 	}
 	finally {
-		if ($mod_in_cpan) {
+		if ($mod_in_cpan && !$self->{requires}{$module}) {
 
 			# alociate current cpan version against module name
 			$self->{$require_type}{$module} = $mod->cpan_version;
