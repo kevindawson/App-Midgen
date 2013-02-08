@@ -223,30 +223,32 @@ sub find_makefile_requires {
 				# else {
 				# push @items, $module;
 				# }
+				
+				$self->store_modules('requires', $module );
 
-				my $mod;
-				my $mod_in_cpan = 0;
-				try {
-					$mod = CPAN::Shell->expand( 'Module', $module );
+				# my $mod;
+				# my $mod_in_cpan = 0;
+				# try {
+					# $mod = CPAN::Shell->expand( 'Module', $module );
 
-					if ( $mod->cpan_version ne 'undef' ) {
+					# if ( $mod->cpan_version ne 'undef' ) {
 
-						# alociate current cpan version against module name
-						# $requires{$module} = $mod->cpan_version;
-						$mod_in_cpan = 1;
-					}
-				}
-				catch {
-					say 'caught ' . $module if $self->{debug};
-					$self->{requires}{$module} = 0;
-				}
-				finally {
-					if ($mod_in_cpan) {
+						# # alociate current cpan version against module name
+						# # $requires{$module} = $mod->cpan_version;
+						# $mod_in_cpan = 1;
+					# }
+				# }
+				# catch {
+					# say 'caught ' . $module if $self->{debug};
+					# $self->{requires}{$module} = 0;
+				# }
+				# finally {
+					# if ($mod_in_cpan) {
 
-						# alociate current cpan version against module name
-						$self->{requires}{$module} = $mod->cpan_version;
-					}
-				};
+						# # alociate current cpan version against module name
+						# $self->{requires}{$module} = $mod->cpan_version;
+					# }
+				# };
 			}
 		}
 	}
@@ -290,7 +292,7 @@ sub find_makefile_test_requires {
 
 		}
 	}
-	
+
 	# Hack for use_ok in test files, Ouch!
 	my $ppi_tqs = $document->find('PPI::Token::Quote::Single');
 	if ($ppi_tqs) {
@@ -300,14 +302,16 @@ sub find_makefile_test_requires {
 				my $module = $include->content;
 				$module =~ s/^[']//;
 				$module =~ s/[']$//;
+
 				# if we have found it already ignore it
 				if ( !$self->{requires}{$module} ) {
 					push @modules, $module;
 				}
 			}
-			
+
 			# if we found a modules, process it
 			if ( $#modules > 0 ) {
+				p @modules if $self->{debug};
 				$self->thingie( \@modules );
 			}
 		}
@@ -322,7 +326,7 @@ sub thingie {
 	my $self = shift;
 
 	my $modules_ref = shift;
-	my @items   = ();
+	my @items       = ();
 
 	foreach my $module ( @{$modules_ref} ) {
 		if ( !$self->{core} ) {
@@ -350,38 +354,75 @@ sub thingie {
 		if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm ) {
 
 			# mark all Padre core as just Padre, for plugins
-			push @items, 'Padre';
+			# push @items, 'Padre';
 			$module = 'Padre';
-		} else {
-			push @items, $module;
-		}
+		} 
+		# else {
+			# push @items, $module;
+		# }
+		
+		$self->store_modules('test_requires', $module );
 
-		try {
-			my $mod = CPAN::Shell->expand( 'Module', $module );
-			if ($mod) {
+		# try {
+		# my $mod = CPAN::Shell->expand( 'Module', $module );
+		# if ($mod) {
 
-				# next if not defined $mod;
-				if ( $mod->cpan_version && !$self->{requires}{$module} ) {
-					$self->{test_requires}{$module} = $mod->cpan_version;
-				}
-			} else {
-				$module =~ s/^(\S+)::\S+/$1/;
+		# # next if not defined $mod;
+		# if ( $mod->cpan_version && !$self->{requires}{$module} ) {
+		# $self->{test_requires}{$module} = $mod->cpan_version;
+		# }
+		# } else {
+		# $module =~ s/^(\S+)::\S+/$1/;
 
-				# p $module;
-				$mod = CPAN::Shell->expand( 'Module', $module );
-				p $mod if $self->{debug};
+		# # p $module;
+		# $mod = CPAN::Shell->expand( 'Module', $module );
+		# p $mod if $self->{debug};
 
-				if ( $mod->cpan_version && !$self->{requires}{$module} ) {
-					$self->{test_requires}{$module} = $mod->cpan_version;
-					p $self->{test_requires}{$module};
-				}
-			}
-		};
+		# if ( $mod->cpan_version && !$self->{requires}{$module} ) {
+		# $self->{test_requires}{$module} = $mod->cpan_version;
+		# p $self->{test_requires}{$module};
+		# }
+		# }
+		# };
+
+
 	}
 }
 
+#######
+# store_modules
+#######
+sub store_modules {
+	my $self         = shift;
+	my $require_type = shift;
+	my $module       = shift;
 
+	my $mod;
+	my $mod_in_cpan = 0;
+	try {
+		$mod = CPAN::Shell->expand( 'Module', $module );
 
+		if ( $mod->cpan_version ne 'undef' ) {
+
+			# alociate current cpan version against module name
+			# $requires{$module} = $mod->cpan_version;
+			$mod_in_cpan = 1;
+		}
+	}
+	catch {
+		say 'caught ' . $module if $self->{debug};
+		$self->{$require_type}{$module} = 0;
+	}
+	finally {
+		if ($mod_in_cpan) {
+
+			# alociate current cpan version against module name
+			$self->{$require_type}{$module} = $mod->cpan_version;
+		}
+	};
+
+	return;
+}
 
 #######
 # base_parent
