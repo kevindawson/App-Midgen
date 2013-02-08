@@ -101,7 +101,7 @@ sub find_package_names {
 	# Load a Document from a file
 	my $document = PPI::Document->new($filename);
 	push @{ $self->{package_names} }, $document->find_first('PPI::Statement::Package')->namespace;
-	
+
 	return;
 }
 
@@ -166,7 +166,8 @@ sub find_makefile_requires {
 	if ( $self->{verbose} ) {
 		say 'looking for requires in -> ' . $filename;
 	}
-	my @items = ();
+
+	# my @items = ();
 	my $ppi_i = $document->find('PPI::Statement::Include');
 
 	p $ppi_i if $self->{debug};
@@ -215,11 +216,13 @@ sub find_makefile_requires {
 				if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm ) {
 
 					# mark all Padre core as just Padre, for plugins
-					push @items, 'Padre';
+					# push @items, 'Padre';
 					$module = 'Padre';
-				} else {
-					push @items, $module;
 				}
+
+				# else {
+				# push @items, $module;
+				# }
 
 				my $mod;
 				my $mod_in_cpan = 0;
@@ -265,7 +268,8 @@ sub find_makefile_test_requires {
 	if ( $self->{verbose} ) {
 		say 'looking for test_requires in: ' . $filename;
 	}
-	my @items = ();
+
+	# my @items = ();
 
 	# Load a Document from a file
 	my $document = PPI::Document->new($filename);
@@ -276,6 +280,7 @@ sub find_makefile_test_requires {
 			next if $include->type eq 'no';
 
 			my @modules = $include->module;
+
 			if ( !$self->{base_parent} ) {
 				my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
 				if (@base_parent_modules) {
@@ -309,11 +314,13 @@ sub find_makefile_test_requires {
 				if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm ) {
 
 					# mark all Padre core as just Padre, for plugins
-					push @items, 'Padre';
+					# push @items, 'Padre';
 					$module = 'Padre';
-				} else {
-					push @items, $module;
 				}
+
+				# else {
+				# push @items, $module;
+				# }
 
 				try {
 					my $mod = CPAN::Shell->expand( 'Module', $module );
@@ -339,10 +346,106 @@ sub find_makefile_test_requires {
 			}
 		}
 	}
-	# my $ppi_tqs = $document->find('PPI::Token::Quote::Single');
-	# p $ppi_tqs;
+
+	my $ppi_tqs = $document->find('PPI::Token::Quote::Single');
+	if ($ppi_tqs) {
+		my @modules;
+		foreach my $include ( @{$ppi_tqs} ) {
+			if ( $include->content =~ /::/ && $include->content !~ /main/ ) {
+				my $module = $include->content;
+				$module =~ s/^[']//;
+				$module =~ s/[']$//;
+				if ( !$self->{requires}{$module} ) {
+					push @modules, $module;
+				}
+			}
+
+			if ( $#modules > 0 ) {
+
+				# p @modules;
+				$self->thingie( \@modules );
+			}
+
+			# p $module if $module !~ /main/;
+
+		}
+	}
+
+
 	return;
 }
+
+
+sub thingie {
+	my $self = shift;
+
+	my $modules = shift;
+	my @items   = ();
+
+	# if ( !$self->{base_parent} ) {
+	# my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
+	# if (@base_parent_modules) {
+	# @modules = @base_parent_modules;
+	# }
+	# }
+
+	foreach my $module ( @{$modules} ) {
+		if ( !$self->{core} ) {
+
+			p $module if $self->{debug};
+
+			# hash with core modules to process regardless
+			# don't ignore Test::More so as to get done_testing mst++
+			my $ignore_core = { 'Test::More' => 1, };
+			if ( !$ignore_core->{$module} ) {
+				next if Module::CoreList->first_release($module);
+			}
+		}
+
+		#deal with ''
+		next if $module eq NONE;
+		if ( $module =~ /^$self->{package_name}/sxm ) {
+
+			# don't include our own packages here
+			next;
+		}
+		if ( $module =~ /Mojo/sxm && !$self->{mojo} ) {
+			$module = 'Mojolicious';
+		}
+		if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm ) {
+
+			# mark all Padre core as just Padre, for plugins
+			push @items, 'Padre';
+			$module = 'Padre';
+		} else {
+			push @items, $module;
+		}
+
+		try {
+			my $mod = CPAN::Shell->expand( 'Module', $module );
+			if ($mod) {
+
+				# next if not defined $mod;
+				if ( $mod->cpan_version && !$self->{requires}{$module} ) {
+					$self->{test_requires}{$module} = $mod->cpan_version;
+				}
+			} else {
+				$module =~ s/^(\S+)::\S+/$1/;
+
+				# p $module;
+				$mod = CPAN::Shell->expand( 'Module', $module );
+				p $mod if $self->{debug};
+
+				if ( $mod->cpan_version && !$self->{requires}{$module} ) {
+					$self->{test_requires}{$module} = $mod->cpan_version;
+					p $self->{test_requires}{$module};
+				}
+			}
+		};
+	}
+}
+
+
 
 
 #######
