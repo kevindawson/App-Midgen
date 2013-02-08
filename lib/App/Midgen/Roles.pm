@@ -70,6 +70,15 @@ has 'output_format' => (
 	default => sub { 'dsl' },
 	required => 1,
 );
+has 'padre' => (
+is  => 'ro',
+	isa => sub {
+		croak "$_[0] this is not a Bool"
+			unless is_Bool( $_[0] );
+	},
+	default => sub { 0 },
+	required => 1,
+);
 has 'verbose' => (
 	is  => 'ro',
 	isa => sub {
