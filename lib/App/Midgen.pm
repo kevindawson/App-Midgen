@@ -82,7 +82,7 @@ sub first_package_name {
 
 	p $self->{package_names} if $self->{debug};
 
-	# We will assume the first one found is our Package
+	# We will assume the first one found is our Package Name
 	$self->{package_name} = $self->{package_names}[0];
 	say 'Package: ' . $self->{package_name} if $self->{verbose};
 
@@ -100,8 +100,8 @@ sub find_package_names {
 
 	# Load a Document from a file
 	my $document = PPI::Document->new($filename);
-	my $ppi_sp   = $document->find('PPI::Statement::Package');
-	push @{ $self->{package_names} }, $ppi_sp->[0]->namespace;
+	push @{ $self->{package_names} }, $document->find_first('PPI::Statement::Package')->namespace;
+	
 	return;
 }
 
@@ -339,6 +339,8 @@ sub find_makefile_test_requires {
 			}
 		}
 	}
+	# my $ppi_tqs = $document->find('PPI::Token::Quote::Single');
+	# p $ppi_tqs;
 	return;
 }
 
