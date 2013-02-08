@@ -3,12 +3,22 @@ use inc::Module::Install::DSL 1.06;
 all_from lib/App::Midgen.pm
 requires_from lib/App::Midgen.pm
 
+requires CPAN                         1.9800
+requires Carp                         1.26
+requires Cwd                          3.40
 requires Data::Printer                0.35
 requires File::Slurp                  9999.19
+requires File::Spec                   3.40
+requires Getopt::Long                 2.38
+requires Module::CoreList             2.80
 requires Moo                          1.000008
 requires MooX::Types::MooseLike::Base 0.16
 requires PPI                          1.215
+requires Pod::Usage                   1.61
 requires Try::Tiny                    0.12
+requires autodie                      2.13
+requires constant                     1.25
+requires lib                          0.63
 
 test_requires Test::More 0.98
 
