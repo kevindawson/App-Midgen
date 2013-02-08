@@ -352,18 +352,10 @@ sub store_modules {
 			$mod_in_cpan = 1;
 		}
 
-		# else {
-		# $module =~ s/^(\S+)::\S+/$1/;
-		# $mod = CPAN::Shell->expand( 'Module', $module );
-		# p $mod if $self->{debug};
-
-		# if ( $mod->cpan_version && !$self->{requires}{$module} ) {
-		# $mod_in_cpan = 1;
-		# }
-		# }
 	}
 	catch {
 		say 'caught ' . $module if $self->{debug};
+
 		# exclude modules in test dir
 		if ( $module !~ /^t::/ ) {
 			$self->{$require_type}{$module} = 0;
