@@ -258,7 +258,7 @@ sub find_makefile_test_requires {
 				}
 			}
 
-			$self->thingie( \@modules );
+			$self->process_found_modules( \@modules );
 
 		}
 	}
@@ -282,7 +282,7 @@ sub find_makefile_test_requires {
 			# if we found a modules, process it
 			if ( $#modules > 0 ) {
 				p @modules if $self->{debug};
-				$self->thingie( \@modules );
+				$self->process_found_modules( \@modules );
 			}
 		}
 	}
@@ -291,8 +291,10 @@ sub find_makefile_test_requires {
 	return;
 }
 
-#ToDo needs a new name, this is shit
-sub thingie {
+#######
+# composed method - process_found_modules
+#######
+sub process_found_modules {
 	my $self = shift;
 
 	my $modules_ref = shift;
@@ -333,7 +335,7 @@ sub thingie {
 }
 
 #######
-# store_modules
+# composed method - store_modules
 #######
 sub store_modules {
 	my $self         = shift;
@@ -354,18 +356,11 @@ sub store_modules {
 	}
 	catch {
 		say "caught - $require_type - $module" if $self->{debug};
-		if ( $require_type eq 'test_requires' ) {
-			say "caught - $require_type - $module";
-			say $module . ' - ' . $self->{requires}{$module};
-			say 'true'     if $self->{requires}{$module};
-			say 'not true' if !$self->{requires}{$module};
-		}
 
 		# exclude modules in test dir
 		if ( $require_type eq 'requires' ) {
 			$self->{$require_type}{$module} = 0;
 		} elsif ( $module !~ /^t::/ && $self->{requires}{$module} ) {
-			say 'here';
 			$self->{$require_type}{$module} = 0;
 		}
 	}
