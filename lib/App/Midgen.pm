@@ -348,21 +348,29 @@ sub store_modules {
 		if ( $mod->cpan_version ne 'undef' ) {
 
 			# alociate current cpan version against module name
-			# $requires{$module} = $mod->cpan_version;
 			$mod_in_cpan = 1;
 		}
 
 	}
 	catch {
-		say 'caught ' . $module if $self->{debug};
+		say "caught - $require_type - $module" if $self->{debug};
+		if ( $require_type eq 'test_requires' ) {
+			say "caught - $require_type - $module";
+			say $module . ' - ' . $self->{requires}{$module};
+			say 'true'     if $self->{requires}{$module};
+			say 'not true' if !$self->{requires}{$module};
+		}
 
 		# exclude modules in test dir
-		if ( $module !~ /^t::/ ) {
+		if ( $require_type eq 'requires' ) {
+			$self->{$require_type}{$module} = 0;
+		} elsif ( $module !~ /^t::/ && $self->{requires}{$module} ) {
+			say 'here';
 			$self->{$require_type}{$module} = 0;
 		}
 	}
 	finally {
-		if ($mod_in_cpan && !$self->{requires}{$module}) {
+		if ( $mod_in_cpan && !$self->{requires}{$module} ) {
 
 			# alociate current cpan version against module name
 			$self->{$require_type}{$module} = $mod->cpan_version;
