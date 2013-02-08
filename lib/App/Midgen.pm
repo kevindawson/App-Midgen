@@ -218,8 +218,8 @@ sub find_makefile_requires {
 					# mark all Padre core as just Padre, for plugins
 					$module = 'Padre';
 				}
-				
-				$self->store_modules('requires', $module );
+
+				$self->store_modules( 'requires', $module );
 
 			}
 		}
@@ -324,37 +324,10 @@ sub thingie {
 		if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm ) {
 
 			# mark all Padre core as just Padre, for plugins
-			# push @items, 'Padre';
 			$module = 'Padre';
-		} 
-		# else {
-			# push @items, $module;
-		# }
-		
-		$self->store_modules('test_requires', $module );
+		}
 
-		# try {
-		# my $mod = CPAN::Shell->expand( 'Module', $module );
-		# if ($mod) {
-
-		# # next if not defined $mod;
-		# if ( $mod->cpan_version && !$self->{requires}{$module} ) {
-		# $self->{test_requires}{$module} = $mod->cpan_version;
-		# }
-		# } else {
-		# $module =~ s/^(\S+)::\S+/$1/;
-
-		# # p $module;
-		# $mod = CPAN::Shell->expand( 'Module', $module );
-		# p $mod if $self->{debug};
-
-		# if ( $mod->cpan_version && !$self->{requires}{$module} ) {
-		# $self->{test_requires}{$module} = $mod->cpan_version;
-		# p $self->{test_requires}{$module};
-		# }
-		# }
-		# };
-
+		$self->store_modules( 'test_requires', $module );
 
 	}
 }
@@ -378,10 +351,23 @@ sub store_modules {
 			# $requires{$module} = $mod->cpan_version;
 			$mod_in_cpan = 1;
 		}
+
+		# else {
+		# $module =~ s/^(\S+)::\S+/$1/;
+		# $mod = CPAN::Shell->expand( 'Module', $module );
+		# p $mod if $self->{debug};
+
+		# if ( $mod->cpan_version && !$self->{requires}{$module} ) {
+		# $mod_in_cpan = 1;
+		# }
+		# }
 	}
 	catch {
 		say 'caught ' . $module if $self->{debug};
-		$self->{$require_type}{$module} = 0;
+		# exclude modules in test dir
+		if ( $module !~ /^t::/ ) {
+			$self->{$require_type}{$module} = 0;
+		}
 	}
 	finally {
 		if ($mod_in_cpan) {
