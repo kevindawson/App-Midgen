@@ -6,7 +6,7 @@ use warnings;
 use Moo;
 with qw( App::Midgen::Roles );
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 use English qw( -no_match_vars ); # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -332,6 +332,7 @@ sub process_found_modules {
 		$self->store_modules( 'test_requires', $module );
 
 	}
+	return;
 }
 
 #######
@@ -467,6 +468,8 @@ sub output_header {
 
 	# Let's get the current version of Module::Install::DSL
 	my $mod = CPAN::Shell->expand( 'Module', 'inc::Module::Install::DSL' );
+	my $package_name = $self->{package_name};
+	$package_name =~ s{::}{/};
 
 	given ( $self->{output_format} ) {
 
@@ -477,8 +480,8 @@ sub output_header {
 			print "\n";
 			say 'use inc::Module::Install::DSL ' . $mod->cpan_version . ';';
 			print "\n";
-			say 'all_from lib/' . $self->{package_name} . '.pm';
-			say 'requires_from lib/' . $self->{package_name} . '.pm';
+			say 'all_from lib/' . $package_name . '.pm';
+			say 'requires_from lib/' . $package_name . '.pm';
 		}
 
 		# when ('build') {
@@ -583,7 +586,7 @@ App::Midgen - generate the requires and test requires for Makefile.PL using Modu
 
 =head1 VERSION
 
-This document describes App::Midgen version 0.01
+This document describes App::Midgen version 0.06
 
 =head1 SYNOPSIS
 
@@ -659,6 +662,41 @@ Now with a GetOps --help or -?
 
  midgen.pl -?
 
+=head1 METHODS
+
+=over 4
+
+=item * base_parent
+
+=item * find_makefile_requires
+
+=item * find_makefile_test_requires
+
+=item * find_package_names
+
+=item * find_required_modules
+
+=item * find_required_test_modules
+
+=item * first_package_name
+
+=item * initialise
+
+=item * output_footer
+
+=item * output_header
+
+=item * output_main_body
+
+=item * process_found_modules
+
+=item * remove_noisy_children
+
+=item * run
+
+=item * store_modules
+
+=back
 
 =head1 INTERFACE 
 
