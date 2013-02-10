@@ -1,7 +1,7 @@
 use inc::Module::Install::DSL 1.06;
 
-all_from lib/App::Midgen.pm
-requires_from lib/App::Midgen.pm
+all_from lib/App/Midgen.pm
+requires_from lib/App/Midgen.pm
 
 requires CPAN                         1.9800
 requires Carp                         1.26
