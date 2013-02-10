@@ -94,7 +94,7 @@ midgen.pl - generate the requires and test requires for Makefile.PL using Module
 
 =head1 SYNOPSIS
 
-midgen.pl [options]
+midgen [options]
 
  Options:
    -help	brief help message
