@@ -3,7 +3,7 @@ App::Midgen
 
 generate the requires and test requires for Makefile.PL using Module::Install::DSL
 
-Version: 0.06
+Version: 0.07
 
 Usage:
     midgen [options]
