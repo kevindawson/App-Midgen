@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#! /usr/bin/env perl
 
 use 5.010001;
 use strict;
@@ -19,8 +19,8 @@ use Data::Printer {
 	colored     => 1,
 };
 
-# use FindBin qw($Bin);
-# use lib map { "$Bin/$_" } qw( lib ../lib );
+use FindBin qw($Bin);
+use lib map { "$Bin/$_" } qw( lib ../lib );
 
 #######
 # Start of Menu
