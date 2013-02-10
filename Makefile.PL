@@ -21,7 +21,6 @@ requires constant                     1.25
 requires lib                          0.63
 
 test_requires Test::More 0.98
-test_requires strictures 1.004004
 
 install_script midgen
 
