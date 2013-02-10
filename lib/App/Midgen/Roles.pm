@@ -4,7 +4,7 @@ use v5.10;
 use strict;
 use warnings;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -131,7 +131,7 @@ App::Midgen - generate the requires and test requires for Makefile.PL using Modu
 
 =head1 VERSION
 
-This document describes App::Midgen version 0.06
+This document describes App::Midgen version 0.07
 
 =head1 ACCSESSORS
 
