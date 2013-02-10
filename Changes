@@ -2,11 +2,18 @@ Revision history for App-Midgen
 
 {{$NEXT}}
 
+0.07 2013-02-10
+ - Update Changes [d62fc0b]
+ - remove strictures [dd86b71]
+ - remove an unwanted dependancy [5eaca1d]
+ - put a copy of pod in readme.md [4100b1a]
+ - bump to version 0.07 [1b1bcc4]
+
 0.06 2013-02-10
  - first pass of midgen against it's self,  [6a37b2e]
  - first attempt at a Role with the GetOpps Long cmd varibles [61c8e11]
- - Add noise control for PPI::XS test, we can't use it 
-   as it has deperated calls [8f6d32e]
+ - Add noise control for PPI::XS test, we can't use it			   
+      as it has deperated calls [8f6d32e]
  - encapsulated attributes [5efce18]
  - cooking on gas, as it was, so we are working [722185f]
  - add some encapsulated attribures to store our module and version info in
