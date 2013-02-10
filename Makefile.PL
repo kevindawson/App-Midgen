@@ -24,5 +24,9 @@ test_requires Test::More 0.98
 
 install_script midgen
 
+homepage    https://github.com/kevindawson/App-Midgen
+bugtracker  https://github.com/kevindawson/App-Midgen/issues
+repository  git://github.com/kevindawson/App-Midgen.git
+
 no_index directory  qw{ t xt eg share inc privinc }
 
