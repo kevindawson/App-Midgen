@@ -1,21 +1,36 @@
 App::Midgen
 ==========
 
-generate the requires and test requires for Makefile.PL using Module::Install::DSL
+Generate the 'requires' and 'test requires' for Makefile.PL using Module::Install::DSL
+
+This started out as a way of generating the core for a Module::Install::DSL Makefile.PL, 
+why DSL because it's nice and clean, so now I can generate the contents when I want, 
+rather than as I add new use and require statments, and because adam kicked me :)
+
 
 Version: 0.07
+
+Synopsis:
+
+Change to root of package and run
+
+ midgen
+
+Now with a GetOps --help or -?
+
+ midgen -?
 
 Usage:
     midgen [options]
 
      Options:
-       -help        brief help message
-       -output      change format
-       -core        show perl core modules
-       -verbose     take a little peek as to what is going on
-       -base        Don't check for base includes
-       -mojo        Don't be Mojo friendly  
-       -debug       lots of stuff
+       --help        brief help message
+       --output      change format
+       --core        show perl core modules
+       --verbose     take a little peek as to what is going on
+       --base        Don't check for base includes
+       --mojo        Don't be Mojo friendly  
+       --debug       lots of stuff
 
 Options:
     --help or -h
