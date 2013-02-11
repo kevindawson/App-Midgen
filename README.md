@@ -12,7 +12,7 @@ Version: 0.07
 
 Synopsis:
 
-Change to root of a package you want to scan and run
+Change to the root of the package you want to scan and run
 
  midgen
 
