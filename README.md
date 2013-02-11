@@ -22,7 +22,6 @@ Now with a added GetOps --help or -?
 Usage:
     midgen [options]
 
-     Options:
        --help        brief help message
        --output      change format
        --core        show perl core modules
