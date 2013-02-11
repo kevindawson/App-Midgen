@@ -5,7 +5,7 @@ use warnings FATAL => 'all';
 use English qw( -no_match_vars ); # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Test::More tests => 19;
+use Test::More tests => 18;
 
 
 use_ok('App::Midgen');
@@ -24,7 +24,6 @@ use_ok( 'MooX::Types::MooseLike::Base', '0.19' );
 use_ok( 'PPI',                          '1.215' );
 use_ok( 'Pod::Usage',                   '1.61' );
 use_ok( 'Try::Tiny',                    '0.12' );
-use_ok( 'autodie',                      '2.13' );
 use_ok( 'constant',                     '1.25' );
 use_ok( 'lib',                          '0.63' );
 
