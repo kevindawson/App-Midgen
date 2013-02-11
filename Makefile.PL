@@ -16,7 +16,6 @@ requires MooX::Types::MooseLike::Base 0.19
 requires PPI                          1.215
 requires Pod::Usage                   1.61
 requires Try::Tiny                    0.12
-requires autodie                      2.13
 requires constant                     1.25
 requires lib                          0.63
 
