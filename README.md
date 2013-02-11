@@ -12,13 +12,12 @@ Version: 0.07
 
 Synopsis:
 
-Change to root of package and run
+Change to root of a package you want to scan and run
 
  midgen
 
-Now with a GetOps --help or -?
+Now with a added GetOps --help or -?
 
- midgen -?
 
 Usage:
     midgen [options]
@@ -34,7 +33,7 @@ Usage:
 
 Options:
 
-    --help or -h
+    --help or -h or -?
         Print a brief help message and exits.
 
     --output or -o
