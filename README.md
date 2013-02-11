@@ -33,6 +33,7 @@ Usage:
        --debug       lots of stuff
 
 Options:
+
     --help or -h
         Print a brief help message and exits.
 
