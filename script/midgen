@@ -90,20 +90,20 @@ __END__
 
 =head1 NAME
 
-midgen.pl - generate the requires and test requires for Makefile.PL using Module::Install::DSL
+midgen - generate the requires and test requires for Makefile.PL using Module::Install::DSL
 
 =head1 SYNOPSIS
 
 midgen [options]
 
  Options:
-   -help	brief help message
-   -output	change format
-   -core	show perl core modules
-   -verbose	take a little peek as to what is going on
-   -base	Don't check for base includes
-   -mojo	Don't be Mojo friendly	
-   -debug	lots of stuff
+   --help    brief help message
+   --output  change format
+   --core    show perl core modules
+   --verbose take a little peek as to what is going on
+   --base    don't check for base includes
+   --mojo    don't be Mojo friendly	
+   --debug   lot's of stuff
 
 =head1 OPTIONS
 
@@ -117,12 +117,12 @@ Print a brief help message and exits.
 
 By default we do 'dsl' -> Module::Include::DSL
 
- midgen.pl -o dsl	# Module::Include::DSL
- midgen.pl -o mi	# Module::Include
- midgen.pl -o build	# Build.PL
+ midgen -o dsl	# Module::Include::DSL
+ midgen -o mi	# Module::Include
+ midgen -o build	# Build.PL
 
 
-=item B<-core or -c>
+=item B<--core or -c>
 
  * Shows modules that are in Perl core
  * some modules have a version number eg; constant, Carp
@@ -156,15 +156,17 @@ equivalent of -cv and some :)
  
 =head1 DESCRIPTION
 
-This started out as a way of generating the core for a Module::Install::DSL Makefile.PL, why DSL because it's nice and clean, so now I can generate the contents when I want, rather than as I add new use and require statments, and because adam kicked me :)
+This started out as a way of generating the core for a Module::Install::DSL Makefile.PL, 
+why DSL because it's nice and clean, so now I can generate the contents when I want, 
+rather than as I add new use and require statments, and because adam kicked me :)
 
 Change to root of package and run
 
- midgen.pl
+ midgen
 
 Now with a GetOps --help or -?
 
- midgen.pl -?
+ midgen -?
 
 =head1 AUTHORS
 
