@@ -15,6 +15,7 @@ use Carp;
 #######
 # cmd line options
 #######
+
 has 'base_parent' => (
 	is  => 'ro',
 	isa => sub {
@@ -22,10 +23,11 @@ has 'base_parent' => (
 			unless is_Bool( $_[0] );
 	},
 	default => sub {
-		0
+		0;
 	},
 	required => 1,
 );
+
 has 'core' => (
 	is  => 'ro',
 	isa => sub {
@@ -33,10 +35,11 @@ has 'core' => (
 			unless is_Bool( $_[0] );
 	},
 	default => sub {
-		0
+		0;
 	},
 	required => 1,
 );
+
 has 'debug' => (
 	is  => 'ro',
 	isa => sub {
@@ -44,10 +47,11 @@ has 'debug' => (
 			unless is_Bool( $_[0] );
 	},
 	default => sub {
-		0
+		0;
 	},
 	required => 1,
 );
+
 has 'mojo' => (
 	is  => 'ro',
 	isa => sub {
@@ -55,10 +59,11 @@ has 'mojo' => (
 			unless is_Bool( $_[0] );
 	},
 	default => sub {
-		0
+		0;
 	},
 	required => 1,
 );
+
 has 'noisy_children' => (
 	is  => 'ro',
 	isa => sub {
@@ -66,10 +71,11 @@ has 'noisy_children' => (
 			unless is_Bool( $_[0] );
 	},
 	default => sub {
-		0
+		0;
 	},
 	required => 1,
 );
+
 has 'output_format' => (
 	is  => 'ro',
 	isa => sub {
@@ -78,10 +84,11 @@ has 'output_format' => (
 		return;
 	},
 	default => sub {
-		'dsl'
+		'dsl';
 	},
 	required => 1,
 );
+
 has 'padre' => (
 	is  => 'ro',
 	isa => sub {
@@ -89,10 +96,11 @@ has 'padre' => (
 			unless is_Bool( $_[0] );
 	},
 	default => sub {
-		0
+		0;
 	},
 	required => 1,
 );
+
 has 'verbose' => (
 	is  => 'ro',
 	isa => sub {
@@ -100,7 +108,7 @@ has 'verbose' => (
 			unless is_Bool( $_[0] );
 	},
 	default => sub {
-		0
+		0;
 	},
 	required => 1,
 );
