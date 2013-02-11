@@ -28,7 +28,7 @@ Options:
          midgen.pl -o mi        # Module::Include
          midgen.pl -o build     # Build.PL
 
-    -core or -c
+    --core or -c
          * Shows modules that are in Perl core
          * some modules have a version number eg; constant, Carp
          * some have a version of 0 eg; strict, English
