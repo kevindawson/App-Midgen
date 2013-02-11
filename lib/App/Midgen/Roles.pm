@@ -21,7 +21,9 @@ has 'base_parent' => (
 		croak "$_[0] this is not a Bool"
 			unless is_Bool( $_[0] );
 	},
-	default => sub { 0 },
+	default => sub {
+		0
+	},
 	required => 1,
 );
 has 'core' => (
@@ -30,7 +32,9 @@ has 'core' => (
 		croak "$_[0] this is not a Bool"
 			unless is_Bool( $_[0] );
 	},
-	default => sub { 0 },
+	default => sub {
+		0
+	},
 	required => 1,
 );
 has 'debug' => (
@@ -39,7 +43,9 @@ has 'debug' => (
 		croak "$_[0] this is not a Bool"
 			unless is_Bool( $_[0] );
 	},
-	default => sub { 0 },
+	default => sub {
+		0
+	},
 	required => 1,
 );
 has 'mojo' => (
@@ -48,7 +54,9 @@ has 'mojo' => (
 		croak "$_[0] this is not a Bool"
 			unless is_Bool( $_[0] );
 	},
-	default => sub { 0 },
+	default => sub {
+		0
+	},
 	required => 1,
 );
 has 'noisy_children' => (
@@ -57,7 +65,9 @@ has 'noisy_children' => (
 		croak "$_[0] this is not a Bool"
 			unless is_Bool( $_[0] );
 	},
-	default => sub { 0 },
+	default => sub {
+		0
+	},
 	required => 1,
 );
 has 'output_format' => (
@@ -67,16 +77,20 @@ has 'output_format' => (
 		croak 'not a supported output format' unless defined $format->{ $_[0] };
 		return;
 	},
-	default => sub { 'dsl' },
+	default => sub {
+		'dsl'
+	},
 	required => 1,
 );
 has 'padre' => (
-is  => 'ro',
+	is  => 'ro',
 	isa => sub {
 		croak "$_[0] this is not a Bool"
 			unless is_Bool( $_[0] );
 	},
-	default => sub { 0 },
+	default => sub {
+		0
+	},
 	required => 1,
 );
 has 'verbose' => (
@@ -85,7 +99,9 @@ has 'verbose' => (
 		croak "$_[0] this is not a Bool"
 			unless is_Bool( $_[0] );
 	},
-	default => sub { 0 },
+	default => sub {
+		0
+	},
 	required => 1,
 );
 
@@ -93,29 +109,26 @@ has 'verbose' => (
 # some encapsulated attributes
 #######
 
-# Our best guess as to this packages name
 has 'package_name' => (
 	is  => 'rw',
 	isa => Str,
 );
 
-# Some package names we found along the way
 has 'package_names' => (
 	is  => 'rw',
 	isa => ArrayRef,
 );
 
-# Some where to store required modules and version info in
 has 'requires' => (
 	is  => 'rw',
 	isa => HashRef,
 );
 
-# Some where to store test_required modules and version info in
 has 'test_requires' => (
 	is  => 'rw',
 	isa => HashRef,
 );
+
 
 1;
 
@@ -127,13 +140,13 @@ __END__
 
 =head1 NAME
 
-App::Midgen - generate the requires and test requires for Makefile.PL using Module::Install::DSL
+App::Midgen::Roles - Package Options and Attributes used by App::Midgen
 
 =head1 VERSION
 
-This document describes App::Midgen version 0.07
+This document describes App::Midgen::Roles version 0.07
 
-=head1 ACCSESSORS
+=head1 OPTIONS
 
 =over 4
 
@@ -154,6 +167,29 @@ This document describes App::Midgen version 0.07
 =item * verbose
 
 =back
+
+=head1 ACCSESSORS
+
+=over 4
+
+=item * package_name
+
+Our best guess as to this packages name
+
+=item * package_names
+
+Some package names we found along the way
+
+=item * requires
+
+Some where to store required modules and version info in
+
+=item * test_requires
+
+Some where to store test_required modules and version info in
+
+=back
+
 
 =head1 AUTHORS
 
