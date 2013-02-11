@@ -10,7 +10,6 @@ our $VERSION = '0.07';
 use English qw( -no_match_vars ); # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use autodie;
 use CPAN;
 use Carp;
 use Cwd;
@@ -662,6 +661,7 @@ Now with a GetOps --help or -?
 
  midgen.pl -?
 
+see L<Module::Install::DSL>,
 =head1 METHODS
 
 =over 4
@@ -805,6 +805,7 @@ modify it under the same terms as Perl 5 itself.
 =head1 SEE ALSO
 
 L<Perl::PrereqScanner>,
+L<Module::Install::DSL>,
 
 =head1 DISCLAIMER OF WARRANTY
 
