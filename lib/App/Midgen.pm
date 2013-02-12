@@ -277,6 +277,17 @@ sub find_makefile_test_requires {
 					push @modules, $module;
 				}
 			}
+			if ( $include->content =~ /::/ && $include->content =~ /use/ ) {
+				my $module = $include->content;
+				$module =~ s/^[']//;
+				$module =~ s/[']$//;
+				$module =~ s/^use\s//;
+
+				# if we have found it already ignore it
+				if ( !$self->{requires}{$module} ) {
+					push @modules, $module;
+				}
+			}
 
 			# if we found a modules, process it
 			if ( $#modules > 0 ) {
