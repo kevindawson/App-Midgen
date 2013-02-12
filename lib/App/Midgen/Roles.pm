@@ -176,6 +176,8 @@ This document describes App::Midgen::Roles version 0.07
 
 =back
 
+for more info see L<midgen>
+
 =head1 ACCSESSORS
 
 =over 4
@@ -199,7 +201,7 @@ Some where to store test_required modules and version info in
 =back
 
 
-=head1 AUTHORS
+=head1 AUTHOR
 
 Kevin Dawson E<lt>bowtie@cpan.orgE<gt>
 
@@ -209,7 +211,7 @@ none at present
 
 =head1 COPYRIGHT
 
-Copyright E<copy> 2013 AUTHORS and CONTRIBUTORS as listed above.
+Copyright E<copy> 2013 AUTHOR and CONTRIBUTORS as listed above.
 
 =head1 LICENSE
 
@@ -218,7 +220,7 @@ modify it under the same terms as Perl 5 itself.
 
 =head1 SEE ALSO
 
-L<Perl::PrereqScanner>,
+L<App::Midgen>,
 
 =head1 DISCLAIMER OF WARRANTY
 
