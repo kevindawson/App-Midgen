@@ -148,7 +148,7 @@ __END__
 
 =head1 NAME
 
-App::Midgen::Roles - Package Options and Attributes used by App::Midgen
+App::Midgen::Roles - Package Options and Attributes used by L<App::Midgen>
 
 =head1 VERSION
 
