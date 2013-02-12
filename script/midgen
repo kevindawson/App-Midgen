@@ -86,6 +86,10 @@ __END__
 
 midgen - generate the requires and test requires for Makefile.PL using Module::Install::DSL
 
+=head1 VERSION
+
+This document describes midgen version 0.08
+
 =head1 SYNOPSIS
 
 midgen [options]
