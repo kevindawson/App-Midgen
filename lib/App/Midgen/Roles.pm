@@ -4,7 +4,7 @@ use v5.10;
 use strict;
 use warnings;
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -152,7 +152,7 @@ App::Midgen::Roles - Package Options and Attributes used by App::Midgen
 
 =head1 VERSION
 
-This document describes App::Midgen::Roles version 0.07
+This document describes App::Midgen::Roles version 0.08
 
 =head1 OPTIONS
 
