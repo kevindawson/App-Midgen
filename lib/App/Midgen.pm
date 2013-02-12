@@ -6,7 +6,7 @@ use warnings;
 use Moo;
 with qw( App::Midgen::Roles );
 
-our $VERSION = '0.07';
+our $VERSION = '0.07_02';
 use English qw( -no_match_vars ); # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -661,7 +661,7 @@ Now with a GetOps --help or -?
 
  midgen.pl -?
 
-see L<Module::Install::DSL>,
+see L<midgen>,
 =head1 METHODS
 
 =over 4
@@ -744,14 +744,7 @@ App::Midgen requires no configuration files or environment variables.
 
 =head1 DEPENDENCIES
 
-=for author to fill in:
-    A list of all the other modules that this module relies upon,
-    including any restrictions on versions, and an indication whether
-    the module is part of the standard Perl distribution, part of the
-    module's distribution, or must be installed separately. ]
-
-None.
-
+L<App::Midgen::Roles>,
 
 =head1 INCOMPATIBILITIES
 
