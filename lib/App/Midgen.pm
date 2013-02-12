@@ -279,6 +279,7 @@ sub find_makefile_test_requires {
 			}
 			if ( $include->content =~ /::/ && $include->content =~ /use/ ) {
 				my $module = $include->content;
+				#ToDo test for duplicats and rubish
 				$module =~ s/^[']//;
 				$module =~ s/[']$//;
 				$module =~ s/^use\s//;
@@ -290,13 +291,38 @@ sub find_makefile_test_requires {
 			}
 
 			# if we found a modules, process it
-			if ( $#modules > 0 ) {
+			if ( scalar @modules > 0 ) {
 				p @modules if $self->{debug};
 				$self->process_found_modules( \@modules );
 			}
 		}
 	}
+	
+	my $ppi_tqd = $document->find('PPI::Token::Quote::Double');
+	if ($ppi_tqd) {
+		my @modules;
+		foreach my $include ( @{$ppi_tqd} ) {
 
+			if ( $include->content =~ /::/ && $include->content =~ /use/ ) {
+				my $module = $include->content;
+
+				$module =~ s/^["]//;
+				$module =~ s/["]$//;
+				$module =~ s/^use\s//;
+
+				# if we have found it already ignore it
+				if ( !$self->{requires}{$module} ) {
+					push @modules, $module;
+				}
+			}
+
+			# if we found a modules, process it
+			if ( scalar @modules > 0 ) {
+				p @modules if $self->{debug};
+				$self->process_found_modules( \@modules );
+			}
+		}
+	}
 
 	return;
 }
