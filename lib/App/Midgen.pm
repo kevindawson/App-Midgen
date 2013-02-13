@@ -539,43 +539,61 @@ sub output_main_body {
 	my $title        = shift || 'title missing';
 	my $required_ref = shift || return;
 
-	print "\n";
+	given ( $self->{output_format} ) {
 
-	my $pm_length = 0;
-	foreach my $module_name ( sort keys %{$required_ref} ) {
-		if ( length $module_name > $pm_length ) {
-			$pm_length = length $module_name;
+		when ('mi') {
+			$self->{output}->body_mi($title, $required_ref);
+		}
+		when ('dsl') {
+			$self->{output}->body_dsl($title, $required_ref );
+		}
+		when ('build') {
+			$self->{output}->body_build($title, $required_ref );
+		}
+		when ('dzil') {
+			$self->{output}->body_dzil($title, $required_ref );
 		}
 	}
 
-	say $title . ' => {' if $self->{output_format} eq 'build';
 
-	foreach my $module_name ( sort keys %{$required_ref} ) {
-		given ( $self->{output_format} ) {
-			when ('mi') {
-				if ( $module_name =~ /^Win32/sxm ) {
-					my $sq_key = "'$module_name'";
-					printf "%s %-*s => '%s' if win32;\n", $title, $pm_length + 2, $sq_key,
-						$required_ref->{$module_name};
-				} else {
-					my $sq_key = "'$module_name'";
-					printf "%s %-*s => '%s';\n", $title, $pm_length + 2, $sq_key, $required_ref->{$module_name};
-				}
-			}
-			when ('dsl') {
-				if ( $module_name =~ /^Win32/sxm ) {
-					printf "%s %-*s %s if win32\n", $title, $pm_length, $module_name, $required_ref->{$module_name};
-				} else {
-					printf "%s %-*s %s\n", $title, $pm_length, $module_name, $required_ref->{$module_name};
-				}
-			}
-			when ('build') {
-				my $sq_key = "'$module_name'";
-				printf "\t %-*s => '%s',\n", $pm_length + 2, $sq_key, $required_ref->{$module_name};
-			}
-		}
-	}
-	say '},' if $self->{output_format} eq 'build';
+
+	# print "\n";
+
+	# my $pm_length = 0;
+	# foreach my $module_name ( sort keys %{$required_ref} ) {
+		# if ( length $module_name > $pm_length ) {
+			# $pm_length = length $module_name;
+		# }
+	# }
+
+	# say $title . ' => {' if $self->{output_format} eq 'build';
+
+	# foreach my $module_name ( sort keys %{$required_ref} ) {
+		# given ( $self->{output_format} ) {
+			# when ('mi') {
+				# if ( $module_name =~ /^Win32/sxm ) {
+					# my $sq_key = "'$module_name'";
+					# printf "%s %-*s => '%s' if win32;\n", $title, $pm_length + 2, $sq_key,
+						# $required_ref->{$module_name};
+				# } else {
+					# my $sq_key = "'$module_name'";
+					# printf "%s %-*s => '%s';\n", $title, $pm_length + 2, $sq_key, $required_ref->{$module_name};
+				# }
+			# }
+			# when ('dsl') {
+				# if ( $module_name =~ /^Win32/sxm ) {
+					# printf "%s %-*s %s if win32\n", $title, $pm_length, $module_name, $required_ref->{$module_name};
+				# } else {
+					# printf "%s %-*s %s\n", $title, $pm_length, $module_name, $required_ref->{$module_name};
+				# }
+			# }
+			# when ('build') {
+				# my $sq_key = "'$module_name'";
+				# printf "\t %-*s => '%s',\n", $pm_length + 2, $sq_key, $required_ref->{$module_name};
+			# }
+		# }
+	# }
+	# say '},' if $self->{output_format} eq 'build';
 	return;
 }
 #######
