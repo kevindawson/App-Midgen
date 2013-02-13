@@ -249,6 +249,7 @@ sub find_makefile_test_requires {
 			next if $include->type eq 'no';
 
 			my @modules = $include->module;
+			# p @modules;
 
 			if ( !$self->{base_parent} ) {
 				my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
@@ -267,10 +268,13 @@ sub find_makefile_test_requires {
 	if ($ppi_tqs) {
 		my @modules;
 		foreach my $include ( @{$ppi_tqs} ) {
-			if ( $include->content =~ /::/ && $include->content !~ /main/ ) {
+			if ( $include->content =~ /::/ && $include->content !~ /main/ && !$include->content =~ /use/) {
 				my $module = $include->content;
+				# p $module;
 				$module =~ s/^[']//;
 				$module =~ s/[']$//;
+				$module =~ s/(\s[\w|\s]+)$//;
+				# p $module;
 
 				# if we have found it already ignore it
 				if ( !$self->{requires}{$module} ) {
@@ -280,10 +284,11 @@ sub find_makefile_test_requires {
 			if ( $include->content =~ /::/ && $include->content =~ /use/ ) {
 				my $module = $include->content;
 				#ToDo test for duplicats and rubish
+				# p $module;
 				$module =~ s/^[']//;
 				$module =~ s/[']$//;
 				$module =~ s/^use\s//;
-
+				# p $module;
 				# if we have found it already ignore it
 				if ( !$self->{requires}{$module} ) {
 					push @modules, $module;
@@ -305,11 +310,12 @@ sub find_makefile_test_requires {
 
 			if ( $include->content =~ /::/ && $include->content =~ /use/ ) {
 				my $module = $include->content;
-
+				# p $module;
 				$module =~ s/^["]//;
 				$module =~ s/["]$//;
 				$module =~ s/^use\s//;
-
+				$module =~ s/(\s[\s|\w|\n|.|;]+)$//;
+				# p $module;
 				# if we have found it already ignore it
 				if ( !$self->{requires}{$module} ) {
 					push @modules, $module;
@@ -334,6 +340,7 @@ sub process_found_modules {
 	my $self = shift;
 
 	my $modules_ref = shift;
+	# p $modules_ref;
 	my @items       = ();
 
 	foreach my $module ( @{$modules_ref} ) {
@@ -378,6 +385,7 @@ sub store_modules {
 	my $self         = shift;
 	my $require_type = shift;
 	my $module       = shift;
+	# p $module;
 
 	my $mod;
 	my $mod_in_cpan = 0;
@@ -393,11 +401,13 @@ sub store_modules {
 	}
 	catch {
 		say "caught - $require_type - $module" if $self->{debug};
+		
+		# p $module;
 
 		# exclude modules in test dir
 		if ( $require_type eq 'requires' ) {
 			$self->{$require_type}{$module} = 0;
-		} elsif ( $module !~ /^t::/ && $self->{requires}{$module} ) {
+		} elsif ( $module !~ /^t::/ || $self->{requires}{$module} ) {
 			$self->{$require_type}{$module} = 0;
 		}
 	}
@@ -408,6 +418,7 @@ sub store_modules {
 			$self->{$require_type}{$module} = $mod->cpan_version;
 		}
 	};
+	# p $self->{$require_type};
 
 	return;
 }
