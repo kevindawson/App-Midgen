@@ -92,6 +92,10 @@ This document describes midgen version 0.08
 
 =head1 SYNOPSIS
 
+Change to root of package and run
+
+ midgen
+
 midgen [options]
 
  Options:
