@@ -9,7 +9,7 @@ BEGIN {
 }
 
 our $VERSION = '0.08';
-use English qw( -no_match_vars ); # Avoids regex performance penalty
+use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 use Data::Printer {
@@ -96,7 +96,7 @@ Change to root of package and run
 
  midgen
 
-Now with a Getops --help or -?
+Now with a Getopt --help or -?
 
  midgen -?
 
@@ -169,7 +169,7 @@ uses L<Data::Printer>
 
 This started out as a way of generating the core for a Module::Install::DSL Makefile.PL, 
 why DSL because it's nice and clean, so now I can generate the contents when I want, 
-rather than as I add new use and require statments, and because adam kicked me :)
+rather than as I add new use and require statements, and because Adam kicked me :)
 
 
 
