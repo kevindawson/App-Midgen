@@ -267,7 +267,7 @@ __END__
 
 =head1 NAME
 
-App::Midgen::Output - Package Options and Attributes used by L<App::Midgen>
+App::Midgen::Output - A selection of output orinated methods used by L<App::Midgen>
 
 =head1 VERSION
 
@@ -300,30 +300,6 @@ This document describes App::Midgen::Output version 0.08
 =item * body_dzil
 
 =item * footer_dzil
-
-=back
-
-for more info see L<midgen>
-
-=head1 ACCESSORS
-
-=over 4
-
-=item * package_name
-
-Our best guess as to this packages name
-
-=item * package_names
-
-Some package names we found along the way
-
-=item * requires
-
-Some where to store required modules and version info in
-
-=item * test_requires
-
-Some where to store test_required modules and version info in
 
 =back
 
