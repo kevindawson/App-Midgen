@@ -36,49 +36,13 @@ sub header_dsl {
 	return;
 }
 #######
-# header_mi
+# body_dsl
 #######
-sub header_mi {
-	my $self         = shift;
-	my $package_name = shift;
-
-	print "\n";
-	say 'mi header underdevelopment';
-	print "\n";
-
+sub body_dsl {
+	my $self = shift;
+	
 	return;
 }
-#######
-# header_build
-#######
-sub header_build {
-	my $self         = shift;
-	my $package_name = shift;
-
-	print "\n";
-	say 'build header underdevelopment';
-	print "\n";
-
-	return;
-}
-#######
-# header_dzil
-#######
-sub header_dzil {
-	my $self         = shift;
-	my $package_name = shift;
-
-	print "\n";
-	say 'dzil header underdevelopment';
-	print "\n";
-
-	return;
-}
-
-
-
-
-
 #######
 # footer_dsl
 #######
@@ -103,6 +67,30 @@ sub footer_dsl {
 
 	return;
 }
+
+
+
+#######
+# header_mi
+#######
+sub header_mi {
+	my $self         = shift;
+	my $package_name = shift;
+
+	print "\n";
+	say 'mi header underdevelopment';
+	print "\n";
+
+	return;
+}
+#######
+# body_mi
+#######
+sub body_mi {
+	my $self = shift;
+	
+	return;
+}
 #######
 # footer_mi
 #######
@@ -115,6 +103,30 @@ sub footer_mi {
 
 	return;
 }
+
+
+
+#######
+# header_build
+#######
+sub header_build {
+	my $self         = shift;
+	my $package_name = shift;
+
+	print "\n";
+	say 'build header underdevelopment';
+	print "\n";
+
+	return;
+}
+#######
+# body_build
+#######
+sub body_build {
+	my $self = shift;
+	
+	return;
+}
 #######
 # footer_build
 #######
@@ -125,6 +137,30 @@ sub footer_build {
 	say 'build footer underdevelopment';
 	print "\n";
 
+	return;
+}
+
+
+
+#######
+# header_dzil
+#######
+sub header_dzil {
+	my $self         = shift;
+	my $package_name = shift;
+
+	print "\n";
+	say 'dzil header underdevelopment';
+	print "\n";
+
+	return;
+}
+#######
+# body_dzil
+#######
+sub body_dzil {
+	my $self = shift;
+	
 	return;
 }
 #######
