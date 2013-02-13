@@ -5,6 +5,7 @@ use strict;
 use warnings;
 use Moo;
 with qw( App::Midgen::Roles );
+use App::Midgen::Output;
 
 our $VERSION = '0.08';
 use English qw( -no_match_vars ); # Avoids regex performance penalty
@@ -59,6 +60,7 @@ sub run {
 #######
 sub initialise {
 	my $self = shift;
+	$self->{output} = App::Midgen::Output->new;
 
 	# stop rlib from Fing all over cwd
 	$self->{working_dir} = cwd();
@@ -272,6 +274,7 @@ sub find_makefile_test_requires {
 				$module =~ s/[']$//;
 				$module =~ s/(\s[\w|\s]+)$//;
 				p $module if $self->{debug};
+
 				# if we have found it already ignore it
 				if ( !$self->{requires}{$module} ) {
 					push @modules, $module;
@@ -286,6 +289,7 @@ sub find_makefile_test_requires {
 				$module =~ s/[']$//;
 				$module =~ s/^use\s//;
 				p $module if $self->{debug};
+
 				# if we have found it already ignore it
 				if ( !$self->{requires}{$module} ) {
 					push @modules, $module;
@@ -313,6 +317,7 @@ sub find_makefile_test_requires {
 				$module =~ s/^use\s//;
 				$module =~ s/(\s[\s|\w|\n|.|;]+)$//;
 				p $module if $self->{debug};
+
 				# if we have found it already ignore it
 				if ( !$self->{requires}{$module} ) {
 					push @modules, $module;
@@ -509,27 +514,29 @@ sub remove_noisy_children {
 sub output_header {
 	my $self = shift;
 
+	# my $output = App::Midgen::Output->new;
+
 	# Let's get the current version of Module::Install::DSL
-	my $mod = CPAN::Shell->expand( 'Module', 'inc::Module::Install::DSL' );
-	my $package_name = $self->{package_name} // NONE;
-	$package_name =~ s{::}{/};
+	# my $mod = CPAN::Shell->expand( 'Module', 'inc::Module::Install::DSL' );
+	# my $package_name = $self->{package_name} // NONE;
+	# $package_name =~ s{::}{/};
+
+	# p $output;
 
 	given ( $self->{output_format} ) {
 
-		# when ('mi') {
-		#ToDo add mi to output_top
-		# }
-		when ('dsl') {
-			print "\n";
-			say 'use inc::Module::Install::DSL ' . $mod->cpan_version . ';';
-			print "\n";
-			say 'all_from lib/' . $package_name . '.pm';
-			say 'requires_from lib/' . $package_name . '.pm';
+		when ('mi') {
+			$self->{output}->header_mi( $self->{package_name} );
 		}
-
-		# when ('build') {
-		#ToDo add build  to output_top
-		# }
+		when ('dsl') {
+			$self->{output}->header_dsl( $self->{package_name} );
+		}
+		when ('build') {
+			$self->{output}->header_build( $self->{package_name} );
+		}
+		when ('dzil') {
+			$self->{output}->header_dzil( $self->{package_name} );
+		}
 	}
 	return;
 }
