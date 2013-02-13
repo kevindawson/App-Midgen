@@ -81,14 +81,14 @@ sub first_package_name {
 
 	p $self->{package_names} if $self->{debug};
 
-	# We will assume the first one found is our Package Name
+	# We will assume the first package found is our Package Name, pot lock :)
 	$self->{package_name} = $self->{package_names}[0];
 	say 'Package: ' . $self->{package_name} if $self->{verbose};
 
 	return;
 }
 #######
-# first_package_name
+# find_package_name
 #######
 sub find_package_names {
 	my $self     = shift;
@@ -99,6 +99,8 @@ sub find_package_names {
 
 	# Load a Document from a file
 	my $document = PPI::Document->new($filename);
+	
+	# Extract package names
 	push @{ $self->{package_names} }, $document->find_first('PPI::Statement::Package')->namespace;
 
 	return;
@@ -166,9 +168,7 @@ sub find_makefile_requires {
 		say 'looking for requires in -> ' . $filename;
 	}
 
-	# my @items = ();
 	my $ppi_i = $document->find('PPI::Statement::Include');
-
 	p $ppi_i if $self->{debug};
 
 	if ($ppi_i) {
@@ -184,9 +184,6 @@ sub find_makefile_requires {
 					@modules = @base_parent_modules;
 				}
 
-				# try{
-				# @modules = $self->base_parent( $include->module, $include->content, $include->pragma );
-				# };
 			}
 
 			foreach my $module (@modules) {
@@ -205,6 +202,8 @@ sub find_makefile_requires {
 				#deal with ''
 				next if $module eq NONE;
 				if ( $module =~ /^$self->{package_name}/sxm ) {
+					
+					# Tommy here is were we ignore current package children
 
 					# don't include our own packages here
 					next;
@@ -249,7 +248,6 @@ sub find_makefile_test_requires {
 			next if $include->type eq 'no';
 
 			my @modules = $include->module;
-			# p @modules;
 
 			if ( !$self->{base_parent} ) {
 				my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
@@ -270,11 +268,9 @@ sub find_makefile_test_requires {
 		foreach my $include ( @{$ppi_tqs} ) {
 			if ( $include->content =~ /::/ && $include->content !~ /main/ && !$include->content =~ /use/) {
 				my $module = $include->content;
-				# p $module;
 				$module =~ s/^[']//;
 				$module =~ s/[']$//;
 				$module =~ s/(\s[\w|\s]+)$//;
-				# p $module;
 
 				# if we have found it already ignore it
 				if ( !$self->{requires}{$module} ) {
@@ -283,12 +279,12 @@ sub find_makefile_test_requires {
 			}
 			if ( $include->content =~ /::/ && $include->content =~ /use/ ) {
 				my $module = $include->content;
-				#ToDo test for duplicats and rubish
-				# p $module;
+				#ToDo test for duplicats and rubish, part 1 done more to do
+
 				$module =~ s/^[']//;
 				$module =~ s/[']$//;
 				$module =~ s/^use\s//;
-				# p $module;
+
 				# if we have found it already ignore it
 				if ( !$self->{requires}{$module} ) {
 					push @modules, $module;
@@ -310,12 +306,11 @@ sub find_makefile_test_requires {
 
 			if ( $include->content =~ /::/ && $include->content =~ /use/ ) {
 				my $module = $include->content;
-				# p $module;
 				$module =~ s/^["]//;
 				$module =~ s/["]$//;
 				$module =~ s/^use\s//;
 				$module =~ s/(\s[\s|\w|\n|.|;]+)$//;
-				# p $module;
+
 				# if we have found it already ignore it
 				if ( !$self->{requires}{$module} ) {
 					push @modules, $module;
@@ -340,7 +335,6 @@ sub process_found_modules {
 	my $self = shift;
 
 	my $modules_ref = shift;
-	# p $modules_ref;
 	my @items       = ();
 
 	foreach my $module ( @{$modules_ref} ) {
@@ -385,7 +379,6 @@ sub store_modules {
 	my $self         = shift;
 	my $require_type = shift;
 	my $module       = shift;
-	# p $module;
 
 	my $mod;
 	my $mod_in_cpan = 0;
@@ -401,8 +394,6 @@ sub store_modules {
 	}
 	catch {
 		say "caught - $require_type - $module" if $self->{debug};
-		
-		# p $module;
 
 		# exclude modules in test dir
 		if ( $require_type eq 'requires' ) {
@@ -418,7 +409,6 @@ sub store_modules {
 			$self->{$require_type}{$module} = $mod->cpan_version;
 		}
 	};
-	# p $self->{$require_type};
 
 	return;
 }
