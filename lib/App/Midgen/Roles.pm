@@ -178,7 +178,7 @@ This document describes App::Midgen::Roles version 0.08
 
 for more info see L<midgen>
 
-=head1 ACCSESSORS
+=head1 ACCESSORS
 
 =over 4
 
