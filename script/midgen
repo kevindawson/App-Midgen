@@ -84,7 +84,7 @@ __END__
 
 =head1 NAME
 
-midgen - generate the requires and test requires sections for Makefile.PL using Module::Install::DSL
+midgen - generate the requires and test requires sections for Makefile.PL
 
 =head1 VERSION
 
@@ -96,7 +96,21 @@ Change to root of package and run
 
  midgen
 
-midgen [options]
+Now with a GetOps --help or -?
+
+ midgen -?
+
+
+ midgen [options]
+
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<--help or -h>
+
+Print a brief help message and exits.
 
  Options:
    --help    brief help message
@@ -107,17 +121,9 @@ midgen [options]
    --mojo    don't be Mojo friendly	
    --debug   lot's of stuff
 
-=head1 OPTIONS
-
-=over 4
-
-=item B<--help or -h>
-
-Print a brief help message and exits.
-
 =item B<--output or -o>
 
-By default we do 'dsl' -> Module::Include::DSL
+By default we output to screen in 'dsl' format, so you can check, copy and paste
 
  midgen -o dsl		# Module::Include::DSL
  midgen -o mi		# Module::Include
@@ -162,13 +168,7 @@ This started out as a way of generating the core for a Module::Install::DSL Make
 why DSL because it's nice and clean, so now I can generate the contents when I want, 
 rather than as I add new use and require statments, and because adam kicked me :)
 
-Change to root of package and run
 
- midgen
-
-Now with a GetOps --help or -?
-
- midgen -?
 
 =head1 AUTHOR
 
