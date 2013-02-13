@@ -1,6 +1,8 @@
 Revision history for App-Midgen
 
 {{$NEXT}}
+
+0.08 2013-02-13
  - tweak the wiki page [582b3a1]
  - tweak the POD for clarity [2b73d2f]
  - remove autodie as WE are not doing any thing directly [d56e610]
@@ -10,8 +12,15 @@ Revision history for App-Midgen
  - add filters for the extra testing of t/ files to remove unwanted text
    2nd go, still more to do [bed7915]
  - pod pod pod, it's almost fun [5505f08]
- - Update Changes [d363b92]
  - at last the test is 'not defined' as undef is ignored  [73baf27]
+ - Update Changes [82b1ba4]
+ - Add some running comments [a895b67]
+ - Add a catch block  [0f6f731]
+ - add dzil to roles [eff562f]
+ - Add an Output.pm and move all output formats to it start of [7f85598]
+ - that's the ruff copy of main body output in [8deb173]
+ - that's double quoted the dzil module names done [588addc]
+ - spellcheck [dd315f7]
 
 0.07 2013-02-10
  - Update Changes [d62fc0b]
