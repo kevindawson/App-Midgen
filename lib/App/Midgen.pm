@@ -99,7 +99,7 @@ sub find_package_names {
 
 	# Load a Document from a file
 	my $document = PPI::Document->new($filename);
-	
+
 	# Extract package names
 	push @{ $self->{package_names} }, $document->find_first('PPI::Statement::Package')->namespace;
 
@@ -202,9 +202,8 @@ sub find_makefile_requires {
 				#deal with ''
 				next if $module eq NONE;
 				if ( $module =~ /^$self->{package_name}/sxm ) {
-					
-					# Tommy here is were we ignore current package children
 
+					# Tommy here is were we ignore current package children
 					# don't include our own packages here
 					next;
 				}
@@ -218,7 +217,6 @@ sub find_makefile_requires {
 				}
 
 				$self->store_modules( 'requires', $module );
-
 			}
 		}
 	}
@@ -239,7 +237,7 @@ sub find_makefile_test_requires {
 		say 'looking for test_requires in: ' . $filename;
 	}
 
-	# Load a Document from a file
+	# Load a Document from a file and check use and require contents
 	my $document = PPI::Document->new($filename);
 	my $ppi_i    = $document->find('PPI::Statement::Include');
 
@@ -257,16 +255,16 @@ sub find_makefile_test_requires {
 			}
 
 			$self->process_found_modules( \@modules );
-
 		}
 	}
 
 	# Hack for use_ok in test files, Ouch!
+	# Now lets double chech the ptq-Single hidden in a test file
 	my $ppi_tqs = $document->find('PPI::Token::Quote::Single');
 	if ($ppi_tqs) {
 		my @modules;
 		foreach my $include ( @{$ppi_tqs} ) {
-			if ( $include->content =~ /::/ && $include->content !~ /main/ && !$include->content =~ /use/) {
+			if ( $include->content =~ /::/ && $include->content !~ /main/ && !$include->content =~ /use/ ) {
 				my $module = $include->content;
 				$module =~ s/^[']//;
 				$module =~ s/[']$//;
@@ -279,6 +277,7 @@ sub find_makefile_test_requires {
 			}
 			if ( $include->content =~ /::/ && $include->content =~ /use/ ) {
 				my $module = $include->content;
+
 				#ToDo test for duplicats and rubish, part 1 done more to do
 
 				$module =~ s/^[']//;
@@ -299,6 +298,7 @@ sub find_makefile_test_requires {
 		}
 	}
 	
+	# Now lets double chech the ptq-Doubles hidden in a test file - why O why - rtfm pbp
 	my $ppi_tqd = $document->find('PPI::Token::Quote::Double');
 	if ($ppi_tqd) {
 		my @modules;
@@ -403,7 +403,7 @@ sub store_modules {
 		} elsif ( not defined $self->{requires}{$module} ) {
 			$self->{$require_type}{$module} = 0;
 		}
-		
+
 	}
 	finally {
 		if ( $mod_in_cpan && !$self->{requires}{$module} ) {
