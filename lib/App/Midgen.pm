@@ -8,7 +8,7 @@ with qw( App::Midgen::Roles );
 use App::Midgen::Output;
 
 our $VERSION = '0.08';
-use English qw( -no_match_vars ); # Avoids regex performance penalty
+use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 use CPAN;
@@ -66,7 +66,7 @@ sub initialise {
 	$self->{working_dir} = cwd();
 	say 'working in dir: ' . $self->{working_dir} if $self->{debug};
 
-	# set up cpan bit's as well as checking we are upto date
+	# set up cpan bit's as well as checking we are up to date
 	CPAN::HandleConfig->load;
 	CPAN::Shell::setup_output;
 	CPAN::Index->reload;
@@ -263,7 +263,7 @@ sub find_makefile_test_requires {
 	}
 
 	# Hack for use_ok in test files, Ouch!
-	# Now lets double chech the ptq-Single hidden in a test file
+	# Now lets double check the ptq-Single hidden in a test file
 	my $ppi_tqs = $document->find('PPI::Token::Quote::Single');
 	if ($ppi_tqs) {
 		my @modules;
@@ -283,7 +283,7 @@ sub find_makefile_test_requires {
 			if ( $include->content =~ /::/ && $include->content =~ /use/ ) {
 				my $module = $include->content;
 
-				#ToDo test for duplicats and rubish, part 1 done more to do
+				#ToDo test for duplicates and rubbish, part 1 done more to do
 
 				$module =~ s/^[']//;
 				$module =~ s/[']$//;
@@ -304,7 +304,7 @@ sub find_makefile_test_requires {
 		}
 	}
 
-	# Now lets double chech the ptq-Doubles hidden in a test file - why O why - rtfm pbp
+	# Now lets double check the ptq-Doubles hidden in a test file - why O why - rtfm pbp
 	my $ppi_tqd = $document->find('PPI::Token::Quote::Double');
 	if ($ppi_tqd) {
 		my @modules;
@@ -394,7 +394,7 @@ sub store_modules {
 
 		if ( $mod->cpan_version ne 'undef' ) {
 
-			# alociate current cpan version against module name
+			# allocate current cpan version against module name
 			$mod_in_cpan = 1;
 		}
 
@@ -415,7 +415,7 @@ sub store_modules {
 	finally {
 		if ( $mod_in_cpan && !$self->{requires}{$module} ) {
 
-			# alociate current cpan version against module name
+			# allocate current cpan version against module name
 			$self->{$require_type}{$module} = $mod->cpan_version;
 		}
 	};
@@ -483,7 +483,7 @@ sub remove_noisy_children {
 
 		if ( $sorted_modules[$n] =~ /^$sorted_modules[$n-1]::/ ) {
 
-			# Checking for one degree of seperation
+			# Checking for one degree of separation
 			# ie A::B -> A::B::C is ok but A::B::C::D is not
 			if ( ( $parent_score + 1 ) == $child_score ) {
 
@@ -605,7 +605,7 @@ Change to root of package and run
 
  midgen
 
-Now with a GetOps --help or -?
+Now with a Getopt --help or -?
 
  midgen -?
 
@@ -615,7 +615,7 @@ See L<midgen> for more info.
 
 This started out as a way of generating the core for a Module::Install::DSL Makefile.PL, 
 why DSL because it's nice and clean, so now I can generate the contents when I want, 
-rather than as I add new use and require statments, and because adam kicked me :)
+rather than as I add new use and require statements, and because Adam kicked me :)
 
 For more info and sample output see L<wiki|https://github.com/kevindawson/App-Midgen/wiki>
 
@@ -675,7 +675,7 @@ None reported.
 Please report any bugs or feature requests to
 through the web interface at
 L<https://github.com/kevindawson/App-Midgen/issues>.
-If reporting a Bug, also supply the Module info, midgen faild against.
+If reporting a Bug, also supply the Module info, midgen failed against.
 
 =head1 AUTHOR
 
