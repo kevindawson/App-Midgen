@@ -398,9 +398,12 @@ sub store_modules {
 		# exclude modules in test dir
 		if ( $require_type eq 'requires' ) {
 			$self->{$require_type}{$module} = 0;
-		} elsif ( $module !~ /^t::/ || $self->{requires}{$module} ) {
+		} elsif ( $module !~ /^t::/ && $self->{requires}{$module} ) {
+			$self->{$require_type}{$module} = 0;
+		} elsif ( not defined $self->{requires}{$module} ) {
 			$self->{$require_type}{$module} = 0;
 		}
+		
 	}
 	finally {
 		if ( $mod_in_cpan && !$self->{requires}{$module} ) {
