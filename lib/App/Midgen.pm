@@ -637,70 +637,6 @@ This document describes App::Midgen version 0.08
 
 =head1 SYNOPSIS
 
-midgen.pl [options]
-
- Options:
-   -help	brief help message
-   -output	change format
-   -core	show perl core modules
-   -verbose	take a little peek as to what is going on
-   -base	Don't check for base includes
-   -mojo	Don't be Mojo friendly	
-   -debug	lots of stuff
-
-=head1 OPTIONS
-
-=over 4
-
-=item B<--help or -h>
-
-Print a brief help message and exits.
-
-=item B<--output or -o>
-
-By default we do 'dsl' -> Module::Include::DSL
-
- midgen.pl -o dsl	# Module::Include::DSL
- midgen.pl -o mi	# Module::Include
- midgen.pl -o build	# Build.PL
-
-
-=item B<-core or -c>
-
- * Shows modules that are in Perl core
- * some modules have a version number eg; constant, Carp
- * some have a version of 0 eg; strict, English 
-
-=item B<--verbose or -v>
-
-Show file that are being checked
-
-also show contents of base|parent check
-
-=item B<--parent or -p>
-
-alternative  --base or -b
-
-Turn Off - try to include the contents of base|parent modules as well
-
-=item B<--mojo or -m>
-
-Turn Off - the /Mojo/ to Mojolicious catch
-
-=item B<--noisy_children or -n>
-
- * Show a required modules noisy children, as we find them
-
-=item B<--debug or -d>
-
-equivalent of -cv and some :)
-
-=back
- 
-=head1 DESCRIPTION
-
-This started out as a way of generating the core for a Module::Install::DSL Makefile.PL, why DSL because it's nice and clean, so now I can generate the contents when I want, rather than as I add new use and require statments, and because adam kicked me :)
-
 Change to root of package and run
 
  midgen.pl
@@ -710,6 +646,12 @@ Now with a GetOps --help or -?
  midgen.pl -?
 
 see L<midgen>,
+ 
+=head1 DESCRIPTION
+
+This started out as a way of generating the core for a Module::Install::DSL Makefile.PL, why DSL because it's nice and clean, so now I can generate the contents when I want, rather than as I add new use and require statments, and because adam kicked me :)
+
+
 =head1 METHODS
 
 =over 4
@@ -826,7 +768,7 @@ L<http://rt.cpan.org>.
 
 
 
-=head1 AUTHORS
+=head1 AUTHOR
 
 Kevin Dawson E<lt>bowtie@cpan.orgE<gt>
 
@@ -836,7 +778,7 @@ none at present
 
 =head1 COPYRIGHT
 
-Copyright E<copy> 2013 AUTHORS and CONTRIBUTORS as listed above.
+Copyright E<copy> 2013 AUTHOR and CONTRIBUTORS as listed above.
 
 =head1 LICENSE
 
