@@ -58,7 +58,7 @@ sub header_build {
 	print "\n";
 	say 'build header underdevelopment';
 	print "\n";
-	
+
 	return;
 }
 #######
@@ -67,7 +67,7 @@ sub header_build {
 sub header_dzil {
 	my $self         = shift;
 	my $package_name = shift;
-	
+
 	print "\n";
 	say 'dzil header underdevelopment';
 	print "\n";
@@ -76,4 +76,71 @@ sub header_dzil {
 }
 
 
+
+
+
+#######
+# footer_dsl
+#######
+sub footer_dsl {
+	my $self = shift;
+
+	print "\n";
+	say '#ToDo you should consider completing the following';
+	say "homepage\t...";
+	say "bugtracker\t...";
+	say "repository\t...";
+
+	print "\n";
+	if ( defined -d './share' ) {
+		say 'install_share';
+		print "\n";
+	}
+
+	#ToDo add script
+	
+	say 'no_index directory  qw{ t xt eg share inc privinc }';
+
+	return;
+}
+#######
+# footer_mi
+#######
+sub footer_mi {
+	my $self = shift;
+
+	print "\n";
+	say 'mi footer underdevelopment';
+	print "\n";
+
+	return;
+}
+#######
+# footer_build
+#######
+sub footer_build {
+	my $self = shift;
+
+	print "\n";
+	say 'build footer underdevelopment';
+	print "\n";
+
+	return;
+}
+#######
+# footer_dzil
+#######
+sub footer_dzil {
+	my $self = shift;
+
+	print "\n";
+	say 'dzil footer underdevelopment';
+	print "\n";
+
+	return;
+}
+
 1;
+
+__END__
+
