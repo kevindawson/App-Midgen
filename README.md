@@ -1,7 +1,7 @@
 App::Midgen
 ==========
 
-Generate the 'requires' and 'test requires' for Makefile.PL using Module::Install::DSL
+Generate or Check the 'requires' and 'test requires' for Makefile.PL
 
 This started out as a way of generating the core for a Module::Install::DSL Makefile.PL, 
 why DSL because it's nice and clean, so now I can generate the contents when I want, 
@@ -18,6 +18,7 @@ Change to the root of the package you want to scan and run
 
 Now with a added GetOps --help or -?
 
+ midgen -?
 
 Usage:
     midgen [options]
@@ -38,9 +39,10 @@ Options:
     --output or -o
         By default we do 'dsl' -> Module::Include::DSL
 
-         midgen.pl -o dsl       # Module::Include::DSL
-         midgen.pl -o mi        # Module::Include
-         midgen.pl -o build     # Build.PL
+         midgen -o dsl      # Module::Include::DSL
+         midgen -o mi       # Module::Include
+         midgen -o build    # Build.PL
+         midgen -o dzil     # Dist::Zilla
 
     --core or -c
          * Shows modules that are in Perl core
