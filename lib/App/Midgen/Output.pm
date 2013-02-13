@@ -39,8 +39,26 @@ sub header_dsl {
 # body_dsl
 #######
 sub body_dsl {
-	my $self = shift;
-	
+	my $self         = shift;
+	my $title        = shift;
+	my $required_ref = shift;
+	print "\n";
+
+	my $pm_length = 0;
+	foreach my $module_name ( sort keys %{$required_ref} ) {
+		if ( length $module_name > $pm_length ) {
+			$pm_length = length $module_name;
+		}
+	}
+
+	foreach my $module_name ( sort keys %{$required_ref} ) {
+
+		if ( $module_name =~ /^Win32/sxm ) {
+			printf "%s %-*s %s if win32\n", $title, $pm_length, $module_name, $required_ref->{$module_name};
+		} else {
+			printf "%s %-*s %s\n", $title, $pm_length, $module_name, $required_ref->{$module_name};
+		}
+	}
 	return;
 }
 #######
@@ -62,7 +80,7 @@ sub footer_dsl {
 	}
 
 	#ToDo add script
-	
+
 	say 'no_index directory  qw{ t xt eg share inc privinc }';
 
 	return;
@@ -87,8 +105,30 @@ sub header_mi {
 # body_mi
 #######
 sub body_mi {
-	my $self = shift;
-	
+	my $self         = shift;
+	my $title        = shift;
+	my $required_ref = shift;
+	print "\n";
+
+	my $pm_length = 0;
+	foreach my $module_name ( sort keys %{$required_ref} ) {
+		if ( length $module_name > $pm_length ) {
+			$pm_length = length $module_name;
+		}
+	}
+
+	foreach my $module_name ( sort keys %{$required_ref} ) {
+
+		if ( $module_name =~ /^Win32/sxm ) {
+			my $sq_key = "'$module_name'";
+			printf "%s %-*s => '%s' if win32;\n", $title, $pm_length + 2, $sq_key, $required_ref->{$module_name};
+		} else {
+			my $sq_key = "'$module_name'";
+			printf "%s %-*s => '%s';\n", $title, $pm_length + 2, $sq_key, $required_ref->{$module_name};
+		}
+
+	}
+
 	return;
 }
 #######
@@ -123,8 +163,27 @@ sub header_build {
 # body_build
 #######
 sub body_build {
-	my $self = shift;
-	
+	my $self         = shift;
+	my $title        = shift;
+	my $required_ref = shift;
+	print "\n";
+
+	my $pm_length = 0;
+	foreach my $module_name ( sort keys %{$required_ref} ) {
+		if ( length $module_name > $pm_length ) {
+			$pm_length = length $module_name;
+		}
+	}
+
+	say $title . ' => {';
+
+	foreach my $module_name ( sort keys %{$required_ref} ) {
+
+		my $sq_key = "'$module_name'";
+		printf "\t %-*s => '%s',\n", $pm_length + 2, $sq_key, $required_ref->{$module_name};
+
+	}
+	say '},';
 	return;
 }
 #######
@@ -159,8 +218,30 @@ sub header_dzil {
 # body_dzil
 #######
 sub body_dzil {
-	my $self = shift;
-	
+	my $self         = shift;
+	my $title        = shift;
+	my $required_ref = shift;
+	print "\n";
+
+	my $pm_length = 0;
+	foreach my $module_name ( sort keys %{$required_ref} ) {
+		if ( length $module_name > $pm_length ) {
+			$pm_length = length $module_name;
+		}
+	}
+	if ( $title eq 'requires' ) {
+		say '"PREREQ_PM" => {';
+	} else {
+		say '"BUILD_REQUIRES" => {';
+	}
+
+	foreach my $module_name ( sort keys %{$required_ref} ) {
+
+		my $sq_key = "'$module_name'";
+		printf "\t %-*s => '%s',\n", $pm_length + 2, $sq_key, $required_ref->{$module_name};
+
+	}
+	say '},';
 	return;
 }
 #######
