@@ -663,7 +663,7 @@ App::Midgen requires no configuration files or environment variables.
 
 =head1 DEPENDENCIES
 
-L<App::Midgen::Roles>,
+L<App::Midgen::Roles>, L<App::Midgen::Output>,
 
 =head1 INCOMPATIBILITIES
 
