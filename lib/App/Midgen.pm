@@ -644,6 +644,7 @@ see L<midgen>,
 
 This started out as a way of generating the core for a Module::Install::DSL Makefile.PL, why DSL because it's nice and clean, so now I can generate the contents when I want, rather than as I add new use and require statments, and because adam kicked me :)
 
+for more info and sample output see L<wiki|https://github.com/kevindawson/App-Midgen/wiki>
 
 =head1 METHODS
 
