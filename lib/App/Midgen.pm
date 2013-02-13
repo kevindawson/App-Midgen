@@ -622,7 +622,7 @@ __END__
 
 =head1 NAME
 
-App::Midgen - generate the requires and test requires for Makefile.PL using Module::Install::DSL
+App::Midgen - generate the requires and test requires sections for Makefile.PL
 
 =head1 VERSION
 
@@ -638,13 +638,15 @@ Now with a GetOps --help or -?
 
  midgen -?
 
-see L<midgen>,
+See L<midgen> for more info.
  
 =head1 DESCRIPTION
 
-This started out as a way of generating the core for a Module::Install::DSL Makefile.PL, why DSL because it's nice and clean, so now I can generate the contents when I want, rather than as I add new use and require statments, and because adam kicked me :)
+This started out as a way of generating the core for a Module::Install::DSL Makefile.PL, 
+why DSL because it's nice and clean, so now I can generate the contents when I want, 
+rather than as I add new use and require statments, and because adam kicked me :)
 
-for more info and sample output see L<wiki|https://github.com/kevindawson/App-Midgen/wiki>
+For more info and sample output see L<wiki|https://github.com/kevindawson/App-Midgen/wiki>
 
 =head1 METHODS
 
@@ -684,13 +686,6 @@ for more info and sample output see L<wiki|https://github.com/kevindawson/App-Mi
 
 
 =head1 CONFIGURATION AND ENVIRONMENT
-
-=for author to fill in:
-    A full explanation of any configuration system(s) used by the
-    module, including the names and locations of any configuration
-    files, and the meaning of any environment variables or properties
-    that can be set. These descriptions must also include details of any
-    configuration language used.
   
 App::Midgen requires no configuration files or environment variables.
 
@@ -700,13 +695,6 @@ App::Midgen requires no configuration files or environment variables.
 L<App::Midgen::Roles>,
 
 =head1 INCOMPATIBILITIES
-
-=for author to fill in:
-    A list of any modules that this module cannot be used in conjunction
-    with. This may be due to name conflicts in the interface, or
-    competition for system or program resources, or due to internal
-    limitations of Perl (for example, many modules that use source code
-    filters are mutually incompatible).
 
 None reported.
 
