@@ -128,8 +128,8 @@ By default we output to screen in 'dsl' format, so you can check, copy and paste
 
  midgen -o dsl		# Module::Include::DSL
  midgen -o mi		# Module::Include
- midgen -o build	# Build.PL
-
+ midgen -o build	# Build
+ midgen -o dzil		# Dist::Zilla
 
 =item B<--core or -c>
 
