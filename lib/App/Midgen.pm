@@ -36,7 +36,9 @@ use constant {
 sub run {
 	my $self = shift;
 	$self->initialise();
-	$self->first_package_name();
+	try {
+		$self->first_package_name();
+	};
 	$self->output_header();
 
 	$self->find_required_modules();
@@ -269,7 +271,7 @@ sub find_makefile_test_requires {
 				$module =~ s/^[']//;
 				$module =~ s/[']$//;
 				$module =~ s/(\s[\w|\s]+)$//;
-
+				p $module if $self->{debug};
 				# if we have found it already ignore it
 				if ( !$self->{requires}{$module} ) {
 					push @modules, $module;
@@ -283,7 +285,7 @@ sub find_makefile_test_requires {
 				$module =~ s/^[']//;
 				$module =~ s/[']$//;
 				$module =~ s/^use\s//;
-
+				p $module if $self->{debug};
 				# if we have found it already ignore it
 				if ( !$self->{requires}{$module} ) {
 					push @modules, $module;
@@ -297,7 +299,7 @@ sub find_makefile_test_requires {
 			}
 		}
 	}
-	
+
 	# Now lets double chech the ptq-Doubles hidden in a test file - why O why - rtfm pbp
 	my $ppi_tqd = $document->find('PPI::Token::Quote::Double');
 	if ($ppi_tqd) {
@@ -310,7 +312,7 @@ sub find_makefile_test_requires {
 				$module =~ s/["]$//;
 				$module =~ s/^use\s//;
 				$module =~ s/(\s[\s|\w|\n|.|;]+)$//;
-
+				p $module if $self->{debug};
 				# if we have found it already ignore it
 				if ( !$self->{requires}{$module} ) {
 					push @modules, $module;
@@ -476,7 +478,8 @@ sub remove_noisy_children {
 
 		if ( $sorted_modules[$n] =~ /^$sorted_modules[$n-1]::/ ) {
 
-			# Checking for one degree of seperation ie A::B -> A::B::C is ok but A::B::C::D is not
+			# Checking for one degree of seperation
+			# ie A::B -> A::B::C is ok but A::B::C::D is not
 			if ( ( $parent_score + 1 ) == $child_score ) {
 
 				# Test for same version number
@@ -508,7 +511,7 @@ sub output_header {
 
 	# Let's get the current version of Module::Install::DSL
 	my $mod = CPAN::Shell->expand( 'Module', 'inc::Module::Install::DSL' );
-	my $package_name = $self->{package_name};
+	my $package_name = $self->{package_name} // NONE;
 	$package_name =~ s{::}{/};
 
 	given ( $self->{output_format} ) {
