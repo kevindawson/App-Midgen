@@ -639,11 +639,11 @@ This document describes App::Midgen version 0.08
 
 Change to root of package and run
 
- midgen.pl
+ midgen
 
 Now with a GetOps --help or -?
 
- midgen.pl -?
+ midgen -?
 
 see L<midgen>,
  
@@ -688,37 +688,6 @@ This started out as a way of generating the core for a Module::Install::DSL Make
 
 =back
 
-=head1 INTERFACE 
-
-=for author to fill in:
-    Write a separate section listing the public components of the modules
-    interface. These normally consist of either subroutines that may be
-    exported, or methods that may be called on objects belonging to the
-    classes provided by the module.
-
-
-=head1 DIAGNOSTICS
-
-=for author to fill in:
-    List every single error and warning message that the module can
-    generate (even the ones that will "never happen"), with a full
-    explanation of each problem, one or more likely causes, and any
-    suggested remedies.
-
-=over
-
-=item C<< Error message here, perhaps with %s placeholders >>
-
-[Description of error here]
-
-=item C<< Another error message here >>
-
-[Description of error here]
-
-[Et cetera, et cetera]
-
-=back
-
 
 =head1 CONFIGURATION AND ENVIRONMENT
 
@@ -750,23 +719,10 @@ None reported.
 
 =head1 BUGS AND LIMITATIONS
 
-=for author to fill in:
-    A list of known problems with the module, together with some
-    indication Whether they are likely to be fixed in an upcoming
-    release. Also a list of restrictions on the features the module
-    does provide: data types that cannot be handled, performance issues
-    and the circumstances in which they may arise, practical
-    limitations on the size of data sets, special cases that are not
-    (yet) handled, etc.
-
-No bugs have been reported.
-
 Please report any bugs or feature requests to
-C<bug-app-midgen@rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org>.
-
-
-
+through the web interface at
+L<https://github.com/kevindawson/App-Midgen/issues>.
+If reporting a Bug, also supply the Module info, midgen faild against.
 
 =head1 AUTHOR
 
