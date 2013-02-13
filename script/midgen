@@ -115,8 +115,8 @@ Print a brief help message and exits.
 
 By default we do 'dsl' -> Module::Include::DSL
 
- midgen -o dsl	# Module::Include::DSL
- midgen -o mi	# Module::Include
+ midgen -o dsl		# Module::Include::DSL
+ midgen -o mi		# Module::Include
  midgen -o build	# Build.PL
 
 
