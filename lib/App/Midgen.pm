@@ -514,15 +514,6 @@ sub remove_noisy_children {
 sub output_header {
 	my $self = shift;
 
-	# my $output = App::Midgen::Output->new;
-
-	# Let's get the current version of Module::Install::DSL
-	# my $mod = CPAN::Shell->expand( 'Module', 'inc::Module::Install::DSL' );
-	# my $package_name = $self->{package_name} // NONE;
-	# $package_name =~ s{::}{/};
-
-	# p $output;
-
 	given ( $self->{output_format} ) {
 
 		when ('mi') {
@@ -592,32 +583,23 @@ sub output_main_body {
 #######
 sub output_footer {
 	my $self = shift;
-
+	
 	given ( $self->{output_format} ) {
 
-		# when ('mi') {
-
-		# }
-		when ('dsl') {
-			if ( $self->{verbose} ) {
-				print "\n";
-				say '#ToDo you should consider completing the following';
-				say "homepage\t...";
-				say "bugtracker\t...";
-				say "repository\t...";
-			}
-			print "\n";
-			if ( defined -d './share' ) {
-				say 'install_share';
-				print "\n";
-			}
-			say 'no_index directory  qw{ t xt eg share inc privinc }';
+		when ('mi') {
+			$self->{output}->footer_mi( );
 		}
-
-		# when ('build') {
-
-		# }
+		when ('dsl') {
+			$self->{output}->footer_dsl( );
+		}
+		when ('build') {
+			$self->{output}->footer_build( );
+		}
+		when ('dzil') {
+			$self->{output}->footer_dzil( );
+		}
 	}
+
 	return;
 }
 
