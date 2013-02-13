@@ -1,6 +1,15 @@
 Revision history for App-Midgen
 
 {{$NEXT}}
+ - tweak the wiki page [582b3a1]
+ - tweak the POD for clarity [2b73d2f]
+ - remove autodie as WE are not doing any thing directly [d56e610]
+ - add test for use in an eval in testing [163576a]
+ - add test for use in an eval in testing add a second test for double to
+   complement single qoute [4933099]
+ - add filters for the extra testing of t/ files to remove unwanted text
+   2nd go, still more to do [bed7915]
+ - pod pod pod, it's almost fun [5505f08]
 
 0.07 2013-02-10
  - Update Changes [d62fc0b]
