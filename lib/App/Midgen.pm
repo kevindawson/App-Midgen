@@ -250,6 +250,7 @@ sub find_makefile_test_requires {
 			next if $include->type eq 'no';
 
 			my @modules = $include->module;
+			p @modules if $self->{debug};
 
 			if ( !$self->{base_parent} ) {
 				my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
@@ -359,9 +360,16 @@ sub process_found_modules {
 
 		#deal with ''
 		next if $module eq NONE;
+		p $module if $self->{debug};
+		
 		if ( $module =~ /^$self->{package_name}/sxm ) {
 
 			# don't include our own packages here
+			next;
+		}
+		if ( $module =~ /^t::/sxm ) {
+
+			# don't include our own test packages here
 			next;
 		}
 		if ( $module =~ /Mojo/sxm && !$self->{mojo} ) {
@@ -386,7 +394,8 @@ sub store_modules {
 	my $self         = shift;
 	my $require_type = shift;
 	my $module       = shift;
-
+	p $module if $self->{debug};
+	
 	my $mod;
 	my $mod_in_cpan = 0;
 	try {
