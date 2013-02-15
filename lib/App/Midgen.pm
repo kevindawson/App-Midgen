@@ -281,7 +281,7 @@ sub find_makefile_test_requires {
 					push @modules, $module;
 				}
 			}
-			if ( $include->content =~ /::/ && $include->content =~ /use/ ) {
+			if ( $include->content =~ /::/ && $include->content =~ /^use/ ) {
 				my $module = $include->content;
 
 				#ToDo test for duplicates and rubbish, part 1 done more to do
@@ -311,7 +311,7 @@ sub find_makefile_test_requires {
 		my @modules;
 		foreach my $include ( @{$ppi_tqd} ) {
 
-			if ( $include->content =~ /::/ && $include->content =~ /use/ ) {
+			if ( $include->content =~ /::/ && $include->content =~ /^use/ ) {
 				my $module = $include->content;
 				$module =~ s/^["]//;
 				$module =~ s/["]$//;
