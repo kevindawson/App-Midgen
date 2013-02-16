@@ -42,13 +42,13 @@ sub run {
 	};
 	$self->output_header();
 
-	$self->find_required_modules();
-	$self->remove_noisy_children( $self->{requires} ) if ( !$self->{verbose} );
-	$self->output_main_body( 'requires', $self->{requires} );
+	# $self->find_required_modules();
+	# $self->remove_noisy_children( $self->{requires} ) if ( !$self->{verbose} );
+	# $self->output_main_body( 'requires', $self->{requires} );
 
-	$self->find_required_test_modules();
-	$self->output_main_body( 'test_requires', $self->{test_requires} );
-	$self->output_footer();
+	# $self->find_required_test_modules();
+	# $self->output_main_body( 'test_requires', $self->{test_requires} );
+	# $self->output_footer();
 
 	print "\n";
 
@@ -97,6 +97,10 @@ sub first_package_name {
 sub find_package_names {
 	my $self     = shift;
 	my $filename = $_;
+	state $files_checked;
+	if ( defined $files_checked ){
+		return if $files_checked >= 3;
+	 }
 
 	# Only check in pm files
 	return if $filename !~ /[.]pm$/sxm;
@@ -106,6 +110,7 @@ sub find_package_names {
 
 	# Extract package names
 	push @{ $self->{package_names} }, $document->find_first('PPI::Statement::Package')->namespace;
+	$files_checked++;
 
 	return;
 }
@@ -441,22 +446,32 @@ sub base_parent {
 	my $content = shift;
 	my $pragma  = shift;
 	my @modules = ();
-	if ( $module =~ /base|parent/sxm ) {
 
+	if ( $module =~ /base|parent|with|extends/sxm ) {
 		if ( $self->{verbose} ) {
 			say 'Info: check ' . $pragma . ' pragma: ';
 			say $content;
 		}
+		p $content;
 
 		$content =~ s/^use (base|parent) //;
-
-		$content =~ s/^qw[\<|\(|\{|\[]\n?\t?\s*//;
+		# $content =~ s/^use //;
+		p $content;
+		$content =~ s/\s*(q[q|w])\s*//;
+p $content;
+		# $content =~ s/^qw[\<|\(|\{|\[]\n?\t?\s*//;
+		$content =~ s/[<?]|[(?]|[{?]\n?\t?\s*//;
+# $content =~ s/^qw[\<|\(|\{|\[]\n?\t?\s*//;		
+# $content =~ s/^qw[\<|\(|\{|\[]\n?\t?\s*//;
+p $content;		
 		$content =~ s/\s*[\>|\)|\}|\]];\n?\t?$//;
+p $content;		
 		$content =~ s/(\n\t)/, /g;
-
+p $content;
 		@modules = split /, /, $content;
+p @modules;		
 		push @modules, $module;
-		p @modules if $self->{debug};
+		p @modules;# if $self->{debug};
 	}
 	return @modules;
 }
