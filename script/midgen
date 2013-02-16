@@ -122,7 +122,7 @@ Print a brief help message and exits.
    --verbose        take a little peek as to what is going on
    --parent         don't check for base|parent includes
    --mojo           don't be Mojo friendly
-   --noisy_children show them
+   --noisy_children show them as we find them
    --debug          lot's of stuff
 
 =item B<--output or -o>
