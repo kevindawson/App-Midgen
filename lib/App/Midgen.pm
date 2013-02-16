@@ -361,7 +361,7 @@ sub process_found_modules {
 		#deal with ''
 		next if $module eq NONE;
 		p $module if $self->{debug};
-		
+
 		if ( $module =~ /^$self->{package_name}/sxm ) {
 
 			# don't include our own packages here
@@ -395,7 +395,7 @@ sub store_modules {
 	my $require_type = shift;
 	my $module       = shift;
 	p $module if $self->{debug};
-	
+
 	my $mod;
 	my $mod_in_cpan = 0;
 	try {
@@ -551,16 +551,16 @@ sub output_main_body {
 	given ( $self->{output_format} ) {
 
 		when ('mi') {
-			$self->{output}->body_mi($title, $required_ref);
+			$self->{output}->body_mi( $title, $required_ref );
 		}
 		when ('dsl') {
-			$self->{output}->body_dsl($title, $required_ref );
+			$self->{output}->body_dsl( $title, $required_ref );
 		}
 		when ('build') {
-			$self->{output}->body_build($title, $required_ref );
+			$self->{output}->body_build( $title, $required_ref );
 		}
 		when ('dzil') {
-			$self->{output}->body_dzil($title, $required_ref );
+			$self->{output}->body_dzil( $title, $required_ref );
 		}
 	}
 
@@ -571,20 +571,20 @@ sub output_main_body {
 #######
 sub output_footer {
 	my $self = shift;
-	
+
 	given ( $self->{output_format} ) {
 
 		when ('mi') {
-			$self->{output}->footer_mi( );
+			$self->{output}->footer_mi();
 		}
 		when ('dsl') {
-			$self->{output}->footer_dsl( );
+			$self->{output}->footer_dsl();
 		}
 		when ('build') {
-			$self->{output}->footer_build( );
+			$self->{output}->footer_build();
 		}
 		when ('dzil') {
-			$self->{output}->footer_dzil( );
+			$self->{output}->footer_dzil();
 		}
 	}
 
