@@ -73,7 +73,7 @@ $midgen->run();
 
 my $end_run = time();
 my $run_time = $end_run - $start_run;
-say "Job took $run_time seconds";
+say 'I just spent '.$run_time.'s doing that for you';
 say 'END';
 
 exit(0);
