@@ -27,6 +27,7 @@ use Try::Tiny;
 use constant {
 	BLANK => qq{ },
 	NONE  => q{},
+	THREE => 3,
 };
 
 
@@ -99,7 +100,7 @@ sub find_package_names {
 	my $filename = $_;
 	state $files_checked;
 	if ( defined $files_checked ) {
-		return if $files_checked >= 3;
+		return if $files_checked >= THREE;
 	}
 
 	# Only check in pm files
@@ -510,7 +511,7 @@ sub remove_noisy_children {
 						if $self->{noisy_children};
 					try {
 						delete $required_ref->{ $sorted_modules[$n] };
-						splice( @sorted_modules, $n, 1 );
+						splice @sorted_modules, $n, 1 ;
 						$n--;
 					};
 					p @sorted_modules if $self->{debug};
