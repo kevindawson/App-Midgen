@@ -42,13 +42,13 @@ sub run {
 	};
 	$self->output_header();
 
-	# $self->find_required_modules();
-	# $self->remove_noisy_children( $self->{requires} ) if ( !$self->{verbose} );
-	# $self->output_main_body( 'requires', $self->{requires} );
+	$self->find_required_modules();
+	$self->remove_noisy_children( $self->{requires} ) if ( !$self->{verbose} );
+	$self->output_main_body( 'requires', $self->{requires} );
 
-	# $self->find_required_test_modules();
-	# $self->output_main_body( 'test_requires', $self->{test_requires} );
-	# $self->output_footer();
+	$self->find_required_test_modules();
+	$self->output_main_body( 'test_requires', $self->{test_requires} );
+	$self->output_footer();
 
 	print "\n";
 
