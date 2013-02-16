@@ -54,7 +54,7 @@ p @output if $debug;
 #######
 
 say 'START';
-my $start_run = time();
+
 use App::Midgen;
 
 my $midgen = App::Midgen->new(
@@ -71,9 +71,9 @@ p $midgen if $debug;
 
 $midgen->run();
 
-my $end_run = time();
-my $run_time = $end_run - $start_run;
-say 'I just spent '.$run_time.'s doing that for you';
+
+my $run_time = time - $BASETIME;
+say 'I just spent '.$run_time.'s doing all that for you';
 say 'END';
 
 exit(0);
