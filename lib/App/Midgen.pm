@@ -98,9 +98,9 @@ sub find_package_names {
 	my $self     = shift;
 	my $filename = $_;
 	state $files_checked;
-	if ( defined $files_checked ){
+	if ( defined $files_checked ) {
 		return if $files_checked >= 3;
-	 }
+	}
 
 	# Only check in pm files
 	return if $filename !~ /[.]pm$/sxm;
@@ -452,26 +452,17 @@ sub base_parent {
 			say 'Info: check ' . $pragma . ' pragma: ';
 			say $content;
 		}
-		p $content;
 
 		$content =~ s/^use (base|parent) //;
-		# $content =~ s/^use //;
-		p $content;
-		$content =~ s/\s*(q[q|w])\s*//;
-p $content;
-		# $content =~ s/^qw[\<|\(|\{|\[]\n?\t?\s*//;
-		$content =~ s/[<?]|[(?]|[{?]\n?\t?\s*//;
-# $content =~ s/^qw[\<|\(|\{|\[]\n?\t?\s*//;		
-# $content =~ s/^qw[\<|\(|\{|\[]\n?\t?\s*//;
-p $content;		
-		$content =~ s/\s*[\>|\)|\}|\]];\n?\t?$//;
-p $content;		
+		$content =~ s/\s*(q[q|w]\n?\t?)\s*//;
+		$content =~ s/([<?]|[(?]|[{?]\n?\t?)\s*//;
+		$content =~ s/\s*([>?]|[)?]|[}?])\s*//;
+		$content =~ s/\s*(;\n?\t?)$//;
 		$content =~ s/(\n\t)/, /g;
-p $content;
 		@modules = split /, /, $content;
-p @modules;		
+
 		push @modules, $module;
-		p @modules;# if $self->{debug};
+		p @modules if $self->{debug};
 	}
 	return @modules;
 }
