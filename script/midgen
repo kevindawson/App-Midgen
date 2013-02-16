@@ -116,13 +116,14 @@ or
 Print a brief help message and exits.
 
  Options:
-   --help    brief help message
-   --output  change format
-   --core    show perl core modules
-   --verbose take a little peek as to what is going on
-   --base    don't check for base includes
-   --mojo    don't be Mojo friendly	
-   --debug   lot's of stuff
+   --help           brief help message
+   --output         change format
+   --core           show perl core modules
+   --verbose        take a little peek as to what is going on
+   --parent         don't check for base|parent includes
+   --mojo           don't be Mojo friendly
+   --noisy_children show them
+   --debug          lot's of stuff
 
 =item B<--output or -o>
 
