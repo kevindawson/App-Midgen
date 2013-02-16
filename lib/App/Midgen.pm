@@ -505,7 +505,7 @@ sub remove_noisy_children {
 
 				# Test for same version number
 				if ( $required_ref->{ $sorted_modules[ $n - 1 ] } eq $required_ref->{ $sorted_modules[$n] } ) {
-					say 'delete miscreant noisy children '
+					say 'delete miscreant noisy child '
 						. $sorted_modules[$n] . ' ver '
 						. $required_ref->{ $sorted_modules[$n] }
 						if $self->{noisy_children};
