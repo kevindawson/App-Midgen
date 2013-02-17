@@ -51,7 +51,7 @@ sub run {
 	$self->output_main_body( 'test_requires', $self->{test_requires} );
 	$self->output_footer();
 
-	print "\n";
+	# print "\n";
 
 	return;
 }
@@ -505,13 +505,14 @@ sub remove_noisy_children {
 
 				# Test for same version number
 				if ( $required_ref->{ $sorted_modules[ $n - 1 ] } eq $required_ref->{ $sorted_modules[$n] } ) {
+					print "\n";
 					say 'delete miscreant noisy child '
 						. $sorted_modules[$n] . ' => '
 						. $required_ref->{ $sorted_modules[$n] }
 						if $self->{noisy_children};
 					try {
 						delete $required_ref->{ $sorted_modules[$n] };
-						splice @sorted_modules, $n, 1 ;
+						splice @sorted_modules, $n, 1;
 						$n--;
 					};
 					p @sorted_modules if $self->{debug};
@@ -544,6 +545,9 @@ sub output_header {
 		when ('dzil') {
 			$self->{output}->header_dzil( $self->{package_name} );
 		}
+		when ('dist') {
+			$self->{output}->header_dist( $self->{package_name} );
+		}
 	}
 	return;
 }
@@ -569,6 +573,9 @@ sub output_main_body {
 		when ('dzil') {
 			$self->{output}->body_dzil( $title, $required_ref );
 		}
+		when ('dist') {
+			$self->{output}->body_dist( $title, $required_ref );
+		}
 	}
 
 	return;
@@ -592,6 +599,9 @@ sub output_footer {
 		}
 		when ('dzil') {
 			$self->{output}->footer_dzil();
+		}
+		when ('dist') {
+			$self->{output}->footer_dist();
 		}
 	}
 
