@@ -113,6 +113,18 @@ has 'verbose' => (
 	required => 1,
 );
 
+has 'twins' => (
+	is  => 'ro',
+	isa => sub {
+		croak "$_[0] this is not a Bool"
+			unless is_Bool( $_[0] );
+	},
+	default => sub {
+		0;
+	},
+	required => 1,
+);
+
 #######
 # some encapsulated attributes
 #######
