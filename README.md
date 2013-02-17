@@ -43,6 +43,7 @@ Options:
          midgen -o mi       # Module::Include
          midgen -o build    # Build.PL
          midgen -o dzil     # Dist::Zilla
+         midgen -o dist		# dist.ini
 
     --core or -c
          * Shows modules that are in Perl core
