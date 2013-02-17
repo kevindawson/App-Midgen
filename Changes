@@ -1,6 +1,25 @@
 Revision history for App-Midgen
 
 {{$NEXT}}
+ - update readme [3dc8c81]
+ - add test to ignore modules in packages test dir t/ we don't want to
+   include them [a7d8cc8]
+ - be tougher on edge cases checking in tests for lines begin with use
+ - tidy [a3d23d4]
+ - stop looking when we have found a couple of files for a package name
+ - remove some commented out code during testing [59301f3]
+ - add a timmer to add with perception [b0d3006]
+ - tidy some reg-ex up [6aa3105]
+ - some pbp [7860d4f]
+ - tweak out put message from children to child [04f3af8]
+ - tweak time message [7181b85]
+ - tidy noisy output so it is copy-a-ball [62775a3]
+ - a better time estimation [dea6719]
+ - add dist output option [91233c5]
+
+ [8f1939e]
+
+ [cc15715]
 
 0.08 2013-02-13
  - tweak the wiki page [582b3a1]
@@ -21,6 +40,7 @@ Revision history for App-Midgen
  - that's the ruff copy of main body output in [8deb173]
  - that's double quoted the dzil module names done [588addc]
  - spellcheck [dd315f7]
+ - Update Changes [16d9516]
 
 0.07 2013-02-10
  - Update Changes [d62fc0b]
