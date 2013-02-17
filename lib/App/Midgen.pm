@@ -46,8 +46,9 @@ sub run {
 	$self->find_required_modules();
 	$self->remove_noisy_children( $self->{requires} ) if ( !$self->{verbose} );
 	$self->remove_twins( $self->{requires} )          if ( !$self->{verbose} );
+
 	#run a second time if we found any twins, this will sort out twins and triplets etc
-	$self->remove_noisy_children( $self->{requires} ) if ( !$self->{verbose}  && $self->{found_twins});
+	$self->remove_noisy_children( $self->{requires} ) if ( !$self->{verbose} && $self->{found_twins} );
 
 	$self->output_main_body( 'requires', $self->{requires} );
 
@@ -564,64 +565,37 @@ sub remove_twins {
 			$dee_parient =~ s/(::\w+)$//;
 		}
 
-		# if ( $sorted_modules[$n] =~ /^$sorted_modules[$n-1]::/ ) {
-
-		# Checking for one degree of separation
-		# ie A::B -> A::B::C is ok but A::B::C::D is not
+		# Checking for same parient and score
 		if ( $dum_parient eq $dee_parient && $dum_score == $dee_score ) {
-
-
 
 			# Test for same version number
 			if ( $required_ref->{ $sorted_modules[ $n - 1 ] } eq $required_ref->{ $sorted_modules[$n] } ) {
 
-				# if ( $self->{noisy_children} ) {
-				print "\n";
-				say 'i havs found twins';
-				say $dum_name . ' ('
-					. $required_ref->{ $sorted_modules[ $n - 1 ] }
-					. ') <-twins-> '
-					. $dee_name . ' ('
-					. $required_ref->{ $sorted_modules[$n] } . ')';
-
-				# }
+				if ( $self->{twins} ) {
+					print "\n";
+					say 'i havs found twins';
+					say $dum_name . ' ('
+						. $required_ref->{ $sorted_modules[ $n - 1 ] }
+						. ') <-twins-> '
+						. $dee_name . ' ('
+						. $required_ref->{ $sorted_modules[$n] } . ')';
+				}
 
 				#Check for vailed parent
 				my $mod;
 				try {
 					$mod = CPAN::Shell->expand( 'Module', $dum_parient );
 				};
-				# p $mod->cpan_version;
-				# p $required_ref->{ $sorted_modules[$n] };
 
 				#Check parent version against a twins version
-
 				if ( $mod->cpan_version == $required_ref->{ $sorted_modules[$n] } ) {
 
 					say $dum_parient . ' -> ' . $mod->cpan_version . ' is a parent of these twins';
-					$required_ref->{ $dum_parient } = $mod->cpan_version;
+					$required_ref->{$dum_parient} = $mod->cpan_version;
 					$self->{found_twins} = 1;
-
 				}
-
-
-
-
-				# print "\n";
-				# say 'delete miscreant noisy child '
-				# . $sorted_modules[$n] . ' => '
-				# . $required_ref->{ $sorted_modules[$n] }
-				# if $self->{noisy_children};
-				# try {
-				# delete $required_ref->{ $sorted_modules[$n] };
-				# splice @sorted_modules, $n, 1;
-				# $n--;
-				# };
-				# p @sorted_modules if $self->{debug};
 			}
 		}
-
-		# }
 		$n++ if ( $n == $#sorted_modules );
 	}
 	return;
