@@ -67,6 +67,7 @@ my $midgen = App::Midgen->new(
 	output_format  => $output[-1],
 	mojo           => $mojo,
 	noisy_children => $noisy_children,
+	twins          => $twins,
 	debug          => $debug,
 );
 
