@@ -590,7 +590,7 @@ sub remove_twins {
 				#Check parent version against a twins version
 				if ( $mod->cpan_version == $required_ref->{ $sorted_modules[$n] } ) {
 
-					say $dum_parient . ' -> ' . $mod->cpan_version . ' is a parent of these twins';
+					say $dum_parient . ' -> ' . $mod->cpan_version . ' is a parent of these twins' if $self->{twins} ;
 					$required_ref->{$dum_parient} = $mod->cpan_version;
 					$self->{found_twins} = 1;
 				}
