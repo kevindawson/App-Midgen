@@ -128,12 +128,13 @@ Print a brief help message and exits.
 =item B<--output or -o>
 
 By default we output to screen in 'dsl' format, 
-so you can check, copy and paste or select an alternative as shown below
+so you can check, copy and paste or select an alternative as shown below.
 
  midgen -o dsl		# Module::Include::DSL
  midgen -o mi		# Module::Include
  midgen -o build	# Build
  midgen -o dzil		# Dist::Zilla
+ midgen -o dist		# dist.ini
 
 =item B<--core or -c>
 
