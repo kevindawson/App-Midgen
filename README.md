@@ -28,7 +28,7 @@ Usage:
        --core        show perl core modules
        --verbose     take a little peek as to what is going on
        --base        Don't check for base includes
-       --mojo        Don't be Mojo friendly  
+       --mojo        Don't be Mojo friendly
        --debug       lots of stuff
 
 Options:
@@ -65,6 +65,9 @@ Options:
 
     --noisy_children or -n
          * Show a required modules noisy children, as we find them
+         
+    --twins or -t
+         * Show a modules that are twins as we find them, and ajust for there parient instead
 
     --debug or -d
         equivalent of -cv and some :)
