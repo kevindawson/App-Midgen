@@ -18,7 +18,7 @@ use Data::Printer {
 };
 
 use FindBin qw($Bin);
-use lib map { "$Bin/$_" } qw( lib ../lib );
+use lib map {"$Bin/$_"} qw( lib ../lib );
 
 #######
 # Start of Menu
@@ -33,6 +33,7 @@ my $verbose        = 0;    # option variable with default value (false)
 my @output         = 'dsl';
 my $mojo           = 0;    # 1 true ignore Mojo detection
 my $noisy_children = 0;    # unwanted noisy children
+my $twins          = 0;    # unwanted twins
 my $debug          = 0;    # lots of good stuff here :)
 GetOptions(
 	'verbose|v'        => \$verbose,
@@ -41,8 +42,10 @@ GetOptions(
 	'help|h|?'         => \$help,
 	'mojo|m'           => \$mojo,
 	'output|o=s'       => \@output,
+	'twins|t'          => \$twins,
 	'noisy_children|n' => \$noisy_children,
-	'debug|d' => sub { $core = 1; $verbose = 1; $base_parent = 1; $mojo = 1; $noisy_children = 1; $debug = 1; },
+	'debug|d' =>
+		sub { $core = 1; $verbose = 1; $base_parent = 1; $mojo = 1; $noisy_children = 1; $twins = 1, $debug = 1; },
 ) or pod2usage(2);
 pod2usage(1) if $help;
 
@@ -73,7 +76,7 @@ $midgen->run();
 
 
 my $run_time = time - $BASETIME;
-say 'I just spent '.$run_time.'s doing all that for you';
+say 'I just spent ' . $run_time . 's doing all that for you';
 say 'END';
 
 exit(0);
@@ -123,6 +126,7 @@ Print a brief help message and exits.
    --parent         don't check for base|parent includes
    --mojo           don't be Mojo friendly
    --noisy_children show them as we find them
+   --twins          show twins
    --debug          lot's of stuff
 
 =item B<--output or -o>
@@ -161,7 +165,11 @@ Turn Off - the /Mojo/ to Mojolicious catch
 =item B<--noisy_children or -n>
 
  * Show a required modules noisy children, as we find them
+ 
+=item B<--twins or -t>
 
+ * Show a modules that are twins as we find them, and ajust for there parient instead
+ 
 =item B<--debug or -d>
 
 equivalent of -cv and some :))
