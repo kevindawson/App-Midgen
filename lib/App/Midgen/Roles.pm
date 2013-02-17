@@ -136,6 +136,14 @@ has 'test_requires' => (
 	is  => 'rw',
 	isa => HashRef,
 );
+has 'found_twins' => (
+	is      => 'rw',
+	isa     => Bool,
+	default => sub {
+		0;
+	},
+	required => 1,
+);
 
 
 1;
