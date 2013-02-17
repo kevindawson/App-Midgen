@@ -82,6 +82,7 @@ sub footer_dsl {
 	#ToDo add script
 
 	say 'no_index directory  qw{ t xt eg share inc privinc }';
+	print "\n";
 
 	return;
 }
@@ -153,9 +154,9 @@ sub header_build {
 	my $self         = shift;
 	my $package_name = shift;
 
-	print "\n";
-	say 'build header underdevelopment';
-	print "\n";
+	# print "\n";
+	# say 'build header underdevelopment';
+	# print "\n";
 
 	return;
 }
@@ -192,8 +193,8 @@ sub body_build {
 sub footer_build {
 	my $self = shift;
 
-	print "\n";
-	say 'build footer underdevelopment';
+	# print "\n";
+	# say 'build footer underdevelopment';
 	print "\n";
 
 	return;
@@ -208,9 +209,9 @@ sub header_dzil {
 	my $self         = shift;
 	my $package_name = shift;
 
-	print "\n";
-	say 'dzil header underdevelopment';
-	print "\n";
+	# print "\n";
+	# say 'dzil header underdevelopment';
+	# print "\n";
 
 	return;
 }
@@ -250,13 +251,68 @@ sub body_dzil {
 sub footer_dzil {
 	my $self = shift;
 
-	print "\n";
-	say 'dzil footer underdevelopment';
+	# print "\n";
+	# say 'dzil footer underdevelopment';
 	print "\n";
 
 	return;
 }
 
+
+#######
+# header_dist
+#######
+sub header_dist {
+	my $self         = shift;
+	my $package_name = shift;
+
+	# print "\n";
+	# say 'dist header underdevelopment';
+	# print "\n";
+
+	return;
+}
+#######
+# body_dist
+#######
+sub body_dist {
+	my $self         = shift;
+	my $title        = shift;
+	my $required_ref = shift;
+	print "\n";
+
+	my $pm_length = 0;
+	foreach my $module_name ( sort keys %{$required_ref} ) {
+		if ( length $module_name > $pm_length ) {
+			$pm_length = length $module_name;
+		}
+	}
+	if ( $title eq 'requires' ) {
+		say '[Prereqs]';
+	} else {
+		say '[Prereqs / TestRequires]';
+	}
+
+	foreach my $module_name ( sort keys %{$required_ref} ) {
+
+		# my $sq_key = '"' . $module_name . '"';
+		printf "%-*s = %s\n", $pm_length, $module_name, $required_ref->{$module_name};
+
+	}
+	return;
+}
+#######
+# footer_dist
+#######
+sub footer_dist {
+	my $self = shift;
+
+	# print "\n";
+	# say 'dist footer underdevelopment';
+	print "\n";
+
+	return;
+}
 1;
 
 __END__
