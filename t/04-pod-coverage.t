@@ -12,5 +12,4 @@ all_pod_coverage_ok();
 
 done_testing();
 
-
 __END__

@@ -4,11 +4,12 @@ use strictures 1;
 use English qw( -no_match_vars ); # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Test::More tests => 19;
+use Test::More tests => 20;
 
 
 use_ok('App::Midgen');
 use_ok('App::Midgen::Roles');
+use_ok('App::Midgen::Output');
 
 use_ok( 'CPAN',                         '1.9800' );
 use_ok( 'Carp',                         '1.26' );

@@ -19,16 +19,15 @@ Revision history for App-Midgen
  - Update Changes [1daf87b]
  - add found_twins [e682a13]
  - adding twins check, first part [30400b0]
- - add option twins [62d87ba]
  - add option twins [c1e7da5]
  - add option twins, to show if we find any [ab575a0]
  - add option for twins parent display [d74d137]
  - forgot to set option twins [231cacf]
  - typo [e381f1e]
  - more info in README [2eabaac]
- - more info in README [8d95962]
- - re-add strictures, I think I ubderstand know
-   bump to 0.09 [d02d378]
+ - re-add strictures, I think I ubderstand know bump to 0.09 [fec28e0]
+ - bump version [e3d1ecb]
+ - remove unwanted code from tests [d7caab6]
 
 0.08 2013-02-13
  - tweak the wiki page [582b3a1]
