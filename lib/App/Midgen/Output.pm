@@ -1,14 +1,12 @@
 package App::Midgen::Output;
 
 use v5.10;
-use strict;
-use warnings;
+use Moo;
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Moo;
 use Carp;
 use CPAN;
 use Data::Printer {
@@ -327,7 +325,7 @@ App::Midgen::Output - A selection of output orinated methods used by L<App::Midg
 
 =head1 VERSION
 
-This document describes App::Midgen::Output version 0.08
+This document describes App::Midgen::Output version 0.09
 
 =head1 METHODS
 
@@ -356,6 +354,12 @@ This document describes App::Midgen::Output version 0.08
 =item * body_dzil
 
 =item * footer_dzil
+
+=item * header_dist
+
+=item * body_dist
+
+=item * footer_dist
 
 =back
 

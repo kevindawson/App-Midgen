@@ -1,15 +1,13 @@
 package App::Midgen::Roles;
 
 use v5.10;
-use strict;
-use warnings;
+use Moo::Role;
+use MooX::Types::MooseLike::Base qw(:all);
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Moo::Role;
-use MooX::Types::MooseLike::Base qw(:all);
 use Carp;
 
 #######
@@ -172,7 +170,7 @@ App::Midgen::Roles - Package Options and Attributes used by L<App::Midgen>
 
 =head1 VERSION
 
-This document describes App::Midgen::Roles version 0.08
+This document describes App::Midgen::Roles version 0.09
 
 =head1 OPTIONS
 
@@ -192,6 +190,8 @@ This document describes App::Midgen::Roles version 0.08
 
 =item * padre
 
+=item * twins
+
 =item * verbose
 
 =back
@@ -201,6 +201,10 @@ for more info see L<midgen>
 =head1 ACCESSORS
 
 =over 4
+
+=item * found_twins
+
+Used as a flag to re-run noisy children after descovery of twins
 
 =item * package_name
 

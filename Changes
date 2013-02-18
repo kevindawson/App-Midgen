@@ -16,10 +16,17 @@ Revision history for App-Midgen
  - tidy noisy output so it is copy-a-ball [62775a3]
  - a better time estimation [dea6719]
  - add dist output option [91233c5]
-
- [8f1939e]
-
- [cc15715]
+ - Update Changes [1daf87b]
+ - add found_twins [e682a13]
+ - adding twins check, first part [30400b0]
+ - add option twins [62d87ba]
+ - add option twins [c1e7da5]
+ - add option twins, to show if we find any [ab575a0]
+ - add option for twins parent display [d74d137]
+ - forgot to set option twins [231cacf]
+ - typo [e381f1e]
+ - more info in README [2eabaac]
+ - more info in README [8d95962]
 
 0.08 2013-02-13
  - tweak the wiki page [582b3a1]

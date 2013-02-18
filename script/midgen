@@ -1,14 +1,13 @@
 #!/usr/bin/env perl
 
 use 5.010001;
-use strict;
-use warnings;
+use strictures 1;
 
 BEGIN {
 	$PPI::XS_DISABLE = 1; # noise control - Prevent warning
 }
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -94,7 +93,7 @@ midgen - generate the requires and test requires sections for Makefile.PL
 
 =head1 VERSION
 
-This document describes midgen version 0.08
+This document describes midgen version 0.09
 
 =head1 SYNOPSIS
 

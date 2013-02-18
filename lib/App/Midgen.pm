@@ -1,13 +1,11 @@
 package App::Midgen;
 
 use v5.10;
-use strict;
-use warnings;
 use Moo;
 with qw( App::Midgen::Roles );
 use App::Midgen::Output;
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -699,7 +697,7 @@ App::Midgen - generate the requires and test requires sections for Makefile.PL
 
 =head1 VERSION
 
-This document describes App::Midgen version 0.08
+This document describes App::Midgen version 0.09
 
 =head1 SYNOPSIS
 
@@ -750,6 +748,8 @@ For more info and sample output see L<wiki|https://github.com/kevindawson/App-Mi
 =item * process_found_modules
 
 =item * remove_noisy_children
+
+=item * remove_twins
 
 =item * run
 
