@@ -28,6 +28,7 @@ Revision history for App-Midgen
  - re-add strictures, I think I ubderstand know bump to 0.09 [fec28e0]
  - bump version [e3d1ecb]
  - remove unwanted code from tests [d7caab6]
+ - some minor tweaks to test file inc a rename [3376326]
 
 0.08 2013-02-13
  - tweak the wiki page [582b3a1]
