@@ -27,6 +27,8 @@ Revision history for App-Midgen
  - typo [e381f1e]
  - more info in README [2eabaac]
  - more info in README [8d95962]
+ - re-add strictures, I think I ubderstand know
+   bump to 0.09 [d02d378]
 
 0.08 2013-02-13
  - tweak the wiki page [582b3a1]
