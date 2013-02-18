@@ -6,9 +6,7 @@ use English qw( -no_match_vars ); # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 use Test::More tests => 33;
-use Test::Moose;
-# use Test::Deep;
-# use Data::Dumper;
+
 ######
 # let's check our subs/methods.
 ######
