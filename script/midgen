@@ -1,7 +1,8 @@
 #!/usr/bin/env perl
 
 use 5.010001;
-use strictures 1;
+use strict;
+use warnings FATAL => 'all';
 
 BEGIN {
 	$PPI::XS_DISABLE = 1; # noise control - Prevent warning
@@ -56,6 +57,7 @@ p @output if $debug;
 #######
 
 say 'START';
+say 'Running midgen v'.$VERSION;
 
 use App::Midgen;
 
