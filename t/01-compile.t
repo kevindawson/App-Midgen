@@ -1,10 +1,12 @@
 #!/usr/bin/env perl
 
-use strictures 1;
+use strict;
+use warnings FATAL => 'all';
+
 use English qw( -no_match_vars ); # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Test::More tests => 20;
+use Test::More tests => 19;
 
 
 use_ok('App::Midgen');
@@ -26,7 +28,6 @@ use_ok( 'Pod::Usage',                   '1.61' );
 use_ok( 'Try::Tiny',                    '0.12' );
 use_ok( 'constant',                     '1.25' );
 use_ok( 'lib',                          '0.63' );
-use_ok( 'strictures',                   '1.004004' );
 
 use_ok( 'Test::More', '0.98' );
 
