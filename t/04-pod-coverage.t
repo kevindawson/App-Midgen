@@ -1,6 +1,8 @@
 #!/usr/bin/env perl
 
-use strictures 1;
+use strict;
+use warnings FATAL => 'all';
+
 use English qw( -no_match_vars ); # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
