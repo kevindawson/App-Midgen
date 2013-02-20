@@ -4,7 +4,7 @@ use v5.10;
 use Moo::Role;
 use MooX::Types::MooseLike::Base qw(:all);
 
-our $VERSION = '0.09_01';
+our $VERSION = '0.09_02';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -172,7 +172,7 @@ App::Midgen::Roles - Package Options and Attributes used by L<App::Midgen>
 
 =head1 VERSION
 
-This document describes App::Midgen::Roles version: 0.09_01
+This document describes App::Midgen::Roles version: 0.09_02
 
 =head1 OPTIONS
 

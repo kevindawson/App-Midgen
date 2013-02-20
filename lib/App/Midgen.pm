@@ -5,7 +5,7 @@ use Moo;
 with qw( App::Midgen::Roles );
 use App::Midgen::Output;
 
-our $VERSION = '0.09_01';
+our $VERSION = '0.09_02';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -719,7 +719,7 @@ App::Midgen - generate the requires and test requires sections for Makefile.PL
 
 =head1 VERSION
 
-This document describes App::Midgen version: 0.09_01
+This document describes App::Midgen version: 0.09_02
 
 =head1 SYNOPSIS
 
