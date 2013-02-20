@@ -4,7 +4,7 @@ use v5.10;
 use Moo::Role;
 use MooX::Types::MooseLike::Base qw(:all);
 
-our $VERSION = '0.09_02';
+our $VERSION = '0.09_03';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -147,6 +147,12 @@ has 'test_requires' => (
 	is  => 'rw',
 	isa => HashRef,
 );
+
+has 'recommends' => (
+	is  => 'rw',
+	isa => HashRef,
+);
+
 has 'found_twins' => (
 	is      => 'rw',
 	isa     => Bool,
@@ -172,7 +178,7 @@ App::Midgen::Roles - Package Options and Attributes used by L<App::Midgen>
 
 =head1 VERSION
 
-This document describes App::Midgen::Roles version: 0.09_02
+This document describes App::Midgen::Roles version: 0.09_03
 
 =head1 OPTIONS
 
@@ -223,6 +229,10 @@ Some where to store required modules and version info in
 =item * test_requires
 
 Some where to store test_required modules and version info in
+
+=item * recommends
+
+Some where to store recommend modules and version info in
 
 =back
 
