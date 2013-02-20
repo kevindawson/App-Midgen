@@ -3,7 +3,7 @@ package App::Midgen::Output;
 use v5.10;
 use Moo;
 
-our $VERSION = '0.09_02';
+our $VERSION = '0.09_03';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -137,7 +137,16 @@ sub footer_mi {
 	my $self = shift;
 
 	print "\n";
-	say 'mi footer underdevelopment';
+		print "\n";
+	if ( defined -d './share' ) {
+		say 'install_share';
+		print "\n";
+	}
+
+	#ToDo add script
+
+	say 'no_index directory  qw{ t xt eg share inc privinc }';
+	say 'WriteAll';
 	print "\n";
 
 	return;
@@ -226,10 +235,11 @@ sub body_dzil {
 			$pm_length = length $module_name;
 		}
 	}
-	if ( $title eq 'requires' ) {
-		say '"PREREQ_PM" => {';
-	} else {
-		say '"BUILD_REQUIRES" => {';
+
+	given ($title) {
+		when ('requires')      { say '"PREREQ_PM" => {'; }
+		when ('test_requires') { say '"BUILD_REQUIRES" => {'; }
+		when ('recommends')    { return; }
 	}
 
 	foreach my $module_name ( sort keys %{$required_ref} ) {
@@ -283,10 +293,10 @@ sub body_dist {
 			$pm_length = length $module_name;
 		}
 	}
-	if ( $title eq 'requires' ) {
-		say '[Prereqs]';
-	} else {
-		say '[Prereqs / TestRequires]';
+	given ($title) {
+		when ('requires')      { say '[Prereqs]'; }
+		when ('test_requires') { say 'Prereqs / TestRequires]'; }
+		when ('recommends')    { say '[Prereqs / RuntimeRecommends]'; }
 	}
 
 	foreach my $module_name ( sort keys %{$required_ref} ) {
@@ -325,7 +335,7 @@ App::Midgen::Output - A selection of output orinated methods used by L<App::Midg
 
 =head1 VERSION
 
-This document describes App::Midgen::Output version: 0.09_02
+This document describes App::Midgen::Output version: 0.09_03
 
 =head1 METHODS
 
