@@ -56,7 +56,6 @@ p @output if $debug;
 # End of Menu
 #######
 
-say 'START';
 say 'Running midgen v'.$VERSION;
 
 use App::Midgen;
@@ -79,7 +78,7 @@ $midgen->run();
 
 my $run_time = time - $BASETIME;
 say 'I just spent ' . $run_time . 's doing all that for you';
-say 'END';
+say '__END__';
 
 exit(0);
 
