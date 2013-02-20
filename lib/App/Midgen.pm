@@ -271,8 +271,17 @@ sub find_makefile_test_requires {
 			$self->process_found_modules( \@modules );
 		}
 	}
+	
+	$self->recommends_in_single_quote($document);
+	$self->recommends_in_double_quote($document);
 
-	# Hack for use_ok in test files, Ouch!
+	return;
+}
+
+sub recommends_in_single_quote {
+	my $self = shift;
+	my $document = shift;
+		# Hack for use_ok in test files, Ouch!
 	# Now lets double check the ptq-Single hidden in a test file
 	my $ppi_tqs = $document->find('PPI::Token::Quote::Single');
 	if ($ppi_tqs) {
@@ -290,7 +299,7 @@ sub find_makefile_test_requires {
 					push @modules, $module;
 				}
 			}
-			if ( $include->content =~ /::/ && $include->content =~ /^use/ ) {
+			if ( $include->content =~ /::/ && $include->content =~ /use/ ) {
 				my $module = $include->content;
 
 				#ToDo test for duplicates and rubbish, part 1 done more to do
@@ -298,6 +307,7 @@ sub find_makefile_test_requires {
 				$module =~ s/^[']//;
 				$module =~ s/[']$//;
 				$module =~ s/^use\s//;
+				$module =~ s/(\s[\s|\w|\n|.|;]+)$//;
 				p $module if $self->{debug};
 
 				# if we have found it already ignore it
@@ -313,14 +323,18 @@ sub find_makefile_test_requires {
 			}
 		}
 	}
-
-	# Now lets double check the ptq-Doubles hidden in a test file - why O why - rtfm pbp
+	return;
+}
+sub recommends_in_double_quote {
+	my $self = shift;
+	my $document = shift;
+		# Now lets double check the ptq-Doubles hidden in a test file - why O why - rtfm pbp
 	my $ppi_tqd = $document->find('PPI::Token::Quote::Double');
 	if ($ppi_tqd) {
 		my @modules;
 		foreach my $include ( @{$ppi_tqd} ) {
 
-			if ( $include->content =~ /::/ && $include->content =~ /^use/ ) {
+			if ( $include->content =~ /::/ && $include->content =~ /use/ ) {
 				my $module = $include->content;
 				$module =~ s/^["]//;
 				$module =~ s/["]$//;
@@ -341,7 +355,6 @@ sub find_makefile_test_requires {
 			}
 		}
 	}
-
 	return;
 }
 
