@@ -5,7 +5,7 @@ use Moo;
 with qw( App::Midgen::Roles );
 use App::Midgen::Output;
 
-our $VERSION = '0.09_02';
+our $VERSION = '0.09_03';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -52,6 +52,8 @@ sub run {
 
 	$self->find_required_test_modules();
 	$self->output_main_body( 'test_requires', $self->{test_requires} );
+	$self->output_main_body( 'recommends', $self->{recommends} );
+
 	$self->output_footer();
 
 	# print "\n";
@@ -150,7 +152,7 @@ sub find_required_modules {
 sub find_required_test_modules {
 	my $self = shift;
 
-	my @posiable_directories_to_search = File::Spec->catfile( $self->{working_dir}, 't' );
+	my @posiable_directories_to_search = map { File::Spec->catfile( $self->{working_dir}, $_ ) } qw( t );
 	my @directories_to_search = ();
 	for my $directory (@posiable_directories_to_search) {
 		if ( defined -d $directory ) {
@@ -268,7 +270,7 @@ sub find_makefile_test_requires {
 				}
 			}
 
-			$self->process_found_modules( \@modules );
+			$self->process_found_modules( 'test_requires', \@modules );
 		}
 	}
 
@@ -324,7 +326,7 @@ sub recommends_in_single_quote {
 			# if we found a modules, process it
 			if ( scalar @modules > 0 ) {
 				p @modules if $self->{debug};
-				$self->process_found_modules( \@modules );
+				$self->process_found_modules( 'recommends',\@modules );
 			}
 		}
 	}
@@ -360,7 +362,7 @@ sub recommends_in_double_quote {
 			# if we found a modules, process it
 			if ( scalar @modules > 0 ) {
 				p @modules if $self->{debug};
-				$self->process_found_modules( \@modules );
+				$self->process_found_modules( 'recommends', \@modules );
 			}
 		}
 	}
@@ -372,6 +374,7 @@ sub recommends_in_double_quote {
 #######
 sub process_found_modules {
 	my $self = shift;
+	my $grouping = shift;
 
 	my $modules_ref = shift;
 	my @items       = ();
@@ -412,7 +415,7 @@ sub process_found_modules {
 			$module = 'Padre';
 		}
 
-		$self->store_modules( 'test_requires', $module );
+		$self->store_modules( $grouping, $module );
 
 	}
 	return;
@@ -719,7 +722,7 @@ App::Midgen - generate the requires and test requires sections for Makefile.PL
 
 =head1 VERSION
 
-This document describes App::Midgen version: 0.09_02
+This document describes App::Midgen version: 0.09_03
 
 =head1 SYNOPSIS
 
@@ -768,6 +771,10 @@ For more info and sample output see L<wiki|https://github.com/kevindawson/App-Mi
 =item * output_main_body
 
 =item * process_found_modules
+
+=item * recommends_in_double_quote
+
+=item * recommends_in_single_quote
 
 =item * remove_noisy_children
 
