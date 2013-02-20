@@ -271,17 +271,22 @@ sub find_makefile_test_requires {
 			$self->process_found_modules( \@modules );
 		}
 	}
-	
+
+	#ToDo these are realy rscommends
 	$self->recommends_in_single_quote($document);
 	$self->recommends_in_double_quote($document);
 
 	return;
 }
 
+#######
+# composed method - recommends_in_single_quote
+#######
 sub recommends_in_single_quote {
-	my $self = shift;
+	my $self     = shift;
 	my $document = shift;
-		# Hack for use_ok in test files, Ouch!
+
+	# Hack for use_ok in test files, Ouch!
 	# Now lets double check the ptq-Single hidden in a test file
 	my $ppi_tqs = $document->find('PPI::Token::Quote::Single');
 	if ($ppi_tqs) {
@@ -325,10 +330,14 @@ sub recommends_in_single_quote {
 	}
 	return;
 }
+#######
+# composed method - recommends_in_double_quote
+#######
 sub recommends_in_double_quote {
-	my $self = shift;
+	my $self     = shift;
 	my $document = shift;
-		# Now lets double check the ptq-Doubles hidden in a test file - why O why - rtfm pbp
+
+	# Now lets double check the ptq-Doubles hidden in a test file - why O why - rtfm pbp
 	my $ppi_tqd = $document->find('PPI::Token::Quote::Double');
 	if ($ppi_tqd) {
 		my @modules;
@@ -601,7 +610,7 @@ sub remove_twins {
 				#Check parent version against a twins version
 				if ( $mod->cpan_version == $required_ref->{ $sorted_modules[$n] } ) {
 
-					say $dum_parient . ' -> ' . $mod->cpan_version . ' is the parent of these twins' if $self->{twins} ;
+					say $dum_parient . ' -> ' . $mod->cpan_version . ' is the parent of these twins' if $self->{twins};
 					$required_ref->{$dum_parient} = $mod->cpan_version;
 					$self->{found_twins} = 1;
 				}
