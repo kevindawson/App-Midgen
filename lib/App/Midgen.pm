@@ -52,7 +52,7 @@ sub run {
 
 	$self->find_required_test_modules();
 	$self->output_main_body( 'test_requires', $self->{test_requires} );
-	$self->output_main_body( 'recommends', $self->{recommends} );
+	$self->output_main_body( 'recommends',    $self->{recommends} );
 
 	$self->output_footer();
 
@@ -302,7 +302,7 @@ sub recommends_in_single_quote {
 				p $module if $self->{debug};
 
 				# if we have found it already ignore it
-				if ( !$self->{requires}{$module} ) {
+				if ( !$self->{requires}{$module} && !$self->{test_requires}{$module} ) {
 					push @modules, $module;
 				}
 			}
@@ -318,7 +318,7 @@ sub recommends_in_single_quote {
 				p $module if $self->{debug};
 
 				# if we have found it already ignore it
-				if ( !$self->{requires}{$module} ) {
+				if ( !$self->{requires}{$module} && !$self->{test_requires}{$module} ) {
 					push @modules, $module;
 				}
 			}
@@ -326,7 +326,7 @@ sub recommends_in_single_quote {
 			# if we found a modules, process it
 			if ( scalar @modules > 0 ) {
 				p @modules if $self->{debug};
-				$self->process_found_modules( 'recommends',\@modules );
+				$self->process_found_modules( 'recommends', \@modules );
 			}
 		}
 	}
@@ -354,7 +354,7 @@ sub recommends_in_double_quote {
 				p $module if $self->{debug};
 
 				# if we have found it already ignore it
-				if ( !$self->{requires}{$module} ) {
+				if ( !$self->{requires}{$module} && !$self->{test_requires}{$module} ) {
 					push @modules, $module;
 				}
 			}
@@ -373,7 +373,7 @@ sub recommends_in_double_quote {
 # composed method - process_found_modules
 #######
 sub process_found_modules {
-	my $self = shift;
+	my $self     = shift;
 	my $grouping = shift;
 
 	my $modules_ref = shift;
