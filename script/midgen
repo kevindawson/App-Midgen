@@ -8,7 +8,7 @@ BEGIN {
 	$PPI::XS_DISABLE = 1; # noise control - Prevent warning
 }
 
-our $VERSION = '0.09_03';
+our $VERSION = '0.09_04';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -94,7 +94,7 @@ midgen - generate the requires and test requires sections for Makefile.PL
 
 =head1 VERSION
 
-This document describes midgen version: 0.09_03
+This document describes midgen version: 0.09_04
 
 =head1 SYNOPSIS
 
