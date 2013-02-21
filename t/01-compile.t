@@ -20,7 +20,7 @@ use_ok( 'Data::Printer',                '0.35' );
 use_ok( 'File::Slurp',                  '9999.19' );
 use_ok( 'File::Spec',                   '3.40' );
 use_ok( 'Getopt::Long',                 '2.38' );
-use_ok( 'Module::CoreList',             '2.80' );
+use_ok( 'Module::CoreList',             '2.82' );
 use_ok( 'Moo',                          '1.000008' );
 use_ok( 'MooX::Types::MooseLike::Base', '0.21' );
 use_ok( 'PPI',                          '1.215' );
