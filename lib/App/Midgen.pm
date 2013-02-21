@@ -566,6 +566,9 @@ sub remove_twins {
 
 	p @sorted_modules if $self->{debug};
 
+	# exit if only 1 Module found
+	return if $#sorted_modules == 0;
+
 	my $n = 0;
 	while ( $sorted_modules[$n] ) {
 
