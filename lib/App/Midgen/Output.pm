@@ -13,14 +13,18 @@ use Data::Printer {
 	caller_info => 1,
 	colored     => 1,
 };
-
+use constant {
+	BLANK => qq{ },
+	NONE  => q{},
+	THREE => 3,
+};
 
 #######
 # header_dsl
 #######
 sub header_dsl {
-	my $self         = shift;
-	my $package_name = shift;
+	my $self = shift;
+	my $package_name = shift // NONE;
 
 	# Let's get the current version of Module::Install::DSL
 	my $mod = CPAN::Shell->expand( 'Module', 'inc::Module::Install::DSL' );
@@ -29,8 +33,10 @@ sub header_dsl {
 	print "\n";
 	say 'use inc::Module::Install::DSL ' . $mod->cpan_version . ';';
 	print "\n";
-	say 'all_from lib/' . $package_name . '.pm';
-	say 'requires_from lib/' . $package_name . '.pm';
+	if ( $package_name ne NONE ) {
+		say 'all_from lib/' . $package_name . '.pm';
+		say 'requires_from lib/' . $package_name . '.pm';
+	}
 
 	return;
 }
@@ -91,8 +97,8 @@ sub footer_dsl {
 # header_mi
 #######
 sub header_mi {
-	my $self         = shift;
-	my $package_name = shift;
+	my $self = shift;
+	my $package_name = shift // NONE;
 
 	print "\n";
 	say 'mi header underdevelopment';
@@ -137,7 +143,7 @@ sub footer_mi {
 	my $self = shift;
 
 	print "\n";
-		print "\n";
+	print "\n";
 	if ( defined -d './share' ) {
 		say 'install_share';
 		print "\n";
@@ -157,8 +163,8 @@ sub footer_mi {
 # header_build
 #######
 sub header_build {
-	my $self         = shift;
-	my $package_name = shift;
+	my $self = shift;
+	my $package_name = shift // NONE;
 
 	# print "\n";
 	# say 'build header underdevelopment';
@@ -211,8 +217,8 @@ sub footer_build {
 # header_dzil
 #######
 sub header_dzil {
-	my $self         = shift;
-	my $package_name = shift;
+	my $self = shift;
+	my $package_name = shift // NONE;
 
 	# print "\n";
 	# say 'dzil header underdevelopment';
@@ -269,8 +275,8 @@ sub footer_dzil {
 # header_dist
 #######
 sub header_dist {
-	my $self         = shift;
-	my $package_name = shift;
+	my $self = shift;
+	my $package_name = shift // NONE;
 
 	# print "\n";
 	# say 'dist header underdevelopment';
