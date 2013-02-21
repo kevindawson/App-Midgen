@@ -83,8 +83,11 @@ sub footer_dsl {
 		say 'install_share';
 		print "\n";
 	}
-
-	#ToDo add script
+	
+	if ( defined -d './script' ) {
+		say 'install_script scriptname';
+		print "\n";
+	}
 
 	say 'no_index directory  qw{ t xt eg share inc privinc }';
 	print "\n";
@@ -148,11 +151,14 @@ sub footer_mi {
 	print "\n";
 	print "\n";
 	if ( defined -d './share' ) {
-		say 'install_share';
+		say 'install_share;';
 		print "\n";
 	}
 
-	#ToDo add script
+	if ( defined -d './script' ) {
+		say "install_script 'script/scriptname';";
+		print "\n";
+	}
 
 	say 'no_index directory  qw{ t xt eg share inc privinc }';
 	say 'WriteAll';
