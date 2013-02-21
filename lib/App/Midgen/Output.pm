@@ -287,9 +287,9 @@ sub header_dist {
 	my $self = shift;
 	my $package_name = shift // NONE;
 
-	# print "\n";
-	# say 'dist header underdevelopment';
-	# print "\n";
+	print "\n";
+	say 'name = '. $package_name;
+	print "\n";
 
 	return;
 }
