@@ -301,7 +301,7 @@ sub body_dist {
 	}
 	given ($title) {
 		when ('requires')      { say '[Prereqs]'; }
-		when ('test_requires') { say 'Prereqs / TestRequires]'; }
+		when ('test_requires') { say '[Prereqs / TestRequires]'; }
 		when ('recommends')    { say '[Prereqs / RuntimeRecommends]'; }
 	}
 
