@@ -8,19 +8,20 @@ why DSL because it's nice and clean, so now I can generate the contents when I w
 rather than as I add new use and require statments, and because adam kicked me :)
 
 
-Version: 0.09_04
+## Version 0.09_04
 
-Synopsis:
+## Synopsis
 
 Change to the root of the package you want to scan and run
 
  midgen
 
+
 Now with a added Getopt --help or -?
 
  midgen -?
 
-Usage:
+### Usage
     midgen [options]
 
        --help        brief help message
@@ -31,7 +32,13 @@ Usage:
        --mojo        Don't be Mojo friendly
        --debug       lots of stuff
 
-Options:
+## Description
+**midgen** function is to search your Perl Module and find Includes **use** and **require** and then present them in a format which you can easily use.
+Besides finding the included Modules it also finds the current version. It try s to remove unwanted noise and duplication along the way.
+
+_Food for thought, if we update our Modules, don't we want our users to use the current version, so should we not by default do the same with others Modules._
+
+## Options
 
     --help or -h or -?
         Print a brief help message and exits.
