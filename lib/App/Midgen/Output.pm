@@ -319,8 +319,15 @@ sub body_dist {
 sub footer_dist {
 	my $self = shift;
 
-	# print "\n";
+	print "\n";
 	# say 'dist footer underdevelopment';
+	say '[MetaResources]';
+	say 'homepage          = ...';
+	say 'bugtracker.web    = ...';
+	say 'bugtracker.mailto = ...';
+	say 'repository.url    = ...';
+	say 'repository.web    = ...';
+	say 'repository.type   = ...';
 	print "\n";
 
 	return;
