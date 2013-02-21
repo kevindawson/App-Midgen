@@ -35,9 +35,14 @@ Now with a added Getopt --help or -?
 
 ## Description
 **midgen** function is to search your Perl Module and find Includes **use** and **require** and then present them in a format which you can easily use.
-Besides finding the included Modules it also finds the current version. It try s to remove unwanted noise and duplication along the way.
+Besides finding the included Modules it also finds the current version.
+
+It try s to remove unwanted noise and duplication along the way.
+* Ignores all sub modules of current Module
 * Noisy Children parent A::B noisy Children A::B::C or A::B::D all with same version number.
 * Twins E::F::G and E::F::H and a parent E::F and re-test for noisy children, catching triplets along the way.
+* Mojolicious catch, mofphs Mojo::Base into Mojolicious
+
 _Food for thought, if we update our Modules, don't we want our users to use the current version, so should we not by default do the same with others Modules._
 
 ## Options
