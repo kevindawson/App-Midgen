@@ -99,9 +99,12 @@ sub footer_dsl {
 sub header_mi {
 	my $self = shift;
 	my $package_name = shift // NONE;
+	$package_name =~ s{::}{/};
 
 	print "\n";
-	say 'mi header underdevelopment';
+	if ( $package_name ne NONE ) {
+		say "all_from 'lib/$package_name.pm';";
+	}
 	print "\n";
 
 	return;
