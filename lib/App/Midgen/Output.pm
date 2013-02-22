@@ -348,9 +348,31 @@ sub footer_dist {
 	say 'repository.type   = ...';
 	print "\n";
 
+	my @no_index = $self->no_index;
+	if (@no_index) {
+		say '[MetaNoIndex]';
+		for (@no_index) {
+			say "directory = $_";
+		}
+		print "\n";
+	}
+
 	return;
 }
 
+#######
+# no_index
+#######
+sub no_index {
+	my $self          = shift;
+	my @dirs_to_check = qw( inc t share xt eg privinc );
+	my @dirs_found;
+	for (@dirs_to_check) {
+		push @dirs_found, $_ if -d $_;
+	}
+	p @dirs_found;
+	return @dirs_found;
+}
 
 1;
 
@@ -401,6 +423,8 @@ This document describes App::Midgen::Output version: 0.09_05
 =item * body_dist
 
 =item * footer_dist
+
+=item * no_index
 
 =back
 
