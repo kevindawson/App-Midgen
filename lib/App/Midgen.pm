@@ -599,7 +599,7 @@ sub remove_twins {
 
 				if ( $self->{twins} ) {
 					print "\n";
-					say 'i havs found twins';
+					say 'i have found twins';
 					say $dum_name . ' ('
 						. $required_ref->{ $sorted_modules[ $n - 1 ] }
 						. ') <-twins-> '
