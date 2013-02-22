@@ -3,7 +3,7 @@ package App::Midgen::Output;
 use v5.10;
 use Moo;
 
-our $VERSION = '0.09_05';
+our $VERSION = '0.10';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -403,7 +403,7 @@ App::Midgen::Output - A selection of output orinated methods used by L<App::Midg
 
 =head1 VERSION
 
-This document describes App::Midgen::Output version: 0.09_05
+This document describes App::Midgen::Output version: 0.10
 
 =head1 METHODS
 

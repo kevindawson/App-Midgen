@@ -8,7 +8,7 @@ BEGIN {
 	$PPI::XS_DISABLE = 1; # noise control - Prevent warning
 }
 
-our $VERSION = '0.09_05';
+our $VERSION = '0.10';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -45,7 +45,7 @@ GetOptions(
 	'twins|t'          => \$twins,
 	'noisy_children|n' => \$noisy_children,
 	'debug|d' =>
-		sub { $core = 1; $verbose = 1; $base_parent = 1; $mojo = 1; $noisy_children = 1; $twins = 1, $debug = 1; },
+		sub { $core = 1; $verbose = 1; $base_parent = 1; $mojo = 1; $noisy_children = 1; $twins = 1; $debug = 1; },
 ) or pod2usage(2);
 pod2usage(1) if $help;
 
@@ -94,7 +94,7 @@ midgen - generate the requires and test requires sections for Makefile.PL
 
 =head1 VERSION
 
-This document describes midgen version: 0.09_05
+This document describes midgen version: 0.10
 
 =head1 SYNOPSIS
 
