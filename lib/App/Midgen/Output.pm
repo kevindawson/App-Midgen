@@ -88,12 +88,13 @@ sub footer_dsl {
 		say 'install_script ...';
 		print "\n";
 	}
-	
+
 	my @no_index = $self->no_index;
 	if (@no_index) {
-		say "no_index directory  qw{ @no_index }";
+		say "no_index directory qw{ @no_index }";
 		print "\n";
 	}
+
 	# say 'no_index directory  qw{ t xt eg share inc privinc }';
 	print "\n";
 
@@ -169,13 +170,13 @@ sub footer_mi {
 		say "install_script 'script/...';";
 		print "\n";
 	}
-	
+
 	my @no_index = $self->no_index;
 	if (@no_index) {
-		say "no_index directory  qw{ @no_index };";
+		say "no_index directory qw{ @no_index };";
 		print "\n";
 	}
-	
+
 	# say 'no_index directory  qw{ t xt eg share inc privinc }';
 	say 'WriteAll';
 	print "\n";
@@ -363,7 +364,7 @@ sub footer_dist {
 	if (@no_index) {
 		say '[MetaNoIndex]';
 		for (@no_index) {
-			say "directory = $_";
+			say "directory = $_" if $_ ne 'inc';
 		}
 		print "\n";
 	}
@@ -376,12 +377,11 @@ sub footer_dist {
 #######
 sub no_index {
 	my $self          = shift;
-	my @dirs_to_check = qw( inc t share xt eg privinc );
+	my @dirs_to_check = qw( inc t xt share eg privinc misc corpus );
 	my @dirs_found;
 	for (@dirs_to_check) {
 		push @dirs_found, $_ if -d $_;
 	}
-	# p @dirs_found;
 	return @dirs_found;
 }
 
