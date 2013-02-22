@@ -304,13 +304,14 @@ sub header_dist {
 	my $self = shift;
 	my $package_name = shift // NONE;
 
-	print "\n";
-	$package_name =~ s{::}{-};
-	say 'name        = ' . $package_name;
-	$package_name =~ s{-}{/};
-	say "main_module = lib/$package_name.pm";
-
-	print "\n";
+	if ( $package_name ne NONE ) {
+		print "\n";
+		$package_name =~ s{::}{-};
+		say 'name        = ' . $package_name;
+		$package_name =~ s{-}{/};
+		say "main_module = lib/$package_name.pm";
+		print "\n";
+	}
 
 	return;
 }
