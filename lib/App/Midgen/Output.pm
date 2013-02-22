@@ -73,7 +73,7 @@ sub footer_dsl {
 	my $self = shift;
 
 	print "\n";
-	say '#ToDo you should consider completing the following';
+	say '#ToDo you should consider the following';
 	say "homepage\t...";
 	say "bugtracker\t...";
 	say "repository\t...";
@@ -83,9 +83,9 @@ sub footer_dsl {
 		say 'install_share';
 		print "\n";
 	}
-	
+
 	if ( defined -d './script' ) {
-		say 'install_script scriptname';
+		say 'install_script ...';
 		print "\n";
 	}
 
@@ -149,14 +149,19 @@ sub footer_mi {
 	my $self = shift;
 
 	print "\n";
+	say '#ToDo you should consider the following';
+	say "homepage\t'...';";
+	say "bugtracker\t'...';";
+	say "repository\t'...';";
 	print "\n";
+
 	if ( defined -d './share' ) {
 		say 'install_share;';
 		print "\n";
 	}
 
 	if ( defined -d './script' ) {
-		say "install_script 'script/scriptname';";
+		say "install_script 'script/...';";
 		print "\n";
 	}
 
@@ -288,10 +293,10 @@ sub header_dist {
 	my $package_name = shift // NONE;
 
 	print "\n";
-	say 'name        = '. $package_name;
+	say 'name        = ' . $package_name;
 	$package_name =~ s{::}{/};
 	say "main_module = lib/$package_name.pm";
-	
+
 	print "\n";
 
 	return;
@@ -332,6 +337,7 @@ sub footer_dist {
 	my $self = shift;
 
 	print "\n";
+
 	# say 'dist footer underdevelopment';
 	say '[MetaResources]';
 	say 'homepage          = ...';
