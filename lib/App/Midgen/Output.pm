@@ -349,8 +349,7 @@ sub footer_dist {
 	my $self = shift;
 
 	print "\n";
-
-	# say 'dist footer underdevelopment';
+	say '#ToDo you should consider the following';
 	say '[MetaResources]';
 	say 'homepage          = ...';
 	say 'bugtracker.web    = ...';
@@ -376,9 +375,11 @@ sub footer_dist {
 # no_index
 #######
 sub no_index {
-	my $self          = shift;
-	my @dirs_to_check = qw( inc t xt share eg privinc misc corpus );
+	my $self = shift;
+
+	my @dirs_to_check = qw( corpus eg inc misc privinc share t xt);
 	my @dirs_found;
+
 	for (@dirs_to_check) {
 		push @dirs_found, $_ if -d $_;
 	}
