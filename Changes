@@ -1,43 +1,16 @@
 Revision history for App-Midgen
 
-{{$NEXT}}
- - update readme [3dc8c81]
- - add test to ignore modules in packages test dir t/ we don't want to
-   include them [a7d8cc8]
+0.10 2013-02-22
  - be tougher on edge cases checking in tests for lines begin with use
- - tidy [a3d23d4]
  - stop looking when we have found a couple of files for a package name
- - remove some commented out code during testing [59301f3]
- - add a timmer to add with perception [b0d3006]
- - tidy some reg-ex up [6aa3105]
- - some pbp [7860d4f]
- - tweak out put message from children to child [04f3af8]
- - tweak time message [7181b85]
- - tidy noisy output so it is copy-a-ball [62775a3]
- - a better time estimation [dea6719]
- - add dist output option [91233c5]
- - Update Changes [1daf87b]
- - add found_twins [e682a13]
- - adding twins check, first part [30400b0]
- - add option twins [c1e7da5]
- - add option twins, to show if we find any [ab575a0]
- - add option for twins parent display [d74d137]
- - forgot to set option twins [231cacf]
- - typo [e381f1e]
- - more info in README [2eabaac]
- - bump version [e3d1ecb]
- - remove unwanted code from tests [d7caab6]
- - some minor tweaks to test file inc a rename [3376326]
- - testing version bump to 0.09_01 [ffe56d8]
- - remove strictures so as to shut up pbp checkers [02970d1]
- - lets do some compersiosion  composed metheds [8132b9f]
- - some inline comments [0a0442c]
- - opps missed one [5a623e6]
- - bump version add recommends [397a9a3]
- - tweak static output text :) [4611024]
- - swap to single quote [13de67a]
- - add more method checks [b85f42e]
- - handel a test output without a package name azawawi++ [0583fda]
+ - add a timer to add with perception
+ - tidy some reg-ex up, some pbp to boot
+ - adding twins checking
+ - lets do some composition composed methods
+ - handle a test output without a package name azawawi++ [0583fda]
+ - adjust test so that we don't duplicate recommends
+ - Output format various changes
+ - Update Changes and tidy
 
 0.08 2013-02-13
  - tweak the wiki page [582b3a1]
@@ -45,7 +18,7 @@ Revision history for App-Midgen
  - remove autodie as WE are not doing any thing directly [d56e610]
  - add test for use in an eval in testing [163576a]
  - add test for use in an eval in testing add a second test for double to
-   complement single qoute [4933099]
+   complement single quote [4933099]
  - add filters for the extra testing of t/ files to remove unwanted text
    2nd go, still more to do [bed7915]
  - pod pod pod, it's almost fun [5505f08]
@@ -63,26 +36,26 @@ Revision history for App-Midgen
 0.07 2013-02-10
  - Update Changes [d62fc0b]
  - remove strictures [dd86b71]
- - remove an unwanted dependancy [5eaca1d]
+ - remove an unwanted dependency [5eaca1d]
  - put a copy of pod in readme.md [4100b1a]
  - bump to version 0.07 [1b1bcc4]
 
 0.06 2013-02-10
  - first pass of midgen against it's self,  [6a37b2e]
- - first attempt at a Role with the GetOpps Long cmd varibles [61c8e11]
+ - first attempt at a Role with the GetOpps Long cmd variables [61c8e11]
  - Add noise control for PPI::XS test, we can't use it			   
       as it has deperated calls [8f6d32e]
  - encapsulated attributes [5efce18]
  - cooking on gas, as it was, so we are working [722185f]
- - add some encapsulated attribures to store our module and version info in
+ - add some encapsulated attributes to store our module and version info in
  - run against self - update with minilist contents [3b18315]
  - use block form -> map [feef369]
  - add some error checking to out attributes [35180ab]
  - add defaults to attributes [909ee9e]
  - the out come of re-reading PPI pod, a tweak here and there [2331f55]
  - Hack for use_ok in test files, Ouch! but working [57a93e9]
- - opps duplicats. yuck, ok now [5c0d4df]
- - the joy of refactoring, fixing things that used to work :) [50e9caa]
+ - opps duplicates. yuck, ok now [5c0d4df]
+ - the joy of re-factoring, fixing things that used to work :) [50e9caa]
 
 0.05 2013-02-04
  - Initial release. (BOWTIE)
