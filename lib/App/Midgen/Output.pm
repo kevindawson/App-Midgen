@@ -305,8 +305,9 @@ sub header_dist {
 	my $package_name = shift // NONE;
 
 	print "\n";
+	$package_name =~ s{::}{-};
 	say 'name        = ' . $package_name;
-	$package_name =~ s{::}{/};
+	$package_name =~ s{-}{/};
 	say "main_module = lib/$package_name.pm";
 
 	print "\n";
@@ -377,6 +378,7 @@ sub footer_dist {
 sub no_index {
 	my $self = shift;
 
+	#ToDo add more options as and when
 	my @dirs_to_check = qw( corpus eg inc misc privinc share t xt);
 	my @dirs_found;
 
