@@ -288,7 +288,10 @@ sub header_dist {
 	my $package_name = shift // NONE;
 
 	print "\n";
-	say 'name = '. $package_name;
+	say 'name        = '. $package_name;
+	$package_name =~ s{::}{/};
+	say "main_module = lib/$package_name.pm";
+	
 	print "\n";
 
 	return;
