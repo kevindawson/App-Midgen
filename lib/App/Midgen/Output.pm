@@ -88,8 +88,13 @@ sub footer_dsl {
 		say 'install_script ...';
 		print "\n";
 	}
-
-	say 'no_index directory  qw{ t xt eg share inc privinc }';
+	
+	my @no_index = $self->no_index;
+	if (@no_index) {
+		say "no_index directory  qw{ @no_index }";
+		print "\n";
+	}
+	# say 'no_index directory  qw{ t xt eg share inc privinc }';
 	print "\n";
 
 	return;
@@ -164,8 +169,14 @@ sub footer_mi {
 		say "install_script 'script/...';";
 		print "\n";
 	}
-
-	say 'no_index directory  qw{ t xt eg share inc privinc }';
+	
+	my @no_index = $self->no_index;
+	if (@no_index) {
+		say "no_index directory  qw{ @no_index };";
+		print "\n";
+	}
+	
+	# say 'no_index directory  qw{ t xt eg share inc privinc }';
 	say 'WriteAll';
 	print "\n";
 
@@ -370,7 +381,7 @@ sub no_index {
 	for (@dirs_to_check) {
 		push @dirs_found, $_ if -d $_;
 	}
-	p @dirs_found;
+	# p @dirs_found;
 	return @dirs_found;
 }
 
