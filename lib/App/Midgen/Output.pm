@@ -2,7 +2,7 @@ package App::Midgen::Output;
 
 use v5.10;
 use Moo;
-
+use MooX::Types::MooseLike::Base qw(:all);
 our $VERSION = '0.10';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
@@ -18,6 +18,13 @@ use constant {
 	NONE  => q{},
 	THREE => 3,
 };
+use File::Spec;
+
+# local copy of package root
+has 'work_dir' => (
+	is  => 'rw',
+	isa => Str,
+);
 
 #######
 # header_dsl
@@ -384,7 +391,7 @@ sub no_index {
 	my @dirs_found;
 
 	for (@dirs_to_check) {
-		push @dirs_found, $_ if -d $_;
+		push @dirs_found, $_ if -d File::Spec->catfile( $self->{work_dir}, $_ );
 	}
 	return @dirs_found;
 }

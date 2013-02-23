@@ -66,12 +66,14 @@ sub run {
 #######
 sub initialise {
 	my $self = shift;
-	$self->{output} = App::Midgen::Output->new;
 
 	# stop rlib from Fing all over cwd
 	$self->{working_dir} = cwd();
 	say 'working in dir: ' . $self->{working_dir} if $self->{debug};
-
+	
+	# let's give output a copy also to stop it being Fup as well suspect Tiny::Path
+	$self->{output} = App::Midgen::Output->new( work_dir => $self->{working_dir});
+	
 	# set up cpan bit's as well as checking we are up to date
 	CPAN::HandleConfig->load;
 	CPAN::Shell::setup_output;
