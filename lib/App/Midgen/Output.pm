@@ -81,12 +81,12 @@ sub footer_dsl {
 	say "repository\t...";
 
 	print "\n";
-	if ( defined -d './share' ) {
+	if ( defined -d File::Spec->catfile( $App::Midgen::WORKING_DIR, './share' ) ) {
 		say 'install_share';
 		print "\n";
 	}
 
-	if ( defined -d './script' ) {
+	if ( defined -d File::Spec->catfile( $App::Midgen::WORKING_DIR, './script' ) ) {
 		say 'install_script ...';
 		print "\n";
 	}
@@ -163,20 +163,19 @@ sub footer_mi {
 	say "repository\t'...';";
 	print "\n";
 
-	if ( defined -d './share' ) {
+	if ( defined -d File::Spec->catfile( $App::Midgen::WORKING_DIR, './share' ) ) {
 		say 'install_share;';
 		print "\n";
 	}
 
-	if ( defined -d './script' ) {
+	if ( defined -d File::Spec->catfile( $App::Midgen::WORKING_DIR, './script' ) ) {
 		say "install_script 'script/...';";
 		print "\n";
-	}
-	elsif ( defined -d './bin' ) {
+	} elsif ( defined -d File::Spec->catfile( $App::Midgen::WORKING_DIR, './bin' ) ) {
 		say "install_script 'bin/...';";
 		print "\n";
 	}
-	
+
 	my @no_index = $self->no_index;
 	if (@no_index) {
 		say "no_index directory qw{ @no_index };";
@@ -390,6 +389,7 @@ sub no_index {
 	my @dirs_found;
 
 	for (@dirs_to_check) {
+
 		#ignore synatax warning for global
 		push @dirs_found, $_ if -d File::Spec->catfile( $App::Midgen::WORKING_DIR, $_ );
 	}
