@@ -71,7 +71,9 @@ sub initialise {
 	$WORKING_DIR = cwd();
 
 	# let's give output a copy also to stop it being Fup as well suspect Tiny::Path
-	say 'working in dir: ' . $WORKING_DIR; # if $self->{debug};
+	say 'working in dir: ' . $WORKING_DIR if $self->{debug};
+
+	$self->{output} = App::Midgen::Output->new();
 
 	# set up cpan bit's as well as checking we are up to date
 	CPAN::HandleConfig->load;
