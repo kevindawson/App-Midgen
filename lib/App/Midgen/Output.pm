@@ -172,7 +172,11 @@ sub footer_mi {
 		say "install_script 'script/...';";
 		print "\n";
 	}
-
+	elsif ( defined -d './bin' ) {
+		say "install_script 'bin/...';";
+		print "\n";
+	}
+	
 	my @no_index = $self->no_index;
 	if (@no_index) {
 		say "no_index directory qw{ @no_index };";
@@ -386,6 +390,7 @@ sub no_index {
 	my @dirs_found;
 
 	for (@dirs_to_check) {
+		#ignore synatax warning for global
 		push @dirs_found, $_ if -d File::Spec->catfile( $App::Midgen::WORKING_DIR, $_ );
 	}
 	return @dirs_found;
