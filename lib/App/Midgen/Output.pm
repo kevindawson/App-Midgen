@@ -2,7 +2,7 @@ package App::Midgen::Output;
 
 use v5.10;
 use Moo;
-# use MooX::Types::MooseLike::Base qw(:all);
+
 our $VERSION = '0.10';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
@@ -20,11 +20,6 @@ use constant {
 };
 use File::Spec;
 
-# local copy of package root
-# has 'work_dir' => (
-	# is  => 'rw',
-	# isa => Str,
-# );
 
 #######
 # header_dsl
@@ -385,8 +380,6 @@ sub footer_dist {
 #######
 sub no_index {
 	my $self = shift;
-	
-	p $App::Midgen::WORKING_DIR;
 
 	#ToDo add more options as and when
 	my @dirs_to_check = qw( corpus eg inc misc privinc share t xt);
