@@ -27,7 +27,7 @@ use constant {
 	NONE  => q{},
 	THREE => 3,
 };
-our $WORKING_DIR;
+our $Working_Dir;
 
 
 #######
@@ -68,10 +68,10 @@ sub initialise {
 	my $self = shift;
 
 	# stop rlib from Fing all over cwd
-	$WORKING_DIR = cwd();
+	$Working_Dir = cwd();
 
 	# let's give output a copy also to stop it being Fup as well suspect Tiny::Path
-	say 'working in dir: ' . $WORKING_DIR if $self->{debug};
+	say 'working in dir: ' . $Working_Dir if $self->{debug};
 
 	$self->{output} = App::Midgen::Output->new();
 
@@ -89,7 +89,7 @@ sub first_package_name {
 	my $self = shift;
 
 	try {
-		find( sub { find_package_names($self); }, File::Spec->catfile( $WORKING_DIR, 'lib' ) );
+		find( sub { find_package_names($self); }, File::Spec->catfile( $Working_Dir, 'lib' ) );
 	};
 
 	p $self->{package_names} if $self->{debug};
@@ -132,7 +132,7 @@ sub find_required_modules {
 	my $self = shift;
 
 	# By default we shell only check lib and script (to bin or not?)
-	my @posiable_directories_to_search = map { File::Spec->catfile( $WORKING_DIR, $_ ) } qw( lib script );
+	my @posiable_directories_to_search = map { File::Spec->catfile( $Working_Dir, $_ ) } qw( lib script );
 
 	my @directories_to_search = ();
 	for my $directory (@posiable_directories_to_search) {
@@ -155,7 +155,7 @@ sub find_required_modules {
 sub find_required_test_modules {
 	my $self = shift;
 
-	my @posiable_directories_to_search = map { File::Spec->catfile( $WORKING_DIR, $_ ) } qw( t );
+	my @posiable_directories_to_search = map { File::Spec->catfile( $Working_Dir, $_ ) } qw( t );
 	my @directories_to_search = ();
 	for my $directory (@posiable_directories_to_search) {
 		if ( defined -d $directory ) {
