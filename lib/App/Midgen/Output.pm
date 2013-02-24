@@ -81,12 +81,12 @@ sub footer_dsl {
 	say "repository\t...";
 
 	print "\n";
-	if ( defined -d File::Spec->catfile( $App::Midgen::WORKING_DIR, './share' ) ) {
+	if ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './share' ) ) {
 		say 'install_share';
 		print "\n";
 	}
 
-	if ( defined -d File::Spec->catfile( $App::Midgen::WORKING_DIR, './script' ) ) {
+	if ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './script' ) ) {
 		say 'install_script ...';
 		print "\n";
 	}
@@ -163,15 +163,15 @@ sub footer_mi {
 	say "repository\t'...';";
 	print "\n";
 
-	if ( defined -d File::Spec->catfile( $App::Midgen::WORKING_DIR, './share' ) ) {
+	if ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './share' ) ) {
 		say 'install_share;';
 		print "\n";
 	}
 
-	if ( defined -d File::Spec->catfile( $App::Midgen::WORKING_DIR, './script' ) ) {
+	if ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './script' ) ) {
 		say "install_script 'script/...';";
 		print "\n";
-	} elsif ( defined -d File::Spec->catfile( $App::Midgen::WORKING_DIR, './bin' ) ) {
+	} elsif ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './bin' ) ) {
 		say "install_script 'bin/...';";
 		print "\n";
 	}
@@ -391,7 +391,7 @@ sub no_index {
 	for (@dirs_to_check) {
 
 		#ignore synatax warning for global
-		push @dirs_found, $_ if -d File::Spec->catfile( $App::Midgen::WORKING_DIR, $_ );
+		push @dirs_found, $_ if -d File::Spec->catfile( $App::Midgen::Working_Dir, $_ );
 	}
 	return @dirs_found;
 }
