@@ -4,6 +4,7 @@ use v5.10;
 use Moo;
 with qw( App::Midgen::Roles );
 use App::Midgen::Output;
+use App::Midgen::WorkingDir;
 
 our $VERSION = '0.10';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
@@ -68,7 +69,8 @@ sub initialise {
 	my $self = shift;
 
 	# stop rlib from Fing all over cwd
-	$self->{working_dir} = cwd();
+	my $working_dir = cwd();
+	$self->{working_dir} = App::Midgen::WorkingDir->instance($working_dir);
 	say 'working in dir: ' . $self->{working_dir} if $self->{debug};
 	
 	# let's give output a copy also to stop it being Fup as well suspect Tiny::Path
