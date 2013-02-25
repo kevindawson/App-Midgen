@@ -89,6 +89,9 @@ sub footer_dsl {
 	if ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './script' ) ) {
 		say 'install_script ...';
 		print "\n";
+	} elsif ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './bin' ) ) {
+		say "install_script bin/...";
+		print "\n";
 	}
 
 	my @no_index = $self->no_index;
@@ -198,8 +201,15 @@ sub header_build {
 	my $package_name = shift // NONE;
 
 	# print "\n";
-	# say 'build header underdevelopment';
-	# print "\n";
+	# say "WriteMakefile(";
+	if ( $package_name ne NONE ) {
+		print "\n";
+		$package_name =~ s{::}{-};
+		say 'NAME => ' . $package_name;
+		# $package_name =~ s{-}{/};
+		# say "VERSION_FROM => lib/$package_name.pm";
+		print "\n";
+	}
 
 	return;
 }
@@ -237,7 +247,7 @@ sub footer_build {
 	my $self = shift;
 
 	# print "\n";
-	# say 'build footer underdevelopment';
+	# say ');';
 	print "\n";
 
 	return;
@@ -385,7 +395,7 @@ sub no_index {
 	my $self = shift;
 
 	#ToDo add more options as and when
-	my @dirs_to_check = qw( corpus eg inc misc privinc share t xt);
+	my @dirs_to_check = qw( corpus eg examples inc maint misc privinc share t xt );
 	my @dirs_found;
 
 	for (@dirs_to_check) {
