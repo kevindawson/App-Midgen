@@ -309,14 +309,13 @@ sub recommends_in_single_quote {
 				if ( !$self->{requires}{$module} && !$self->{test_requires}{$module} ) {
 					push @modules, $module;
 				}
+				# if we found a module, process it
 				if ( scalar @modules > 0 ) {
 					p @modules if $self->{debug};
 					$self->process_found_modules( 'recommends', \@modules );
 				}
 			} elsif ( $include->content =~ /::/ && $include->content =~ /use/ ) {
 				my $module = $include->content;
-
-				#ToDo test for duplicates and rubbish, part 1 done more to do
 
 				$module =~ s/^[']//;
 				$module =~ s/[']$//;
@@ -328,6 +327,7 @@ sub recommends_in_single_quote {
 				if ( !$self->{requires}{$module} && !$self->{test_requires}{$module} ) {
 					push @modules, $module;
 				}
+				# if we found a module, process it
 				if ( scalar @modules > 0 ) {
 					p @modules if $self->{debug};
 					$self->process_found_modules( 'recommends', \@modules );
@@ -335,8 +335,6 @@ sub recommends_in_single_quote {
 			}
 			
 			# hack for use_ok in test files 
-
-			# if ( $include->content =~ /::/ && $include->content =~ /use_ok/ ) {
 			elsif ( $include->content =~ /::/ ) {
 				my $module = $include->content;
 
@@ -347,13 +345,11 @@ sub recommends_in_single_quote {
 				p $module if $self->{debug};
 
 				# if we have found it already ignore it
-				# if ( !$self->{requires}{$module} && !$self->{test_requires}{$module} ) {
 				if ( !$self->{requires}{$module} ) {
 					push @modules, $module;
 				}
 
-				# }
-				# if we found a modules, process it
+				# if we found a module, process it
 				if ( scalar @modules > 0 ) {
 					p @modules if $self->{debug};
 					$self->process_found_modules( 'test_requires', \@modules );
@@ -390,7 +386,7 @@ sub recommends_in_double_quote {
 				}
 			}
 
-			# if we found a modules, process it
+			# if we found a module, process it
 			if ( scalar @modules > 0 ) {
 				p @modules if $self->{debug};
 				$self->process_found_modules( 'recommends', \@modules );
@@ -816,7 +812,7 @@ Search for Includes B<use> and B<require> in package modules
 
 =item * recommends_in_single_quote
 
-use_ok
+plus use_ok -> test_require
 
 =item * remove_noisy_children
 
