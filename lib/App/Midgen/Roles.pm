@@ -93,7 +93,6 @@ has 'padre' => (
 		croak "$_[0] this is not a Bool"
 			unless is_Bool( $_[0] );
 	},
-	lazy => 1,
 	default => sub {
 		0;
 	},
@@ -156,7 +155,7 @@ has 'recommends' => (
 has 'found_twins' => (
 	is      => 'rw',
 	isa     => Bool,
-	lazy => 1,
+	lazy    => 1,
 	default => sub {
 		0;
 	},
