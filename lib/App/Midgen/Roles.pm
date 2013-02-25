@@ -181,6 +181,8 @@ This document describes App::Midgen::Roles version: 0.12
 
 =head1 METHODS
 
+none as such, but we do have
+
 =head2 OPTIONS
 
 =over 4
