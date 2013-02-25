@@ -1,5 +1,6 @@
 use inc::Module::Install::DSL 1.06;
 
+perl_version 5.010001
 all_from lib/App/Midgen.pm
 requires_from lib/App/Midgen.pm
 
@@ -19,7 +20,8 @@ requires Try::Tiny                    0.12
 requires constant                     1.25
 requires lib                          0.63
 
-test_requires Test::More 0.98
+test_requires Test::More 6.64
+test_requires ExtUtils::MakeMaker 0
 
 install_script midgen
 
