@@ -8,7 +8,7 @@ BEGIN {
 	$PPI::XS_DISABLE = 1; # noise control - Prevent warning
 }
 
-our $VERSION = '0.10';
+our $VERSION = '0.12';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -44,8 +44,15 @@ GetOptions(
 	'output|o=s'       => \@output,
 	'twins|t'          => \$twins,
 	'noisy_children|n' => \$noisy_children,
-	'debug|d' =>
-		sub { $core = 1; $verbose = 1; $base_parent = 1; $mojo = 1; $noisy_children = 1; $twins = 1; $debug = 1; },
+	'debug|d'          => sub {
+		$core           = 1;
+		$verbose        = 1;
+		$base_parent    = 1;
+		$mojo           = 1;
+		$noisy_children = 1;
+		$twins          = 1;
+		$debug          = 1;
+	},
 ) or pod2usage(2);
 pod2usage(1) if $help;
 
@@ -56,7 +63,7 @@ p @output if $debug;
 # End of Menu
 #######
 
-say 'Running midgen v'.$VERSION;
+say 'Running midgen v' . $VERSION;
 
 use App::Midgen;
 
@@ -90,11 +97,11 @@ __END__
 
 =head1 NAME
 
-midgen - generate the requires and test requires sections for Makefile.PL
+midgen - Check B<requires> & B<test_rerquires> of your CPAN Package
 
 =head1 VERSION
 
-This document describes midgen version: 0.10
+This document describes midgen version: 0.12
 
 =head1 SYNOPSIS
 
@@ -145,7 +152,8 @@ so you can check, copy and paste or select an alternative as shown below.
 
  * Shows modules that are in Perl core
  * some modules have a version number eg; constant, Carp
- * some have a version of 0 eg; strict, English 
+ * some have a version of 0 eg; strict, English
+ * also show any recommends that we found
 
 =item B<--verbose or -v>
 
@@ -186,23 +194,21 @@ why DSL because it's nice and clean, so now I can generate the contents when I w
 rather than as I add new use and require statements, and because Adam kicked me :)
 
 
-
 =head1 AUTHOR
 
-Kevin Dawson E<lt>bowtie@cpan.orgE<gt>
+See L<App::Midgen>
 
 =head2 CONTRIBUTORS
 
-none at present
+See L<App::Midgen>
 
 =head1 COPYRIGHT
 
-Copyright E<copy> 2012-2013 AUTHOR and CONTRIBUTORS as listed above.
+See L<App::Midgen>
 
 =head1 LICENSE
 
-This program is free software; you can redistribute it and/or
-modify it under the same terms as Perl 5 itself.
+See L<App::Midgen>
 
 =cut
 
