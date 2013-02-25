@@ -20,8 +20,8 @@ requires Try::Tiny                    0.12
 requires constant                     1.25
 requires lib                          0.63
 
-test_requires Test::More 6.64
-test_requires ExtUtils::MakeMaker 0
+test_requires ExtUtils::MakeMaker 6.64
+test_requires Test::More          0.98
 
 install_script midgen
 
