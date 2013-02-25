@@ -416,11 +416,16 @@ __END__
 
 =head1 NAME
 
-App::Midgen::Output - A selection of output orinated methods used by L<App::Midgen>
+App::Midgen::Output - A collection of output orinated methods
 
 =head1 VERSION
 
 This document describes App::Midgen::Output version: 0.12
+
+=head1 DESCRIPTION
+
+A collection of output orinated methods used by L<App::Midgen> 
+which all export to STDOUT
 
 =head1 METHODS
 
@@ -458,7 +463,7 @@ This document describes App::Midgen::Output version: 0.12
 
 =item * no_index
 
-Try and guess which of your directories to suggest you should 'no_index'
+Suggest some of your local directories you can 'no_index'
 
 =back
 
