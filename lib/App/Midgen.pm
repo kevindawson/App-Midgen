@@ -5,7 +5,7 @@ use Moo;
 with qw( App::Midgen::Roles );
 use App::Midgen::Output;
 
-our $VERSION = '0.10';
+our $VERSION = '0.12';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -27,7 +27,9 @@ use constant {
 	NONE  => q{},
 	THREE => 3,
 };
-our $Working_Dir;
+
+# stop rlib from Fing all over cwd
+our $Working_Dir = cwd();
 
 
 #######
@@ -67,8 +69,7 @@ sub run {
 sub initialise {
 	my $self = shift;
 
-	# stop rlib from Fing all over cwd
-	$Working_Dir = cwd();
+
 
 	# let's give output a copy also to stop it being Fup as well suspect Tiny::Path
 	say 'working in dir: ' . $Working_Dir if $self->{debug};
@@ -308,8 +309,11 @@ sub recommends_in_single_quote {
 				if ( !$self->{requires}{$module} && !$self->{test_requires}{$module} ) {
 					push @modules, $module;
 				}
-			}
-			if ( $include->content =~ /::/ && $include->content =~ /use/ ) {
+				if ( scalar @modules > 0 ) {
+					p @modules if $self->{debug};
+					$self->process_found_modules( 'recommends', \@modules );
+				}
+			} elsif ( $include->content =~ /::/ && $include->content =~ /use/ ) {
 				my $module = $include->content;
 
 				#ToDo test for duplicates and rubbish, part 1 done more to do
@@ -324,12 +328,36 @@ sub recommends_in_single_quote {
 				if ( !$self->{requires}{$module} && !$self->{test_requires}{$module} ) {
 					push @modules, $module;
 				}
+				if ( scalar @modules > 0 ) {
+					p @modules if $self->{debug};
+					$self->process_found_modules( 'recommends', \@modules );
+				}
 			}
+			
+			# hack for use_ok in test files 
 
-			# if we found a modules, process it
-			if ( scalar @modules > 0 ) {
-				p @modules if $self->{debug};
-				$self->process_found_modules( 'recommends', \@modules );
+			# if ( $include->content =~ /::/ && $include->content =~ /use_ok/ ) {
+			elsif ( $include->content =~ /::/ ) {
+				my $module = $include->content;
+
+				$module =~ s/^[']//;
+				$module =~ s/[']$//;
+				# $module =~ s/^use\s//;
+				# $module =~ s/(\s[\s|\w|\n|.|;]+)$//;
+				p $module if $self->{debug};
+
+				# if we have found it already ignore it
+				# if ( !$self->{requires}{$module} && !$self->{test_requires}{$module} ) {
+				if ( !$self->{requires}{$module} ) {
+					push @modules, $module;
+				}
+
+				# }
+				# if we found a modules, process it
+				if ( scalar @modules > 0 ) {
+					p @modules if $self->{debug};
+					$self->process_found_modules( 'test_requires', \@modules );
+				}
 			}
 		}
 	}
@@ -728,7 +756,7 @@ App::Midgen - generate the requires and test requires sections for Makefile.PL
 
 =head1 VERSION
 
-This document describes App::Midgen version: 0.10
+This document describes App::Midgen version: 0.12
 
 =head1 SYNOPSIS
 
@@ -758,7 +786,11 @@ For more info and sample output see L<wiki|https://github.com/kevindawson/App-Mi
 
 =item * find_makefile_requires
 
+Search for Includes B<use> and B<require> in package modules
+
 =item * find_makefile_test_requires
+
+Search for Includes B<use> and B<require> in test scripts
 
 =item * find_package_names
 
@@ -780,11 +812,21 @@ For more info and sample output see L<wiki|https://github.com/kevindawson/App-Mi
 
 =item * recommends_in_double_quote
 
+Search for Includes B<use> and B<require> in package modules
+
 =item * recommends_in_single_quote
+
+use_ok
 
 =item * remove_noisy_children
 
+Noisy Children parent A::B noisy Children A::B::C or A::B::D 
+all with same version number.
+
 =item * remove_twins
+
+Twins E::F::G and E::F::H and a parent E::F and re-test for noisy children, 
+catching triplets along the way.
 
 =item * run
 
@@ -806,6 +848,11 @@ L<App::Midgen::Roles>, L<App::Midgen::Output>,
 
 None reported.
 
+=head1 WARNINGS
+
+You should have access to L<http://www.cpan.org/>.
+
+Startup may be slow, especially if it we need to do, CPAN reload index.
 
 =head1 BUGS AND LIMITATIONS
 
@@ -824,7 +871,9 @@ none at present
 
 =head1 COPYRIGHT
 
-Copyright E<copy> 2013 AUTHOR and CONTRIBUTORS as listed above.
+Copyright E<copy> 2013 the App:Midgen L</AUTHOR> and L</CONTRIBUTORS> 
+as listed above.
+
 
 =head1 LICENSE
 
