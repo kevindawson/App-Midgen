@@ -53,7 +53,7 @@ sub run {
 	$self->remove_noisy_children( $self->{requires} ) if ( !$self->{verbose} && $self->{found_twins} );
 
 	$self->output_main_body( 'requires', $self->{requires} );
-
+	# p $self->{extra0};
 	$self->find_required_test_modules();
 	$self->extra_scan();
 	$self->output_main_body( 'test_requires', $self->{test_requires} );
@@ -245,7 +245,16 @@ sub find_makefile_requires {
 			}
 		}
 	}
+	# # re azawazi kick let's do some extra scrubbing
+	# # get a parser
+	# my $parser = Module::ExtractUse->new;
 
+	# # parse from a file
+	# $parser->extract_use($filename);
+	# my @array = $parser->array;
+	# for (@array) {
+		# $self->{extra0}{$_} = 'F';
+	# }
 
 
 	return;
@@ -316,7 +325,7 @@ sub extra_scan {
 	# in own method so we can speed up by running once only
 	my @extra_modules;
 	foreach my $ex_mod ( keys %{ $self->{extra} } ) {
-		if ( !$self->{test_requires}{$ex_mod} && !$self->{test_requires}{$ex_mod} ) {
+		if ( !$self->{test_requires}{$ex_mod} && !$self->{test_requires}{$ex_mod} && $ex_mod !~ /\d/) {
 			push @extra_modules, $ex_mod;
 		}
 	}
