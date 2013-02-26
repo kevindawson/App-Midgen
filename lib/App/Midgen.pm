@@ -315,9 +315,9 @@ sub extra_scan {
 
 	# in own method so we can speed up by running once only
 	my @extra_modules;
-	for ( keys $self->{extra} ) {
-		if ( !$self->{test_requires}{$_} && !$self->{test_requires}{$_} ) {
-			push @extra_modules, $_;
+	foreach my $ex_mod ( keys %{ $self->{extra} } ) {
+		if ( !$self->{test_requires}{$ex_mod} && !$self->{test_requires}{$ex_mod} ) {
+			push @extra_modules, $ex_mod;
 		}
 	}
 	p @extra_modules if $self->{debug};
@@ -892,6 +892,10 @@ For more info and sample output see L<wiki|https://github.com/kevindawson/App-Mi
 =over 4
 
 =item * base_parent
+
+=item * check_mojo_core
+
+=item * extra_scan
 
 =item * find_makefile_requires
 
