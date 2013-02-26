@@ -27,6 +27,7 @@ use constant {
 	NONE  => q{},
 	THREE => 3,
 };
+use Module::ExtractUse;
 
 # stop rlib from Fing all over cwd
 our $Working_Dir = cwd();
@@ -44,7 +45,7 @@ sub run {
 	$self->output_header();
 
 	$self->find_required_modules();
-	p $self->{requires};
+
 	$self->remove_noisy_children( $self->{requires} ) if ( !$self->{verbose} );
 	$self->remove_twins( $self->{requires} )          if ( !$self->{verbose} );
 
@@ -54,9 +55,10 @@ sub run {
 	$self->output_main_body( 'requires', $self->{requires} );
 
 	$self->find_required_test_modules();
+	$self->extra_scan();
 	$self->output_main_body( 'test_requires', $self->{test_requires} );
-	$self->output_main_body( 'recommends',    $self->{recommends} );
-
+	$self->output_main_body( 'recommends', $self->{recommends} );
+	p $self->{extra} if $self->{debug};
 	$self->output_footer();
 
 	# print "\n";
@@ -197,6 +199,7 @@ sub find_makefile_requires {
 			next if $include->type eq 'no';
 
 			my @modules = $include->module;
+
 			p @modules if $self->{debug};
 			if ( !$self->{base_parent} ) {
 				my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
@@ -227,8 +230,10 @@ sub find_makefile_requires {
 					# don't include our own packages here
 					next;
 				}
-				if ( $module =~ /Mojo/sxm && !$self->{mojo} ) {
-					$module = 'Mojolicious';
+				# if ( $module =~ /Mojo/sxm && !$self->{mojo} ) {
+				if ( $module =~ /Mojo/sxm ) {
+					$self->check_mojo_core($module);
+					$module = 'Mojolicious' if $self->check_mojo_core($module);
 				}
 				if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm && !$self->{padre} ) {
 
@@ -240,6 +245,8 @@ sub find_makefile_requires {
 			}
 		}
 	}
+
+
 
 	return;
 }
@@ -261,11 +268,14 @@ sub find_makefile_test_requires {
 	my $document = PPI::Document->new($filename);
 	my $ppi_i    = $document->find('PPI::Statement::Include');
 
+	# my @modules; # = $include->module;
 	if ($ppi_i) {
 		foreach my $include ( @{$ppi_i} ) {
 			next if $include->type eq 'no';
 
 			my @modules = $include->module;
+
+			# @modules = $include->module;
 			p @modules if $self->{debug};
 
 			if ( !$self->{base_parent} ) {
@@ -283,8 +293,38 @@ sub find_makefile_test_requires {
 	$self->recommends_in_single_quote($document);
 	$self->recommends_in_double_quote($document);
 
+	# re azawazi kick let's do some extra scrubbing
+	# get a parser
+	my $parser = Module::ExtractUse->new;
+
+	# parse from a file
+	$parser->extract_use($filename);
+	my @array = $parser->array;
+	for (@array) {
+		$self->{extra}{$_} = 'F';
+	}
+
 	return;
 }
+
+#######
+# composed method extra_scan
+#######
+sub extra_scan {
+	my $self = shift;
+
+	# in own method so we can speed up by running once only
+	my @extra_modules;
+	for ( keys $self->{extra} ) {
+		if ( !$self->{test_requires}{$_} && !$self->{test_requires}{$_} ) {
+			push @extra_modules, $_;
+		}
+	}
+	p @extra_modules if $self->{debug};
+	# we only add to recommends as this is only where it seams to excell
+	$self->process_found_modules( 'recommends', \@extra_modules );
+}
+
 
 #######
 # composed method - recommends_in_single_quote
@@ -307,7 +347,7 @@ sub recommends_in_single_quote {
 				p $module if $self->{debug};
 
 				# if we have found it already ignore it
-				if ( !$self->{requires}{$module} && !$self->{test_requires}{$module} ) {
+				if ( !$self->{requires}{$module} && !$self->{test_requires}{$module} && $module !~ /[;|=]/ ) {
 					push @modules, $module;
 				}
 
@@ -326,7 +366,7 @@ sub recommends_in_single_quote {
 				p $module if $self->{debug};
 
 				# if we have found it already ignore it
-				if ( !$self->{requires}{$module} && !$self->{test_requires}{$module} ) {
+				if ( !$self->{requires}{$module} && !$self->{test_requires}{$module} && $module !~ /[;|=]/ ) {
 					push @modules, $module;
 				}
 
@@ -349,7 +389,7 @@ sub recommends_in_single_quote {
 				p $module if $self->{debug};
 
 				# if we have found it already ignore it
-				if ( !$self->{requires}{$module} ) {
+				if ( !$self->{requires}{$module} && $module !~ /\s/ ) {
 					push @modules, $module;
 				}
 
@@ -437,8 +477,10 @@ sub process_found_modules {
 			# don't include our own test packages here
 			next;
 		}
-		if ( $module =~ /Mojo/sxm && !$self->{mojo} ) {
-			$module = 'Mojolicious';
+		# if ( $module =~ /Mojo/sxm && !$self->{mojo} ) {
+		if ( $module =~ /Mojo/sxm ) {
+			# $self->check_mojo_core($module);
+			$module = 'Mojolicious' if $self->check_mojo_core($module);
 		}
 		if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm && !$self->{padre} ) {
 
@@ -667,6 +709,56 @@ sub remove_twins {
 	}
 	return;
 }
+
+#######
+# check_mojo_core
+#######
+sub check_mojo_core {
+	my $self        = shift;
+	my $mojo_module = shift;
+	my $mojo_module_ver;
+	state $mojo_ver;
+
+	# my $mod;
+	if ( not defined $mojo_ver ) {
+		try {
+			my $mod = CPAN::Shell->expand( 'Module', 'Mojolicious' );
+			if ( $mod->cpan_version ne 'undef' ) {
+
+				# allocate current cpan version against module name
+				$mojo_ver = $mod->cpan_version;
+				p $mojo_ver if $self->{debug};
+			}
+		};
+	}
+	try {
+		my $mod = CPAN::Shell->expand( 'Module', $mojo_module );
+		if ( $mod->cpan_version ne 'undef' ) {
+
+			# allocate current cpan version against module name
+			$mojo_module_ver = $mod->cpan_version;
+		} else {
+			$mojo_module_ver = 'undef';
+		}
+	};
+	if ( $self->{mojo} ) {
+		say 'looks like we found another mojo core module';
+		say $mojo_module . ' version ' . $mojo_module_ver;
+	}
+
+	# true if undef or version numbers match
+	# undef is true as Mojo is missing version numbers in all sub modules - Fing idiots
+	if ( $mojo_module_ver eq 'undef' ) {
+		return 1;
+	} elsif ( defined $mojo_module_ver ) {
+		if ( $mojo_ver == $mojo_module_ver ) {
+			return 1;
+		}
+	} else {
+		return 0;
+	}
+}
+
 
 #######
 # output_header
