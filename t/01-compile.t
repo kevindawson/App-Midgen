@@ -6,7 +6,7 @@ use warnings FATAL => 'all';
 use English qw( -no_match_vars ); # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Test::More tests => 20;
+use Test::More tests => 21;
 
 
 use_ok('App::Midgen');
@@ -21,6 +21,7 @@ use_ok( 'File::Slurp',                  '9999.19' );
 use_ok( 'File::Spec',                   '3.40' );
 use_ok( 'Getopt::Long',                 '2.38' );
 use_ok( 'Module::CoreList',             '2.82' );
+use_ok( 'Module::ExtractUse',           '0.280' );
 use_ok( 'Moo',                          '1.000008' );
 use_ok( 'MooX::Types::MooseLike::Base', '0.21' );
 use_ok( 'PPI',                          '1.215' );
