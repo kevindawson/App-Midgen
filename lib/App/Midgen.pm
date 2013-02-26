@@ -762,7 +762,7 @@ __END__
 
 =head1 NAME
 
-App::Midgen - generate the requires and test requires sections for Makefile.PL
+App::Midgen - Check B<requires> & B<test_rerquires> of your CPAN Package
 
 =head1 VERSION
 
