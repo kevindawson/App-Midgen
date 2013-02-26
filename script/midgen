@@ -186,13 +186,6 @@ equivalent of -cv and some :))
 uses L<Data::Printer>
 
 =back
- 
-=head1 DESCRIPTION
-
-This started out as a way of generating the core for a Module::Install::DSL Makefile.PL, 
-why DSL because it's nice and clean, so now I can generate the contents when I want, 
-rather than as I add new use and require statements, and because Adam kicked me :)
-
 
 =head1 AUTHOR
 
