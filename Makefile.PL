@@ -12,7 +12,6 @@ requires File::Slurp                  9999.19
 requires File::Spec                   3.40
 requires Getopt::Long                 2.38
 requires Module::CoreList             2.82
-requires Module::ExtractUse           0.280
 requires Moo                          1.000008
 requires MooX::Types::MooseLike::Base 0.21
 requires PPI                          1.215
