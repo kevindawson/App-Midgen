@@ -44,6 +44,7 @@ sub run {
 	$self->output_header();
 
 	$self->find_required_modules();
+	p $self->{requires};
 	$self->remove_noisy_children( $self->{requires} ) if ( !$self->{verbose} );
 	$self->remove_twins( $self->{requires} )          if ( !$self->{verbose} );
 
@@ -309,6 +310,7 @@ sub recommends_in_single_quote {
 				if ( !$self->{requires}{$module} && !$self->{test_requires}{$module} ) {
 					push @modules, $module;
 				}
+
 				# if we found a module, process it
 				if ( scalar @modules > 0 ) {
 					p @modules if $self->{debug};
@@ -327,19 +329,21 @@ sub recommends_in_single_quote {
 				if ( !$self->{requires}{$module} && !$self->{test_requires}{$module} ) {
 					push @modules, $module;
 				}
+
 				# if we found a module, process it
 				if ( scalar @modules > 0 ) {
 					p @modules if $self->{debug};
 					$self->process_found_modules( 'recommends', \@modules );
 				}
 			}
-			
-			# hack for use_ok in test files 
+
+			# hack for use_ok in test files
 			elsif ( $include->content =~ /::/ ) {
 				my $module = $include->content;
 
 				$module =~ s/^[']//;
 				$module =~ s/[']$//;
+
 				# $module =~ s/^use\s//;
 				# $module =~ s/(\s[\s|\w|\n|.|;]+)$//;
 				p $module if $self->{debug};
@@ -636,16 +640,26 @@ sub remove_twins {
 
 				#Check for vailed parent
 				my $mod;
+				my $mod_in_cpan = 0;
 				try {
 					$mod = CPAN::Shell->expand( 'Module', $dum_parient );
+					if ( $mod->cpan_version ne 'undef' ) {
+
+						# allocate current cpan version against module name
+						$mod_in_cpan = 1;
+					}
 				};
 
-				#Check parent version against a twins version
-				if ( $mod->cpan_version == $required_ref->{ $sorted_modules[$n] } ) {
+				if ($mod_in_cpan) {
 
-					say $dum_parient . ' -> ' . $mod->cpan_version . ' is the parent of these twins' if $self->{twins};
-					$required_ref->{$dum_parient} = $mod->cpan_version;
-					$self->{found_twins} = 1;
+					#Check parent version against a twins version
+					if ( $mod->cpan_version == $required_ref->{ $sorted_modules[$n] } ) {
+
+						say $dum_parient . ' -> ' . $mod->cpan_version . ' is the parent of these twins'
+							if $self->{twins};
+						$required_ref->{$dum_parient} = $mod->cpan_version;
+						$self->{found_twins} = 1;
+					}
 				}
 			}
 		}
@@ -772,6 +786,13 @@ This started out as a way of generating the core for a Module::Install::DSL Make
 why DSL because it's nice and clean, so now I can generate the contents when I want, 
 rather than as I add new use and require statements, and because Adam kicked me :)
 
+All output goes to STDOUT, so you can use it as you see fit.
+
+Food for thought, if we update our Modules, 
+don't we want our users to use the current version, 
+so should we not by default do the same with others Modules. 
+So we always show the current version number, regardless.
+
 For more info and sample output see L<wiki|https://github.com/kevindawson/App-Midgen/wiki>
 
 =head1 METHODS
@@ -808,9 +829,11 @@ Search for Includes B<use> and B<require> in test scripts
 
 =item * recommends_in_double_quote
 
-Search for Includes B<use> and B<require> in package modules
+Search for B<use> in test files
 
 =item * recommends_in_single_quote
+
+Search for B<use> in test files
 
 plus use_ok -> test_require
 
@@ -848,7 +871,7 @@ None reported.
 
 You should have access to L<http://www.cpan.org/>.
 
-Startup may be slow, especially if it we need to do, CPAN reload index.
+Start-up may be slow, especially if it we need to do the equivalent of, CPAN reload index.
 
 =head1 BUGS AND LIMITATIONS
 
