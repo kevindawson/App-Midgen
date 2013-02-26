@@ -53,12 +53,12 @@ sub run {
 	$self->remove_noisy_children( $self->{requires} ) if ( !$self->{verbose} && $self->{found_twins} );
 
 	$self->output_main_body( 'requires', $self->{requires} );
-	# p $self->{extra0};
+
 	$self->find_required_test_modules();
-	$self->extra_scan();
+
 	$self->output_main_body( 'test_requires', $self->{test_requires} );
-	$self->output_main_body( 'recommends', $self->{recommends} );
-	p $self->{extra} if $self->{debug};
+	$self->output_main_body( 'recommends',    $self->{recommends} );
+
 	$self->output_footer();
 
 	# print "\n";
@@ -230,6 +230,7 @@ sub find_makefile_requires {
 					# don't include our own packages here
 					next;
 				}
+
 				# if ( $module =~ /Mojo/sxm && !$self->{mojo} ) {
 				if ( $module =~ /Mojo/sxm ) {
 					$self->check_mojo_core($module);
@@ -245,17 +246,6 @@ sub find_makefile_requires {
 			}
 		}
 	}
-	# # re azawazi kick let's do some extra scrubbing
-	# # get a parser
-	# my $parser = Module::ExtractUse->new;
-
-	# # parse from a file
-	# $parser->extract_use($filename);
-	# my @array = $parser->array;
-	# for (@array) {
-		# $self->{extra0}{$_} = 'F';
-	# }
-
 
 	return;
 }
@@ -302,36 +292,7 @@ sub find_makefile_test_requires {
 	$self->recommends_in_single_quote($document);
 	$self->recommends_in_double_quote($document);
 
-	# re azawazi kick let's do some extra scrubbing
-	# get a parser
-	my $parser = Module::ExtractUse->new;
-
-	# parse from a file
-	$parser->extract_use($filename);
-	my @array = $parser->array;
-	for (@array) {
-		$self->{extra}{$_} = 'F';
-	}
-
 	return;
-}
-
-#######
-# composed method extra_scan
-#######
-sub extra_scan {
-	my $self = shift;
-
-	# in own method so we can speed up by running once only
-	my @extra_modules;
-	foreach my $ex_mod ( keys %{ $self->{extra} } ) {
-		if ( !$self->{test_requires}{$ex_mod} && !$self->{test_requires}{$ex_mod} && $ex_mod !~ /\d/) {
-			push @extra_modules, $ex_mod;
-		}
-	}
-	p @extra_modules if $self->{debug};
-	# we only add to recommends as this is only where it seams to excell
-	$self->process_found_modules( 'recommends', \@extra_modules );
 }
 
 
@@ -486,8 +447,10 @@ sub process_found_modules {
 			# don't include our own test packages here
 			next;
 		}
+
 		# if ( $module =~ /Mojo/sxm && !$self->{mojo} ) {
 		if ( $module =~ /Mojo/sxm ) {
+
 			# $self->check_mojo_core($module);
 			$module = 'Mojolicious' if $self->check_mojo_core($module);
 		}
@@ -903,8 +866,6 @@ For more info and sample output see L<wiki|https://github.com/kevindawson/App-Mi
 =item * base_parent
 
 =item * check_mojo_core
-
-=item * extra_scan
 
 =item * find_makefile_requires
 
