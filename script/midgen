@@ -169,7 +169,10 @@ Turn Off - try to include the contents of base|parent modules as well
 
 =item B<--mojo or -m>
 
-Turn Off - the /Mojo/ to Mojolicious catch
+Turn on extra output to show the /Mojo/ to Mojolicious catch, 
+suggest you incorporate it with verbose for maximum affect
+
+ midgen -vm
 
 =item B<--noisy_children or -n>
 
