@@ -165,7 +165,10 @@ also show contents of base|parent check
 
 alternative  --base or -b
 
-Turn Off - try to include the contents of base|parent modules as well
+Turn on extra output to show the base|parent modules, as we find them,
+suggest you incorporate it with verbose for maximum affect
+
+ midgen -vp
 
 =item B<--mojo or -m>
 
