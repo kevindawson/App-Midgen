@@ -527,7 +527,9 @@ sub base_parent {
 			say $content;
 		}
 
-		$content =~ s/^use (base|parent) //;
+		$content =~ s/^(use\s*) //;
+		$content =~ s/^(base|parent) //;
+		$content =~ s/^([-]norequire,)//;
 		$content =~ s/\s*(q[q|w]\n?\t?)\s*//;
 		$content =~ s/([<?]|[(?]|[{?]\n?\t?)\s*//;
 		$content =~ s/\s*([>?]|[)?]|[}?])\s*//;
