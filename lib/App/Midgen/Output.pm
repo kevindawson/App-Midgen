@@ -30,7 +30,7 @@ sub header_dsl {
 
 	# Let's get the current version of Module::Install::DSL
 	my $mod = CPAN::Shell->expand( 'Module', 'inc::Module::Install::DSL' );
-	$package_name =~ s{::}{/};
+	$package_name =~ s{::}{/}g;
 
 	print "\n";
 	say 'use inc::Module::Install::DSL ' . $mod->cpan_version . ';';
@@ -113,7 +113,7 @@ sub footer_dsl {
 sub header_mi {
 	my $self = shift;
 	my $package_name = shift // NONE;
-	$package_name =~ s{::}{/};
+	$package_name =~ s{::}{/}g;
 
 	print "\n";
 	if ( $package_name ne NONE ) {
@@ -204,7 +204,7 @@ sub header_build {
 	# say "WriteMakefile(";
 	if ( $package_name ne NONE ) {
 		print "\n";
-		$package_name =~ s{::}{-};
+		$package_name =~ s{::}{-}g;
 		say 'NAME => ' . $package_name;
 		# $package_name =~ tr{-}{/};
 		# say "VERSION_FROM => lib/$package_name.pm";
@@ -321,7 +321,7 @@ sub header_dist {
 
 	if ( $package_name ne NONE ) {
 		print "\n";
-		$package_name =~ s{::}{-};
+		$package_name =~ s{::}{-}g;
 		say 'name        = ' . $package_name;
 		$package_name =~ tr{-}{/};
 		say "main_module = lib/$package_name.pm";
