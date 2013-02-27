@@ -201,12 +201,9 @@ sub find_makefile_requires {
 			my @modules = $include->module;
 
 			p @modules if $self->{debug};
-			if ( !$self->{base_parent} ) {
-				my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
-				if (@base_parent_modules) {
-					@modules = @base_parent_modules;
-				}
-
+			my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
+			if (@base_parent_modules) {
+				@modules = @base_parent_modules;
 			}
 
 			foreach my $module (@modules) {
@@ -231,7 +228,6 @@ sub find_makefile_requires {
 					next;
 				}
 
-				# if ( $module =~ /Mojo/sxm && !$self->{mojo} ) {
 				if ( $module =~ /Mojo/sxm ) {
 					$self->check_mojo_core($module);
 					$module = 'Mojolicious' if $self->check_mojo_core($module);
@@ -267,23 +263,17 @@ sub find_makefile_test_requires {
 	my $document = PPI::Document->new($filename);
 	my $ppi_i    = $document->find('PPI::Statement::Include');
 
-	# my @modules; # = $include->module;
 	if ($ppi_i) {
 		foreach my $include ( @{$ppi_i} ) {
 			next if $include->type eq 'no';
 
 			my @modules = $include->module;
-
-			# @modules = $include->module;
 			p @modules if $self->{debug};
 
-			if ( !$self->{base_parent} ) {
-				my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
-				if (@base_parent_modules) {
-					@modules = @base_parent_modules;
-				}
+			my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
+			if (@base_parent_modules) {
+				@modules = @base_parent_modules;
 			}
-
 			$self->process_found_modules( 'test_requires', \@modules );
 		}
 	}
@@ -348,14 +338,11 @@ sub recommends_in_single_quote {
 			}
 
 			# hack for use_ok in test files
-			elsif ( $include->content =~ /::/ ) {
+			elsif ( $include->content =~ /::/ && $include->content !~ /main::/ ) {
 				my $module = $include->content;
 
 				$module =~ s/^[']//;
 				$module =~ s/[']$//;
-
-				# $module =~ s/^use\s//;
-				# $module =~ s/(\s[\s|\w|\n|.|;]+)$//;
 				p $module if $self->{debug};
 
 				# if we have found it already ignore it
@@ -448,7 +435,6 @@ sub process_found_modules {
 			next;
 		}
 
-		# if ( $module =~ /Mojo/sxm && !$self->{mojo} ) {
 		if ( $module =~ /Mojo/sxm ) {
 
 			# $self->check_mojo_core($module);
@@ -522,7 +508,7 @@ sub base_parent {
 	my @modules = ();
 
 	if ( $module =~ /base|parent|with|extends/sxm ) {
-		if ( $self->{verbose} ) {
+		if ( $self->{base_parent} ) {
 			say 'Info: check ' . $pragma . ' pragma: ';
 			say $content;
 		}
