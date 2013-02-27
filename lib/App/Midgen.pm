@@ -848,14 +848,14 @@ See L<midgen> for cmd line option info.
 
 This started out as a way of generating the core for a Module::Install::DSL Makefile.PL, 
 why DSL because it's nice and clean, so now I can generate the contents when I want, 
-rather than as I add new use and require statements, and because Adam kicked me :)
+rather than as I add new use and require statements, yes it's another L<PPI> powered app.
 
 All output goes to STDOUT, so you can use it as you see fit.
 
 Food for thought, if we update our Modules, 
 don't we want our users to use the current version, 
 so should we not by default do the same with others Modules. 
-So we always show the current version number, regardless.
+Thus we always show the current version number, regardless.
 
 For more info and sample output see L<wiki|https://github.com/kevindawson/App-Midgen/wiki>
 
@@ -931,7 +931,9 @@ L<App::Midgen::Roles>, L<App::Midgen::Output>,
 
 =head1 INCOMPATIBILITIES
 
-None reported.
+After some reflection, we do not scan xt/... 
+as the methods by which the modules Included are varied, 
+this is best left to the module Author. 
 
 =head1 WARNINGS
 
@@ -952,7 +954,7 @@ Kevin Dawson E<lt>bowtie@cpan.orgE<gt>
 
 =head2 CONTRIBUTORS
 
-none at present
+Ahmad M. Zawawi E<lt>ahmad.zawawi@gmail.comE<gt>
 
 =head1 COPYRIGHT
 
