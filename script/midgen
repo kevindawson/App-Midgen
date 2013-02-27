@@ -31,7 +31,7 @@ my $base_parent    = 0;    # 1 true ignore perl base functions
 my $core           = 0;    # show perl core modules as well
 my $verbose        = 0;    # option variable with default value (false)
 my @output         = 'dsl';
-my $mojo           = 0;    # 1 true ignore Mojo detection
+my $mojo           = 0;    # show the Mojo detection
 my $noisy_children = 0;    # unwanted noisy children
 my $twins          = 0;    # unwanted twins
 my $debug          = 0;    # lots of good stuff here :)
@@ -132,10 +132,10 @@ Print a brief help message and exits.
    --core           show perl core modules
    --verbose        take a little peek as to what is going on
    --parent         don't check for base|parent includes
-   --mojo           don't be Mojo friendly
+   --mojo           show the Mojo catch as we find them
    --noisy_children show them as we find them
-   --twins          show twins
-   --debug          lot's of stuff
+   --twins          show twins as we find them
+   --debug          lot's of stuff very
 
 =item B<--output or -o>
 
@@ -169,15 +169,18 @@ Turn Off - try to include the contents of base|parent modules as well
 
 =item B<--mojo or -m>
 
-Turn on extra output to show the /Mojo/ to Mojolicious catch, 
+Turn on extra output to show the /Mojo/ to Mojolicious catch, as we find them,
 suggest you incorporate it with verbose for maximum affect
 
  midgen -vm
 
 =item B<--noisy_children or -n>
 
- * Show a required modules noisy children, as we find them
- 
+Turn on extra output to show the modules considered to be noisy children, as we find them
+suggest you incorporate it with verbose for maximum affect
+
+ midgen -vn
+
 =item B<--twins or -t>
 
  * Show a modules that are twins as we find them, and ajust for there parient instead
@@ -187,6 +190,10 @@ suggest you incorporate it with verbose for maximum affect
 equivalent of -cv and some :))
 
 uses L<Data::Printer>
+
+suggest you consider redirecting STDERR when the debug option is used
+
+ midgen -d 2>debug.txt
 
 =back
 
