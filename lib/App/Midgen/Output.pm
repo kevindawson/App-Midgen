@@ -395,7 +395,7 @@ sub no_index {
 	my $self = shift;
 
 	#ToDo add more options as and when
-	my @dirs_to_check = qw( corpus eg examples inc maint misc privinc share t xt );
+	my @dirs_to_check = qw( corpus eg examples fbp inc maint misc privinc share t xt );
 	my @dirs_found;
 
 	for (@dirs_to_check) {
