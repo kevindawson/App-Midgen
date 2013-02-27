@@ -66,6 +66,7 @@ sub body_dsl {
 			printf "%s %-*s %s\n", $title, $pm_length, $module_name, $required_ref->{$module_name};
 		}
 	}
+	print "\n";
 	return;
 }
 #######
@@ -150,7 +151,7 @@ sub body_mi {
 		}
 
 	}
-
+	print "\n";
 	return;
 }
 #######
@@ -238,6 +239,7 @@ sub body_build {
 
 	}
 	say '},';
+	print "\n";
 	return;
 }
 #######
@@ -296,6 +298,7 @@ sub body_dzil {
 
 	}
 	say '},';
+	print "\n";
 	return;
 }
 #######
@@ -357,6 +360,7 @@ sub body_dist {
 		printf "%-*s = %s\n", $pm_length, $module_name, $required_ref->{$module_name};
 
 	}
+	print "\n";
 	return;
 }
 #######
