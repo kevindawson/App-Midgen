@@ -22,6 +22,9 @@ requires lib                          0.63
 test_requires ExtUtils::MakeMaker 6.64
 test_requires Test::More          0.98
 
+recommends Test::Pod           1.46
+recommends Test::Pod::Coverage 1.08
+
 install_script midgen
 
 homepage    https://github.com/kevindawson/App-Midgen
