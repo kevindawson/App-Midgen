@@ -8,7 +8,6 @@ requires CPAN                         1.9800
 requires Carp                         1.26
 requires Cwd                          3.40
 requires Data::Printer                0.35
-requires File::Slurp                  9999.19
 requires File::Spec                   3.40
 requires Getopt::Long                 2.38
 requires Module::CoreList             2.82
