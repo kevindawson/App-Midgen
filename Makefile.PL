@@ -31,5 +31,4 @@ homepage    https://github.com/kevindawson/App-Midgen
 bugtracker  https://github.com/kevindawson/App-Midgen/issues
 repository  git://github.com/kevindawson/App-Midgen.git
 
-no_index directory  qw{ t xt eg share inc privinc }
-
+no_index directory  qw{ inc t xt }
