@@ -18,7 +18,6 @@ use Data::Printer {
 };
 use File::Spec;
 use File::Find qw(find);
-# use File::Slurp qw(read_file write_file);
 use Module::CoreList;
 use PPI;
 use Try::Tiny;
@@ -27,7 +26,6 @@ use constant {
 	NONE  => q{},
 	THREE => 3,
 };
-# use Module::ExtractUse;
 
 # stop rlib from Fing all over cwd
 our $Working_Dir = cwd();
@@ -46,8 +44,6 @@ sub run {
 
 	$self->find_required_modules();
 
-	# $self->find_required_test_modules();
-
 	$self->remove_noisy_children( $self->{requires} );
 	$self->remove_twins( $self->{requires} );
 
@@ -62,8 +58,6 @@ sub run {
 	$self->output_main_body( 'recommends',    $self->{recommends} );
 
 	$self->output_footer();
-
-	# print "\n";
 
 	return;
 }
@@ -160,7 +154,8 @@ sub find_required_modules {
 #######
 sub find_required_test_modules {
 	my $self = shift;
-
+	
+	# By default we shell only check t\ (to xt\ or not?)
 	my @posiable_directories_to_search = map { File::Spec->catfile( $Working_Dir, $_ ) } qw( t );
 	my @directories_to_search = ();
 	for my $directory (@posiable_directories_to_search) {
@@ -190,23 +185,6 @@ sub find_makefile_requires {
 		when (m/[.]\w{2,4}$/) { say 'rejecting ' . $filename if $self->{verbose}; return; }
 		default { return if not $self->is_perlfile($filename); }
 	}
-
-	# my $document = PPI::Document->new($filename);
-	# my $ppi_tc   = $document->find('PPI::Token::Comment');
-
-	# my $not_a_pl_file = 0;
-
-	# if ($ppi_tc) {
-	# $not_a_pl_file = 1 if $ppi_tc->[0]->content =~ /perl/;
-	# say 'shebang' if ( $ppi_tc->[0]->content =~ /perl/ && $self->{verbose} );
-	# }
-
-	# return unless ( $document->find('PPI::Statement::Package') || $not_a_pl_file );
-	# say 'package' if ( $document->find('PPI::Statement::Package') && $self->{verbose} );
-	# say 'looking for requires in -> ' . $filename if $self->{verbose};
-
-	# my $document = PPI::Document->new($filename);
-
 
 	my $ppi_i = $document->find('PPI::Statement::Include');
 
@@ -250,7 +228,7 @@ sub find_makefile_requires {
 				}
 				if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm && !$self->{padre} ) {
 
-					# mark all Padre core as just Padre, for plugins
+					# mark all Padre core as just Padre, for Padre plugins
 					$module = 'Padre';
 				}
 
@@ -275,15 +253,13 @@ sub is_perlfile {
 	my $not_a_pl_file = 0;
 
 	if ($ppi_tc) {
-		$not_a_pl_file = 1 if $ppi_tc->[0]->content =~ /perl/;
-
-		# say 'shebang' if ( $ppi_tc->[0]->content =~ /perl/ && $self->{verbose} );
+		# check first token-comment for a shebang
+		$not_a_pl_file = 1 if $ppi_tc->[0]->content =~ m/^#!.+perl.*$/;
 	}
 
 	if ( $document->find('PPI::Statement::Package') || $not_a_pl_file ) {
 		if ( $self->{verbose} ) {
 
-			# print 'looking for requires in -> ' . $filename ;
 			print "looking for requires in (package) -> " if $document->find('PPI::Statement::Package');
 			print "looking for requires in (shebang) -> " if $ppi_tc->[0]->content =~ /perl/;
 			say $filename ;
