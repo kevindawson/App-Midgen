@@ -56,8 +56,6 @@ GetOptions(
 ) or pod2usage(2);
 pod2usage(1) if $help;
 
-p @output if $debug;
-
 
 #######
 # End of Menu
@@ -131,7 +129,7 @@ Print a brief help message and exits.
    --output         change format
    --core           show perl core modules
    --verbose        take a little peek as to what is going on
-   --parent         don't check for base|parent includes
+   --parent         show the base|parent includes as we find them
    --mojo           show the Mojo catch as we find them
    --noisy_children show them as we find them
    --twins          show twins as we find them
@@ -180,17 +178,18 @@ suggest you incorporate it with verbose for maximum affect
 =item B<--noisy_children or -n>
 
 Turn on extra output to show the modules considered to be noisy children, as we find them
-suggest you incorporate it with verbose for maximum affect
 
- midgen -vn
+ midgen -n
 
 =item B<--twins or -t>
 
- * Show a modules that are twins as we find them, and ajust for there parient instead
+Turn on extra output to show the modules that are twins as we find them, as we find them
+
+ midgen -t
  
 =item B<--debug or -d>
 
-equivalent of -cv and some :))
+equivalent of -cnmptv and some :))
 
 uses L<Data::Printer>
 
