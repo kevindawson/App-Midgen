@@ -18,7 +18,7 @@ use Data::Printer {
 };
 use File::Spec;
 use File::Find qw(find);
-use File::Slurp qw(read_file write_file);
+# use File::Slurp qw(read_file write_file);
 use Module::CoreList;
 use PPI;
 use Try::Tiny;
@@ -27,7 +27,7 @@ use constant {
 	NONE  => q{},
 	THREE => 3,
 };
-use Module::ExtractUse;
+# use Module::ExtractUse;
 
 # stop rlib from Fing all over cwd
 our $Working_Dir = cwd();
@@ -46,11 +46,13 @@ sub run {
 
 	$self->find_required_modules();
 
-	$self->remove_noisy_children( $self->{requires} ) if ( !$self->{verbose} );
-	$self->remove_twins( $self->{requires} )          if ( !$self->{verbose} );
+	# $self->find_required_test_modules();
+
+	$self->remove_noisy_children( $self->{requires} );
+	$self->remove_twins( $self->{requires} );
 
 	#run a second time if we found any twins, this will sort out twins and triplets etc
-	$self->remove_noisy_children( $self->{requires} ) if ( !$self->{verbose} && $self->{found_twins} );
+	$self->remove_noisy_children( $self->{requires} ) if $self->{found_twins};
 
 	$self->output_main_body( 'requires', $self->{requires} );
 
@@ -136,7 +138,7 @@ sub find_required_modules {
 	my $self = shift;
 
 	# By default we shell only check lib and script (to bin or not?)
-	my @posiable_directories_to_search = map { File::Spec->catfile( $Working_Dir, $_ ) } qw( lib script );
+	my @posiable_directories_to_search = map { File::Spec->catfile( $Working_Dir, $_ ) } qw( script lib );
 
 	my @directories_to_search = ();
 	for my $directory (@posiable_directories_to_search) {
@@ -182,20 +184,34 @@ sub find_makefile_requires {
 	my $self     = shift;
 	my $filename = $_;
 	my $document = PPI::Document->new($filename);
-	return
-		unless ( defined $document->find('PPI::Statement::Package')
-		|| $document->find('PPI::Token::Comment') =~ /perl$/ );
 
-	if ( $self->{verbose} ) {
-		say 'looking for requires in -> ' . $filename;
+	given ($filename) {
+		when (m/[.]pm$/) { say 'looking for requires in (.pm)-> ' . $filename if $self->{verbose}; }
+		when (m/[.]\w{2,4}$/) { say 'rejecting ' . $filename if $self->{verbose}; return; }
+		default { return if not $self->is_perlfile($filename); }
 	}
 
+	# my $document = PPI::Document->new($filename);
+	# my $ppi_tc   = $document->find('PPI::Token::Comment');
+
+	# my $not_a_pl_file = 0;
+
+	# if ($ppi_tc) {
+	# $not_a_pl_file = 1 if $ppi_tc->[0]->content =~ /perl/;
+	# say 'shebang' if ( $ppi_tc->[0]->content =~ /perl/ && $self->{verbose} );
+	# }
+
+	# return unless ( $document->find('PPI::Statement::Package') || $not_a_pl_file );
+	# say 'package' if ( $document->find('PPI::Statement::Package') && $self->{verbose} );
+	# say 'looking for requires in -> ' . $filename if $self->{verbose};
+
+	# my $document = PPI::Document->new($filename);
+
+
 	my $ppi_i = $document->find('PPI::Statement::Include');
-	p $ppi_i if $self->{debug};
 
 	if ($ppi_i) {
 		foreach my $include ( @{$ppi_i} ) {
-			p $include if $self->{debug};
 			next if $include->type eq 'no';
 
 			my @modules = $include->module;
@@ -244,6 +260,39 @@ sub find_makefile_requires {
 	}
 
 	return;
+}
+
+########
+# is this a perl file
+#######
+sub is_perlfile {
+	my $self     = shift;
+	my $filename = shift;
+
+	my $document = PPI::Document->new($filename);
+	my $ppi_tc   = $document->find('PPI::Token::Comment');
+
+	my $not_a_pl_file = 0;
+
+	if ($ppi_tc) {
+		$not_a_pl_file = 1 if $ppi_tc->[0]->content =~ /perl/;
+
+		# say 'shebang' if ( $ppi_tc->[0]->content =~ /perl/ && $self->{verbose} );
+	}
+
+	if ( $document->find('PPI::Statement::Package') || $not_a_pl_file ) {
+		if ( $self->{verbose} ) {
+
+			# print 'looking for requires in -> ' . $filename ;
+			print "looking for requires in (package) -> " if $document->find('PPI::Statement::Package');
+			print "looking for requires in (shebang) -> " if $ppi_tc->[0]->content =~ /perl/;
+			say $filename ;
+		}
+		return 1;
+	} else {
+		return 0;
+	}
+
 }
 
 
@@ -299,10 +348,16 @@ sub recommends_in_single_quote {
 	if ($ppi_tqs) {
 		my @modules;
 		foreach my $include ( @{$ppi_tqs} ) {
-			if ( $include->content =~ /::/ && $include->content !~ /main/ && !$include->content =~ /use/ ) {
-				my $module = $include->content;
-				$module =~ s/^[']//;
-				$module =~ s/[']$//;
+			my $module = $include->content;
+			$module =~ s/^[']//;
+			$module =~ s/[']$//;
+
+			# if ( $include->content =~ /::/ && $include->content !~ /main/ && !$include->content =~ /use/ ) {
+			if ( $module =~ /::/ && $module !~ /main/ && !$module =~ /use/ ) {
+
+				# my $module = $include->content;
+				# $module =~ s/^[']//;
+				# $module =~ s/[']$//;
 				$module =~ s/(\s[\w|\s]+)$//;
 				p $module if $self->{debug};
 
@@ -316,11 +371,13 @@ sub recommends_in_single_quote {
 					p @modules if $self->{debug};
 					$self->process_found_modules( 'recommends', \@modules );
 				}
-			} elsif ( $include->content =~ /::/ && $include->content =~ /use/ ) {
-				my $module = $include->content;
 
-				$module =~ s/^[']//;
-				$module =~ s/[']$//;
+				# } elsif ( $include->content =~ /::/ && $include->content =~ /use/ ) {
+			} elsif ( $module =~ /::/ && $module =~ /use/ ) {
+
+				# my $module = $include->content;
+				# $module =~ s/^[']//;
+				# $module =~ s/[']$//;
 				$module =~ s/^use\s//;
 				$module =~ s/(\s[\s|\w|\n|.|;]+)$//;
 				p $module if $self->{debug};
@@ -338,11 +395,12 @@ sub recommends_in_single_quote {
 			}
 
 			# hack for use_ok in test files
-			elsif ( $include->content =~ /::/ && $include->content !~ /main::/ ) {
-				my $module = $include->content;
+			# elsif ( $include->content =~ /::/ && $include->content !~ /main::/ ) {
+			elsif ( $module =~ /::/ && $module !~ /main::/ ) {
 
-				$module =~ s/^[']//;
-				$module =~ s/[']$//;
+				# my $module = $include->content;
+				# $module =~ s/^[']//;
+				# $module =~ s/[']$//;
 				p $module if $self->{debug};
 
 				# if we have found it already ignore it
@@ -474,7 +532,7 @@ sub store_modules {
 
 	}
 	catch {
-		say "caught - $require_type - $module" if $self->{debug};
+		carp "caught - $require_type - $module" if $self->{debug};
 
 		# exclude modules in test dir
 		if ( $require_type eq 'requires' ) {
@@ -870,6 +928,8 @@ Search for Includes B<use> and B<require> in test scripts
 =item * find_required_test_modules
 
 =item * first_package_name
+
+=item * is_perlfile
 
 =item * initialise
 
