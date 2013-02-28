@@ -154,7 +154,7 @@ sub find_required_modules {
 #######
 sub find_required_test_modules {
 	my $self = shift;
-	
+
 	# By default we shell only check t\ (to xt\ or not?)
 	my @posiable_directories_to_search = map { File::Spec->catfile( $Working_Dir, $_ ) } qw( t );
 	my @directories_to_search = ();
@@ -253,6 +253,7 @@ sub is_perlfile {
 	my $not_a_pl_file = 0;
 
 	if ($ppi_tc) {
+
 		# check first token-comment for a shebang
 		$not_a_pl_file = 1 if $ppi_tc->[0]->content =~ m/^#!.+perl.*$/;
 	}
@@ -288,20 +289,22 @@ sub find_makefile_test_requires {
 	my $document = PPI::Document->new($filename);
 	my $ppi_i    = $document->find('PPI::Statement::Include');
 
+	my @modules;
 	if ($ppi_i) {
 		foreach my $include ( @{$ppi_i} ) {
 			next if $include->type eq 'no';
-
-			my @modules = $include->module;
+			push @modules, $include->module;
 			p @modules if $self->{debug};
 
 			my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
 			if (@base_parent_modules) {
-				@modules = @base_parent_modules;
+				push @modules, @base_parent_modules;
 			}
-			$self->process_found_modules( 'test_requires', \@modules );
+
 		}
 	}
+	p @modules if $self->{debug};
+	$self->process_found_modules( 'test_requires', \@modules );
 
 	#ToDo these are realy rscommends
 	$self->recommends_in_single_quote($document);
@@ -331,9 +334,6 @@ sub recommends_in_single_quote {
 			# if ( $include->content =~ /::/ && $include->content !~ /main/ && !$include->content =~ /use/ ) {
 			if ( $module =~ /::/ && $module !~ /main/ && !$module =~ /use/ ) {
 
-				# my $module = $include->content;
-				# $module =~ s/^[']//;
-				# $module =~ s/[']$//;
 				$module =~ s/(\s[\w|\s]+)$//;
 				p $module if $self->{debug};
 
@@ -351,9 +351,6 @@ sub recommends_in_single_quote {
 				# } elsif ( $include->content =~ /::/ && $include->content =~ /use/ ) {
 			} elsif ( $module =~ /::/ && $module =~ /use/ ) {
 
-				# my $module = $include->content;
-				# $module =~ s/^[']//;
-				# $module =~ s/[']$//;
 				$module =~ s/^use\s//;
 				$module =~ s/(\s[\s|\w|\n|.|;]+)$//;
 				p $module if $self->{debug};
@@ -374,9 +371,6 @@ sub recommends_in_single_quote {
 			# elsif ( $include->content =~ /::/ && $include->content !~ /main::/ ) {
 			elsif ( $module =~ /::/ && $module !~ /main::/ ) {
 
-				# my $module = $include->content;
-				# $module =~ s/^[']//;
-				# $module =~ s/[']$//;
 				p $module if $self->{debug};
 
 				# if we have found it already ignore it
@@ -555,6 +549,7 @@ sub base_parent {
 		$content =~ s/\s*([>?]|[)?]|[}?])\s*//;
 		$content =~ s/\s*(;\n?\t?)$//;
 		$content =~ s/(\n\t)/, /g;
+		$content =~ s{'}{}g;
 		@modules = split /, /, $content;
 
 		push @modules, $module;
