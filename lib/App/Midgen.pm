@@ -498,7 +498,9 @@ sub store_modules {
 
 			# allocate current cpan version against module name
 			$mod_in_cpan = 1;
-		}
+		} else {
+			$self->{$require_type}{$module} = 'undef';
+			}
 
 	}
 	catch {
@@ -508,9 +510,9 @@ sub store_modules {
 		if ( $require_type eq 'requires' ) {
 			$self->{$require_type}{$module} = 0;
 		} elsif ( $module !~ /^t::/ && $self->{requires}{$module} ) {
-			$self->{$require_type}{$module} = 0.0;
+			$self->{$require_type}{$module} = 0;
 		} elsif ( not defined $self->{requires}{$module} ) {
-			$self->{$require_type}{$module} = 0.00;
+			$self->{$require_type}{$module} = 0;
 		}
 
 	}
