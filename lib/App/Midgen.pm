@@ -188,55 +188,66 @@ sub find_makefile_requires {
 
 	my $ppi_i = $document->find('PPI::Statement::Include');
 
+	my @modules;
 	if ($ppi_i) {
 		foreach my $include ( @{$ppi_i} ) {
 			next if $include->type eq 'no';
 
-			my @modules = $include->module;
+			# my @modules = $include->module;
+
+			push @modules, $include->module;
 
 			p @modules if $self->{debug};
 			my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
 			if (@base_parent_modules) {
-				@modules = @base_parent_modules;
+
+				# @modules = @base_parent_modules;
+
+				push @modules, @base_parent_modules;
 			}
 
-			foreach my $module (@modules) {
-				p $module if $self->{debug};
+			# foreach my $module (@modules) {
+			# p $module if $self->{debug};
 
-				if ( !$self->{core} ) {
-					p $module if $self->{debug};
+			# #deal with ''
+			# next if $module eq NONE;
 
-					# hash with core modules to process regardless
-					my $ignore_core = { 'File::Path' => 1, };
-					if ( !$ignore_core->{$module} ) {
-						next if Module::CoreList->first_release($module);
-					}
-				}
+			# p $module if $self->{debug};
 
-				#deal with ''
-				next if $module eq NONE;
-				if ( $module =~ /^$self->{package_name}/sxm ) {
+			# # hash with core modules to process regardless
+			# my $ignore_core = { 'File::Path' => 1, };
+			# if ( !$ignore_core->{$module} ) {
 
-					# Tommy here is were we ignore current package children
-					# don't include our own packages here
-					next;
-				}
+			# # next if Module::CoreList->first_release($module);
+			# if ( Module::CoreList->first_release($module) ) {
+			# next if !$self->{core};
+			# $self->{requires}{$module} = 'core' if $self->{core};
+			# }
+			# }
 
-				if ( $module =~ /Mojo/sxm ) {
-					$self->check_mojo_core($module);
-					$module = 'Mojolicious' if $self->check_mojo_core($module);
-				}
-				if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm && !$self->{padre} ) {
+			# if ( $module =~ /^$self->{package_name}/sxm ) {
 
-					# mark all Padre core as just Padre, for Padre plugins
-					$module = 'Padre';
-				}
+			# # Tommy here is were we ignore current package children
+			# # don't include our own packages here
+			# next;
+			# }
 
-				$self->store_modules( 'requires', $module );
-			}
+			# if ( $module =~ /Mojo/sxm ) {
+			# $self->check_mojo_core($module);
+			# $module = 'Mojolicious' if $self->check_mojo_core($module);
+			# }
+			# if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm && !$self->{padre} ) {
+
+			# # mark all Padre core as just Padre, for Padre plugins
+			# $module = 'Padre';
+			# }
+
+			# $self->store_modules( 'requires', $module );
+			# }
 		}
 	}
 
+	$self->process_found_modules( 'requires', \@modules );
 	return;
 }
 
@@ -281,9 +292,10 @@ sub find_makefile_test_requires {
 	my $filename = $_;
 	return if $filename !~ /[.]t|pm$/sxm;
 
-	if ( $self->{verbose} ) {
-		say 'looking for test_requires in: ' . $filename;
-	}
+	# if ( $self->{verbose} ) {
+	say 'looking for test_requires in: ' . $filename;
+
+	# }
 
 	# Load a Document from a file and check use and require contents
 	my $document = PPI::Document->new($filename);
@@ -304,11 +316,17 @@ sub find_makefile_test_requires {
 		}
 	}
 	p @modules if $self->{debug};
-	$self->process_found_modules( 'test_requires', \@modules );
+	try {
+		$self->process_found_modules( 'test_requires', \@modules );
+	};
 
 	#ToDo these are realy rscommends
-	$self->recommends_in_single_quote($document);
-	$self->recommends_in_double_quote($document);
+	try {
+		$self->recommends_in_single_quote($document);
+		$self->recommends_in_double_quote($document);
+	};
+
+	p $self->{test_requires};
 
 	return;
 }
@@ -429,27 +447,36 @@ sub recommends_in_double_quote {
 # composed method - process_found_modules
 #######
 sub process_found_modules {
-	my $self     = shift;
-	my $grouping = shift;
+	my $self         = shift;
+	my $require_type = shift;
+	my $modules_ref  = shift;
 
-	my $modules_ref = shift;
-	my @items       = ();
+	p $modules_ref;
+	my @items = ();
 
 	foreach my $module ( @{$modules_ref} ) {
-		if ( !$self->{core} ) {
 
-			p $module if $self->{debug};
+		# if ( !$self->{core} ) {
 
-			# hash with core modules to process regardless
-			# don't ignore Test::More so as to get done_testing mst++
-			my $ignore_core = { 'Test::More' => 1, };
-			if ( !$ignore_core->{$module} ) {
-				next if Module::CoreList->first_release($module);
-			}
-		}
+		# p $module if $self->{debug};
+
+		# # hash with core modules to process regardless
+		# # don't ignore Test::More so as to get done_testing mst++
+		# my $ignore_core = { 'Test::More' => 1, };
+		# if ( !$ignore_core->{$module} ) {
+		# next if Module::CoreList->first_release($module);
+		# }
+		# }
+
+		# #deal with ''
+		# next if $module eq NONE;
+		# p $module if $self->{debug};
 
 		#deal with ''
 		next if $module eq NONE;
+
+
+
 		p $module if $self->{debug};
 
 		if ( $module =~ /^$self->{package_name}/sxm ) {
@@ -474,7 +501,32 @@ sub process_found_modules {
 			$module = 'Padre';
 		}
 
-		$self->store_modules( $grouping, $module );
+		# hash with core modules to process regardless
+		my $ignore_core = { 'File::Path' => 1, };
+		if ( !$ignore_core->{$module} ) {
+
+			# next if Module::CoreList->first_release($module);
+			if ( Module::CoreList->first_release($module) ) {
+				next if !$self->{core};
+				try {
+					next if defined $self->{require}{$module};
+					next if defined $self->{test_requires}{$module};
+				};
+
+				$self->{$require_type}{$module} = 'core' if $self->{core};
+
+				# p $self->{$require_type}{$module};
+			}
+		}
+		p $module;
+		try {
+			next if defined $self->{require}{$module};
+			next if defined $self->{test_requires}{$module};
+		};
+
+		p $module;
+
+		$self->store_modules( $require_type, $module );
 
 	}
 	return;
@@ -487,7 +539,7 @@ sub store_modules {
 	my $self         = shift;
 	my $require_type = shift;
 	my $module       = shift;
-	p $module if $self->{debug};
+	p $module; # if $self->{debug};
 
 	my $mod;
 	my $mod_in_cpan = 0;
@@ -498,15 +550,21 @@ sub store_modules {
 
 			# allocate current cpan version against module name
 			$mod_in_cpan = 1;
+			say 'try';
 		}
 
 	}
 	catch {
 		carp "caught - $require_type - $module" if $self->{debug};
 
+
 		# exclude modules in test dir
 		if ( $require_type eq 'requires' ) {
-			$self->{$require_type}{$module} = 0;
+
+			# if ( not defined $self->{$require_type}{$module} )  { #&& $self->{$require_type}{$module} ne 'core' ) {
+			$self->{$require_type}{$module} = '!cpan' if not defined $self->{$require_type}{$module};
+
+			# }
 		} elsif ( $module !~ /^t::/ && $self->{requires}{$module} ) {
 			$self->{$require_type}{$module} = 0.0;
 		} elsif ( not defined $self->{requires}{$module} ) {
@@ -517,11 +575,27 @@ sub store_modules {
 	finally {
 		if ( $mod_in_cpan && !$self->{requires}{$module} ) {
 
+
 			# allocate current cpan version against module name
 			$self->{$require_type}{$module} = $mod->cpan_version;
+			say 'finally-1';
 		}
-	};
+		if ( $mod_in_cpan && $self->{requires}{$module} eq 'core' ) {
 
+
+			# allocate current cpan version against module name
+			$self->{$require_type}{$module} = $mod->cpan_version;
+			say 'finally-2';
+		}
+
+		# if ( $mod_in_cpan && $self->{test_requires}{$module} eq 'core' ) {
+
+
+		# # allocate current cpan version against module name
+		# $self->{$require_type}{$module} = $mod->cpan_version;
+		# say 'finally-3';
+		# }
+	};
 	return;
 }
 
