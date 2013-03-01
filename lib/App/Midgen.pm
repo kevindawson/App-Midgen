@@ -42,20 +42,25 @@ sub run {
 	};
 	$self->output_header();
 
-	$self->find_required_modules();
+	# $self->find_required_modules();
 
-	$self->remove_noisy_children( $self->{requires} );
-	$self->remove_twins( $self->{requires} );
+	# $self->remove_noisy_children( $self->{requires} );
+	# $self->remove_twins( $self->{requires} );
 
 	#run a second time if we found any twins, this will sort out twins and triplets etc
-	$self->remove_noisy_children( $self->{requires} ) if $self->{found_twins};
+	# $self->remove_noisy_children( $self->{requires} ) if $self->{found_twins};
+
+	p $self->{requires};
 
 	$self->output_main_body( 'requires', $self->{requires} );
 
 	$self->find_required_test_modules();
 
+	p $self->{test_requires};
+	p $self->{recommends};
+
 	$self->output_main_body( 'test_requires', $self->{test_requires} );
-	$self->output_main_body( 'recommends',    $self->{recommends} );
+	$self->output_main_body( 'recommends', $self->{recommends} );
 
 	$self->output_footer();
 
@@ -292,10 +297,7 @@ sub find_makefile_test_requires {
 	my $filename = $_;
 	return if $filename !~ /[.]t|pm$/sxm;
 
-	# if ( $self->{verbose} ) {
-	say 'looking for test_requires in: ' . $filename;
-
-	# }
+	say 'looking for test_requires in: ' . $filename ;# if $self->{verbose};
 
 	# Load a Document from a file and check use and require contents
 	my $document = PPI::Document->new($filename);
@@ -315,16 +317,16 @@ sub find_makefile_test_requires {
 
 		}
 	}
-	p @modules if $self->{debug};
-	try {
-		$self->process_found_modules( 'test_requires', \@modules );
-	};
+	p @modules; # if $self->{debug};
+
+	# $self->process_found_modules( 'test_requires', \@modules );
 
 	#ToDo these are realy rscommends
-	try {
-		$self->recommends_in_single_quote($document);
-		$self->recommends_in_double_quote($document);
-	};
+	say 'lets do some bits';
+
+	$self->recommends_in_single_quote($document);
+	$self->recommends_in_double_quote($document);
+
 
 	p $self->{test_requires};
 
@@ -362,7 +364,7 @@ sub recommends_in_single_quote {
 
 				# if we found a module, process it
 				if ( scalar @modules > 0 ) {
-					p @modules if $self->{debug};
+					p @modules;# if $self->{debug};
 					$self->process_found_modules( 'recommends', \@modules );
 				}
 
@@ -380,7 +382,7 @@ sub recommends_in_single_quote {
 
 				# if we found a module, process it
 				if ( scalar @modules > 0 ) {
-					p @modules if $self->{debug};
+					p @modules;# if $self->{debug};
 					$self->process_found_modules( 'recommends', \@modules );
 				}
 			}
@@ -398,7 +400,7 @@ sub recommends_in_single_quote {
 
 				# if we found a module, process it
 				if ( scalar @modules > 0 ) {
-					p @modules if $self->{debug};
+					p @modules;# if $self->{debug};
 					$self->process_found_modules( 'test_requires', \@modules );
 				}
 			}
@@ -451,8 +453,8 @@ sub process_found_modules {
 	my $require_type = shift;
 	my $modules_ref  = shift;
 
-	p $modules_ref;
-	my @items = ();
+	# p $modules_ref;
+	# my @items = ();
 
 	foreach my $module ( @{$modules_ref} ) {
 
@@ -471,11 +473,12 @@ sub process_found_modules {
 		# #deal with ''
 		# next if $module eq NONE;
 		# p $module if $self->{debug};
-
+		
+		p $module;# if $self->{debug};
 		#deal with ''
 		next if $module eq NONE;
-
-
+		next if $self->{requires}{$module};
+		next if $self->{test_requires}{$module};
 
 		p $module if $self->{debug};
 
@@ -501,35 +504,38 @@ sub process_found_modules {
 			$module = 'Padre';
 		}
 
+		p $module;# if $self->{debug};
+		
 		# hash with core modules to process regardless
-		my $ignore_core = { 'File::Path' => 1, };
+		my $ignore_core = { 'File::Path' => 1, 'Test::More' => 1, };
 		if ( !$ignore_core->{$module} ) {
 
 			# next if Module::CoreList->first_release($module);
 			if ( Module::CoreList->first_release($module) ) {
 				next if !$self->{core};
-				try {
-					next if defined $self->{require}{$module};
-					next if defined $self->{test_requires}{$module};
-				};
+				# try {
+					# next if defined $self->{requires}{$module};
+					# next if defined $self->{test_requires}{$module};
+				# };
 
 				$self->{$require_type}{$module} = 'core' if $self->{core};
 
-				# p $self->{$require_type}{$module};
+				p $self->{$require_type}{$module};
 			}
 		}
-		p $module;
-		try {
-			next if defined $self->{require}{$module};
-			next if defined $self->{test_requires}{$module};
-		};
+
+		# p $module;
+		# try {
+		# next if defined $self->{require}{$module};
+		# next if defined $self->{test_requires}{$module};
+		# };
 
 		p $module;
-
+		# p $self->{$require_type}{$module};
 		$self->store_modules( $require_type, $module );
 
 	}
-	return;
+	# return;
 }
 
 #######
@@ -551,12 +557,16 @@ sub store_modules {
 			# allocate current cpan version against module name
 			$mod_in_cpan = 1;
 			say 'try';
+			p $module;
+		} else {
+			p $mod;
+			$self->{$require_type}{$module} = 'undef';
 		}
 
 	}
 	catch {
 		carp "caught - $require_type - $module" if $self->{debug};
-
+		say "caught - $require_type - $module";
 
 		# exclude modules in test dir
 		if ( $require_type eq 'requires' ) {
@@ -565,10 +575,16 @@ sub store_modules {
 			$self->{$require_type}{$module} = '!cpan' if not defined $self->{$require_type}{$module};
 
 			# }
+		} elsif ( $require_type eq 'test_requires' ) {
+
+			$self->{$require_type}{$module} = '!cpan' if not defined $self->{$require_type}{$module};
+
 		} elsif ( $module !~ /^t::/ && $self->{requires}{$module} ) {
-			$self->{$require_type}{$module} = 0.0;
+			$self->{$require_type}{$module} = 2;
+
+			# delete $self->{$require_type}{$module};
 		} elsif ( not defined $self->{requires}{$module} ) {
-			$self->{$require_type}{$module} = 0.00;
+			$self->{$require_type}{$module} = 3;
 		}
 
 	}
@@ -578,6 +594,7 @@ sub store_modules {
 
 			# allocate current cpan version against module name
 			$self->{$require_type}{$module} = $mod->cpan_version;
+
 			say 'finally-1';
 		}
 		if ( $mod_in_cpan && $self->{requires}{$module} eq 'core' ) {
@@ -585,6 +602,7 @@ sub store_modules {
 
 			# allocate current cpan version against module name
 			$self->{$require_type}{$module} = $mod->cpan_version;
+
 			say 'finally-2';
 		}
 
@@ -596,7 +614,7 @@ sub store_modules {
 		# say 'finally-3';
 		# }
 	};
-	return;
+	# return;
 }
 
 #######
