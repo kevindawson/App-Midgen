@@ -52,9 +52,6 @@ sub run {
 	$self->remove_noisy_children( $self->{requires} ) if $self->{found_twins};
 
 	$self->output_main_body( 'requires', $self->{requires} );
-
-	$self->find_required_test_modules();
-
 	$self->output_main_body( 'test_requires', $self->{test_requires} );
 	$self->output_main_body( 'recommends',    $self->{recommends} );
 
@@ -68,8 +65,6 @@ sub run {
 #######
 sub initialise {
 	my $self = shift;
-
-
 
 	# let's give output a copy also to stop it being Fup as well suspect Tiny::Path
 	say 'working in dir: ' . $Working_Dir if $self->{debug};
@@ -199,8 +194,6 @@ sub find_makefile_requires {
 			p @modules if $self->{debug};
 			my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
 			if (@base_parent_modules) {
-				@modules = @base_parent_modules;
-			}
 
 				push @modules, @base_parent_modules;
 			}
@@ -301,7 +294,6 @@ sub recommends_in_single_quote {
 			$module =~ s/^[']//;
 			$module =~ s/[']$//;
 
-			# if ( $include->content =~ /::/ && $include->content !~ /main/ && !$include->content =~ /use/ ) {
 			if ( $module =~ /::/ && $module !~ /main/ && !$module =~ /use/ ) {
 
 				$module =~ s/(\s[\w|\s]+)$//;
@@ -314,11 +306,9 @@ sub recommends_in_single_quote {
 
 				# if we found a module, process it
 				if ( scalar @modules > 0 ) {
-					p @modules if $self->{debug};
 					$self->process_found_modules( 'recommends', \@modules );
 				}
 
-				# } elsif ( $include->content =~ /::/ && $include->content =~ /use/ ) {
 			} elsif ( $module =~ /::/ && $module =~ /use/ ) {
 
 				$module =~ s/^use\s//;
@@ -332,13 +322,11 @@ sub recommends_in_single_quote {
 
 				# if we found a module, process it
 				if ( scalar @modules > 0 ) {
-					p @modules if $self->{debug};
 					$self->process_found_modules( 'recommends', \@modules );
 				}
 			}
 
 			# hack for use_ok in test files
-			# elsif ( $include->content =~ /::/ && $include->content !~ /main::/ ) {
 			elsif ( $module =~ /::/ && $module !~ /main::/ ) {
 
 				p $module if $self->{debug};
@@ -350,7 +338,6 @@ sub recommends_in_single_quote {
 
 				# if we found a module, process it
 				if ( scalar @modules > 0 ) {
-					p @modules if $self->{debug};
 					$self->process_found_modules( 'test_requires', \@modules );
 				}
 			}
@@ -387,7 +374,6 @@ sub recommends_in_double_quote {
 
 			# if we found a module, process it
 			if ( scalar @modules > 0 ) {
-				p @modules if $self->{debug};
 				$self->process_found_modules( 'recommends', \@modules );
 			}
 		}
@@ -404,13 +390,11 @@ sub process_found_modules {
 	my $modules_ref  = shift;
 
 	foreach my $module ( @{$modules_ref} ) {
-		if ( !$self->{core} ) {
 
 		p $module if $self->{debug};
 
 		#deal with ''
 		next if $module eq NONE;
-		p $module if $self->{debug};
 
 		if ( $module =~ /^$self->{package_name}/sxm ) {
 
@@ -466,8 +450,6 @@ sub store_modules {
 	my $module       = shift;
 	p $module if $self->{debug};
 
-	my $mod;
-	my $mod_in_cpan = 0;
 	try {
 		my $mod = CPAN::Shell->expand( 'Module', $module );
 
@@ -980,4 +962,6 @@ SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGES.
 
 =cut
+
+
 
