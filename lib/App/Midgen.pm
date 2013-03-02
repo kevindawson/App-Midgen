@@ -456,36 +456,23 @@ sub store_modules {
 	my $module       = shift;
 	p $module if $self->{debug};
 
-	my $mod;
-	my $mod_in_cpan = 0;
 	try {
-		$mod = CPAN::Shell->expand( 'Module', $module );
+		my $mod = CPAN::Shell->expand( 'Module', $module );
 
 		if ( $mod->cpan_version ne 'undef' ) {
 
 			# allocate current cpan version against module name
-			$mod_in_cpan = 1;
 			$self->{$require_type}{$module} = $mod->cpan_version;
-
-			# say 'try';
-			# p $module;
 		} else {
-			# p $mod;
+			# Mark as undef, ie no version in cpan, what fun!
 			$self->{$require_type}{$module} = 'undef';
 		}
 
 	}
 	catch {
 		carp "caught - $require_type - $module" if $self->{debug};
-		# say "caught - $require_type - $module";
 
-		# exclude modules in test dir
-		# if ( $require_type eq 'requires' ) {
-
-			# if ( not defined $self->{$require_type}{$module} )  { #&& $self->{$require_type}{$module} ne 'core' ) {
 			$self->{$require_type}{$module} = '!cpan' if not defined $self->{$require_type}{$module};
-
-
 	};
 
 	return;
