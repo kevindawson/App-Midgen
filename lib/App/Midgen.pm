@@ -55,7 +55,7 @@ sub run {
 	$self->find_required_test_modules();
 
 	$self->output_main_body( 'test_requires', $self->{test_requires} );
-	$self->output_main_body( 'recommends', $self->{recommends} );
+	$self->output_main_body( 'recommends',    $self->{recommends} );
 
 	$self->output_footer();
 
@@ -398,8 +398,9 @@ sub process_found_modules {
 	my $modules_ref  = shift;
 
 	foreach my $module ( @{$modules_ref} ) {
-		
+
 		p $module if $self->{debug};
+
 		#deal with ''
 		next if $module eq NONE;
 
@@ -429,7 +430,7 @@ sub process_found_modules {
 		next if $self->{test_requires}{$module};
 
 		p $module if $self->{debug};
-		
+
 		# hash with core modules to process regardless
 		my $ignore_core = { 'File::Path' => 1, 'Test::More' => 1, };
 		if ( !$ignore_core->{$module} ) {
@@ -464,6 +465,7 @@ sub store_modules {
 			# allocate current cpan version against module name
 			$self->{$require_type}{$module} = $mod->cpan_version;
 		} else {
+
 			# Mark as undef, ie no version in cpan, what fun!
 			$self->{$require_type}{$module} = 'undef';
 		}
@@ -472,7 +474,7 @@ sub store_modules {
 	catch {
 		carp "caught - $require_type - $module" if $self->{debug};
 
-			$self->{$require_type}{$module} = '!cpan' if not defined $self->{$require_type}{$module};
+		$self->{$require_type}{$module} = '!cpan' if not defined $self->{$require_type}{$module};
 	};
 
 	return;
