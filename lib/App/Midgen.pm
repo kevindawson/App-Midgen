@@ -68,8 +68,6 @@ sub run {
 sub initialise {
 	my $self = shift;
 
-
-
 	# let's give output a copy also to stop it being Fup as well suspect Tiny::Path
 	say 'working in dir: ' . $Working_Dir if $self->{debug};
 
