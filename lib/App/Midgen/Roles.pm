@@ -130,26 +130,31 @@ has 'twins' => (
 has 'package_name' => (
 	is  => 'rw',
 	isa => Str,
+	lazy => 1,
 );
 
 has 'package_names' => (
 	is  => 'rw',
 	isa => ArrayRef,
+	lazy => 1,
 );
 
 has 'requires' => (
 	is  => 'rw',
 	isa => HashRef,
+	lazy => 1,
 );
 
 has 'test_requires' => (
 	is  => 'rw',
 	isa => HashRef,
+	lazy => 1,
 );
 
 has 'recommends' => (
 	is  => 'rw',
 	isa => HashRef,
+	lazy => 1,
 );
 
 has 'found_twins' => (
@@ -162,6 +167,11 @@ has 'found_twins' => (
 	required => 1,
 );
 
+has 'document' => (
+	is  => 'rw',
+	isa => Object,
+	lazy => 1,
+);
 
 1;
 
@@ -192,6 +202,8 @@ none as such, but we do have
 =item * core
 
 =item * debug
+
+=item * document
 
 =item * mojo
 
