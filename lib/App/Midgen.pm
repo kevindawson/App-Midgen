@@ -431,8 +431,9 @@ sub process_found_modules {
 
 			# next if Module::CoreList->first_release($module);
 			if ( Module::CoreList->first_release($module) ) {
+				# Skip if we are not intrested in core mofules
 				next if !$self->{core};
-
+				# Assign a temp value to indicate a core module
 				$self->{$require_type}{$module} = 'core' if $self->{core};
 			}
 		}
