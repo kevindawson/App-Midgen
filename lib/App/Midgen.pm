@@ -50,13 +50,9 @@ sub run {
 	#run a second time if we found any twins, this will sort out twins and triplets etc
 	$self->remove_noisy_children( $self->{requires} ) if $self->{found_twins};
 
-	# p $self->{requires};
 	$self->output_main_body( 'requires', $self->{requires} );
 
 	$self->find_required_test_modules();
-
-	# p $self->{test_requires};
-	# p $self->{recommends};
 
 	$self->output_main_body( 'test_requires', $self->{test_requires} );
 	$self->output_main_body( 'recommends', $self->{recommends} );
@@ -197,57 +193,14 @@ sub find_makefile_requires {
 		foreach my $include ( @{$ppi_i} ) {
 			next if $include->type eq 'no';
 
-			# my @modules = $include->module;
-
 			push @modules, $include->module;
 
 			p @modules if $self->{debug};
 			my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
 			if (@base_parent_modules) {
 
-				# @modules = @base_parent_modules;
-
 				push @modules, @base_parent_modules;
 			}
-
-			# foreach my $module (@modules) {
-			# p $module if $self->{debug};
-
-			# #deal with ''
-			# next if $module eq NONE;
-
-			# p $module if $self->{debug};
-
-			# # hash with core modules to process regardless
-			# my $ignore_core = { 'File::Path' => 1, };
-			# if ( !$ignore_core->{$module} ) {
-
-			# # next if Module::CoreList->first_release($module);
-			# if ( Module::CoreList->first_release($module) ) {
-			# next if !$self->{core};
-			# $self->{requires}{$module} = 'core' if $self->{core};
-			# }
-			# }
-
-			# if ( $module =~ /^$self->{package_name}/sxm ) {
-
-			# # Tommy here is were we ignore current package children
-			# # don't include our own packages here
-			# next;
-			# }
-
-			# if ( $module =~ /Mojo/sxm ) {
-			# $self->check_mojo_core($module);
-			# $module = 'Mojolicious' if $self->check_mojo_core($module);
-			# }
-			# if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm && !$self->{padre} ) {
-
-			# # mark all Padre core as just Padre, for Padre plugins
-			# $module = 'Padre';
-			# }
-
-			# $self->store_modules( 'requires', $module );
-			# }
 		}
 	}
 
@@ -320,14 +273,9 @@ sub find_makefile_test_requires {
 
 	$self->process_found_modules( 'test_requires', \@modules );
 
-	#ToDo these are realy rscommends
-	# say 'lets do some bits';
-
+	#These are realy recommends
 	$self->recommends_in_single_quote($document);
 	$self->recommends_in_double_quote($document);
-
-
-	# p $self->{test_requires};
 
 	return;
 }
@@ -350,7 +298,6 @@ sub recommends_in_single_quote {
 			$module =~ s/^[']//;
 			$module =~ s/[']$//;
 
-			# if ( $include->content =~ /::/ && $include->content !~ /main/ && !$include->content =~ /use/ ) {
 			if ( $module =~ /::/ && $module !~ /main/ && !$module =~ /use/ ) {
 
 				$module =~ s/(\s[\w|\s]+)$//;
@@ -367,7 +314,6 @@ sub recommends_in_single_quote {
 					$self->process_found_modules( 'recommends', \@modules );
 				}
 
-				# } elsif ( $include->content =~ /::/ && $include->content =~ /use/ ) {
 			} elsif ( $module =~ /::/ && $module =~ /use/ ) {
 
 				$module =~ s/^use\s//;
@@ -387,7 +333,6 @@ sub recommends_in_single_quote {
 			}
 
 			# hack for use_ok in test files
-			# elsif ( $include->content =~ /::/ && $include->content !~ /main::/ ) {
 			elsif ( $module =~ /::/ && $module !~ /main::/ ) {
 
 				p $module if $self->{debug};
@@ -452,32 +397,11 @@ sub process_found_modules {
 	my $require_type = shift;
 	my $modules_ref  = shift;
 
-	# p $modules_ref;
-	# my @items = ();
-
 	foreach my $module ( @{$modules_ref} ) {
-
-		# if ( !$self->{core} ) {
-
-		# p $module if $self->{debug};
-
-		# # hash with core modules to process regardless
-		# # don't ignore Test::More so as to get done_testing mst++
-		# my $ignore_core = { 'Test::More' => 1, };
-		# if ( !$ignore_core->{$module} ) {
-		# next if Module::CoreList->first_release($module);
-		# }
-		# }
-
-		# #deal with ''
-		# next if $module eq NONE;
-		# p $module if $self->{debug};
 		
 		p $module if $self->{debug};
 		#deal with ''
 		next if $module eq NONE;
-
-		p $module if $self->{debug};
 
 		if ( $module =~ /^$self->{package_name}/sxm ) {
 
@@ -513,27 +437,12 @@ sub process_found_modules {
 			# next if Module::CoreList->first_release($module);
 			if ( Module::CoreList->first_release($module) ) {
 				next if !$self->{core};
-				# try {
-					# next if defined $self->{requires}{$module};
-					# next if defined $self->{test_requires}{$module};
-				# };
 
 				$self->{$require_type}{$module} = 'core' if $self->{core};
-
-				# p $self->{$require_type}{$module};
 			}
 		}
 
-		# p $module;
-		# try {
-		# next if defined $self->{require}{$module};
-		# next if defined $self->{test_requires}{$module};
-		# };
-
-		# p $module;
-		# p $self->{$require_type}{$module};
 		$self->store_modules( $require_type, $module );
-
 	}
 	return;
 }
@@ -576,50 +485,9 @@ sub store_modules {
 			# if ( not defined $self->{$require_type}{$module} )  { #&& $self->{$require_type}{$module} ne 'core' ) {
 			$self->{$require_type}{$module} = '!cpan' if not defined $self->{$require_type}{$module};
 
-			# }
-#		} else {
-#			$self->{$require_type}{$module} = 'caught';
-#		}
-
-#		elsif ( $require_type eq 'test_requires' ) {
-#
-#			$self->{$require_type}{$module} = '!cpan' if not defined $self->{$require_type}{$module};
-#
-#		} elsif ( $module !~ /^t::/ && $self->{requires}{$module} ) {
-#			$self->{$require_type}{$module} = 2;
-#
-#			# delete $self->{$require_type}{$module};
-#		} elsif ( not defined $self->{requires}{$module} ) {
-#			$self->{$require_type}{$module} = 3;
-#		}
 
 	};
-#	finally {
-#		if ( $mod_in_cpan && !$self->{requires}{$module} ) {
-#
-#
-#			# allocate current cpan version against module name
-#			$self->{$require_type}{$module} = $mod->cpan_version;
-#
-#			say 'finally-1';
-#		}
-#		if ( $mod_in_cpan && $self->{requires}{$module} eq 'core' ) {
-#
-#
-#			# allocate current cpan version against module name
-#			$self->{$require_type}{$module} = $mod->cpan_version;
-#
-#			say 'finally-2';
-#		}
 
-		# if ( $mod_in_cpan && $self->{test_requires}{$module} eq 'core' ) {
-
-
-		# # allocate current cpan version against module name
-		# $self->{$require_type}{$module} = $mod->cpan_version;
-		# say 'finally-3';
-		# }
-#	};
 	return;
 }
 
