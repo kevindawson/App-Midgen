@@ -303,14 +303,13 @@ sub recommends_in_single_quote {
 				$module =~ s/(\s[\w|\s]+)$//;
 				p $module if $self->{debug};
 
-				# if we have found it already ignore it
+				# if we have found it already ignore it - or - contains ;|=
 				if ( !$self->{requires}{$module} && !$self->{test_requires}{$module} && $module !~ /[;|=]/ ) {
 					push @modules, $module;
 				}
 
 				# if we found a module, process it
 				if ( scalar @modules > 0 ) {
-					p @modules if $self->{debug};
 					$self->process_found_modules( 'recommends', \@modules );
 				}
 
@@ -320,14 +319,13 @@ sub recommends_in_single_quote {
 				$module =~ s/(\s[\s|\w|\n|.|;]+)$//;
 				p $module if $self->{debug};
 
-				# if we have found it already ignore it
+				# if we have found it already ignore it - or - contains ;|=
 				if ( !$self->{requires}{$module} && !$self->{test_requires}{$module} && $module !~ /[;|=]/ ) {
 					push @modules, $module;
 				}
 
 				# if we found a module, process it
 				if ( scalar @modules > 0 ) {
-					p @modules if $self->{debug};
 					$self->process_found_modules( 'recommends', \@modules );
 				}
 			}
@@ -344,7 +342,6 @@ sub recommends_in_single_quote {
 
 				# if we found a module, process it
 				if ( scalar @modules > 0 ) {
-					p @modules if $self->{debug};
 					$self->process_found_modules( 'test_requires', \@modules );
 				}
 			}
@@ -381,7 +378,6 @@ sub recommends_in_double_quote {
 
 			# if we found a module, process it
 			if ( scalar @modules > 0 ) {
-				p @modules if $self->{debug};
 				$self->process_found_modules( 'recommends', \@modules );
 			}
 		}
@@ -473,7 +469,6 @@ sub store_modules {
 	}
 	catch {
 		carp "caught - $require_type - $module" if $self->{debug};
-
 		$self->{$require_type}{$module} = '!cpan' if not defined $self->{$require_type}{$module};
 	};
 
