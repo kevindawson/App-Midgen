@@ -43,6 +43,7 @@ sub run {
 	$self->output_header();
 
 	$self->find_required_modules();
+	$self->find_required_test_modules();
 
 	$self->remove_noisy_children( $self->{requires} );
 	$self->remove_twins( $self->{requires} );
@@ -51,9 +52,6 @@ sub run {
 	$self->remove_noisy_children( $self->{requires} ) if $self->{found_twins};
 
 	$self->output_main_body( 'requires', $self->{requires} );
-
-	$self->find_required_test_modules();
-
 	$self->output_main_body( 'test_requires', $self->{test_requires} );
 	$self->output_main_body( 'recommends',    $self->{recommends} );
 
