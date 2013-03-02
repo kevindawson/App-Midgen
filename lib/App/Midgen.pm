@@ -202,6 +202,9 @@ sub find_makefile_requires {
 
 			foreach my $module (@modules) {
 				p $module if $self->{debug};
+				
+				#deal with ''
+				next if $module eq NONE;
 
 				if ( !$self->{core} ) {
 					p $module if $self->{debug};
@@ -211,10 +214,8 @@ sub find_makefile_requires {
 					if ( !$ignore_core->{$module} ) {
 						next if Module::CoreList->first_release($module);
 					}
-				}
+				} 
 
-				#deal with ''
-				next if $module eq NONE;
 				if ( $module =~ /^$self->{package_name}/sxm ) {
 
 					# Tommy here is were we ignore current package children
@@ -436,6 +437,14 @@ sub process_found_modules {
 	my @items       = ();
 
 	foreach my $module ( @{$modules_ref} ) {
+		
+		p $module if $self->{debug};
+		#deal with ''
+		next if $module eq NONE;
+		next if $self->{requires}{$module};
+		next if $self->{test_requires}{$module};
+		
+		
 		if ( !$self->{core} ) {
 
 			p $module if $self->{debug};
@@ -448,8 +457,7 @@ sub process_found_modules {
 			}
 		}
 
-		#deal with ''
-		next if $module eq NONE;
+
 		p $module if $self->{debug};
 
 		if ( $module =~ /^$self->{package_name}/sxm ) {
