@@ -17,8 +17,11 @@ use Data::Printer {
 	colored     => 1,
 };
 
+# we are doing this so we can run from git during development
+# perl ~/GitHub/App-Midgen/script/midgen -c
 use FindBin qw($Bin);
 use lib map {"$Bin/$_"} qw( lib ../lib );
+use App::Midgen;
 
 #######
 # Start of Menu
@@ -56,14 +59,11 @@ GetOptions(
 ) or pod2usage(2);
 pod2usage(1) if $help;
 
-
 #######
 # End of Menu
 #######
 
 say 'Running midgen v' . $VERSION;
-
-use App::Midgen;
 
 my $midgen = App::Midgen->new(
 	base_parent    => $base_parent,
@@ -79,7 +79,6 @@ my $midgen = App::Midgen->new(
 p $midgen if $debug;
 
 $midgen->run();
-
 
 my $run_time = time - $BASETIME;
 say 'I just spent ' . $run_time . 's doing all that for you';
@@ -114,7 +113,6 @@ Now with a Getopt --help or -?
 or
 
  midgen [options]
-
 
 =head1 OPTIONS
 
