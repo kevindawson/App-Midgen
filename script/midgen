@@ -186,7 +186,7 @@ Turn on extra output to show the modules considered to be noisy children, as we 
 Turn on extra output to show the modules that are twins as we find them, as we find them
 
  midgen -t
- 
+
 =item B<--debug or -d>
 
 equivalent of -cnmptv and some :))

@@ -43,6 +43,7 @@ sub run {
 	$self->output_header();
 
 	$self->find_required_modules();
+	$self->find_required_test_modules();
 
 	$self->remove_noisy_children( $self->{requires} );
 	$self->remove_twins( $self->{requires} );
@@ -188,11 +189,12 @@ sub find_makefile_requires {
 
 	my $ppi_i = $document->find('PPI::Statement::Include');
 
+	my @modules;
 	if ($ppi_i) {
 		foreach my $include ( @{$ppi_i} ) {
 			next if $include->type eq 'no';
 
-			my @modules = $include->module;
+			push @modules, $include->module;
 
 			p @modules if $self->{debug};
 			my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
@@ -200,44 +202,12 @@ sub find_makefile_requires {
 				@modules = @base_parent_modules;
 			}
 
-			foreach my $module (@modules) {
-				p $module if $self->{debug};
-				
-				#deal with ''
-				next if $module eq NONE;
-
-				if ( !$self->{core} ) {
-					p $module if $self->{debug};
-
-					# hash with core modules to process regardless
-					my $ignore_core = { 'File::Path' => 1, };
-					if ( !$ignore_core->{$module} ) {
-						next if Module::CoreList->first_release($module);
-					}
-				} 
-
-				if ( $module =~ /^$self->{package_name}/sxm ) {
-
-					# Tommy here is were we ignore current package children
-					# don't include our own packages here
-					next;
-				}
-
-				if ( $module =~ /Mojo/sxm ) {
-					$self->check_mojo_core($module);
-					$module = 'Mojolicious' if $self->check_mojo_core($module);
-				}
-				if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm && !$self->{padre} ) {
-
-					# mark all Padre core as just Padre, for Padre plugins
-					$module = 'Padre';
-				}
-
-				$self->store_modules( 'requires', $module );
+				push @modules, @base_parent_modules;
 			}
 		}
 	}
 
+	$self->process_found_modules( 'requires', \@modules );
 	return;
 }
 
@@ -282,9 +252,7 @@ sub find_makefile_test_requires {
 	my $filename = $_;
 	return if $filename !~ /[.]t|pm$/sxm;
 
-	if ( $self->{verbose} ) {
-		say 'looking for test_requires in: ' . $filename;
-	}
+	say 'looking for test_requires in: ' . $filename if $self->{verbose};
 
 	# Load a Document from a file and check use and require contents
 	my $document = PPI::Document->new($filename);
@@ -305,9 +273,10 @@ sub find_makefile_test_requires {
 		}
 	}
 	p @modules if $self->{debug};
+
 	$self->process_found_modules( 'test_requires', \@modules );
 
-	#ToDo these are realy rscommends
+	#These are realy recommends
 	$self->recommends_in_single_quote($document);
 	$self->recommends_in_double_quote($document);
 
@@ -338,7 +307,7 @@ sub recommends_in_single_quote {
 				$module =~ s/(\s[\w|\s]+)$//;
 				p $module if $self->{debug};
 
-				# if we have found it already ignore it
+				# if we have found it already ignore it - or - contains ;|=
 				if ( !$self->{requires}{$module} && !$self->{test_requires}{$module} && $module !~ /[;|=]/ ) {
 					push @modules, $module;
 				}
@@ -356,7 +325,7 @@ sub recommends_in_single_quote {
 				$module =~ s/(\s[\s|\w|\n|.|;]+)$//;
 				p $module if $self->{debug};
 
-				# if we have found it already ignore it
+				# if we have found it already ignore it - or - contains ;|=
 				if ( !$self->{requires}{$module} && !$self->{test_requires}{$module} && $module !~ /[;|=]/ ) {
 					push @modules, $module;
 				}
@@ -430,34 +399,17 @@ sub recommends_in_double_quote {
 # composed method - process_found_modules
 #######
 sub process_found_modules {
-	my $self     = shift;
-	my $grouping = shift;
-
-	my $modules_ref = shift;
-	my @items       = ();
+	my $self         = shift;
+	my $require_type = shift;
+	my $modules_ref  = shift;
 
 	foreach my $module ( @{$modules_ref} ) {
-		
-		p $module if $self->{debug};
-		#deal with ''
-		next if $module eq NONE;
-		next if $self->{requires}{$module};
-		next if $self->{test_requires}{$module};
-		
-		
 		if ( !$self->{core} ) {
 
-			p $module if $self->{debug};
+		p $module if $self->{debug};
 
-			# hash with core modules to process regardless
-			# don't ignore Test::More so as to get done_testing mst++
-			my $ignore_core = { 'Test::More' => 1, };
-			if ( !$ignore_core->{$module} ) {
-				next if Module::CoreList->first_release($module);
-			}
-		}
-
-
+		#deal with ''
+		next if $module eq NONE;
 		p $module if $self->{debug};
 
 		if ( $module =~ /^$self->{package_name}/sxm ) {
@@ -482,8 +434,25 @@ sub process_found_modules {
 			$module = 'Padre';
 		}
 
-		$self->store_modules( $grouping, $module );
+		next if $self->{requires}{$module};
+		next if $self->{test_requires}{$module};
 
+		p $module if $self->{debug};
+
+		# hash with core modules to process regardless
+		my $ignore_core = { 'File::Path' => 1, 'Test::More' => 1, };
+		if ( !$ignore_core->{$module} ) {
+
+			# next if Module::CoreList->first_release($module);
+			if ( Module::CoreList->first_release($module) ) {
+				# Skip if we are not intrested in core mofules
+				next if !$self->{core};
+				# Assign a temp value to indicate a core module
+				$self->{$require_type}{$module} = 'core' if $self->{core};
+			}
+		}
+
+		$self->store_modules( $require_type, $module );
 	}
 	return;
 }
@@ -500,36 +469,22 @@ sub store_modules {
 	my $mod;
 	my $mod_in_cpan = 0;
 	try {
-		$mod = CPAN::Shell->expand( 'Module', $module );
+		my $mod = CPAN::Shell->expand( 'Module', $module );
 
 		if ( $mod->cpan_version ne 'undef' ) {
 
 			# allocate current cpan version against module name
-			$mod_in_cpan = 1;
+			$self->{$require_type}{$module} = $mod->cpan_version;
 		} else {
+
+			# Mark as undef, ie no version in cpan, what fun!
 			$self->{$require_type}{$module} = 'undef';
-			}
+		}
 
 	}
 	catch {
 		carp "caught - $require_type - $module" if $self->{debug};
-
-		# exclude modules in test dir
-		if ( $require_type eq 'requires' ) {
-			$self->{$require_type}{$module} = 0;
-		} elsif ( $module !~ /^t::/ && $self->{requires}{$module} ) {
-			$self->{$require_type}{$module} = 0;
-		} elsif ( not defined $self->{requires}{$module} ) {
-			$self->{$require_type}{$module} = 0;
-		}
-
-	}
-	finally {
-		if ( $mod_in_cpan && !$self->{requires}{$module} ) {
-
-			# allocate current cpan version against module name
-			$self->{$require_type}{$module} = $mod->cpan_version;
-		}
+		$self->{$require_type}{$module} = '!cpan' if not defined $self->{$require_type}{$module};
 	};
 
 	return;
