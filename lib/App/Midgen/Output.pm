@@ -263,9 +263,13 @@ sub header_dzil {
 	my $self = shift;
 	my $package_name = shift // NONE;
 
-	# print "\n";
-	# say 'dzil header underdevelopment';
-	# print "\n";
+	if ( $package_name ne NONE ) {
+		print "\n";
+		say "NAME => '$package_name'";
+		$package_name =~ s{::}{/}g;
+		say "VERSION_FROM => 'lib/$package_name.pm'";
+		print "\n";
+	}
 
 	return;
 }
@@ -286,8 +290,8 @@ sub body_dzil {
 	}
 
 	given ($title) {
-		when ('requires')      { say '"PREREQ_PM" => {'; }
-		when ('test_requires') { say '"BUILD_REQUIRES" => {'; }
+		when ('requires')      { say 'PREREQ_PM => {'; }
+		when ('test_requires') { say 'BUILD_REQUIRES => {'; }
 		when ('recommends')    { return; }
 	}
 
@@ -306,9 +310,22 @@ sub body_dzil {
 #######
 sub footer_dzil {
 	my $self = shift;
+	my $package_name = shift // NONE;
+	$package_name =~ s{::}{-}g;
 
-	# print "\n";
-	# say 'dzil footer underdevelopment';
+	print "\n";
+	say '#ToDo you should consider the following';
+	say 'META_MERGE => {';
+    say "\tresources => {";
+    say "\t\thomepage   => 'https://github.com/.../$package_name',";
+    say "\t\trepository => 'git://github.com/.../$package_name.git',";
+    say "\t\tbugtracker => 'https://github.com/.../$package_name/issues',";
+	say "\t},";
+    say "\tx_contributors => [";
+	say "\t\t'brian d foy (ADOPTME) <brian.d.foy\@gmail.com>',";
+	say "\t\t'Fred Bloggs <fred\@bloggs.org>',";
+	say "\t],";
+	say "},";
 	print "\n";
 
 	return;
