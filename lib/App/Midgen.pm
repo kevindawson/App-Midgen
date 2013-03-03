@@ -111,10 +111,10 @@ sub find_package_names {
 	return if $filename !~ /[.]pm$/sxm;
 
 	# Load a Document from a file
-	$self->{document} = PPI::Document->new($filename);
+	$self->{ppi_document} = PPI::Document->new($filename);
 
 	# Extract package names
-	push @{ $self->{package_names} }, $self->{document}->find_first('PPI::Statement::Package')->namespace;
+	push @{ $self->{package_names} }, $self->{ppi_document}->find_first('PPI::Statement::Package')->namespace;
 	$files_checked++;
 
 	return;
@@ -174,7 +174,7 @@ sub find_required_test_modules {
 sub find_makefile_requires {
 	my $self     = shift;
 	my $filename = $_;
-	$self->{document} = PPI::Document->new($filename);
+	$self->{ppi_document} = PPI::Document->new($filename);
 
 	given ($filename) {
 		when (m/[.]pm$/) { say 'looking for requires in (.pm)-> ' . $filename if $self->{verbose}; }
@@ -182,7 +182,7 @@ sub find_makefile_requires {
 		default { return if not $self->is_perlfile($filename); }
 	}
 
-	my $ppi_i = $self->{document}->find('PPI::Statement::Include');
+	my $ppi_i = $self->{ppi_document}->find('PPI::Statement::Include');
 
 	my @modules;
 	if ($ppi_i) {
@@ -211,8 +211,8 @@ sub is_perlfile {
 	my $self     = shift;
 	my $filename = shift;
 
-	$self->{document} = PPI::Document->new($filename);
-	my $ppi_tc   = $self->{document}->find('PPI::Token::Comment');
+	$self->{ppi_document} = PPI::Document->new($filename);
+	my $ppi_tc   = $self->{ppi_document}->find('PPI::Token::Comment');
 
 	my $not_a_pl_file = 0;
 
@@ -222,10 +222,10 @@ sub is_perlfile {
 		$not_a_pl_file = 1 if $ppi_tc->[0]->content =~ m/^#!.+perl.*$/;
 	}
 
-	if ( $self->{document}->find('PPI::Statement::Package') || $not_a_pl_file ) {
+	if ( $self->{ppi_document}->find('PPI::Statement::Package') || $not_a_pl_file ) {
 		if ( $self->{verbose} ) {
 
-			print "looking for requires in (package) -> " if $self->{document}->find('PPI::Statement::Package');
+			print "looking for requires in (package) -> " if $self->{ppi_document}->find('PPI::Statement::Package');
 			print "looking for requires in (shebang) -> " if $ppi_tc->[0]->content =~ /perl/;
 			say $filename ;
 		}
@@ -248,8 +248,8 @@ sub find_makefile_test_requires {
 	say 'looking for test_requires in: ' . $filename if $self->{verbose};
 
 	# Load a Document from a file and check use and require contents
-	$self->{document} = PPI::Document->new($filename);
-	my $ppi_i    = $self->{document}->find('PPI::Statement::Include');
+	$self->{ppi_document} = PPI::Document->new($filename);
+	my $ppi_i    = $self->{ppi_document}->find('PPI::Statement::Include');
 
 	my @modules;
 	if ($ppi_i) {
@@ -270,8 +270,8 @@ sub find_makefile_test_requires {
 	$self->process_found_modules( 'test_requires', \@modules );
 
 	#These are realy recommends
-	$self->recommends_in_single_quote();#$self->{document});
-	$self->recommends_in_double_quote();#$self->{document});
+	$self->recommends_in_single_quote();#$self->{ppi_document});
+	$self->recommends_in_double_quote();#$self->{ppi_document});
 
 	return;
 }
@@ -285,7 +285,7 @@ sub recommends_in_single_quote {
 
 	# Hack for use_ok in test files, Ouch!
 	# Now lets double check the ptq-Single hidden in a test file
-	my $ppi_tqs = $self->{document}->find('PPI::Token::Quote::Single');
+	my $ppi_tqs = $self->{ppi_document}->find('PPI::Token::Quote::Single');
 	if ($ppi_tqs) {
 		my @modules;
 		foreach my $include ( @{$ppi_tqs} ) {
@@ -351,7 +351,7 @@ sub recommends_in_double_quote {
 	my $self     = shift;
 
 	# Now lets double check the ptq-Doubles hidden in a test file - why O why - rtfm pbp
-	my $ppi_tqd = $self->{document}->find('PPI::Token::Quote::Double');
+	my $ppi_tqd = $self->{ppi_document}->find('PPI::Token::Quote::Double');
 	if ($ppi_tqd) {
 		my @modules;
 		foreach my $include ( @{$ppi_tqd} ) {

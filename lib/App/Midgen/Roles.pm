@@ -167,7 +167,7 @@ has 'found_twins' => (
 	required => 1,
 );
 
-has 'document' => (
+has 'ppi_document' => (
 	is  => 'rw',
 	isa => Object,
 	lazy => 1,
@@ -203,8 +203,6 @@ none as such, but we do have
 
 =item * debug
 
-=item * document
-
 =item * mojo
 
 =item * noisy_children
@@ -212,6 +210,8 @@ none as such, but we do have
 =item * output_format
 
 =item * padre
+
+=item * ppi_document
 
 =item * twins
 
