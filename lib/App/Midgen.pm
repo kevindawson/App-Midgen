@@ -416,8 +416,8 @@ sub process_found_modules {
 			$module = 'Padre';
 		}
 
-		next if $self->{requires}{$module};
-		next if $self->{test_requires}{$module};
+		next if defined $self->{requires}{$module};
+		next if defined $self->{test_requires}{$module};
 
 		p $module if $self->{debug};
 
@@ -432,7 +432,11 @@ sub process_found_modules {
 				next if !$self->{core};
 
 				# Assign a temp value to indicate a core module
-				$self->{$require_type}{$module} = 'core' if $self->{core};
+				if ( $self->{core} && !$self->{zero} ) {
+					$self->{$require_type}{$module} = 'core';
+				} elsif ( $self->{core} && $self->{zero} ) {
+					$self->{$require_type}{$module} = 0;
+				}
 			}
 		}
 

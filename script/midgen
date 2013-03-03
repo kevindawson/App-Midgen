@@ -37,6 +37,7 @@ my @output         = 'dsl';
 my $mojo           = 0;    # show the Mojo detection
 my $noisy_children = 0;    # unwanted noisy children
 my $twins          = 0;    # unwanted twins
+my $zero           = 0;    # display 0 instead of core
 my $debug          = 0;    # lots of good stuff here :)
 GetOptions(
 	'verbose|v'        => \$verbose,
@@ -47,6 +48,7 @@ GetOptions(
 	'output|o=s'       => \@output,
 	'twins|t'          => \$twins,
 	'noisy_children|n' => \$noisy_children,
+	'zero|z'           => \$zero,
 	'debug|d'          => sub {
 		$core           = 1;
 		$verbose        = 1;
@@ -73,6 +75,7 @@ my $midgen = App::Midgen->new(
 	mojo           => $mojo,
 	noisy_children => $noisy_children,
 	twins          => $twins,
+	zero           => $zero,
 	debug          => $debug,
 );
 
@@ -131,6 +134,7 @@ Print a brief help message and exits.
    --mojo           show the Mojo catch as we find them
    --noisy_children show them as we find them
    --twins          show twins as we find them
+   --zero           show a 0 instead of core
    --debug          lot's of stuff very
 
 =item B<--output or -o>
@@ -182,6 +186,12 @@ Turn on extra output to show the modules considered to be noisy children, as we 
 Turn on extra output to show the modules that are twins, as we find them
 
  midgen -t
+ 
+=item B<--zero or z>
+
+Use a 0 instead of core for core module version number
+
+ midgen -z
 
 =item B<--debug or -d>
 
