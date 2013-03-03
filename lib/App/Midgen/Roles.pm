@@ -123,6 +123,18 @@ has 'twins' => (
 	required => 1,
 );
 
+has 'zero' => (
+	is  => 'ro',
+	isa => sub {
+		croak "$_[0] this is not a Bool"
+			unless is_Bool( $_[0] );
+	},
+	default => sub {
+		0;
+	},
+	required => 1,
+);
+
 #######
 # some encapsulated attributes
 #######
@@ -216,6 +228,8 @@ none as such, but we do have
 =item * twins
 
 =item * verbose
+
+=item * zero
 
 =back
 
