@@ -758,19 +758,19 @@ sub output_footer {
 	given ( $self->{output_format} ) {
 
 		when ('mi') {
-			$self->{output}->footer_mi();
+			$self->{output}->footer_mi( $self->{package_name} );
 		}
 		when ('dsl') {
-			$self->{output}->footer_dsl();
+			$self->{output}->footer_dsl( $self->{package_name} );
 		}
 		when ('build') {
-			$self->{output}->footer_build();
+			$self->{output}->footer_build( $self->{package_name} );
 		}
 		when ('dzil') {
 			$self->{output}->footer_dzil( $self->{package_name} );
 		}
 		when ('dist') {
-			$self->{output}->footer_dist();
+			$self->{output}->footer_dist( $self->{package_name} );
 		}
 	}
 
