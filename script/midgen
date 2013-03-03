@@ -153,9 +153,7 @@ so you can check, copy and paste or select an alternative as shown below.
 
 =item B<--verbose or -v>
 
-Show file that are being checked
-
-also show contents of base|parent check
+Show filename that we are checking, as we go
 
 =item B<--parent or -p>
 
@@ -181,7 +179,7 @@ Turn on extra output to show the modules considered to be noisy children, as we 
 
 =item B<--twins or -t>
 
-Turn on extra output to show the modules that are twins as we find them, as we find them
+Turn on extra output to show the modules that are twins, as we find them
 
  midgen -t
 
