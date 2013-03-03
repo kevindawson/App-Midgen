@@ -4,20 +4,13 @@ use v5.10;
 use Moo;
 
 our $VERSION = '0.12';
-use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
+use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 use Carp;
 use CPAN;
-use Data::Printer {
-	caller_info => 1,
-	colored     => 1,
-};
-use constant {
-	BLANK => qq{ },
-	NONE  => q{},
-	THREE => 3,
-};
+use Data::Printer {caller_info => 1, colored => 1,};
+use constant {BLANK => qq{ }, NONE => q{}, THREE => 3,};
 use File::Spec;
 
 
@@ -25,86 +18,91 @@ use File::Spec;
 # header_dsl
 #######
 sub header_dsl {
-	my $self = shift;
-	my $package_name = shift // NONE;
+  my $self = shift;
+  my $package_name = shift // NONE;
 
-	# Let's get the current version of Module::Install::DSL
-	my $mod = CPAN::Shell->expand( 'Module', 'inc::Module::Install::DSL' );
-	$package_name =~ s{::}{/}g;
+  # Let's get the current version of Module::Install::DSL
+  my $mod = CPAN::Shell->expand('Module', 'inc::Module::Install::DSL');
+  $package_name =~ s{::}{/}g;
 
-	print "\n";
-	say 'use inc::Module::Install::DSL ' . $mod->cpan_version . ';';
-	print "\n";
-	if ( $package_name ne NONE ) {
-		say 'all_from lib/' . $package_name . '.pm';
-		say 'requires_from lib/' . $package_name . '.pm';
-	}
-	print "\n";
-	return;
+  print "\n";
+  say 'use inc::Module::Install::DSL ' . $mod->cpan_version . ';';
+  print "\n";
+  if ($package_name ne NONE) {
+    say 'all_from lib/' . $package_name . '.pm';
+    say 'requires_from lib/' . $package_name . '.pm';
+  }
+  print "\n";
+  return;
 }
 #######
 # body_dsl
 #######
 sub body_dsl {
-	my $self         = shift;
-	my $title        = shift;
-	my $required_ref = shift;
-	print "\n";
+  my $self         = shift;
+  my $title        = shift;
+  my $required_ref = shift;
+  print "\n";
 
-	my $pm_length = 0;
-	foreach my $module_name ( sort keys %{$required_ref} ) {
-		if ( length $module_name > $pm_length ) {
-			$pm_length = length $module_name;
-		}
-	}
+  my $pm_length = 0;
+  foreach my $module_name (sort keys %{$required_ref}) {
+    if (length $module_name > $pm_length) {
+      $pm_length = length $module_name;
+    }
+  }
 
-	foreach my $module_name ( sort keys %{$required_ref} ) {
+  foreach my $module_name (sort keys %{$required_ref}) {
 
-		if ( $module_name =~ /^Win32/sxm ) {
-			printf "%s %-*s %s if win32\n", $title, $pm_length, $module_name, $required_ref->{$module_name};
-		} else {
-			printf "%s %-*s %s\n", $title, $pm_length, $module_name, $required_ref->{$module_name};
-		}
-	}
-	print "\n";
-	return;
+    if ($module_name =~ /^Win32/sxm) {
+      printf "%s %-*s %s if win32\n", $title, $pm_length, $module_name,
+        $required_ref->{$module_name};
+    }
+    else {
+      printf "%s %-*s %s\n", $title, $pm_length, $module_name,
+        $required_ref->{$module_name};
+    }
+  }
+  print "\n";
+  return;
 }
 #######
 # footer_dsl
 #######
 sub footer_dsl {
-	my $self = shift;
+  my $self = shift;
+  my $package_name = shift // NONE;
+  $package_name =~ s{::}{-}g;
 
-	print "\n";
-	say '#ToDo you should consider the following';
-	say "homepage\t...";
-	say "bugtracker\t...";
-	say "repository\t...";
+  print "\n";
+  say '# ToDo you should consider the following';
+  say "homepage    https://github.com/.../$package_name";
+  say "bugtracker  https://github.com/.../$package_name/issues";
+  say "repository  git://github.com/.../$package_name.git";
 
-	print "\n";
-	if ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './share' ) ) {
-		say 'install_share';
-		print "\n";
-	}
+  print "\n";
+  if (defined -d File::Spec->catfile($App::Midgen::Working_Dir, './share')) {
+    say 'install_share';
+    print "\n";
+  }
 
-	if ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './script' ) ) {
-		say 'install_script ...';
-		print "\n";
-	} elsif ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './bin' ) ) {
-		say "install_script bin/...";
-		print "\n";
-	}
+  if (defined -d File::Spec->catfile($App::Midgen::Working_Dir, './script')) {
+    say 'install_script ...';
+    print "\n";
+  }
+  elsif (defined -d File::Spec->catfile($App::Midgen::Working_Dir, './bin')) {
+    say "install_script bin/...";
+    print "\n";
+  }
 
-	my @no_index = $self->no_index;
-	if (@no_index) {
-		say "no_index directory qw{ @no_index }";
-		print "\n";
-	}
+  my @no_index = $self->no_index;
+  if (@no_index) {
+    say "no_index directory qw{ @no_index }";
+    print "\n";
+  }
 
-	# say 'no_index directory  qw{ t xt eg share inc privinc }';
-	print "\n";
+  print "\n";
 
-	return;
+  return;
 }
 
 
@@ -112,85 +110,105 @@ sub footer_dsl {
 # header_mi
 #######
 sub header_mi {
-	my $self = shift;
-	my $package_name = shift // NONE;
-	$package_name =~ s{::}{/}g;
+  my $self = shift;
+  my $package_name = shift // NONE;
 
-	print "\n";
-	if ( $package_name ne NONE ) {
-		say "all_from 'lib/$package_name.pm';";
-	}
-	print "\n";
+  # Let's get the current version of Module::Install::DSL
+  my $mod = CPAN::Shell->expand('Module', 'inc::Module::Install');
 
-	return;
+
+  print "\n";
+  say 'use inc::Module::Install ' . $mod->cpan_version . ';';
+
+  print "\n";
+  if ($package_name ne NONE) {
+    $package_name =~ s{::}{-}g;
+    say "name '$package_name';";
+    $package_name =~ tr{-}{/};
+    say "all_from 'lib/$package_name.pm';";
+  }
+  print "\n";
+
+  return;
 }
 #######
 # body_mi
 #######
 sub body_mi {
-	my $self         = shift;
-	my $title        = shift;
-	my $required_ref = shift;
-	print "\n";
+  my $self         = shift;
+  my $title        = shift;
+  my $required_ref = shift;
+  print "\n";
 
-	my $pm_length = 0;
-	foreach my $module_name ( sort keys %{$required_ref} ) {
-		if ( length $module_name > $pm_length ) {
-			$pm_length = length $module_name;
-		}
-	}
+  my $pm_length = 0;
+  foreach my $module_name (sort keys %{$required_ref}) {
+    if (length $module_name > $pm_length) {
+      $pm_length = length $module_name;
+    }
+  }
 
-	foreach my $module_name ( sort keys %{$required_ref} ) {
+  foreach my $module_name (sort keys %{$required_ref}) {
 
-		if ( $module_name =~ /^Win32/sxm ) {
-			my $sq_key = "'$module_name'";
-			printf "%s %-*s => '%s' if win32;\n", $title, $pm_length + 2, $sq_key, $required_ref->{$module_name};
-		} else {
-			my $sq_key = "'$module_name'";
-			printf "%s %-*s => '%s';\n", $title, $pm_length + 2, $sq_key, $required_ref->{$module_name};
-		}
+    if ($module_name =~ /^Win32/sxm) {
+      my $sq_key = "'$module_name'";
+      printf "%s %-*s => '%s' if win32;\n", $title, $pm_length + 2, $sq_key,
+        $required_ref->{$module_name};
+    }
+    else {
+      my $sq_key = "'$module_name'";
+      printf "%s %-*s => '%s';\n", $title, $pm_length + 2, $sq_key,
+        $required_ref->{$module_name};
+    }
 
-	}
-	print "\n";
-	return;
+  }
+  print "\n";
+  return;
 }
 #######
 # footer_mi
 #######
 sub footer_mi {
-	my $self = shift;
+  my $self = shift;
+  my $package_name = shift // NONE;
+  $package_name =~ s{::}{-}g;
 
-	print "\n";
-	say '#ToDo you should consider the following';
-	say "homepage\t'...';";
-	say "bugtracker\t'...';";
-	say "repository\t'...';";
-	print "\n";
+  print "\n";
+  say '# ToDo you should consider the following';
+  say "homepage    'https://github.com/.../$package_name';";
+  say "bugtracker  'https://github.com/.../$package_name/issues';";
+  say "repository  'git://github.com/.../$package_name.git';";
+  print "\n";
+  say 'Meta->add_metadata(';
+  say "\tx_contributors => [";
+  say "\t\t'brian d foy (ADOPTME) <brian.d.foy\@gmail.com>',";
+  say "\t\t'Fred Bloggs <fred\@bloggs.org>',";
+  say "\t],";
+  say ");\n";
 
-	if ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './share' ) ) {
-		say 'install_share;';
-		print "\n";
-	}
+  if (defined -d File::Spec->catfile($App::Midgen::Working_Dir, './share')) {
+    say 'install_share;';
+    print "\n";
+  }
 
-	if ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './script' ) ) {
-		say "install_script 'script/...';";
-		print "\n";
-	} elsif ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './bin' ) ) {
-		say "install_script 'bin/...';";
-		print "\n";
-	}
+  if (defined -d File::Spec->catfile($App::Midgen::Working_Dir, './script')) {
+    say "install_script 'script/...';";
+    print "\n";
+  }
+  elsif (defined -d File::Spec->catfile($App::Midgen::Working_Dir, './bin')) {
+    say "install_script 'bin/...';";
+    print "\n";
+  }
 
-	my @no_index = $self->no_index;
-	if (@no_index) {
-		say "no_index directory qw{ @no_index };";
-		print "\n";
-	}
+  my @no_index = $self->no_index;
+  if (@no_index) {
+    say "no_index 'directory' => qw{ @no_index };";
+    print "\n";
+  }
 
-	# say 'no_index directory  qw{ t xt eg share inc privinc }';
-	say 'WriteAll';
-	print "\n";
+  say 'WriteAll';
+  print "\n";
 
-	return;
+  return;
 }
 
 
@@ -198,61 +216,63 @@ sub footer_mi {
 # header_build
 #######
 sub header_build {
-	my $self = shift;
-	my $package_name = shift // NONE;
+  my $self = shift;
+  my $package_name = shift // NONE;
 
-	# print "\n";
-	# say "WriteMakefile(";
-	if ( $package_name ne NONE ) {
-		print "\n";
-		$package_name =~ s{::}{-}g;
-		say 'NAME => ' . $package_name;
-		# $package_name =~ tr{-}{/};
-		# say "VERSION_FROM => lib/$package_name.pm";
-		print "\n";
-	}
+  # print "\n";
+  # say "WriteMakefile(";
+  if ($package_name ne NONE) {
+    print "\n";
+    $package_name =~ s{::}{-}g;
+    say 'NAME => ' . $package_name;
 
-	return;
+    # $package_name =~ tr{-}{/};
+    # say "VERSION_FROM => lib/$package_name.pm";
+    print "\n";
+  }
+
+  return;
 }
 #######
 # body_build
 #######
 sub body_build {
-	my $self         = shift;
-	my $title        = shift;
-	my $required_ref = shift;
-	print "\n";
+  my $self         = shift;
+  my $title        = shift;
+  my $required_ref = shift;
+  print "\n";
 
-	my $pm_length = 0;
-	foreach my $module_name ( sort keys %{$required_ref} ) {
-		if ( length $module_name > $pm_length ) {
-			$pm_length = length $module_name;
-		}
-	}
+  my $pm_length = 0;
+  foreach my $module_name (sort keys %{$required_ref}) {
+    if (length $module_name > $pm_length) {
+      $pm_length = length $module_name;
+    }
+  }
 
-	say $title . ' => {';
+  say $title . ' => {';
 
-	foreach my $module_name ( sort keys %{$required_ref} ) {
+  foreach my $module_name (sort keys %{$required_ref}) {
 
-		my $sq_key = "'$module_name'";
-		printf "\t %-*s => '%s',\n", $pm_length + 2, $sq_key, $required_ref->{$module_name};
+    my $sq_key = "'$module_name'";
+    printf "\t %-*s => '%s',\n", $pm_length + 2, $sq_key,
+      $required_ref->{$module_name};
 
-	}
-	say '},';
-	print "\n";
-	return;
+  }
+  say '},';
+  print "\n";
+  return;
 }
 #######
 # footer_build
 #######
 sub footer_build {
-	my $self = shift;
+  my $self = shift;
 
-	# print "\n";
-	# say ');';
-	print "\n";
+  # print "\n";
+  # say ');';
+  print "\n";
 
-	return;
+  return;
 }
 
 
@@ -260,75 +280,76 @@ sub footer_build {
 # header_dzil
 #######
 sub header_dzil {
-	my $self = shift;
-	my $package_name = shift // NONE;
+  my $self = shift;
+  my $package_name = shift // NONE;
 
-	if ( $package_name ne NONE ) {
-		print "\n";
-		say "NAME => '$package_name'";
-		$package_name =~ s{::}{/}g;
-		say "VERSION_FROM => 'lib/$package_name.pm'";
-		print "\n";
-	}
+  if ($package_name ne NONE) {
+    print "\n";
+    say "NAME => '$package_name'";
+    $package_name =~ s{::}{/}g;
+    say "VERSION_FROM => 'lib/$package_name.pm'";
+    print "\n";
+  }
 
-	return;
+  return;
 }
 #######
 # body_dzil
 #######
 sub body_dzil {
-	my $self         = shift;
-	my $title        = shift;
-	my $required_ref = shift;
-	print "\n";
+  my $self         = shift;
+  my $title        = shift;
+  my $required_ref = shift;
+  print "\n";
 
-	my $pm_length = 0;
-	foreach my $module_name ( sort keys %{$required_ref} ) {
-		if ( length $module_name > $pm_length ) {
-			$pm_length = length $module_name;
-		}
-	}
+  my $pm_length = 0;
+  foreach my $module_name (sort keys %{$required_ref}) {
+    if (length $module_name > $pm_length) {
+      $pm_length = length $module_name;
+    }
+  }
 
-	given ($title) {
-		when ('requires')      { say 'PREREQ_PM => {'; }
-		when ('test_requires') { say 'BUILD_REQUIRES => {'; }
-		when ('recommends')    { return; }
-	}
+  given ($title) {
+    when ('requires')      { say 'PREREQ_PM => {'; }
+    when ('test_requires') { say 'BUILD_REQUIRES => {'; }
+    when ('recommends')    { return; }
+  }
 
-	foreach my $module_name ( sort keys %{$required_ref} ) {
+  foreach my $module_name (sort keys %{$required_ref}) {
 
-		my $sq_key = '"' . $module_name . '"';
-		printf "\t %-*s => '%s',\n", $pm_length + 2, $sq_key, $required_ref->{$module_name};
+    my $sq_key = '"' . $module_name . '"';
+    printf "\t %-*s => '%s',\n", $pm_length + 2, $sq_key,
+      $required_ref->{$module_name};
 
-	}
-	say '},';
-	print "\n";
-	return;
+  }
+  say '},';
+  print "\n";
+  return;
 }
 #######
 # footer_dzil
 #######
 sub footer_dzil {
-	my $self = shift;
-	my $package_name = shift // NONE;
-	$package_name =~ s{::}{-}g;
+  my $self = shift;
+  my $package_name = shift // NONE;
+  $package_name =~ s{::}{-}g;
 
-	print "\n";
-	say '#ToDo you should consider the following';
-	say 'META_MERGE => {';
-    say "\tresources => {";
-    say "\t\thomepage   => 'https://github.com/.../$package_name',";
-    say "\t\trepository => 'git://github.com/.../$package_name.git',";
-    say "\t\tbugtracker => 'https://github.com/.../$package_name/issues',";
-	say "\t},";
-    say "\tx_contributors => [";
-	say "\t\t'brian d foy (ADOPTME) <brian.d.foy\@gmail.com>',";
-	say "\t\t'Fred Bloggs <fred\@bloggs.org>',";
-	say "\t],";
-	say "},";
-	print "\n";
+  print "\n";
+  say '# ToDo you should consider the following';
+  say 'META_MERGE => {';
+  say "\tresources => {";
+  say "\t\thomepage   => 'https://github.com/.../$package_name',";
+  say "\t\trepository => 'git://github.com/.../$package_name.git',";
+  say "\t\tbugtracker => 'https://github.com/.../$package_name/issues',";
+  say "\t},";
+  say "\tx_contributors => [";
+  say "\t\t'brian d foy (ADOPTME) <brian.d.foy\@gmail.com>',";
+  say "\t\t'Fred Bloggs <fred\@bloggs.org>',";
+  say "\t],";
+  say "},";
+  print "\n";
 
-	return;
+  return;
 }
 
 
@@ -336,95 +357,105 @@ sub footer_dzil {
 # header_dist
 #######
 sub header_dist {
-	my $self = shift;
-	my $package_name = shift // NONE;
+  my $self = shift;
+  my $package_name = shift // NONE;
 
-	if ( $package_name ne NONE ) {
-		print "\n";
-		$package_name =~ s{::}{-}g;
-		say 'name        = ' . $package_name;
-		$package_name =~ tr{-}{/};
-		say "main_module = lib/$package_name.pm";
-		print "\n";
-	}
+  if ($package_name ne NONE) {
+    print "\n";
+    $package_name =~ s{::}{-}g;
+    say 'name        = ' . $package_name;
+    $package_name =~ tr{-}{/};
+    say "main_module = lib/$package_name.pm";
+    print "\n";
+  }
 
-	return;
+  return;
 }
 #######
 # body_dist
 #######
 sub body_dist {
-	my $self         = shift;
-	my $title        = shift;
-	my $required_ref = shift;
-	print "\n";
+  my $self         = shift;
+  my $title        = shift;
+  my $required_ref = shift;
+  print "\n";
 
-	my $pm_length = 0;
-	foreach my $module_name ( sort keys %{$required_ref} ) {
-		if ( length $module_name > $pm_length ) {
-			$pm_length = length $module_name;
-		}
-	}
-	given ($title) {
-		when ('requires')      { say '[Prereqs]'; }
-		when ('test_requires') { say '[Prereqs / TestRequires]'; }
-		when ('recommends')    { say '[Prereqs / RuntimeRecommends]'; }
-	}
+  my $pm_length = 0;
+  foreach my $module_name (sort keys %{$required_ref}) {
+    if (length $module_name > $pm_length) {
+      $pm_length = length $module_name;
+    }
+  }
+  given ($title) {
+    when ('requires')      { say '[Prereqs]'; }
+    when ('test_requires') { say '[Prereqs / TestRequires]'; }
+    when ('recommends')    { say '[Prereqs / RuntimeRecommends]'; }
+  }
 
-	foreach my $module_name ( sort keys %{$required_ref} ) {
+  foreach my $module_name (sort keys %{$required_ref}) {
 
-		# my $sq_key = '"' . $module_name . '"';
-		printf "%-*s = %s\n", $pm_length, $module_name, $required_ref->{$module_name};
+    # my $sq_key = '"' . $module_name . '"';
+    printf "%-*s = %s\n", $pm_length, $module_name,
+      $required_ref->{$module_name};
 
-	}
-	print "\n";
-	return;
+  }
+  print "\n";
+  return;
 }
 #######
 # footer_dist
 #######
 sub footer_dist {
-	my $self = shift;
+  my $self = shift;
+  my $package_name = shift // NONE;
+  $package_name =~ s{::}{-}g;
 
-	print "\n";
-	say '#ToDo you should consider the following';
-	say '[MetaResources]';
-	say 'homepage          = ...';
-	say 'bugtracker.web    = ...';
-	say 'bugtracker.mailto = ...';
-	say 'repository.url    = ...';
-	say 'repository.web    = ...';
-	say 'repository.type   = ...';
-	print "\n";
+  print "\n";
+  say '# ToDo you should consider the following';
+  say '[MetaResources]';
+  say "homepage          = https://github.com/.../$package_name";
+  say "bugtracker.web    = https://github.com/.../$package_name/issues";
+  say 'bugtracker.mailto = ...';
+  say "repository.url    = git://github.com/.../$package_name.git";
+  say 'repository.web    = ...';
+  say 'repository.type   = git';
+  print "\n";
 
-	my @no_index = $self->no_index;
-	if (@no_index) {
-		say '[MetaNoIndex]';
-		for (@no_index) {
-			say "directory = $_" if $_ ne 'inc';
-		}
-		print "\n";
-	}
+  my @no_index = $self->no_index;
+  if (@no_index) {
+    say '[MetaNoIndex]';
+    for (@no_index) {
+      say "directory = $_" if $_ ne 'inc';
+    }
+    print "\n";
+  }
 
-	return;
+  say '[Meta::Contributors]';
+  say 'contributor = brian d foy (ADOPTME) <brian.d.foy@gmail.com>';
+  say 'contributor = Fred Bloggs <fred@bloggs.org>';
+  print "\n";
+
+  return;
 }
 
 #######
 # no_index
 #######
 sub no_index {
-	my $self = shift;
+  my $self = shift;
 
-	#ToDo add more options as and when
-	my @dirs_to_check = qw( corpus eg examples fbp inc maint misc privinc share t xt );
-	my @dirs_found;
+  #ToDo add more options as and when
+  my @dirs_to_check
+    = qw( corpus eg examples fbp inc maint misc privinc share t xt );
+  my @dirs_found;
 
-	for (@dirs_to_check) {
+  for (@dirs_to_check) {
 
-		#ignore synatax warning for global
-		push @dirs_found, $_ if -d File::Spec->catfile( $App::Midgen::Working_Dir, $_ );
-	}
-	return @dirs_found;
+    #ignore synatax warning for global
+    push @dirs_found, $_
+      if -d File::Spec->catfile($App::Midgen::Working_Dir, $_);
+  }
+  return @dirs_found;
 }
 
 1;
