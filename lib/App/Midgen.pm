@@ -767,7 +767,7 @@ sub output_footer {
 			$self->{output}->footer_build();
 		}
 		when ('dzil') {
-			$self->{output}->footer_dzil();
+			$self->{output}->footer_dzil( $self->{package_name} );
 		}
 		when ('dist') {
 			$self->{output}->footer_dist();
