@@ -128,32 +128,32 @@ has 'twins' => (
 #######
 
 has 'package_name' => (
-	is  => 'rw',
-	isa => Str,
+	is   => 'rw',
+	isa  => Str,
 	lazy => 1,
 );
 
 has 'package_names' => (
-	is  => 'rw',
-	isa => ArrayRef,
+	is   => 'rw',
+	isa  => ArrayRef,
 	lazy => 1,
 );
 
 has 'requires' => (
-	is  => 'rw',
-	isa => HashRef,
+	is   => 'rw',
+	isa  => HashRef,
 	lazy => 1,
 );
 
 has 'test_requires' => (
-	is  => 'rw',
-	isa => HashRef,
+	is   => 'rw',
+	isa  => HashRef,
 	lazy => 1,
 );
 
 has 'recommends' => (
-	is  => 'rw',
-	isa => HashRef,
+	is   => 'rw',
+	isa  => HashRef,
 	lazy => 1,
 );
 
@@ -168,8 +168,8 @@ has 'found_twins' => (
 );
 
 has 'ppi_document' => (
-	is  => 'rw',
-	isa => Object,
+	is   => 'rw',
+	isa  => Object,
 	lazy => 1,
 );
 

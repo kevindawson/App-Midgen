@@ -51,7 +51,7 @@ sub run {
 	#run a second time if we found any twins, this will sort out twins and triplets etc
 	$self->remove_noisy_children( $self->{requires} ) if $self->{found_twins};
 
-	$self->output_main_body( 'requires', $self->{requires} );
+	$self->output_main_body( 'requires',      $self->{requires} );
 	$self->output_main_body( 'test_requires', $self->{test_requires} );
 	$self->output_main_body( 'recommends',    $self->{recommends} );
 
@@ -212,7 +212,7 @@ sub is_perlfile {
 	my $filename = shift;
 
 	$self->{ppi_document} = PPI::Document->new($filename);
-	my $ppi_tc   = $self->{ppi_document}->find('PPI::Token::Comment');
+	my $ppi_tc = $self->{ppi_document}->find('PPI::Token::Comment');
 
 	my $not_a_pl_file = 0;
 
@@ -249,7 +249,7 @@ sub find_makefile_test_requires {
 
 	# Load a Document from a file and check use and require contents
 	$self->{ppi_document} = PPI::Document->new($filename);
-	my $ppi_i    = $self->{ppi_document}->find('PPI::Statement::Include');
+	my $ppi_i = $self->{ppi_document}->find('PPI::Statement::Include');
 
 	my @modules;
 	if ($ppi_i) {
@@ -270,8 +270,8 @@ sub find_makefile_test_requires {
 	$self->process_found_modules( 'test_requires', \@modules );
 
 	#These are realy recommends
-	$self->recommends_in_single_quote();#$self->{ppi_document});
-	$self->recommends_in_double_quote();#$self->{ppi_document});
+	$self->recommends_in_single_quote(); #$self->{ppi_document});
+	$self->recommends_in_double_quote(); #$self->{ppi_document});
 
 	return;
 }
@@ -281,7 +281,7 @@ sub find_makefile_test_requires {
 # composed method - recommends_in_single_quote
 #######
 sub recommends_in_single_quote {
-	my $self     = shift;
+	my $self = shift;
 
 	# Hack for use_ok in test files, Ouch!
 	# Now lets double check the ptq-Single hidden in a test file
@@ -348,7 +348,7 @@ sub recommends_in_single_quote {
 # composed method - recommends_in_double_quote
 #######
 sub recommends_in_double_quote {
-	my $self     = shift;
+	my $self = shift;
 
 	# Now lets double check the ptq-Doubles hidden in a test file - why O why - rtfm pbp
 	my $ppi_tqd = $self->{ppi_document}->find('PPI::Token::Quote::Double');
@@ -427,8 +427,10 @@ sub process_found_modules {
 
 			# next if Module::CoreList->first_release($module);
 			if ( Module::CoreList->first_release($module) ) {
+
 				# Skip if we are not intrested in core mofules
 				next if !$self->{core};
+
 				# Assign a temp value to indicate a core module
 				$self->{$require_type}{$module} = 'core' if $self->{core};
 			}
