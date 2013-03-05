@@ -6,7 +6,7 @@ use warnings FATAL => 'all';
 use English qw( -no_match_vars ); # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Test::More tests => 35;
+use Test::More tests => 34;
 
 ######
 # let's check our subs/methods.

@@ -1,6 +1,6 @@
 package App::Midgen::Output;
 
-use 5.010001;
+use v5.10;
 use Moo;
 
 our $VERSION = '0.12';
