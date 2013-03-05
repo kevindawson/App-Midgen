@@ -189,9 +189,10 @@ Turn on extra output to show the modules that are twins, as we find them
  
 =item B<--zero or z>
 
-Use a 0 instead of core for core module version number
+Use a '0' instead of 'core' for core module version number, suggest you incorporate it with core for maximum affect
 
- midgen -z
+
+ midgen -cz
 
 =item B<--debug or -d>
 
