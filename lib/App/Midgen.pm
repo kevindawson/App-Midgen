@@ -1,6 +1,6 @@
 package App::Midgen;
 
-use 5.010001;
+use v5.10;
 use Moo;
 with qw( App::Midgen::Roles );
 use App::Midgen::Output;
@@ -20,6 +20,8 @@ use File::Spec;
 use File::Find qw(find);
 use Module::CoreList;
 use PPI;
+use Perl::MinimumVersion;
+use version;
 use Try::Tiny;
 use constant {
 	BLANK => qq{ },
@@ -29,7 +31,7 @@ use constant {
 
 # stop rlib from Fing all over cwd
 our $Working_Dir = cwd();
-
+our $Min_Version = 0;
 
 #######
 # run
@@ -181,6 +183,9 @@ sub find_makefile_requires {
 		when (m/[.]\w{2,4}$/) { say 'rejecting ' . $filename if $self->{verbose}; return; }
 		default { return if not $self->is_perlfile($filename); }
 	}
+	try {
+		$self->min_version();
+	};
 
 	my $ppi_i = $self->{ppi_document}->find('PPI::Statement::Include');
 
@@ -250,6 +255,10 @@ sub find_makefile_test_requires {
 	# Load a Document from a file and check use and require contents
 	$self->{ppi_document} = PPI::Document->new($filename);
 	my $ppi_i = $self->{ppi_document}->find('PPI::Statement::Include');
+
+	try {
+		$self->min_version();
+	};
 
 	my @modules;
 	if ($ppi_i) {
@@ -699,6 +708,42 @@ sub check_mojo_core {
 	}
 }
 
+#######
+# find min perl version
+######
+sub min_version {
+	my $self = shift;
+# Create the version checking object
+  my $object = Perl::MinimumVersion->new( $self->{ppi_document} );
+
+# Find the minimum version
+  my $minimum_version = $object->minimum_version;
+#  $minimum_version =~ s/v//;
+#  say 'minimum_version - ' . $minimum_version;
+  $Min_Version
+    = version->parse($Min_Version) > version->parse($minimum_version) ? $Min_Version : $minimum_version;
+
+
+  my $minimum_explicit_version = $object->minimum_explicit_version;
+#  $minimum_explicit_version =~ s/v//;
+#  say 'minimum_explicit_version - ' . $minimum_explicit_version;
+  $Min_Version
+    = version->parse($Min_Version) > version->parse($minimum_explicit_version)
+    ? $Min_Version
+    : $minimum_explicit_version;
+
+  my $minimum_syntax_version = $object->minimum_syntax_version;
+#  $minimum_syntax_version =~ s/v//;
+#  say 'minimum_syntax_version - ' . $minimum_syntax_version;
+  $Min_Version
+    = version->parse($Min_Version) > version->parse($minimum_syntax_version)
+    ? $Min_Version
+    : $minimum_syntax_version;
+
+#  say 'min_version - ' . $Min_Version;
+
+	return;
+}
 
 #######
 # output_header
@@ -852,6 +897,10 @@ Search for Includes B<use> and B<require> in test scripts
 =item * first_package_name
 
 =item * is_perlfile
+
+=item * min_version
+
+uses L<Perl::MinimumVersion> to find min version of package
 
 =item * output_footer
 

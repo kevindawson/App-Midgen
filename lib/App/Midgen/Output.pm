@@ -1,6 +1,6 @@
 package App::Midgen::Output;
 
-use 5.010001;
+use v5.10;
 use Moo;
 
 our $VERSION = '0.12';
@@ -32,6 +32,7 @@ sub header_dsl {
 		say 'all_from lib/' . $package_name . '.pm';
 		say 'requires_from lib/' . $package_name . '.pm';
 	}
+
 	print "\n";
 	return;
 }
@@ -42,6 +43,7 @@ sub body_dsl {
 	my $self         = shift;
 	my $title        = shift;
 	my $required_ref = shift;
+	say 'perl_version ' . $App::Midgen::Min_Version if $title eq 'requires' ;
 	print "\n";
 
 	my $pm_length = 0;
@@ -134,7 +136,7 @@ sub body_mi {
 	my $self         = shift;
 	my $title        = shift;
 	my $required_ref = shift;
-	print "\n";
+#	print "\n";
 
 	my $pm_length = 0;
 	foreach my $module_name ( sort keys %{$required_ref} ) {
@@ -142,6 +144,9 @@ sub body_mi {
 			$pm_length = length $module_name;
 		}
 	}
+
+	say "perl_version '$App::Midgen::Min_Version';" if $title eq 'requires' ;
+	print "\n";
 
 	foreach my $module_name ( sort keys %{$required_ref} ) {
 
@@ -377,7 +382,7 @@ sub body_dist {
 		}
 	}
 	given ($title) {
-		when ('requires')      { say '[Prereqs]'; }
+		when ('requires')      { say '[Prereqs]'; printf "%-*s = %s\n", $pm_length, 'perl', $App::Midgen::Min_Version;  }
 		when ('test_requires') { say '[Prereqs / TestRequires]'; }
 		when ('recommends')    { say '[Prereqs / RuntimeRecommends]'; }
 	}
