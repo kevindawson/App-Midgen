@@ -1,6 +1,6 @@
 package App::Midgen::Roles;
 
-use v5.10;
+use 5.010001;
 use Moo::Role;
 use MooX::Types::MooseLike::Base qw(:all);
 

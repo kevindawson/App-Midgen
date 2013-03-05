@@ -6,7 +6,7 @@ use warnings FATAL => 'all';
 use English qw( -no_match_vars ); # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Test::More tests => 19;
+use Test::More tests => 18;
 
 
 use_ok('App::Midgen');
@@ -21,14 +21,13 @@ use_ok( 'File::Spec',                   '3.40' );
 use_ok( 'Getopt::Long',                 '2.38' );
 use_ok( 'Module::CoreList',             '2.82' );
 use_ok( 'Moo',                          '1.000008' );
-use_ok( 'MooX::Types::MooseLike::Base', '0.21' );
+use_ok( 'MooX::Types::MooseLike::Base', '0.22' );
 use_ok( 'PPI',                          '1.215' );
 use_ok( 'Pod::Usage',                   '1.61' );
 use_ok( 'Try::Tiny',                    '0.12' );
 use_ok( 'constant',                     '1.25' );
 use_ok( 'lib',                          '0.63' );
 
-use_ok( 'ExtUtils::MakeMaker', '6.64' );
 use_ok( 'Test::More',          '0.98' );
 
 diag("Testing App::Midgen v$App::Midgen::VERSION");

@@ -12,14 +12,13 @@ requires File::Spec                   3.40
 requires Getopt::Long                 2.38
 requires Module::CoreList             2.82
 requires Moo                          1.000008
-requires MooX::Types::MooseLike::Base 0.21
+requires MooX::Types::MooseLike::Base 0.22
 requires PPI                          1.215
 requires Pod::Usage                   1.61
 requires Try::Tiny                    0.12
 requires constant                     1.25
 requires lib                          0.63
 
-test_requires ExtUtils::MakeMaker 6.64
 test_requires Test::More          0.98
 
 recommends Test::Pod           1.46

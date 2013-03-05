@@ -15,7 +15,7 @@ use Test::More tests => 35;
 my @subs = qw(
 	base_parent find_makefile_requires find_makefile_test_requires
 	find_package_names find_required_modules find_required_test_modules
-	first_package_name initialise output_footer output_header
+	first_package_name output_footer output_header
 	output_main_body process_found_modules remove_noisy_children
 	remove_twins run store_modules
 	recommends_in_double_quote recommends_in_single_quote 
