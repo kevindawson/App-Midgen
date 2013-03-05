@@ -1,6 +1,6 @@
 package App::Midgen;
 
-use v5.10;
+use 5.010001;
 use Moo;
 with qw( App::Midgen::Roles );
 use App::Midgen::Output;

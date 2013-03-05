@@ -400,15 +400,6 @@ sub footer_dist {
 	$package_name =~ s{::}{-}g;
 
 	print "\n";
-	say '# ToDo you should consider the following';
-	say '[MetaResources]';
-	say "homepage          = https://github.com/.../$package_name";
-	say "bugtracker.web    = https://github.com/.../$package_name/issues";
-	say 'bugtracker.mailto = ...';
-	say "repository.url    = git://github.com/.../$package_name.git";
-	say 'repository.web    = ...';
-	say 'repository.type   = git';
-	print "\n";
 
 	my @no_index = $self->no_index;
 	if (@no_index) {
@@ -418,6 +409,32 @@ sub footer_dist {
 		}
 		print "\n";
 	}
+
+	if ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './share' ) ) {
+		say '[ShareDir]';
+		say 'dir = share';
+		print "\n";
+	}
+
+	if ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './script' ) ) {
+		say '[ExecDir]';
+		say 'dir = script';
+		print "\n";
+	} elsif ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './bin' ) ) {
+		say '[ExecDir]';
+		say 'dir = bin';
+		print "\n";
+	}
+
+	say '# ToDo you should consider the following';
+	say '[MetaResources]';
+	say "homepage          = https://github.com/.../$package_name";
+	say "bugtracker.web    = https://github.com/.../$package_name/issues";
+	say 'bugtracker.mailto = ...';
+	say "repository.url    = git://github.com/.../$package_name.git";
+	say 'repository.type   = git';
+	say "repository.web    = https://github.com/.../$package_name";
+	print "\n";
 
 	say '[Meta::Contributors]';
 	say 'contributor = brian d foy (ADOPTME) <brian.d.foy@gmail.com>';
