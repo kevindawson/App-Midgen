@@ -1,8 +1,9 @@
 use inc::Module::Install::DSL 1.06;
 
-perl_version 5.010001
 all_from lib/App/Midgen.pm
 requires_from lib/App/Midgen.pm
+
+perl_version 5.010001
 
 requires CPAN                         1.9800
 requires Carp                         1.26
@@ -14,6 +15,7 @@ requires Module::CoreList             2.82
 requires Moo                          1.000008
 requires MooX::Types::MooseLike::Base 0.22
 requires PPI                          1.215
+requires Perl::MinimumVersion         1.32
 requires Pod::Usage                   1.61
 requires Try::Tiny                    0.12
 requires constant                     1.25
