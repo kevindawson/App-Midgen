@@ -183,9 +183,6 @@ sub find_makefile_requires {
 		when (m/[.]\w{2,4}$/) { say 'rejecting ' . $filename if $self->{verbose}; return; }
 		default { return if not $self->is_perlfile($filename); }
 	}
-	try {
-		$self->min_version();
-	};
 
 	my $ppi_i = $self->{ppi_document}->find('PPI::Statement::Include');
 
