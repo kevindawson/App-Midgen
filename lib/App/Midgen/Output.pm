@@ -43,7 +43,7 @@ sub body_dsl {
 	my $self         = shift;
 	my $title        = shift;
 	my $required_ref = shift;
-	say 'perl_version ' . $App::Midgen::Min_Version if $title eq 'requires' ;
+	say 'perl_version ' . $App::Midgen::Min_Version if $title eq 'requires';
 	print "\n";
 
 	my $pm_length = 0;
@@ -114,7 +114,6 @@ sub header_mi {
 	# Let's get the current version of Module::Install::DSL
 	my $mod = CPAN::Shell->expand( 'Module', 'inc::Module::Install' );
 
-
 	print "\n";
 	say 'use inc::Module::Install ' . $mod->cpan_version . ';';
 
@@ -136,7 +135,6 @@ sub body_mi {
 	my $self         = shift;
 	my $title        = shift;
 	my $required_ref = shift;
-#	print "\n";
 
 	my $pm_length = 0;
 	foreach my $module_name ( sort keys %{$required_ref} ) {
@@ -145,7 +143,7 @@ sub body_mi {
 		}
 	}
 
-	say "perl_version '$App::Midgen::Min_Version';" if $title eq 'requires' ;
+	say "perl_version '$App::Midgen::Min_Version';" if $title eq 'requires';
 	print "\n";
 
 	foreach my $module_name ( sort keys %{$required_ref} ) {
@@ -216,15 +214,10 @@ sub header_build {
 	my $self = shift;
 	my $package_name = shift // NONE;
 
-	# print "\n";
-	# say "WriteMakefile(";
 	if ( $package_name ne NONE ) {
 		print "\n";
 		$package_name =~ s{::}{-}g;
 		say 'NAME => ' . $package_name;
-
-		# $package_name =~ tr{-}{/};
-		# say "VERSION_FROM => lib/$package_name.pm";
 		print "\n";
 	}
 
@@ -264,8 +257,6 @@ sub body_build {
 sub footer_build {
 	my $self = shift;
 
-	# print "\n";
-	# say ');';
 	print "\n";
 
 	return;
@@ -382,7 +373,7 @@ sub body_dist {
 		}
 	}
 	given ($title) {
-		when ('requires')      { say '[Prereqs]'; printf "%-*s = %s\n", $pm_length, 'perl', $App::Midgen::Min_Version;  }
+		when ('requires') { say '[Prereqs]'; printf "%-*s = %s\n", $pm_length, 'perl', $App::Midgen::Min_Version; }
 		when ('test_requires') { say '[Prereqs / TestRequires]'; }
 		when ('recommends')    { say '[Prereqs / RuntimeRecommends]'; }
 	}
@@ -405,7 +396,6 @@ sub footer_dist {
 	$package_name =~ s{::}{-}g;
 
 	print "\n";
-
 	my @no_index = $self->no_index;
 	if (@no_index) {
 		say '[MetaNoIndex]';

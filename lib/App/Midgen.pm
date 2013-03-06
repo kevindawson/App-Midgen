@@ -114,6 +114,9 @@ sub find_package_names {
 
 	# Load a Document from a file
 	$self->{ppi_document} = PPI::Document->new($filename);
+	try {
+		$self->min_version();
+	};
 
 	# Extract package names
 	push @{ $self->{package_names} }, $self->{ppi_document}->find_first('PPI::Statement::Package')->namespace;
@@ -130,7 +133,7 @@ sub find_required_modules {
 	my $self = shift;
 
 	# By default we shell only check lib and script (to bin or not?)
-	my @posiable_directories_to_search = map { File::Spec->catfile( $Working_Dir, $_ ) } qw( script lib );
+	my @posiable_directories_to_search = map { File::Spec->catfile( $Working_Dir, $_ ) } qw( script bin lib );
 
 	my @directories_to_search = ();
 	for my $directory (@posiable_directories_to_search) {
@@ -177,14 +180,15 @@ sub find_makefile_requires {
 	my $self     = shift;
 	my $filename = $_;
 	$self->{ppi_document} = PPI::Document->new($filename);
+	my $is_script = 0;
 
 	given ($filename) {
 		when (m/[.]pm$/) { say 'looking for requires in (.pm)-> ' . $filename if $self->{verbose}; }
 		when (m/[.]\w{2,4}$/) { say 'rejecting ' . $filename if $self->{verbose}; return; }
-		default { return if not $self->is_perlfile($filename); }
+		default { return if not $self->is_perlfile($filename); $is_script = 1; }
 	}
 	try {
-		$self->min_version();
+		$self->min_version() if $is_script;
 	};
 
 	my $ppi_i = $self->{ppi_document}->find('PPI::Statement::Include');
@@ -256,6 +260,9 @@ sub find_makefile_test_requires {
 	$self->{ppi_document} = PPI::Document->new($filename);
 	my $ppi_i = $self->{ppi_document}->find('PPI::Statement::Include');
 
+	#	try {
+	#		$self->min_version();
+	#	};
 	my @modules;
 	if ($ppi_i) {
 		foreach my $include ( @{$ppi_i} ) {
@@ -709,34 +716,37 @@ sub check_mojo_core {
 ######
 sub min_version {
 	my $self = shift;
-# Create the version checking object
-  my $object = Perl::MinimumVersion->new( $self->{ppi_document} );
 
-# Find the minimum version
-  my $minimum_version = $object->minimum_version;
-#  $minimum_version =~ s/v//;
-#  say 'minimum_version - ' . $minimum_version;
-  $Min_Version
-    = version->parse($Min_Version) > version->parse($minimum_version) ? $Min_Version : $minimum_version;
+	# Create the version checking object
+	my $object = Perl::MinimumVersion->new( $self->{ppi_document} );
+
+	# Find the minimum version
+	my $minimum_version = $object->minimum_version;
+
+	#  $minimum_version =~ s/v//;
+	#  say 'minimum_version - ' . $minimum_version;
+	$Min_Version = version->parse($Min_Version) > version->parse($minimum_version) ? $Min_Version : $minimum_version;
 
 
-  my $minimum_explicit_version = $object->minimum_explicit_version;
-#  $minimum_explicit_version =~ s/v//;
-#  say 'minimum_explicit_version - ' . $minimum_explicit_version;
-  $Min_Version
-    = version->parse($Min_Version) > version->parse($minimum_explicit_version)
-    ? $Min_Version
-    : $minimum_explicit_version;
+	my $minimum_explicit_version = $object->minimum_explicit_version;
 
-  my $minimum_syntax_version = $object->minimum_syntax_version;
-#  $minimum_syntax_version =~ s/v//;
-#  say 'minimum_syntax_version - ' . $minimum_syntax_version;
-  $Min_Version
-    = version->parse($Min_Version) > version->parse($minimum_syntax_version)
-    ? $Min_Version
-    : $minimum_syntax_version;
+	#  $minimum_explicit_version =~ s/v//;
+	#  say 'minimum_explicit_version - ' . $minimum_explicit_version;
+	$Min_Version =
+		version->parse($Min_Version) > version->parse($minimum_explicit_version)
+		? $Min_Version
+		: $minimum_explicit_version;
 
-#  say 'min_version - ' . $Min_Version;
+	my $minimum_syntax_version = $object->minimum_syntax_version;
+
+	#  $minimum_syntax_version =~ s/v//;
+	#  say 'minimum_syntax_version - ' . $minimum_syntax_version;
+	$Min_Version =
+		version->parse($Min_Version) > version->parse($minimum_syntax_version)
+		? $Min_Version
+		: $minimum_syntax_version;
+
+	#  say 'min_version - ' . $Min_Version;
 
 	return;
 }
