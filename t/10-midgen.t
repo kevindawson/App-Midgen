@@ -6,7 +6,7 @@ use warnings FATAL => 'all';
 use English qw( -no_match_vars ); # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Test::More tests => 28;
+use Test::More tests => 25;
 
 ######
 # let's check our subs/methods.
@@ -14,8 +14,7 @@ use Test::More tests => 28;
 
 my @subs = qw(
 	base_parent find_required_modules find_required_test_modules
-	first_package_name output_footer output_header
-	output_main_body remove_noisy_children
+	first_package_name remove_noisy_children
 	remove_twins run min_version
 );
 

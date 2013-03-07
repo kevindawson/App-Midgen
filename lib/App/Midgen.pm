@@ -42,7 +42,7 @@ sub run {
 	try {
 		$self->first_package_name();
 	};
-	$self->output_header();
+	$self->_output_header();
 
 	$self->find_required_modules();
 	$self->find_required_test_modules();
@@ -53,11 +53,11 @@ sub run {
 	#run a second time if we found any twins, this will sort out twins and triplets etc
 	$self->remove_noisy_children( $self->{requires} ) if $self->{found_twins};
 
-	$self->output_main_body( 'requires',      $self->{requires} );
-	$self->output_main_body( 'test_requires', $self->{test_requires} );
-	$self->output_main_body( 'recommends',    $self->{recommends} );
+	$self->_output_main_body( 'requires',      $self->{requires} );
+	$self->_output_main_body( 'test_requires', $self->{test_requires} );
+	$self->_output_main_body( 'recommends',    $self->{recommends} );
 
-	$self->output_footer();
+	$self->_output_footer();
 
 	return;
 }
@@ -746,9 +746,9 @@ sub min_version {
 }
 
 #######
-# output_header
+# _output_header
 #######
-sub output_header {
+sub _output_header {
 	my $self = shift;
 
 	given ( $self->{output_format} ) {
@@ -772,9 +772,9 @@ sub output_header {
 	return;
 }
 #######
-# output_main_body
+# _output_main_body
 #######
-sub output_main_body {
+sub _output_main_body {
 	my $self         = shift;
 	my $title        = shift || 'title missing';
 	my $required_ref = shift || return;
@@ -801,9 +801,9 @@ sub output_main_body {
 	return;
 }
 #######
-# output_footer
+# _output_footer
 #######
-sub output_footer {
+sub _output_footer {
 	my $self = shift;
 
 	given ( $self->{output_format} ) {
@@ -859,9 +859,14 @@ See L<midgen> for cmd line option info.
  
 =head1 DESCRIPTION
 
+This is an aid to present a packages module requirements by scanning 
+the package, 
+then displaying in a familiar format with the current version number from CPAN.
+
 This started out as a way of generating the core for a Module::Install::DSL Makefile.PL, 
-why DSL because it's nice and clean, so now I can generate the contents when I want, 
-rather than as I add new use and require statements, yes it's another L<PPI> powered app.
+why DSL because it's nice and clean, 
+so now you can generate the contents and check when you want, 
+yes it's another L<PPI> powered app.
 
 All output goes to STDOUT, so you can use it as you see fit.
 
@@ -869,7 +874,7 @@ All output goes to STDOUT, so you can use it as you see fit.
 
 =over 4
 
-=item * NN.nnn.nnn we got the current version number from CPAN
+=item * NN.nnnnnn we got the current version number from CPAN (numify)
 
 =item * 'undef' no version number returned by CPAN
 
@@ -879,10 +884,12 @@ All output goes to STDOUT, so you can use it as you see fit.
 
 =back
 
-Food for thought, if we update our Modules, 
+I<Food for thought, if we update our Modules, 
 don't we want our users to use the current version, 
 so should we not by default do the same with others Modules. 
-Thus we always show the current version number, regardless.
+Thus we always show the current version number, regardless.>
+
+We also display some other info to complement the modules we have found.
 
 For more info and sample output see L<wiki|https://github.com/kevindawson/App-Midgen/wiki>
 
@@ -892,7 +899,7 @@ For more info and sample output see L<wiki|https://github.com/kevindawson/App-Mi
 
 =item * base_parent
 
-check inside base/parent pragmas for modules to include
+Check inside base/parent pragmas for modules to include
 
 =item * find_required_modules
 
@@ -900,30 +907,26 @@ Search for Includes B<use> and B<require> in package modules
 
 =item * find_required_test_modules
 
-Search for Includes B<use> and B<require> in test scripts
+Search for Includes B<use> and B<require> in test scripts, 
+also B<use_ok>, I<plus some other patterns along the way.>
 
 =item * first_package_name
 
-assume first package found is your package
+Assume first package found is your packages name
 
 =item * min_version
 
-uses L<Perl::MinimumVersion> to find min version of your package by taking a quick look, I<note this is not a full scan>
-
-=item * output_footer
-
-=item * output_header
-
-=item * output_main_body
+Uses L<Perl::MinimumVersion> to find the minimum version of your package by taking a quick look, 
+I<note this is not a full scan see L<perlver> for a full scan>.
 
 =item * remove_noisy_children
 
-Noisy Children parent A::B noisy Children A::B::C or A::B::D 
-all with same version number.
+Parent A::B has noisy Children A::B::C and A::B::D all with same version number.
 
 =item * remove_twins
 
-Twins E::F::G and E::F::H and a parent E::F and re-test for noisy children, 
+Twins E::F::G and E::F::H  have a parent E::F with same version number, 
+so we add a parent E::F and re-test for noisy children, 
 catching triplets along the way.
 
 =item * run
@@ -967,6 +970,10 @@ Kevin Dawson E<lt>bowtie@cpan.orgE<gt>
 =head2 CONTRIBUTORS
 
 Ahmad M. Zawawi E<lt>ahmad.zawawi@gmail.comE<gt>
+
+Matt S. Trout E<lt>mst@shadowcat.co.ukE<gt>
+
+Tommy Butler E<lt>ace@tommybutler.meE<gt>
 
 =head1 COPYRIGHT
 

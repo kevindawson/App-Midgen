@@ -1,5 +1,15 @@
 Revision history for App-Midgen
 
+0.12 2013-03-07
+ - Rewrite of all POD
+ - Add perl-minversion test
+ - Add method _is_perl to better test for vaild perl files
+ - A magor refactoing to speed up operation
+ - base/parent know handles parent -norequire
+ - Do a version check for mojo catch
+ - Add no_index to Output
+ - More info output as food for thought
+
 0.10 2013-02-22
  - be tougher on edge cases checking in tests for lines begin with use
  - stop looking when we have found a couple of files for a package name
