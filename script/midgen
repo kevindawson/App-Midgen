@@ -97,7 +97,7 @@ __END__
 
 =head1 NAME
 
-midgen - Check B<requires> & B<test_rerquires> of your CPAN Package
+midgen - Check B<requires> & B<test_rerquires> of your package for CPAN inclusion.
 
 =head1 VERSION
 
@@ -105,7 +105,7 @@ This document describes midgen version: 0.12
 
 =head1 SYNOPSIS
 
-Change to root of package and run
+Change to the root of your package and run
 
  midgen
 
@@ -123,7 +123,7 @@ or
 
 =item B<--help or -h>
 
-Print a brief help message and exits.
+Prints a help message and exits.
 
  Options:
    --help           brief help message
@@ -139,8 +139,8 @@ Print a brief help message and exits.
 
 =item B<--output or -o>
 
-By default we output to screen in 'dsl' format, 
-so you can check, copy and paste or select an alternative as shown below.
+By default we output to STDOUT in 'dsl' format, 
+so you can check, copy n paste or select an alternative format as shown below.
 
  midgen -o dsl		# Module::Include::DSL
  midgen -o mi		# Module::Include
@@ -183,9 +183,10 @@ Turn on extra output to show the modules considered to be noisy children, as we 
 
 =item B<--twins or -t>
 
-Turn on extra output to show the modules that are twins, as we find them
+Turn on extra output to show the modules that are twins, as we find them, 
+suggest you incorporate it with noisy_children for maximum affect
 
- midgen -t
+ midgen -nt
  
 =item B<--zero or z>
 

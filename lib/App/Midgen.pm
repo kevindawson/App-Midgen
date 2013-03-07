@@ -87,7 +87,7 @@ sub first_package_name {
 	my $self = shift;
 
 	try {
-		find( sub { find_package_names($self); }, File::Spec->catfile( $Working_Dir, 'lib' ) );
+		find( sub { _find_package_names($self); }, File::Spec->catfile( $Working_Dir, 'lib' ) );
 	};
 
 	p $self->{package_names} if $self->{debug};
@@ -101,7 +101,7 @@ sub first_package_name {
 #######
 # find_package_name
 #######
-sub find_package_names {
+sub _find_package_names {
 	my $self     = shift;
 	my $filename = $_;
 	state $files_checked;
@@ -144,7 +144,7 @@ sub find_required_modules {
 	p @directories_to_search if $self->{debug};
 
 	try {
-		find( sub { find_makefile_requires($self); }, @directories_to_search );
+		find( sub { _find_makefile_requires($self); }, @directories_to_search );
 	};
 
 	return;
@@ -166,7 +166,7 @@ sub find_required_test_modules {
 	}
 
 	try {
-		find( sub { find_makefile_test_requires($self); }, @directories_to_search );
+		find( sub { _find_makefile_test_requires($self); }, @directories_to_search );
 	};
 
 	return;
@@ -174,9 +174,9 @@ sub find_required_test_modules {
 }
 
 #######
-# find_makefile_requires
+# _find_makefile_requires
 #######
-sub find_makefile_requires {
+sub _find_makefile_requires {
 	my $self     = shift;
 	my $filename = $_;
 	$self->{ppi_document} = PPI::Document->new($filename);
@@ -185,7 +185,7 @@ sub find_makefile_requires {
 	given ($filename) {
 		when (m/[.]pm$/) { say 'looking for requires in (.pm)-> ' . $filename if $self->{verbose}; }
 		when (m/[.]\w{2,4}$/) { say 'rejecting ' . $filename if $self->{verbose}; return; }
-		default { return if not $self->is_perlfile($filename); $is_script = 1; }
+		default { return if not $self->_is_perlfile($filename); $is_script = 1; }
 	}
 	try {
 		$self->min_version() if $is_script;
@@ -209,14 +209,14 @@ sub find_makefile_requires {
 		}
 	}
 
-	$self->process_found_modules( 'requires', \@modules );
+	$self->_process_found_modules( 'requires', \@modules );
 	return;
 }
 
 ########
 # is this a perl file
 #######
-sub is_perlfile {
+sub _is_perlfile {
 	my $self     = shift;
 	my $filename = shift;
 
@@ -247,9 +247,9 @@ sub is_perlfile {
 
 
 #######
-# find_makefile_test_requires
+# _find_makefile_test_requires
 #######
-sub find_makefile_test_requires {
+sub _find_makefile_test_requires {
 	my $self     = shift;
 	my $filename = $_;
 	return if $filename !~ /[.]t|pm$/sxm;
@@ -279,11 +279,11 @@ sub find_makefile_test_requires {
 	}
 	p @modules if $self->{debug};
 
-	$self->process_found_modules( 'test_requires', \@modules );
+	$self->_process_found_modules( 'test_requires', \@modules );
 
 	#These are realy recommends
-	$self->recommends_in_single_quote(); #$self->{ppi_document});
-	$self->recommends_in_double_quote(); #$self->{ppi_document});
+	$self->_recommends_in_single_quote(); #$self->{ppi_document});
+	$self->_recommends_in_double_quote(); #$self->{ppi_document});
 
 	return;
 }
@@ -292,7 +292,7 @@ sub find_makefile_test_requires {
 #######
 # composed method - recommends_in_single_quote
 #######
-sub recommends_in_single_quote {
+sub _recommends_in_single_quote {
 	my $self = shift;
 
 	# Hack for use_ok in test files, Ouch!
@@ -317,7 +317,7 @@ sub recommends_in_single_quote {
 
 				# if we found a module, process it
 				if ( scalar @modules > 0 ) {
-					$self->process_found_modules( 'recommends', \@modules );
+					$self->_process_found_modules( 'recommends', \@modules );
 				}
 
 			} elsif ( $module =~ /::/ && $module =~ /use/ ) {
@@ -333,7 +333,7 @@ sub recommends_in_single_quote {
 
 				# if we found a module, process it
 				if ( scalar @modules > 0 ) {
-					$self->process_found_modules( 'recommends', \@modules );
+					$self->_process_found_modules( 'recommends', \@modules );
 				}
 			}
 
@@ -349,7 +349,7 @@ sub recommends_in_single_quote {
 
 				# if we found a module, process it
 				if ( scalar @modules > 0 ) {
-					$self->process_found_modules( 'test_requires', \@modules );
+					$self->_process_found_modules( 'test_requires', \@modules );
 				}
 			}
 		}
@@ -359,7 +359,7 @@ sub recommends_in_single_quote {
 #######
 # composed method - recommends_in_double_quote
 #######
-sub recommends_in_double_quote {
+sub _recommends_in_double_quote {
 	my $self = shift;
 
 	# Now lets double check the ptq-Doubles hidden in a test file - why O why - rtfm pbp
@@ -384,7 +384,7 @@ sub recommends_in_double_quote {
 
 			# if we found a module, process it
 			if ( scalar @modules > 0 ) {
-				$self->process_found_modules( 'recommends', \@modules );
+				$self->_process_found_modules( 'recommends', \@modules );
 			}
 		}
 	}
@@ -392,9 +392,9 @@ sub recommends_in_double_quote {
 }
 
 #######
-# composed method - process_found_modules
+# composed method - _process_found_modules
 #######
-sub process_found_modules {
+sub _process_found_modules {
 	my $self         = shift;
 	my $require_type = shift;
 	my $modules_ref  = shift;
@@ -419,8 +419,8 @@ sub process_found_modules {
 
 		if ( $module =~ /Mojo/sxm ) {
 
-			# $self->check_mojo_core($module);
-			$module = 'Mojolicious' if $self->check_mojo_core($module);
+			# $self->_check_mojo_core($module);
+			$module = 'Mojolicious' if $self->_check_mojo_core($module);
 		}
 		if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm && !$self->{padre} ) {
 
@@ -452,15 +452,15 @@ sub process_found_modules {
 			}
 		}
 
-		$self->store_modules( $require_type, $module );
+		$self->_store_modules( $require_type, $module );
 	}
 	return;
 }
 
 #######
-# composed method - store_modules
+# composed method - _store_modules
 #######
-sub store_modules {
+sub _store_modules {
 	my $self         = shift;
 	my $require_type = shift;
 	my $module       = shift;
@@ -663,9 +663,9 @@ sub remove_twins {
 }
 
 #######
-# check_mojo_core
+# _check_mojo_core
 #######
-sub check_mojo_core {
+sub _check_mojo_core {
 	my $self        = shift;
 	my $mojo_module = shift;
 	my $mojo_module_ver;
@@ -722,31 +722,25 @@ sub min_version {
 
 	# Find the minimum version
 	my $minimum_version = $object->minimum_version;
-
-	#  $minimum_version =~ s/v//;
-	#  say 'minimum_version - ' . $minimum_version;
-	$Min_Version = version->parse($Min_Version) > version->parse($minimum_version) ? $Min_Version : $minimum_version;
+	$Min_Version =
+		  version->parse($Min_Version) > version->parse($minimum_version)
+		? version->parse($Min_Version)->numify
+		: version->parse($minimum_version)->numify;
 
 
 	my $minimum_explicit_version = $object->minimum_explicit_version;
-
-	#  $minimum_explicit_version =~ s/v//;
-	#  say 'minimum_explicit_version - ' . $minimum_explicit_version;
 	$Min_Version =
-		version->parse($Min_Version) > version->parse($minimum_explicit_version)
-		? $Min_Version
-		: $minimum_explicit_version;
+		  version->parse($Min_Version) > version->parse($minimum_explicit_version)
+		? version->parse($Min_Version)->numify
+		: version->parse($minimum_explicit_version)->numify;
 
 	my $minimum_syntax_version = $object->minimum_syntax_version;
-
-	#  $minimum_syntax_version =~ s/v//;
-	#  say 'minimum_syntax_version - ' . $minimum_syntax_version;
 	$Min_Version =
-		version->parse($Min_Version) > version->parse($minimum_syntax_version)
-		? $Min_Version
-		: $minimum_syntax_version;
+		  version->parse($Min_Version) > version->parse($minimum_syntax_version)
+		? version->parse($Min_Version)->numify
+		: version->parse($minimum_syntax_version)->numify;
 
-	#  say 'min_version - ' . $Min_Version;
+	say 'min_version - ' . $Min_Version if $self->{debug};
 
 	return;
 }
@@ -845,7 +839,7 @@ __END__
 
 =head1 NAME
 
-App::Midgen - Check B<requires> & B<test_rerquires> of your CPAN Package
+App::Midgen - Check B<requires> & B<test_rerquires> of your Package for CPAN inclusion.
 
 =head1 VERSION
 
@@ -853,7 +847,7 @@ This document describes App::Midgen version: 0.12
 
 =head1 SYNOPSIS
 
-Change to root of package and run
+Change to the root of your package and run
 
  midgen
 
@@ -871,6 +865,20 @@ rather than as I add new use and require statements, yes it's another L<PPI> pow
 
 All output goes to STDOUT, so you can use it as you see fit.
 
+=head3 CPAN Version Number Displayed
+
+=over 4
+
+=item * NN.nnn.nnn we got the current version number from CPAN
+
+=item * 'undef' no version number returned by CPAN
+
+=item * 'core' indicates the module is a perl core module
+
+=item * '!cpan' must be local, one of yours. Not in CPAN, Not in core.
+
+=back
+
 Food for thought, if we update our Modules, 
 don't we want our users to use the current version, 
 so should we not by default do the same with others Modules. 
@@ -884,47 +892,29 @@ For more info and sample output see L<wiki|https://github.com/kevindawson/App-Mi
 
 =item * base_parent
 
-=item * check_mojo_core
-
-=item * find_makefile_requires
-
-Search for Includes B<use> and B<require> in package modules
-
-=item * find_makefile_test_requires
-
-Search for Includes B<use> and B<require> in test scripts
-
-=item * find_package_names
+check inside base/parent pragmas for modules to include
 
 =item * find_required_modules
 
+Search for Includes B<use> and B<require> in package modules
+
 =item * find_required_test_modules
+
+Search for Includes B<use> and B<require> in test scripts
 
 =item * first_package_name
 
-=item * is_perlfile
+assume first package found is your package
 
 =item * min_version
 
-uses L<Perl::MinimumVersion> to find min version of package
+uses L<Perl::MinimumVersion> to find min version of your package by taking a quick look, I<note this is not a full scan>
 
 =item * output_footer
 
 =item * output_header
 
 =item * output_main_body
-
-=item * process_found_modules
-
-=item * recommends_in_double_quote
-
-Search for B<use> in test files
-
-=item * recommends_in_single_quote
-
-Search for B<use> in test files
-
-plus use_ok -> test_require
 
 =item * remove_noisy_children
 
@@ -938,7 +928,6 @@ catching triplets along the way.
 
 =item * run
 
-=item * store_modules
 
 =back
 
@@ -960,7 +949,7 @@ this is best left to the module Author.
 
 =head1 WARNINGS
 
-You should have access to L<http://www.cpan.org/>.
+You should have access to L<http://www.cpan.org/>, or one of it's mirrors.
 
 Start-up may be slow, especially if it we need to do the equivalent of, CPAN reload index.
 

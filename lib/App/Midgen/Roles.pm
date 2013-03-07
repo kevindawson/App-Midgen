@@ -223,8 +223,6 @@ none as such, but we do have
 
 =item * padre
 
-=item * ppi_document
-
 =item * twins
 
 =item * verbose
@@ -251,6 +249,14 @@ Our best guess as to this packages name
 
 Some package names we found along the way
 
+=item * ppi_document
+
+I encapsulated this and got a nifty speed increase
+
+=item * recommends
+
+Some where to store recommend modules and version info in
+
 =item * requires
 
 Some where to store required modules and version info in
@@ -259,9 +265,6 @@ Some where to store required modules and version info in
 
 Some where to store test_required modules and version info in
 
-=item * recommends
-
-Some where to store recommend modules and version info in
 
 =back
 

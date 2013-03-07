@@ -6,19 +6,17 @@ use warnings FATAL => 'all';
 use English qw( -no_match_vars ); # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Test::More tests => 35;
+use Test::More tests => 28;
 
 ######
 # let's check our subs/methods.
 ######
 
 my @subs = qw(
-	base_parent find_makefile_requires find_makefile_test_requires
-	find_package_names find_required_modules find_required_test_modules
+	base_parent find_required_modules find_required_test_modules
 	first_package_name output_footer output_header
-	output_main_body process_found_modules remove_noisy_children
-	remove_twins run store_modules min_version
-	recommends_in_double_quote recommends_in_single_quote 
+	output_main_body remove_noisy_children
+	remove_twins run min_version
 );
 
 use_ok( 'App::Midgen', @subs );

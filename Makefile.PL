@@ -20,6 +20,7 @@ requires Pod::Usage                   1.61
 requires Try::Tiny                    0.12
 requires constant                     1.25
 requires lib                          0.63
+requires version                      0.9902
 
 test_requires Test::More          0.98
 
