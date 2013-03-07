@@ -8,7 +8,7 @@ why DSL because it's nice and clean, so now I can generate the contents when I w
 rather than as I add new use and require statments, and because adam kicked me :)
 
 
-### Version 0.10
+### Version 0.12
 
 ## Synopsis
 
@@ -24,13 +24,16 @@ Now with a added Getopt --help or -?
 ### Usage
     midgen [options]
 
-       --help        brief help message
-       --output      change format
-       --core        show perl core modules
-       --verbose     take a little peek as to what is going on
-       --base        Don't check for base includes
-       --mojo        Don't be Mojo friendly
-       --debug       lots of stuff
+    --help           brief help message
+    --output         change format
+    --core           show perl core modules
+    --verbose        take a little peek as to what is going on
+    --parent         show the base|parent includes as we find them
+    --mojo           show the Mojo catch as we find them
+    --noisy_children show them as we find them
+    --twins          show twins as we find them
+    --zero           show a 0 instead of core
+    --debug          lot's of stuff very
 
 
 ## Description
@@ -51,38 +54,65 @@ _Food for thought, if we update our Modules, don't we want our users to use the 
         Print a brief help message and exits.
 
     --output or -o
-        By default we do 'dsl' -> Module::Include::DSL
+        By default we output to STDOUT in 'dsl' format, so you can check,
+        copy n paste or select an alternative format as shown below.
 
-         midgen -o dsl      # Module::Include::DSL
-         midgen -o mi       # Module::Include
-         midgen -o build    # Build.PL
-         midgen -o dzil     # Dist::Zilla
-         midgen -o dist		# dist.ini
+         midgen -o dsl          # Module::Include::DSL
+         midgen -o mi           # Module::Include
+         midgen -o build        # Build
+         midgen -o dzil         # Dist::Zilla
+         midgen -o dist         # dist.ini
 
     --core or -c
          * Shows modules that are in Perl core
          * some modules have a version number eg; constant, Carp
          * some have a version of 0 eg; strict, English
+         * also show any recommends that we found
 
     --verbose or -v
-        Show file that are being checked
-
-        also show contents of base|parent check
+        Show filename that we are checking, as we go
 
     --parent or -p
         alternative --base or -b
 
-        Turn Off - try to include the contents of base|parent modules as
-        well
+        Turn on extra output to show the base|parent modules, as we find
+        them, suggest you incorporate it with verbose for maximum affect
+
+         midgen -vp
 
     --mojo or -m
-        Turn Off - the /Mojo/ to Mojolicious catch
+        Turn on extra output to show the /Mojo/ to Mojolicious catch, as we
+        find them, suggest you incorporate it with verbose for maximum
+        affect
+
+         midgen -vm
 
     --noisy_children or -n
-         * Show a required modules noisy children, as we find them
-         
+        Turn on extra output to show the modules considered to be noisy
+        children, as we find them
+
+         midgen -n
+
     --twins or -t
-         * Show a modules that are twins as we find them, and ajust for there parient instead
+        Turn on extra output to show the modules that are twins, as we find
+        them, suggest you incorporate it with noisy_children for maximum
+        affect
+
+         midgen -nt
+
+    --zero or z
+        Use a '0' instead of 'core' for core module version number, suggest
+        you incorporate it with core for maximum affect
+
+         midgen -cz
 
     --debug or -d
-        equivalent of -cv and some :)
+        equivalent of -cnmptv and some :))
+
+        uses Data::Printer
+
+        suggest you consider redirecting STDERR when the debug option is
+        used
+
+         midgen -d 2>debug.txt
+
