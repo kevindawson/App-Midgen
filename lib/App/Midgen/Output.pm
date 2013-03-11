@@ -26,7 +26,7 @@ sub header_dsl {
 	$package_name =~ s{::}{/}g;
 
 	print "\n";
-	say 'use inc::Module::Install::DSL ' . $mod->cpan_version . ';';
+	say 'use inc::Module::Install::DSL ' . $mod->cpan_version . q{;};
 	print "\n";
 	if ( $package_name ne NONE ) {
 		say 'all_from lib/' . $package_name . '.pm';
@@ -115,7 +115,7 @@ sub header_mi {
 	my $mod = CPAN::Shell->expand( 'Module', 'inc::Module::Install' );
 
 	print "\n";
-	say 'use inc::Module::Install ' . $mod->cpan_version . ';';
+	say 'use inc::Module::Install ' . $mod->cpan_version . q{;};
 
 	print "\n";
 	if ( $package_name ne NONE ) {
@@ -304,7 +304,7 @@ sub body_dzil {
 
 	foreach my $module_name ( sort keys %{$required_ref} ) {
 
-		my $sq_key = '"' . $module_name . '"';
+		my $sq_key = q{"} . $module_name . q{"};
 		printf "\t %-*s => '%s',\n", $pm_length + 2, $sq_key, $required_ref->{$module_name};
 
 	}
