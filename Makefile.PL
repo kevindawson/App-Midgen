@@ -11,9 +11,9 @@ requires Cwd                          3.40
 requires Data::Printer                0.35
 requires File::Spec                   3.40
 requires Getopt::Long                 2.38
-requires Module::CoreList             2.82
+requires Module::CoreList             2.83
 requires Moo                          1.000008
-requires MooX::Types::MooseLike::Base 0.22
+requires MooX::Types::MooseLike::Base 0.23
 requires PPI                          1.215
 requires Perl::MinimumVersion         1.32
 requires Pod::Usage                   1.61
