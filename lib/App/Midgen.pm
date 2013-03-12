@@ -483,7 +483,7 @@ sub _store_modules {
 	my $self         = shift;
 	my $require_type = shift;
 	my $module       = shift;
-	p $module;# if $self->{debug};
+	p $module if $self->{debug};
 
 	my $version = $self->_cpan_api($module);
 	given ($version) {
@@ -663,25 +663,21 @@ sub remove_twins {
 				}
 
 				#Check for vailed parent
-				my $mod;
+				my $version;
 				my $mod_in_cpan = 0;
-				try {
-					$mod = CPAN::Shell->expand( 'Module', $dum_parient );
-					if ( $mod->cpan_version ne 'undef' ) {
+				$version = $self->_cpan_api($dum_parient);
+				if ( $version ne 'undef' ) {
 
-						# allocate current cpan version against module name
-						$mod_in_cpan = 1;
-					}
-				};
+					# allocate current cpan version against module name
+					$mod_in_cpan = 1;
+				}
 
 				if ($mod_in_cpan) {
 
 					#Check parent version against a twins version
-					if ( $mod->cpan_version == $required_ref->{ $sorted_modules[$n] } ) {
-
-						say $dum_parient . ' -> ' . $mod->cpan_version . ' is the parent of these twins'
-							if $self->{twins};
-						$required_ref->{$dum_parient} = $mod->cpan_version;
+					if ( $version == $required_ref->{ $sorted_modules[$n] } ) {
+						say $dum_parient . ' -> ' . $version . ' is the parent of these twins' if $self->{twins};
+						$required_ref->{$dum_parient} = $version;
 						$self->{found_twins} = 1;
 					}
 				}
@@ -756,7 +752,7 @@ sub _cpan_api {
 		if ( $mod->cpan_version ne 'undef' ) {
 
 			# allocate current cpan version against module name
-			$version = $mod->cpan_version;
+			$version = version->parse( $mod->cpan_version )->numify;
 		} else {
 
 			# Mark as undef, ie no version in cpan, what fun!
