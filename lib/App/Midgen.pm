@@ -728,6 +728,36 @@ sub _check_mojo_core {
 }
 
 #######
+# version from cpan api
+#######
+sub _cpan_api {
+	my $self = shift;
+	my $module       = shift;
+	my $version;
+	p $module if $self->{debug};
+
+	try {
+		my $mod = CPAN::Shell->expand( 'Module', $module );
+
+		if ( $mod->cpan_version ne 'undef' ) {
+
+			# allocate current cpan version against module name
+			$version = $mod->cpan_version;
+		} else {
+
+			# Mark as undef, ie no version in cpan, what fun!
+			$version = 'undef';
+		}
+
+	}
+	catch {
+		carp "caught - $module" if $self->{debug};
+		$version = '!cpan';
+	};
+	return $version;
+}
+
+#######
 # find min perl version
 ######
 sub min_version {
