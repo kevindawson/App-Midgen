@@ -29,6 +29,9 @@ use constant {
 	THREE => 3,
 };
 
+use Perl::PrereqScanner;
+my $scanner = Perl::PrereqScanner->new;
+
 # stop rlib from Fing all over cwd
 our $Working_Dir = cwd();
 our $Min_Version = 0;
@@ -76,7 +79,7 @@ sub _initialise {
 	# set up cpan bit's as well as checking we are up to date
 	CPAN::HandleConfig->load;
 	CPAN::Shell::setup_output;
-	CPAN::Index->reload;
+	CPAN::Index->reload; #ToDo if not skip;
 	return;
 }
 
@@ -191,23 +194,30 @@ sub _find_makefile_requires {
 		$self->min_version() if $is_script;
 	};
 
-	my $ppi_i = $self->{ppi_document}->find('PPI::Statement::Include');
+#say 'I am here';
+	# p $scanner;
+	my $prereqs = $scanner->scan_ppi_document( $self->{ppi_document} );
+	# p $prereqs;
+	my @modules =  $prereqs->required_modules;
+	# p @modules;
 
-	my @modules;
-	if ($ppi_i) {
-		foreach my $include ( @{$ppi_i} ) {
-			next if $include->type eq 'no';
+#	my $ppi_i = $self->{ppi_document}->find('PPI::Statement::Include');
 
-			push @modules, $include->module;
-
-			p @modules if $self->{debug};
-			my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
-			if (@base_parent_modules) {
-
-				push @modules, @base_parent_modules;
-			}
-		}
-	}
+#	my @modules;
+#	if ($ppi_i) {
+#		foreach my $include ( @{$ppi_i} ) {
+#			next if $include->type eq 'no';
+#
+#			push @modules, $include->module;
+#
+#			p @modules if $self->{debug};
+#			my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
+#			if (@base_parent_modules) {
+#
+#				push @modules, @base_parent_modules;
+#			}
+#		}
+#	}
 
 	$self->_process_found_modules( 'requires', \@modules );
 	return;
@@ -258,32 +268,38 @@ sub _find_makefile_test_requires {
 
 	# Load a Document from a file and check use and require contents
 	$self->{ppi_document} = PPI::Document->new($filename);
-	my $ppi_i = $self->{ppi_document}->find('PPI::Statement::Include');
+
+	my $prereqs = $scanner->scan_ppi_document( $self->{ppi_document} );
+	my @modules = $prereqs->required_modules;
+	# p @modules;
+
+
+#	my $ppi_i = $self->{ppi_document}->find('PPI::Statement::Include');
 
 	#	try {
 	#		$self->min_version();
 	#	};
-	my @modules;
-	if ($ppi_i) {
-		foreach my $include ( @{$ppi_i} ) {
-			next if $include->type eq 'no';
-			push @modules, $include->module;
-			p @modules if $self->{debug};
-
-			my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
-			if (@base_parent_modules) {
-				push @modules, @base_parent_modules;
-			}
-
-		}
-	}
+#	my @modules;
+#	if ($ppi_i) {
+#		foreach my $include ( @{$ppi_i} ) {
+#			next if $include->type eq 'no';
+#			push @modules, $include->module;
+#			p @modules if $self->{debug};
+#
+#			my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
+#			if (@base_parent_modules) {
+#				push @modules, @base_parent_modules;
+#			}
+#
+#		}
+#	}
 	p @modules if $self->{debug};
 
 	$self->_process_found_modules( 'test_requires', \@modules );
 
 	#These are realy recommends
-	$self->_recommends_in_single_quote(); #$self->{ppi_document});
-	$self->_recommends_in_double_quote(); #$self->{ppi_document});
+	 $self->_recommends_in_single_quote(); #$self->{ppi_document});
+	 $self->_recommends_in_double_quote(); #$self->{ppi_document});
 
 	return;
 }
@@ -338,20 +354,20 @@ sub _recommends_in_single_quote {
 			}
 
 			# hack for use_ok in test files
-			elsif ( $module =~ /::/ && $module !~ /main::/ ) {
-
-				p $module if $self->{debug};
-
-				# if we have found it already ignore it
-				if ( !$self->{requires}{$module} && $module !~ /\s/ ) {
-					push @modules, $module;
-				}
-
-				# if we found a module, process it
-				if ( scalar @modules > 0 ) {
-					$self->_process_found_modules( 'test_requires', \@modules );
-				}
-			}
+#			elsif ( $module =~ /::/ && $module !~ /main::/ ) {
+#
+#				p $module if $self->{debug};
+#
+#				# if we have found it already ignore it
+#				if ( !$self->{requires}{$module} && $module !~ /\s/ ) {
+#					push @modules, $module;
+#				}
+#
+#				# if we found a module, process it
+#				if ( scalar @modules > 0 ) {
+#					$self->_process_found_modules( 'test_requires', \@modules );
+#				}
+#			}
 		}
 	}
 	return;
@@ -952,9 +968,16 @@ this is best left to the module Author.
 
 =head1 WARNINGS
 
-You should have access to L<http://www.cpan.org/>, or one of it's mirrors.
+As our mantra is to show the current version of a module, 
+we do this by asking your local CPAN config for the information.
+Start-up may be slow as we request a CPAN reload index,
+against L<http://www.cpan.org/>, 
+or one of it's mirrors.
 
-Start-up may be slow, especially if it we need to do the equivalent of, CPAN reload index.
+If you wish to B<skip> this use option --...
+
+ midgen --...
+
 
 =head1 BUGS AND LIMITATIONS
 
