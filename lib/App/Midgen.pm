@@ -364,31 +364,34 @@ sub _process_found_modules {
 
 		#deal with ''
 		next if $module eq NONE;
-		
-		given ( $module ){
-			when ( /perl/sxm ) { next; }
+
+		given ($module) {
+			when (/perl/sxm) {
+
+				# ignore perl we will get it from minperl required
+				next;
+			}
+			when (/^$self->{package_name}/sxm) {
+
+				# don't include our own packages here
+				next;
+			}
+			when (/^t::/sxm) {
+
+				# don't include our own test packages here
+				next;
+			}
+			when (/Mojo/sxm) {
+
+				# $self->_check_mojo_core($module);
+				$module = 'Mojolicious' if $self->_check_mojo_core($module);
+			}
 		}
 
-		if ( $module =~ /^$self->{package_name}/sxm ) {
-
-			# don't include our own packages here
-			next;
-		}
-		if ( $module =~ /^t::/sxm ) {
-
-			# don't include our own test packages here
-			next;
-		}
-
-		if ( $module =~ /Mojo/sxm ) {
-
-			# $self->_check_mojo_core($module);
-			$module = 'Mojolicious' if $self->_check_mojo_core($module);
-		}
 		if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm && !$self->{padre} ) {
 
-			# mark all Padre core as just Padre, for plugins
-			$module = 'Padre';
+		# mark all Padre core as just Padre, for plugins
+		$module = 'Padre';
 		}
 
 		next if defined $self->{requires}{$module};
