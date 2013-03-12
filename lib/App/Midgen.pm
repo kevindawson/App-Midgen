@@ -440,39 +440,6 @@ sub _store_modules {
 }
 
 #######
-# base_parent
-#######
-# sub base_parent {
-# my $self    = shift;
-# my $module  = shift;
-# my $content = shift;
-# my $pragma  = shift;
-# my @modules = ();
-
-# if ( $module =~ /base|parent|with|extends/sxm ) {
-# if ( $self->{base_parent} ) {
-# say 'Info: check ' . $pragma . ' pragma: ';
-# say $content;
-# }
-
-# $content =~ s/^(use\s*) //;
-# $content =~ s/^(base|parent) //;
-# $content =~ s/^([-]norequire,)//;
-# $content =~ s/\s*(q[q|w]\n?\t?)\s*//;
-# $content =~ s/([<?]|[(?]|[{?]\n?\t?)\s*//;
-# $content =~ s/\s*([>?]|[)?]|[}?])\s*//;
-# $content =~ s/\s*(;\n?\t?)$//;
-# $content =~ s/(\n\t)/, /g;
-# $content =~ s{'}{}g;
-# @modules = split /, /, $content;
-
-# push @modules, $module;
-# p @modules if $self->{debug};
-# }
-# return @modules;
-# }
-
-#######
 # remove_noisy_children
 #######
 sub remove_noisy_children {
@@ -854,10 +821,6 @@ For more info and sample output see L<wiki|https://github.com/kevindawson/App-Mi
 
 =over 4
 
-=item * base_parent
-
-Check inside base/parent pragmas for modules to include
-
 =item * find_required_modules
 
 Search for Includes B<use> and B<require> in package modules
@@ -979,6 +942,3 @@ SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGES.
 
 =cut
-
-
-
