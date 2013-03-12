@@ -194,32 +194,8 @@ sub _find_makefile_requires {
 		$self->min_version() if $is_script;
 	};
 
-	#say 'I am here';
-	# p $scanner;
 	my $prereqs = $scanner->scan_ppi_document( $self->{ppi_document} );
-
-	# p $prereqs;
 	my @modules = $prereqs->required_modules;
-
-	# p @modules;
-
-	#	my $ppi_i = $self->{ppi_document}->find('PPI::Statement::Include');
-
-	#	my @modules;
-	#	if ($ppi_i) {
-	#		foreach my $include ( @{$ppi_i} ) {
-	#			next if $include->type eq 'no';
-	#
-	#			push @modules, $include->module;
-	#
-	#			p @modules if $self->{debug};
-	#			my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
-	#			if (@base_parent_modules) {
-	#
-	#				push @modules, @base_parent_modules;
-	#			}
-	#		}
-	#	}
 
 	$self->_process_found_modules( 'requires', \@modules );
 	return;
@@ -274,35 +250,13 @@ sub _find_makefile_test_requires {
 	my $prereqs = $scanner->scan_ppi_document( $self->{ppi_document} );
 	my @modules = $prereqs->required_modules;
 
-	# p @modules;
-
-
-	#	my $ppi_i = $self->{ppi_document}->find('PPI::Statement::Include');
-
-	#	try {
-	#		$self->min_version();
-	#	};
-	#	my @modules;
-	#	if ($ppi_i) {
-	#		foreach my $include ( @{$ppi_i} ) {
-	#			next if $include->type eq 'no';
-	#			push @modules, $include->module;
-	#			p @modules if $self->{debug};
-	#
-	#			my @base_parent_modules = $self->base_parent( $include->module, $include->content, $include->pragma );
-	#			if (@base_parent_modules) {
-	#				push @modules, @base_parent_modules;
-	#			}
-	#
-	#		}
-	#	}
 	p @modules if $self->{debug};
 
 	$self->_process_found_modules( 'test_requires', \@modules );
 
 	#These are realy recommends
-	$self->_recommends_in_single_quote(); #$self->{ppi_document});
-	$self->_recommends_in_double_quote(); #$self->{ppi_document});
+	$self->_recommends_in_single_quote();
+	$self->_recommends_in_double_quote();
 
 	return;
 }
@@ -356,21 +310,6 @@ sub _recommends_in_single_quote {
 				}
 			}
 
-			# hack for use_ok in test files
-			#			elsif ( $module =~ /::/ && $module !~ /main::/ ) {
-			#
-			#				p $module if $self->{debug};
-			#
-			#				# if we have found it already ignore it
-			#				if ( !$self->{requires}{$module} && $module !~ /\s/ ) {
-			#					push @modules, $module;
-			#				}
-			#
-			#				# if we found a module, process it
-			#				if ( scalar @modules > 0 ) {
-			#					$self->_process_found_modules( 'test_requires', \@modules );
-			#				}
-			#			}
 		}
 	}
 	return;
@@ -496,60 +435,41 @@ sub _store_modules {
 		}
 	}
 
-	# try {
-	# my $mod = CPAN::Shell->expand( 'Module', $module );
-
-	# if ( $mod->cpan_version ne 'undef' ) {
-
-	# # allocate current cpan version against module name
-	# $self->{$require_type}{$module} = $mod->cpan_version;
-	# } else {
-
-	# # Mark as undef, ie no version in cpan, what fun!
-	# $self->{$require_type}{$module} = 'undef';
-	# }
-
-	# }
-	# catch {
-	# carp "caught - $require_type - $module" if $self->{debug};
-	# $self->{$require_type}{$module} = '!cpan' if not defined $self->{$require_type}{$module};
-	# };
-
 	return;
 }
 
 #######
 # base_parent
 #######
-sub base_parent {
-	my $self    = shift;
-	my $module  = shift;
-	my $content = shift;
-	my $pragma  = shift;
-	my @modules = ();
+# sub base_parent {
+	# my $self    = shift;
+	# my $module  = shift;
+	# my $content = shift;
+	# my $pragma  = shift;
+	# my @modules = ();
 
-	if ( $module =~ /base|parent|with|extends/sxm ) {
-		if ( $self->{base_parent} ) {
-			say 'Info: check ' . $pragma . ' pragma: ';
-			say $content;
-		}
+	# if ( $module =~ /base|parent|with|extends/sxm ) {
+		# if ( $self->{base_parent} ) {
+			# say 'Info: check ' . $pragma . ' pragma: ';
+			# say $content;
+		# }
 
-		$content =~ s/^(use\s*) //;
-		$content =~ s/^(base|parent) //;
-		$content =~ s/^([-]norequire,)//;
-		$content =~ s/\s*(q[q|w]\n?\t?)\s*//;
-		$content =~ s/([<?]|[(?]|[{?]\n?\t?)\s*//;
-		$content =~ s/\s*([>?]|[)?]|[}?])\s*//;
-		$content =~ s/\s*(;\n?\t?)$//;
-		$content =~ s/(\n\t)/, /g;
-		$content =~ s{'}{}g;
-		@modules = split /, /, $content;
+		# $content =~ s/^(use\s*) //;
+		# $content =~ s/^(base|parent) //;
+		# $content =~ s/^([-]norequire,)//;
+		# $content =~ s/\s*(q[q|w]\n?\t?)\s*//;
+		# $content =~ s/([<?]|[(?]|[{?]\n?\t?)\s*//;
+		# $content =~ s/\s*([>?]|[)?]|[}?])\s*//;
+		# $content =~ s/\s*(;\n?\t?)$//;
+		# $content =~ s/(\n\t)/, /g;
+		# $content =~ s{'}{}g;
+		# @modules = split /, /, $content;
 
-		push @modules, $module;
-		p @modules if $self->{debug};
-	}
-	return @modules;
-}
+		# push @modules, $module;
+		# p @modules if $self->{debug};
+	# }
+	# return @modules;
+# }
 
 #######
 # remove_noisy_children
@@ -697,35 +617,13 @@ sub _check_mojo_core {
 	my $mojo_module_ver;
 	state $mojo_ver;
 
-	# my $mod;
 	if ( not defined $mojo_ver ) {
-		# try {
-			# my $mod = CPAN::Shell->expand( 'Module', 'Mojolicious' );
-			# if ( $mod->cpan_version ne 'undef' ) {
-			# my $version = $self->_cpan_api( 'Mojolicious' );
-			# if ( $version ne 'undef' ) {
-				# allocate current cpan version against module name
-				# $mojo_ver = $mod->cpan_version;
-				# $mojo_ver = $version;
-				
-				$mojo_ver = $self->_cpan_api( 'Mojolicious' );
-				p $mojo_ver if $self->{debug};
-			# }
-		# };
+		$mojo_ver = $self->_cpan_api('Mojolicious');
+		p $mojo_ver if $self->{debug};
 	}
-	# try {
-		# my $mod = CPAN::Shell->expand( 'Module', $mojo_module );
-		# if ( $mod->cpan_version ne 'undef' ) {
 
-			# # allocate current cpan version against module name
-			# $mojo_module_ver = $mod->cpan_version;
-		# } else {
-			# $mojo_module_ver = 'undef';
-		# }
-	# };
-	$mojo_module_ver = $self->_cpan_api( $mojo_module );
-	
-	
+	$mojo_module_ver = $self->_cpan_api($mojo_module);
+
 	if ( $self->{mojo} ) {
 		say 'looks like we found another mojo core module';
 		say $mojo_module . ' version ' . $mojo_module_ver;
