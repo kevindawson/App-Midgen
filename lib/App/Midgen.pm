@@ -21,6 +21,7 @@ use File::Find qw(find);
 use Module::CoreList;
 use PPI;
 use Perl::MinimumVersion;
+use Scalar::Util qw(looks_like_number);
 use version;
 use Try::Tiny;
 use constant {
@@ -442,33 +443,33 @@ sub _store_modules {
 # base_parent
 #######
 # sub base_parent {
-	# my $self    = shift;
-	# my $module  = shift;
-	# my $content = shift;
-	# my $pragma  = shift;
-	# my @modules = ();
+# my $self    = shift;
+# my $module  = shift;
+# my $content = shift;
+# my $pragma  = shift;
+# my @modules = ();
 
-	# if ( $module =~ /base|parent|with|extends/sxm ) {
-		# if ( $self->{base_parent} ) {
-			# say 'Info: check ' . $pragma . ' pragma: ';
-			# say $content;
-		# }
+# if ( $module =~ /base|parent|with|extends/sxm ) {
+# if ( $self->{base_parent} ) {
+# say 'Info: check ' . $pragma . ' pragma: ';
+# say $content;
+# }
 
-		# $content =~ s/^(use\s*) //;
-		# $content =~ s/^(base|parent) //;
-		# $content =~ s/^([-]norequire,)//;
-		# $content =~ s/\s*(q[q|w]\n?\t?)\s*//;
-		# $content =~ s/([<?]|[(?]|[{?]\n?\t?)\s*//;
-		# $content =~ s/\s*([>?]|[)?]|[}?])\s*//;
-		# $content =~ s/\s*(;\n?\t?)$//;
-		# $content =~ s/(\n\t)/, /g;
-		# $content =~ s{'}{}g;
-		# @modules = split /, /, $content;
+# $content =~ s/^(use\s*) //;
+# $content =~ s/^(base|parent) //;
+# $content =~ s/^([-]norequire,)//;
+# $content =~ s/\s*(q[q|w]\n?\t?)\s*//;
+# $content =~ s/([<?]|[(?]|[{?]\n?\t?)\s*//;
+# $content =~ s/\s*([>?]|[)?]|[}?])\s*//;
+# $content =~ s/\s*(;\n?\t?)$//;
+# $content =~ s/(\n\t)/, /g;
+# $content =~ s{'}{}g;
+# @modules = split /, /, $content;
 
-		# push @modules, $module;
-		# p @modules if $self->{debug};
-	# }
-	# return @modules;
+# push @modules, $module;
+# p @modules if $self->{debug};
+# }
+# return @modules;
 # }
 
 #######
@@ -584,15 +585,10 @@ sub remove_twins {
 
 				#Check for vailed parent
 				my $version;
-				my $mod_in_cpan = 0;
+
 				$version = $self->_cpan_api($dum_parient);
-				if ( $version ne 'undef' ) {
 
-					# allocate current cpan version against module name
-					$mod_in_cpan = 1;
-				}
-
-				if ($mod_in_cpan) {
+				if ( looks_like_number($version) ) {
 
 					#Check parent version against a twins version
 					if ( $version == $required_ref->{ $sorted_modules[$n] } ) {
