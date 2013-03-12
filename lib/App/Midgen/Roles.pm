@@ -14,18 +14,6 @@ use Carp;
 # cmd line options
 #######
 
-has 'base_parent' => (
-	is  => 'ro',
-	isa => sub {
-		croak "$_[0] this is not a Bool"
-			unless is_Bool( $_[0] );
-	},
-	default => sub {
-		0;
-	},
-	required => 1,
-);
-
 has 'core' => (
 	is  => 'ro',
 	isa => sub {
@@ -208,8 +196,6 @@ none as such, but we do have
 =head2 OPTIONS
 
 =over 4
-
-=item * base_parent
 
 =item * core
 
