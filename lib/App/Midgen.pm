@@ -699,26 +699,33 @@ sub _check_mojo_core {
 
 	# my $mod;
 	if ( not defined $mojo_ver ) {
-		try {
-			my $mod = CPAN::Shell->expand( 'Module', 'Mojolicious' );
-			if ( $mod->cpan_version ne 'undef' ) {
-
+		# try {
+			# my $mod = CPAN::Shell->expand( 'Module', 'Mojolicious' );
+			# if ( $mod->cpan_version ne 'undef' ) {
+			# my $version = $self->_cpan_api( 'Mojolicious' );
+			# if ( $version ne 'undef' ) {
 				# allocate current cpan version against module name
-				$mojo_ver = $mod->cpan_version;
+				# $mojo_ver = $mod->cpan_version;
+				# $mojo_ver = $version;
+				
+				$mojo_ver = $self->_cpan_api( 'Mojolicious' );
 				p $mojo_ver if $self->{debug};
-			}
-		};
+			# }
+		# };
 	}
-	try {
-		my $mod = CPAN::Shell->expand( 'Module', $mojo_module );
-		if ( $mod->cpan_version ne 'undef' ) {
+	# try {
+		# my $mod = CPAN::Shell->expand( 'Module', $mojo_module );
+		# if ( $mod->cpan_version ne 'undef' ) {
 
-			# allocate current cpan version against module name
-			$mojo_module_ver = $mod->cpan_version;
-		} else {
-			$mojo_module_ver = 'undef';
-		}
-	};
+			# # allocate current cpan version against module name
+			# $mojo_module_ver = $mod->cpan_version;
+		# } else {
+			# $mojo_module_ver = 'undef';
+		# }
+	# };
+	$mojo_module_ver = $self->_cpan_api( $mojo_module );
+	
+	
 	if ( $self->{mojo} ) {
 		say 'looks like we found another mojo core module';
 		say $mojo_module . ' version ' . $mojo_module_ver;
