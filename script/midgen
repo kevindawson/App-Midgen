@@ -30,7 +30,6 @@ use Getopt::Long;
 Getopt::Long::Configure('bundling');
 use Pod::Usage;
 my $help           = 0;
-my $base_parent    = 0;    # 1 true ignore perl base functions
 my $core           = 0;    # show perl core modules as well
 my $verbose        = 0;    # option variable with default value (false)
 my @output         = 'dsl';
@@ -42,7 +41,6 @@ my $debug          = 0;    # lots of good stuff here :)
 GetOptions(
 	'verbose|v'        => \$verbose,
 	'core|c'           => \$core,
-	'base|parent|b|p'  => \$base_parent,
 	'help|h|?'         => \$help,
 	'mojo|m'           => \$mojo,
 	'output|o=s'       => \@output,
@@ -52,7 +50,6 @@ GetOptions(
 	'debug|d'          => sub {
 		$core           = 1;
 		$verbose        = 1;
-		$base_parent    = 1;
 		$mojo           = 1;
 		$noisy_children = 1;
 		$twins          = 1;
@@ -68,7 +65,6 @@ pod2usage(1) if $help;
 say 'Running midgen v' . $VERSION;
 
 my $midgen = App::Midgen->new(
-	base_parent    => $base_parent,
 	core           => $core,
 	verbose        => $verbose,
 	output_format  => $output[-1],
@@ -130,7 +126,6 @@ Prints a help message and exits.
    --output         change format
    --core           show perl core modules
    --verbose        take a little peek as to what is going on
-   --parent         show the base|parent includes as we find them
    --mojo           show the Mojo catch as we find them
    --noisy_children show them as we find them
    --twins          show twins as we find them
@@ -159,14 +154,7 @@ so you can check, copy n paste or select an alternative format as shown below.
 
 Show filename that we are checking, as we go
 
-=item B<--parent or -p>
-
-alternative  --base or -b
-
-Turn on extra output to show the base|parent modules, as we find them,
-suggest you incorporate it with verbose for maximum affect
-
- midgen -vp
+ midgen -v
 
 =item B<--mojo or -m>
 
