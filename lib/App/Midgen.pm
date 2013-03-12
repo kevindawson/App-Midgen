@@ -364,6 +364,10 @@ sub _process_found_modules {
 
 		#deal with ''
 		next if $module eq NONE;
+		
+		given ( $module ){
+			when ( /perl/sxm ) { next; }
+		}
 
 		if ( $module =~ /^$self->{package_name}/sxm ) {
 
