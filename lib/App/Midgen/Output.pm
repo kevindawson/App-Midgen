@@ -7,12 +7,14 @@ our $VERSION = '0.12';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
+#use CPAN;
 use Carp;
-use CPAN;
 use Data::Printer { caller_info => 1, colored => 1, };
 use constant { BLANK => qq{ }, NONE => q{}, THREE => 3, };
 use File::Spec;
-
+use MetaCPAN::API;
+my $mcpan = MetaCPAN::API->new() || die "arse: $!\n";
+use version;
 
 #######
 # header_dsl
@@ -22,11 +24,13 @@ sub header_dsl {
 	my $package_name = shift // NONE;
 
 	# Let's get the current version of Module::Install::DSL
-	my $mod = CPAN::Shell->expand( 'Module', 'inc::Module::Install::DSL' );
+	# my $mod = CPAN::Shell->expand( 'Module', 'inc::Module::Install::DSL' );
+	my $mod = $mcpan->release( distribution => 'Module-Install' );
 	$package_name =~ s{::}{/}g;
 
 	print "\n";
-	say 'use inc::Module::Install::DSL ' . $mod->cpan_version . q{;};
+	# say 'use inc::Module::Install::DSL ' . $mod->cpan_version . q{;};
+	say 'use inc::Module::Install::DSL ' . version->parse( $mod->{version_numified} )->numify . q{;};
 	print "\n";
 	if ( $package_name ne NONE ) {
 		say 'all_from lib/' . $package_name . '.pm';
@@ -112,11 +116,12 @@ sub header_mi {
 	my $package_name = shift // NONE;
 
 	# Let's get the current version of Module::Install::DSL
-	my $mod = CPAN::Shell->expand( 'Module', 'inc::Module::Install' );
+	# my $mod = CPAN::Shell->expand( 'Module', 'inc::Module::Install' );
+	my $mod = $mcpan->release( distribution => 'Module-Install' );
 
 	print "\n";
-	say 'use inc::Module::Install ' . $mod->cpan_version . q{;};
-
+	# say 'use inc::Module::Install ' . $mod->cpan_version . q{;};
+	say 'use inc::Module::Install ' . version->parse( $mod->{version_numified} )->numify . q{;};
 	print "\n";
 	if ( $package_name ne NONE ) {
 		$package_name =~ s{::}{-}g;
