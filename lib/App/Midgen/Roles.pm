@@ -167,12 +167,17 @@ has 'found_twins' => (
 	required => 1,
 );
 
-has 'ppi_document' => (
+has 'scanner' => (
 	is   => 'rw',
 	isa  => Object,
 	lazy => 1,
 );
 
+has 'ppi_document' => (
+	is   => 'rw',
+	isa  => Object,
+	lazy => 1,
+);
 1;
 
 __END__
@@ -246,6 +251,10 @@ Some where to store recommend modules and version info in
 =item * requires
 
 Some where to store required modules and version info in
+
+=item * scanner
+
+accessor to Perl::PrereqScanner object
 
 =item * test_requires
 
