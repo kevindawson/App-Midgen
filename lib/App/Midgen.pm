@@ -12,26 +12,22 @@ local $OUTPUT_AUTOFLUSH = 1;
 use CPAN;
 use Carp;
 use Cwd;
-use Data::Printer {
-	caller_info => 1,
-	colored     => 1,
-};
-use File::Spec;
+use Data::Printer { caller_info => 1, colored     => 1, };
 use File::Find qw(find);
+use File::Spec;
 use Module::CoreList;
 use PPI;
 use Perl::MinimumVersion;
+use Perl::PrereqScanner;
 use Scalar::Util qw(looks_like_number);
-use version;
 use Try::Tiny;
+
 use constant {
 	BLANK => qq{ },
 	NONE  => q{},
 	THREE => 3,
 };
-
-use Perl::PrereqScanner;
-my $scanner = Perl::PrereqScanner->new;
+use version;
 
 # stop rlib from Fing all over cwd
 our $Working_Dir = cwd();
@@ -76,7 +72,8 @@ sub _initialise {
 	say 'working in dir: ' . $Working_Dir if $self->{debug};
 
 	$self->{output} = App::Midgen::Output->new();
-
+	$self->{scanner} = Perl::PrereqScanner->new();
+	
 	# set up cpan bit's as well as checking we are up to date
 	CPAN::HandleConfig->load;
 	CPAN::Shell::setup_output;
@@ -195,7 +192,7 @@ sub _find_makefile_requires {
 		$self->min_version() if $is_script;
 	};
 
-	my $prereqs = $scanner->scan_ppi_document( $self->{ppi_document} );
+	my $prereqs = $self->{scanner}->scan_ppi_document( $self->{ppi_document} );
 	my @modules = $prereqs->required_modules;
 
 	$self->_process_found_modules( 'requires', \@modules );
@@ -248,7 +245,7 @@ sub _find_makefile_test_requires {
 	# Load a Document from a file and check use and require contents
 	$self->{ppi_document} = PPI::Document->new($filename);
 
-	my $prereqs = $scanner->scan_ppi_document( $self->{ppi_document} );
+	my $prereqs = $self->{scanner}->scan_ppi_document( $self->{ppi_document} );
 	my @modules = $prereqs->required_modules;
 
 	p @modules if $self->{debug};
