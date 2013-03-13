@@ -5,23 +5,21 @@ use strict;
 use warnings FATAL => 'all';
 
 BEGIN {
-	$PPI::XS_DISABLE = 1; # noise control - Prevent warning
+  $PPI::XS_DISABLE = 1;    # noise control - Prevent warning
 }
 
 our $VERSION = '0.12';
-use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
+use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Data::Printer {
-	caller_info => 1,
-	colored     => 1,
-};
+use Data::Printer {caller_info => 1, colored => 1,};
 
 # we are doing this so we can run from git during development
 # perl ~/GitHub/App-Midgen/script/midgen -c
 use FindBin qw($Bin);
 use lib map {"$Bin/$_"} qw( lib ../lib );
 use App::Midgen;
+use Time::Stamp 'gmstamp';
 
 #######
 # Start of Menu
@@ -30,31 +28,31 @@ use Getopt::Long;
 Getopt::Long::Configure('bundling');
 use Pod::Usage;
 my $help           = 0;
-my $core           = 0;    # show perl core modules as well
-my $verbose        = 0;    # option variable with default value (false)
+my $core           = 0;       # show perl core modules as well
+my $verbose        = 0;       # option variable with default value (false)
 my @output         = 'dsl';
-my $mojo           = 0;    # show the Mojo detection
-my $noisy_children = 0;    # unwanted noisy children
-my $twins          = 0;    # unwanted twins
-my $zero           = 0;    # display 0 instead of core
-my $debug          = 0;    # lots of good stuff here :)
+my $mojo           = 0;       # show the Mojo detection
+my $noisy_children = 0;       # unwanted noisy children
+my $twins          = 0;       # unwanted twins
+my $zero           = 0;       # display 0 instead of core
+my $debug          = 0;       # lots of good stuff here :)
 GetOptions(
-	'verbose|v'        => \$verbose,
-	'core|c'           => \$core,
-	'help|h|?'         => \$help,
-	'mojo|m'           => \$mojo,
-	'output|o=s'       => \@output,
-	'twins|t'          => \$twins,
-	'noisy_children|n' => \$noisy_children,
-	'zero|z'           => \$zero,
-	'debug|d'          => sub {
-		$core           = 1;
-		$verbose        = 1;
-		$mojo           = 1;
-		$noisy_children = 1;
-		$twins          = 1;
-		$debug          = 1;
-	},
+  'verbose|v'        => \$verbose,
+  'core|c'           => \$core,
+  'help|h|?'         => \$help,
+  'mojo|m'           => \$mojo,
+  'output|o=s'       => \@output,
+  'twins|t'          => \$twins,
+  'noisy_children|n' => \$noisy_children,
+  'zero|z'           => \$zero,
+  'debug|d'          => sub {
+    $core           = 1;
+    $verbose        = 1;
+    $mojo           = 1;
+    $noisy_children = 1;
+    $twins          = 1;
+    $debug          = 1;
+  },
 ) or pod2usage(2);
 pod2usage(1) if $help;
 
@@ -63,16 +61,17 @@ pod2usage(1) if $help;
 #######
 
 say 'Running midgen v' . $VERSION;
+say 'Stamped -> ' . gmstamp($BASETIME);
 
 my $midgen = App::Midgen->new(
-	core           => $core,
-	verbose        => $verbose,
-	output_format  => $output[-1],
-	mojo           => $mojo,
-	noisy_children => $noisy_children,
-	twins          => $twins,
-	zero           => $zero,
-	debug          => $debug,
+  core           => $core,
+  verbose        => $verbose,
+  output_format  => $output[-1],
+  mojo           => $mojo,
+  noisy_children => $noisy_children,
+  twins          => $twins,
+  zero           => $zero,
+  debug          => $debug,
 );
 
 p $midgen if $debug;
