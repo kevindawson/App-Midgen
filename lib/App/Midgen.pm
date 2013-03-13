@@ -9,12 +9,13 @@ our $VERSION = '0.12';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use CPAN;
+#use CPAN;
 use Carp;
 use Cwd;
-use Data::Printer { caller_info => 1, colored     => 1, };
+use Data::Printer { caller_info => 1, colored => 1, };
 use File::Find qw(find);
 use File::Spec;
+use MetaCPAN::API;
 use Module::CoreList;
 use PPI;
 use Perl::MinimumVersion;
@@ -32,6 +33,7 @@ use version;
 # stop rlib from Fing all over cwd
 our $Working_Dir = cwd();
 our $Min_Version = 0;
+my $mcpan = MetaCPAN::API->new() || die "arse: $!\n";
 
 #######
 # run
@@ -71,13 +73,13 @@ sub _initialise {
 	# let's give output a copy also to stop it being Fup as well suspect Tiny::Path
 	say 'working in dir: ' . $Working_Dir if $self->{debug};
 
-	$self->{output} = App::Midgen::Output->new();
+	$self->{output}  = App::Midgen::Output->new();
 	$self->{scanner} = Perl::PrereqScanner->new();
-	
+
 	# set up cpan bit's as well as checking we are up to date
-	CPAN::HandleConfig->load;
-	CPAN::Shell::setup_output;
-	CPAN::Index->reload; #ToDo if not skip;
+	# CPAN::HandleConfig->load;
+	# CPAN::Shell::setup_output;
+	# CPAN::Index->reload; #ToDo if not skip;
 	return;
 }
 
@@ -387,8 +389,8 @@ sub _process_found_modules {
 
 		if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm && !$self->{padre} ) {
 
-		# mark all Padre core as just Padre, for plugins
-		$module = 'Padre';
+			# mark all Padre core as just Padre, for plugins
+			$module = 'Padre';
 		}
 
 		next if defined $self->{requires}{$module};
@@ -609,10 +611,72 @@ sub _check_mojo_core {
 	}
 }
 
+
+# sub metacpan_api {
+sub _cpan_api {
+	my $self   = shift;
+	my $module = shift;
+	my $cpan_version;
+	my $found = 0;
+	my $dist;
+
+	try {
+		$module =~ s/::/-/g;
+		# quick n dirty, get version number if module is classed as a distribution in metacpan
+		my $mod = $mcpan->release( distribution => $module );
+		$cpan_version = version->parse( $mod->{version_numified} )->numify;
+		# $cpan_version = $mod->{version_numified};
+
+		$found        = 1;
+	}
+	catch {
+		try {
+			$module =~ s/-/::/g;
+			my $mcpan_module_info = $mcpan->module($module);
+			$dist = $mcpan_module_info->{distribution};
+			# mark all perl core modules with either 'core' or '0'
+			if ( $dist eq 'perl' ) {
+				if ( $self->{zero} ) {
+					$cpan_version = 0;
+				}	else {
+				$cpan_version = 'core';
+			}
+				$found        = 1;
+			}
+		};
+		if ( $found == 0 ) {
+			try {
+				my $mod = $mcpan->release( distribution => $dist );
+				# $cpan_version = $mod->{version_numified};
+				$cpan_version = version->parse( $mod->{version_numified} )->numify;
+
+				$found        = 1;
+				# say 'bong';
+				$dist =~ s/-/::/g;
+				if ( $module =~ /$dist/ ){
+					print 'module - '. $module .' -> ';
+					say 'in dist - '. $dist;
+				}
+
+				#return $mod->{version_numified};
+			};
+		}
+	}
+
+	finally {
+		# not in metacpan so make acordingly
+		$cpan_version = '!cpan' if $found == 0;
+	};
+	return $cpan_version;
+}
+
+
+
+
 #######
 # version from cpan api
 #######
-sub _cpan_api {
+sub _cpan_api2 {
 	my $self   = shift;
 	my $module = shift;
 	my $version;
