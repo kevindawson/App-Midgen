@@ -5,24 +5,24 @@ requires_from lib/App/Midgen.pm
 
 perl_version 5.010001
 
-requires Carp                         1.260
-requires Cwd                          3.400
-requires Data::Printer                0.350
-requires File::Spec                   3.400
-requires Getopt::Long                 2.390
-requires MetaCPAN::API                0.430
-requires Module::CoreList             2.840
-requires Moo                          1.000008
-requires MooX::Types::MooseLike::Base 0.230
-requires PPI                          1.215
-requires Perl::MinimumVersion         1.320
-requires Perl::PrereqScanner          1.015
-requires Pod::Usage                   1.610
-requires Scalar::Util                 1.270
-requires Time::Stamp                  1.300
-requires Try::Tiny                    0.120
-requires constant                     1.250
-requires version                      0.990200
+requires Carp                   1.260
+requires Cwd                    3.400
+requires Data::Printer          0.350
+requires File::Spec             3.400
+requires Getopt::Long           2.390
+requires MetaCPAN::API          0.430
+requires Module::CoreList       2.840
+requires Moo                    1.000008
+requires MooX::Types::MooseLike 0.230
+requires PPI                    1.215
+requires Perl::MinimumVersion   1.320
+requires Perl::PrereqScanner    1.015
+requires Pod::Usage             1.610
+requires Scalar::Util           1.270
+requires Time::Stamp            1.300
+requires Try::Tiny              0.120
+requires constant               1.250
+requires version                0.990200
 
 test_requires Test::More 0.980
 
