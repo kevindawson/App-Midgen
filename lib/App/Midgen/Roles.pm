@@ -4,7 +4,7 @@ use v5.10;
 use Moo::Role;
 use MooX::Types::MooseLike::Base qw(:all);
 
-our $VERSION = '0.12';
+our $VERSION = '0.14';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -167,6 +167,18 @@ has 'found_twins' => (
 	required => 1,
 );
 
+has 'mcpan' => (
+	is   => 'rw',
+	isa  => Object,
+	lazy => 1,
+);
+
+has 'output' => (
+	is   => 'rw',
+	isa  => Object,
+	lazy => 1,
+);
+
 has 'scanner' => (
 	is   => 'rw',
 	isa  => Object,
@@ -192,7 +204,7 @@ App::Midgen::Roles - Package Options and Attributes used by L<App::Midgen>
 
 =head1 VERSION
 
-This document describes App::Midgen::Roles version: 0.12
+This document describes App::Midgen::Roles version: 0.14
 
 =head1 METHODS
 
@@ -231,6 +243,14 @@ for more info see L<midgen>
 =item * found_twins
 
 Used as a flag to re-run noisy children after descovery of twins
+
+=item * mcpan
+
+accessor to MetaCPAN::API object
+
+=item * output
+
+accessor to App::Midgen::Output object
 
 =item * package_name
 
