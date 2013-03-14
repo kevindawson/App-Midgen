@@ -5,11 +5,10 @@ use Moo;
 with qw( App::Midgen::Roles );
 use App::Midgen::Output;
 
-our $VERSION = '0.12';
+our $VERSION = '0.14';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-#use CPAN;
 use Carp;
 use Cwd;
 use Data::Printer { caller_info => 1, colored => 1, };
@@ -33,7 +32,6 @@ use version;
 # stop rlib from Fing all over cwd
 our $Working_Dir = cwd();
 our $Min_Version = 0;
-my $mcpan = MetaCPAN::API->new() || die "arse: $!\n";
 
 #######
 # run
@@ -73,16 +71,13 @@ sub run {
 sub _initialise {
 	my $self = shift;
 
-	# let's give output a copy also to stop it being Fup as well suspect Tiny::Path
+	# let's give Output a copy, to stop it being Fup as well suspect Tiny::Path aswell
 	say 'working in dir: ' . $Working_Dir if $self->{debug};
 
 	$self->{output}  = App::Midgen::Output->new();
 	$self->{scanner} = Perl::PrereqScanner->new();
+	$self->{mcpan}   = MetaCPAN::API->new() || die "arse: $!\n";
 
-	# set up cpan bit's as well as checking we are up to date
-	# CPAN::HandleConfig->load;
-	# CPAN::Shell::setup_output;
-	# CPAN::Index->reload; #ToDo if not skip;
 	return;
 }
 
@@ -629,7 +624,7 @@ sub get_module_version {
 		$module =~ s/::/-/g;
 
 		# quick n dirty, get version number if module is classed as a distribution in metacpan
-		my $mod = $mcpan->release( distribution => $module );
+		my $mod = $self->{mcpan}->release( distribution => $module );
 		$cpan_version = version->parse( $mod->{version_numified} )->numify;
 
 		# $cpan_version = $mod->{version_numified};
@@ -639,13 +634,13 @@ sub get_module_version {
 	catch {
 		try {
 			$module =~ s/-/::/g;
-			my $mcpan_module_info = $mcpan->module($module);
+			my $mcpan_module_info = $self->{mcpan}->module($module);
 			$dist = $mcpan_module_info->{distribution};
 
 			# mark all perl core modules with either 'core' or '0'
 			if ( $dist eq 'perl' ) {
 				if ( $self->{zero} ) {
-					$cpan_version = version->parse( 0 )->numify;
+					$cpan_version = version->parse(0)->numify;
 				} else {
 					$cpan_version = 'core';
 				}
@@ -654,129 +649,65 @@ sub get_module_version {
 		};
 		if ( $found == 0 ) {
 			try {
-				my $mod = $mcpan->release( distribution => $dist );
+				my $mod = $self->{mcpan}->release( distribution => $dist );
 
 				# $cpan_version = $mod->{version_numified};
 				$cpan_version = version->parse( $mod->{version_numified} )->numify;
-
-				$found = 1;
-				
-				$self->mod_in_dist( $dist, $module, $require_type, $mod->{version_numified} );
-
-				# # say 'bong';
-				# $dist =~ s/-/::/g;
-				# if ( $module =~ /$dist/ ) {
-
-					# # Do We need to do a degree of seperation test also
-					# my $dist_score = split /::/, $dist;
-					# my $mod_score  = split /::/, $module;
-					# unless ( ( $dist_score + 1 ) == $mod_score ) {
-						# say 'Warning: this is out side of my scope, manual intervention required';
-						# say 'module - ' . $module . ' -> in dist - ' . $dist;
-					# }
-
-					# # say 'require_type - ' . $require_type;
-					# given ($require_type) {
-						# when ('requires') {
-
-							# # Add a what should be a parent
-							# $self->{$require_type}{$dist} = version->parse( $mod->{version_numified} )->numify
-								# if !$self->{$require_type}{$dist};
-						# }
-						# when ('test_requires') {
-							# # say 'test_requires';
-							# next if $self->{requires}{$dist};
-							# $self->{$require_type}{$dist} = version->parse( $mod->{version_numified} )->numify
-								# if !$self->{$require_type}{$dist};
-						# }
-					# }
-				# }
+				$found        = 1;
+				$self->mod_in_dist( $dist, $module, $require_type, $mod->{version_numified} ) if $require_type;
 			}
-
 		}
 	}
 	finally {
 		# not in metacpan so make acordingly
-		$cpan_version = '!cpan' if $found == 0;
+		$cpan_version = '!mcpan' if $found == 0;
 	};
 	return $cpan_version;
 }
 #######
-# composed method 
+# composed method
 #######
 sub mod_in_dist {
-	my $self = shift;
-	my $dist = shift;
-	my $module = shift;
+	my $self         = shift;
+	my $dist         = shift;
+	my $module       = shift;
 	my $require_type = shift;
-	my $version = shift;
-	
-					# say 'bong';
-				$dist =~ s/-/::/g;
-				if ( $module =~ /$dist/ ) {
+	my $version      = shift;
 
-					# Do We need to do a degree of seperation test also
-					my $dist_score = split /::/, $dist;
-					my $mod_score  = split /::/, $module;
-					unless ( ( $dist_score + 1 ) == $mod_score ) {
-						print 'Warning: this is out side of my scope, manual intervention required -> ';
-						print "module - $module  -> in dist - $dist \n";
-					}
+	# say 'bong';
+	$dist =~ s/-/::/g;
+	if ( $module =~ /$dist/ ) {
 
-					# say 'require_type - ' . $require_type;
-					given ($require_type) {
-						when ('requires') {
+		# Do We need to do a degree of seperation test also
+		my $dist_score = split /::/, $dist;
+		my $mod_score  = split /::/, $module;
+		unless ( ( $dist_score + 1 ) == $mod_score ) {
+			print 'Warning: this is out side of my scope, manual intervention required -> ';
+			print "module - $module  -> in dist - $dist \n";
+		}
 
-							# Add a what should be a parent
-							$self->{$require_type}{$dist} = version->parse( $version )->numify
-								if !$self->{$require_type}{$dist};
-						}
-						when ('test_requires') {
-							# say 'test_requires';
-							next if $self->{requires}{$dist};
-							$self->{$require_type}{$dist} = version->parse( $version )->numify
-								if !$self->{$require_type}{$dist};
-						}
-					}
-				}
-	
-	
+		# say 'require_type - ' . $require_type;
+		given ($require_type) {
+			when ('requires') {
+
+				# Add a what should be a parent
+				$self->{$require_type}{$dist} = version->parse($version)->numify
+					if !$self->{$require_type}{$dist};
+			}
+			when ('test_requires') {
+
+				# say 'test_requires';
+				next if $self->{requires}{$dist};
+				$self->{$require_type}{$dist} = version->parse($version)->numify
+					if !$self->{$require_type}{$dist};
+			}
+		}
+	}
+
+
 	return;
 }
 
-
-
-
-
-#######
-# get version from using cpan api
-#######
-# sub _cpan_api2 {
-# my $self   = shift;
-# my $module = shift;
-# my $version;
-# p $module if $self->{debug};
-
-# try {
-# my $mod = CPAN::Shell->expand( 'Module', $module );
-
-# if ( $mod->cpan_version ne 'undef' ) {
-
-# # allocate current cpan version against module name
-# $version = version->parse( $mod->cpan_version )->numify;
-# } else {
-
-# # Mark as undef, ie no version in cpan, what fun!
-# $version = 'undef';
-# }
-
-# }
-# catch {
-# carp "caught - $module" if $self->{debug};
-# $version = '!cpan';
-# };
-# return $version;
-# }
 
 #######
 # find min perl version
@@ -821,10 +752,11 @@ sub _output_header {
 	given ( $self->{output_format} ) {
 
 		when ('mi') {
-			$self->{output}->header_mi( $self->{package_name} );
+			$self->{output}->header_mi( $self->{package_name}, $self->get_module_version('inc::Module::Install') );
 		}
 		when ('dsl') {
-			$self->{output}->header_dsl( $self->{package_name} );
+			$self->{output}
+				->header_dsl( $self->{package_name}, $self->get_module_version('inc::Module::Install::DSL') );
 		}
 		when ('build') {
 			$self->{output}->header_build( $self->{package_name} );
@@ -910,7 +842,7 @@ App::Midgen - Check B<requires> & B<test_rerquires> of your Package for CPAN inc
 
 =head1 VERSION
 
-This document describes App::Midgen version: 0.12
+This document describes App::Midgen version: 0.14
 
 =head1 SYNOPSIS
 
@@ -928,7 +860,8 @@ See L<midgen> for cmd line option info.
 
 This is an aid to present a packages module requirements by scanning 
 the package, 
-then displaying in a familiar format with the current version number from CPAN.
+then displaying in a familiar format with the current version number 
+from MetaCPAN.
 
 This started out as a way of generating the core for a Module::Install::DSL Makefile.PL, 
 why DSL because it's nice and clean, 
@@ -937,17 +870,15 @@ yes it's another L<PPI> powered app.
 
 All output goes to STDOUT, so you can use it as you see fit.
 
-=head3 CPAN Version Number Displayed
+=head3 MetaCPAN Version Number Displayed
 
 =over 4
 
-=item * NN.nnnnnn we got the current version number from CPAN (numify)
+=item * NN.nnnnnn we got the current version number from MetaCPAN (numify).
 
-=item * 'undef' no version number returned by CPAN
+=item * 'core' indicates the module is a perl core module.
 
-=item * 'core' indicates the module is a perl core module
-
-=item * '!cpan' must be local, one of yours. Not in CPAN, Not in core.
+=item * '!mcpan' must be local, one of yours. Not in MetaCPAN, Not in core.
 
 =back
 
@@ -980,7 +911,7 @@ Assume first package found is your packages name
 =item * min_version
 
 Uses L<Perl::MinimumVersion> to find the minimum version of your package by taking a quick look, 
-I<note this is not a full scan see L<perlver> for a full scan>.
+I<note this is not a full scan, suggest you use L<perlver> for a full scan>.
 
 =item * remove_noisy_children
 
@@ -1010,20 +941,14 @@ L<App::Midgen::Roles>, L<App::Midgen::Output>,
 =head1 INCOMPATIBILITIES
 
 After some reflection, we do not scan xt/... 
-as the methods by which the modules Included are varied, 
+as the methods by which the modules  are Included are various, 
 this is best left to the module Author. 
 
 =head1 WARNINGS
 
 As our mantra is to show the current version of a module, 
-we do this by asking your local CPAN config for the information.
-Start-up may be slow as we request a CPAN reload index,
-against L<http://www.cpan.org/>, 
-or one of it's mirrors.
-
-If you wish to B<skip> this use option --...
-
- midgen --...
+we do this by asking MetaCPAN directly so we are going to need to 
+connect to L<http://api.metacpan.org/v0/>.
 
 
 =head1 BUGS AND LIMITATIONS
@@ -1044,6 +969,8 @@ Ahmad M. Zawawi E<lt>ahmad.zawawi@gmail.comE<gt>
 Matt S. Trout E<lt>mst@shadowcat.co.ukE<gt>
 
 Tommy Butler E<lt>ace@tommybutler.meE<gt>
+
+Neil Bowers E<lt>neilb@cpan.orgE<gt>
 
 =head1 COPYRIGHT
 
