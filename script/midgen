@@ -8,16 +8,17 @@ BEGIN {
 	$PPI::XS_DISABLE = 1; # noise control - Prevent warning
 }
 
-our $VERSION = '0.12';
+our $VERSION = '0.14';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 use Data::Printer { caller_info => 1, colored => 1, };
 
 # we are doing this so we can run from git during development
-# perl ~/GitHub/App-Midgen/script/midgen -c
+# perl ~/GitHub/App-Midgen/script/midgen
 use FindBin qw($Bin);
 use lib map {"$Bin/$_"} qw( lib ../lib );
+
 use App::Midgen;
 use Time::Stamp 'gmstamp';
 
@@ -79,7 +80,7 @@ p $midgen if $debug;
 $midgen->run();
 
 my $run_time = time - $BASETIME;
-say 'I just spent ' . $run_time . 's doing all that for you';
+say 'I just spent ' . $run_time . 's doing all that for you enjoy';
 say '__END__';
 
 exit(0);
@@ -96,7 +97,7 @@ midgen - Check B<requires> & B<test_rerquires> of your package for CPAN inclusio
 
 =head1 VERSION
 
-This document describes midgen version: 0.12
+This document describes midgen version: 0.14
 
 =head1 SYNOPSIS
 
@@ -151,7 +152,7 @@ so you can check, copy n paste or select an alternative format as shown below.
 
 =item B<--verbose or -v>
 
-Show filename that we are checking, as we go
+Show file names that we are checking, as we go
 
  midgen -v
 
