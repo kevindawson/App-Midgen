@@ -52,8 +52,11 @@ sub run {
 	$self->remove_noisy_children( $self->{requires} );
 	$self->remove_twins( $self->{requires} );
 
-	#run a second time if we found any twins, this will sort out twins and triplets etc
+	# Run a second time if we found any twins, this will sort out twins and triplets etc
 	$self->remove_noisy_children( $self->{requires} ) if $self->{found_twins};
+
+	# Now we have switched to MetaCPAN-Api we can hunt for noisy childre in test requires
+	$self->remove_noisy_children( $self->{test_requires} );
 
 	$self->_output_main_body( 'requires',      $self->{requires} );
 	$self->_output_main_body( 'test_requires', $self->{test_requires} );
@@ -431,7 +434,7 @@ sub _store_modules {
 	my $module       = shift;
 	p $module if $self->{debug};
 
-	my $version = $self->_cpan_api($module);
+	my $version = $self->get_module_version( $module, $require_type );
 	given ($version) {
 
 		when ('!cpan') {
@@ -559,7 +562,7 @@ sub remove_twins {
 				#Check for vailed parent
 				my $version;
 
-				$version = $self->_cpan_api($dum_parient);
+				$version = $self->get_module_version($dum_parient);
 
 				if ( looks_like_number($version) ) {
 
@@ -587,11 +590,11 @@ sub _check_mojo_core {
 	state $mojo_ver;
 
 	if ( not defined $mojo_ver ) {
-		$mojo_ver = $self->_cpan_api('Mojolicious');
+		$mojo_ver = $self->get_module_version('Mojolicious');
 		p $mojo_ver if $self->{debug};
 	}
 
-	$mojo_module_ver = $self->_cpan_api($mojo_module);
+	$mojo_module_ver = $self->get_module_version($mojo_module);
 
 	if ( $self->{mojo} ) {
 		say 'looks like we found another mojo core module';
@@ -611,97 +614,169 @@ sub _check_mojo_core {
 	}
 }
 
-
-# sub metacpan_api {
-sub _cpan_api {
-	my $self   = shift;
-	my $module = shift;
+#######
+# get module version using metacpan_api
+#######
+sub get_module_version {
+	my $self         = shift;
+	my $module       = shift;
+	my $require_type = shift || undef;
 	my $cpan_version;
 	my $found = 0;
 	my $dist;
 
 	try {
 		$module =~ s/::/-/g;
+
 		# quick n dirty, get version number if module is classed as a distribution in metacpan
 		my $mod = $mcpan->release( distribution => $module );
 		$cpan_version = version->parse( $mod->{version_numified} )->numify;
+
 		# $cpan_version = $mod->{version_numified};
 
-		$found        = 1;
+		$found = 1;
 	}
 	catch {
 		try {
 			$module =~ s/-/::/g;
 			my $mcpan_module_info = $mcpan->module($module);
 			$dist = $mcpan_module_info->{distribution};
+
 			# mark all perl core modules with either 'core' or '0'
 			if ( $dist eq 'perl' ) {
 				if ( $self->{zero} ) {
-					$cpan_version = 0;
-				}	else {
-				$cpan_version = 'core';
-			}
-				$found        = 1;
+					$cpan_version = version->parse( 0 )->numify;
+				} else {
+					$cpan_version = 'core';
+				}
+				$found = 1;
 			}
 		};
 		if ( $found == 0 ) {
 			try {
 				my $mod = $mcpan->release( distribution => $dist );
+
 				# $cpan_version = $mod->{version_numified};
 				$cpan_version = version->parse( $mod->{version_numified} )->numify;
 
-				$found        = 1;
-				# say 'bong';
-				$dist =~ s/-/::/g;
-				if ( $module =~ /$dist/ ){
-					print 'module - '. $module .' -> ';
-					say 'in dist - '. $dist;
-				}
+				$found = 1;
+				
+				$self->mod_in_dist( $dist, $module, $require_type, $mod->{version_numified} );
 
-				#return $mod->{version_numified};
-			};
+				# # say 'bong';
+				# $dist =~ s/-/::/g;
+				# if ( $module =~ /$dist/ ) {
+
+					# # Do We need to do a degree of seperation test also
+					# my $dist_score = split /::/, $dist;
+					# my $mod_score  = split /::/, $module;
+					# unless ( ( $dist_score + 1 ) == $mod_score ) {
+						# say 'Warning: this is out side of my scope, manual intervention required';
+						# say 'module - ' . $module . ' -> in dist - ' . $dist;
+					# }
+
+					# # say 'require_type - ' . $require_type;
+					# given ($require_type) {
+						# when ('requires') {
+
+							# # Add a what should be a parent
+							# $self->{$require_type}{$dist} = version->parse( $mod->{version_numified} )->numify
+								# if !$self->{$require_type}{$dist};
+						# }
+						# when ('test_requires') {
+							# # say 'test_requires';
+							# next if $self->{requires}{$dist};
+							# $self->{$require_type}{$dist} = version->parse( $mod->{version_numified} )->numify
+								# if !$self->{$require_type}{$dist};
+						# }
+					# }
+				# }
+			}
+
 		}
 	}
-
 	finally {
 		# not in metacpan so make acordingly
 		$cpan_version = '!cpan' if $found == 0;
 	};
 	return $cpan_version;
 }
-
-
-
-
 #######
-# version from cpan api
+# composed method 
 #######
-sub _cpan_api2 {
-	my $self   = shift;
+sub mod_in_dist {
+	my $self = shift;
+	my $dist = shift;
 	my $module = shift;
-	my $version;
-	p $module if $self->{debug};
+	my $require_type = shift;
+	my $version = shift;
+	
+					# say 'bong';
+				$dist =~ s/-/::/g;
+				if ( $module =~ /$dist/ ) {
 
-	try {
-		my $mod = CPAN::Shell->expand( 'Module', $module );
+					# Do We need to do a degree of seperation test also
+					my $dist_score = split /::/, $dist;
+					my $mod_score  = split /::/, $module;
+					unless ( ( $dist_score + 1 ) == $mod_score ) {
+						print 'Warning: this is out side of my scope, manual intervention required -> ';
+						print "module - $module  -> in dist - $dist \n";
+					}
 
-		if ( $mod->cpan_version ne 'undef' ) {
+					# say 'require_type - ' . $require_type;
+					given ($require_type) {
+						when ('requires') {
 
-			# allocate current cpan version against module name
-			$version = version->parse( $mod->cpan_version )->numify;
-		} else {
-
-			# Mark as undef, ie no version in cpan, what fun!
-			$version = 'undef';
-		}
-
-	}
-	catch {
-		carp "caught - $module" if $self->{debug};
-		$version = '!cpan';
-	};
-	return $version;
+							# Add a what should be a parent
+							$self->{$require_type}{$dist} = version->parse( $version )->numify
+								if !$self->{$require_type}{$dist};
+						}
+						when ('test_requires') {
+							# say 'test_requires';
+							next if $self->{requires}{$dist};
+							$self->{$require_type}{$dist} = version->parse( $version )->numify
+								if !$self->{$require_type}{$dist};
+						}
+					}
+				}
+	
+	
+	return;
 }
+
+
+
+
+
+#######
+# get version from using cpan api
+#######
+# sub _cpan_api2 {
+# my $self   = shift;
+# my $module = shift;
+# my $version;
+# p $module if $self->{debug};
+
+# try {
+# my $mod = CPAN::Shell->expand( 'Module', $module );
+
+# if ( $mod->cpan_version ne 'undef' ) {
+
+# # allocate current cpan version against module name
+# $version = version->parse( $mod->cpan_version )->numify;
+# } else {
+
+# # Mark as undef, ie no version in cpan, what fun!
+# $version = 'undef';
+# }
+
+# }
+# catch {
+# carp "caught - $module" if $self->{debug};
+# $version = '!cpan';
+# };
+# return $version;
+# }
 
 #######
 # find min perl version
