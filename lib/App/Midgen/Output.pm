@@ -3,34 +3,27 @@ package App::Midgen::Output;
 use v5.10;
 use Moo;
 
-our $VERSION = '0.12';
+our $VERSION = '0.14';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-#use CPAN;
-use Carp;
-use Data::Printer { caller_info => 1, colored => 1, };
+# use Carp;
+# use Data::Printer { caller_info => 1, colored => 1, };
 use constant { BLANK => qq{ }, NONE => q{}, THREE => 3, };
 use File::Spec;
-use MetaCPAN::API;
-my $mcpan = MetaCPAN::API->new() || die "arse: $!\n";
-use version;
 
 #######
 # header_dsl
 #######
 sub header_dsl {
-	my $self = shift;
+	my $self         = shift;
 	my $package_name = shift // NONE;
+	my $mi_ver       = shift // NONE;
 
-	# Let's get the current version of Module::Install::DSL
-	# my $mod = CPAN::Shell->expand( 'Module', 'inc::Module::Install::DSL' );
-	my $mod = $mcpan->release( distribution => 'Module-Install' );
 	$package_name =~ s{::}{/}g;
 
 	print "\n";
-	# say 'use inc::Module::Install::DSL ' . $mod->cpan_version . q{;};
-	say 'use inc::Module::Install::DSL ' . version->parse( $mod->{version_numified} )->numify . q{;};
+	say 'use inc::Module::Install::DSL ' . $mi_ver . q{;};
 	print "\n";
 	if ( $package_name ne NONE ) {
 		say 'all_from lib/' . $package_name . '.pm';
@@ -83,15 +76,15 @@ sub footer_dsl {
 	say "repository  git://github.com/.../$package_name.git";
 
 	print "\n";
-	if ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './share' ) ) {
+	if ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'share' ) ) {
 		say 'install_share';
 		print "\n";
 	}
 
-	if ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './script' ) ) {
+	if ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'script' ) ) {
 		say 'install_script ...';
 		print "\n";
-	} elsif ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './bin' ) ) {
+	} elsif ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'bin' ) ) {
 		say "install_script bin/...";
 		print "\n";
 	}
@@ -112,16 +105,12 @@ sub footer_dsl {
 # header_mi
 #######
 sub header_mi {
-	my $self = shift;
+	my $self         = shift;
 	my $package_name = shift // NONE;
-
-	# Let's get the current version of Module::Install::DSL
-	# my $mod = CPAN::Shell->expand( 'Module', 'inc::Module::Install' );
-	my $mod = $mcpan->release( distribution => 'Module-Install' );
+	my $mi_ver       = shift // NONE;
 
 	print "\n";
-	# say 'use inc::Module::Install ' . $mod->cpan_version . q{;};
-	say 'use inc::Module::Install ' . version->parse( $mod->{version_numified} )->numify . q{;};
+	say 'use inc::Module::Install ' . $mi_ver . q{;};
 	print "\n";
 	if ( $package_name ne NONE ) {
 		$package_name =~ s{::}{-}g;
@@ -186,15 +175,15 @@ sub footer_mi {
 	say "\t],";
 	say ");\n";
 
-	if ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './share' ) ) {
+	if ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'share' ) ) {
 		say 'install_share;';
 		print "\n";
 	}
 
-	if ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './script' ) ) {
+	if ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'script' ) ) {
 		say "install_script 'script/...';";
 		print "\n";
-	} elsif ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './bin' ) ) {
+	} elsif ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'bin' ) ) {
 		say "install_script 'bin/...';";
 		print "\n";
 	}
@@ -277,9 +266,9 @@ sub header_dzil {
 
 	if ( $package_name ne NONE ) {
 		print "\n";
-		say "NAME => '$package_name'";
+		say "'NAME' => '$package_name'";
 		$package_name =~ s{::}{/}g;
-		say "VERSION_FROM => 'lib/$package_name.pm'";
+		say "'VERSION_FROM' => 'lib/$package_name.pm'";
 		print "\n";
 	}
 
@@ -302,8 +291,8 @@ sub body_dzil {
 	}
 
 	given ($title) {
-		when ('requires')      { say 'PREREQ_PM => {'; }
-		when ('test_requires') { say 'BUILD_REQUIRES => {'; }
+		when ('requires')      { say "'PREREQ_PM' => {"; }
+		when ('test_requires') { say "'BUILD_REQUIRES' => {"; }
 		when ('recommends')    { return; }
 	}
 
@@ -327,13 +316,13 @@ sub footer_dzil {
 
 	print "\n";
 	say '# ToDo you should consider the following';
-	say 'META_MERGE => {';
-	say "\tresources => {";
-	say "\t\thomepage   => 'https://github.com/.../$package_name',";
-	say "\t\trepository => 'git://github.com/.../$package_name.git',";
-	say "\t\tbugtracker => 'https://github.com/.../$package_name/issues',";
+	say "'META_MERGE' => {";
+	say "\t'resources' => {";
+	say "\t\t'homepage' => 'https://github.com/.../$package_name',";
+	say "\t\t'repository' => 'git://github.com/.../$package_name.git',";
+	say "\t\t'bugtracker' => 'https://github.com/.../$package_name/issues',";
 	say "\t},";
-	say "\tx_contributors => [";
+	say "\t'x_contributors' => [";
 	say "\t\t'brian d foy (ADOPTME) <brian.d.foy\@gmail.com>',";
 	say "\t\t'Fred Bloggs <fred\@bloggs.org>',";
 	say "\t],";
@@ -410,17 +399,17 @@ sub footer_dist {
 		print "\n";
 	}
 
-	if ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './share' ) ) {
+	if ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'share' ) ) {
 		say '[ShareDir]';
 		say 'dir = share';
 		print "\n";
 	}
 
-	if ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './script' ) ) {
+	if ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'script' ) ) {
 		say '[ExecDir]';
 		say 'dir = script';
 		print "\n";
-	} elsif ( defined -d File::Spec->catfile( $App::Midgen::Working_Dir, './bin' ) ) {
+	} elsif ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'bin' ) ) {
 		say '[ExecDir]';
 		say 'dir = bin';
 		print "\n";
@@ -454,11 +443,11 @@ sub no_index {
 	my @dirs_to_check = qw( corpus eg examples fbp inc maint misc privinc share t xt );
 	my @dirs_found;
 
-	for (@dirs_to_check) {
+	for my $dir (@dirs_to_check) {
 
 		#ignore synatax warning for global
-		push @dirs_found, $_
-			if -d File::Spec->catfile( $App::Midgen::Working_Dir, $_ );
+		push @dirs_found, $dir
+			if -d File::Spec->catdir( $App::Midgen::Working_Dir, $dir );
 	}
 	return @dirs_found;
 }
@@ -477,7 +466,7 @@ App::Midgen::Output - A collection of output orinated methods used by L<App::Mid
 
 =head1 VERSION
 
-This document describes App::Midgen::Output version: 0.12
+This document describes App::Midgen::Output version: 0.14
 
 =head1 METHODS
 
