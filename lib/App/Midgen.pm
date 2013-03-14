@@ -908,10 +908,16 @@ also B<use_ok>, I<plus some other patterns along the way.>
 
 Assume first package found is your packages name
 
+=item * get_module_version mod_in_dist
+
+
 =item * min_version
 
 Uses L<Perl::MinimumVersion> to find the minimum version of your package by taking a quick look, 
 I<note this is not a full scan, suggest you use L<perlver> for a full scan>.
+
+=item * mod_in_dist
+
 
 =item * remove_noisy_children
 
