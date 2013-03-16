@@ -3,7 +3,7 @@ package App::Midgen::Output;
 use v5.10;
 use Moo;
 
-# Load time and dependancies negate excuition time
+# Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
 our $VERSION = '0.14';
@@ -448,7 +448,7 @@ sub no_index {
 
 	for my $dir (@dirs_to_check) {
 
-		#ignore synatax warning for global
+		#ignore syntax warning for global
 		push @dirs_found, $dir
 			if -d File::Spec->catdir( $App::Midgen::Working_Dir, $dir );
 	}
@@ -467,7 +467,7 @@ __END__
 
 =head1 NAME
 
-App::Midgen::Output - A collection of output orinated methods used by L<App::Midgen> 
+App::Midgen::Output - A collection of output orientated methods used by L<App::Midgen> 
 
 =head1 VERSION
 

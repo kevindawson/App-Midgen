@@ -4,7 +4,7 @@ use v5.10;
 use Moo::Role;
 use MooX::Types::MooseLike::Base qw(:all);
 
-# Load time and dependancies negate excuition time
+# Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
 our $VERSION = '0.14';
@@ -248,7 +248,7 @@ for more info see L<midgen>
 
 =item * found_twins
 
-Used as a flag to re-run noisy children after descovery of twins
+Used as a flag to re-run noisy children after discovery of twins
 
 =item * mcpan
 

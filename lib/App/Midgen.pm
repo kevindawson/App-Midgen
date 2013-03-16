@@ -5,7 +5,7 @@ use Moo;
 with qw( App::Midgen::Roles );
 use App::Midgen::Output;
 
-# Load time and dependancies negate excuition time
+# Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
 our $VERSION = '0.14';
@@ -56,7 +56,7 @@ sub run {
 	# Run a second time if we found any twins, this will sort out twins and triplets etc
 	$self->remove_noisy_children( $self->{requires} ) if $self->{found_twins};
 
-	# Now we have switched to MetaCPAN-Api we can hunt for noisy childre in test requires
+	# Now we have switched to MetaCPAN-Api we can hunt for noisy children in test requires
 	$self->remove_noisy_children( $self->{test_requires} );
 
 	$self->_output_main_body( 'requires',      $self->{requires} );
@@ -74,7 +74,7 @@ sub run {
 sub _initialise {
 	my $self = shift;
 
-	# let's give Output a copy, to stop it being Fup as well suspect Tiny::Path aswell
+	# let's give Output a copy, to stop it being Fup as well suspect Tiny::Path as-well
 	say 'working in dir: ' . $Working_Dir if $self->{debug};
 
 	$self->{output}  = App::Midgen::Output->new();
@@ -216,7 +216,7 @@ sub _is_perlfile {
 
 	if ($ppi_tc) {
 
-		# check first token-comment for a shebang
+		# check first token-comment for a she-bang
 		$not_a_pl_file = 1 if $ppi_tc->[0]->content =~ m/^#!.+perl.*$/;
 	}
 
@@ -255,7 +255,7 @@ sub _find_makefile_test_requires {
 
 	$self->_process_found_modules( 'test_requires', \@modules );
 
-	#These are realy recommends
+	#These are really recommends
 	$self->_recommends_in_single_quote();
 	$self->_recommends_in_double_quote();
 
@@ -406,7 +406,7 @@ sub _process_found_modules {
 			# next if Module::CoreList->first_release($module);
 			if ( Module::CoreList->first_release($module) ) {
 
-				# Skip if we are not intrested in core mofules
+				# Skip if we are not interested in core modules
 				next if !$self->{core};
 
 				# Assign a temp value to indicate a core module
@@ -435,8 +435,8 @@ sub _store_modules {
 	my $version = $self->get_module_version( $module, $require_type );
 	given ($version) {
 
-		when ('!cpan') {
-			$self->{$require_type}{$module} = '!cpan' if not defined $self->{$require_type}{$module};
+		when ('!mcpan') {
+			$self->{$require_type}{$module} = '!mcpan' if not defined $self->{$require_type}{$module};
 		}
 		default {
 			$self->{$require_type}{$module} = $version;
@@ -541,7 +541,7 @@ sub remove_twins {
 			$dee_parient =~ s/(::\w+)$//;
 		}
 
-		# Checking for same parient and score
+		# Checking for same patient and score
 		if ( $dum_parient eq $dee_parient && $dum_score == $dee_score ) {
 
 			# Test for same version number
@@ -662,7 +662,7 @@ sub get_module_version {
 		}
 	}
 	finally {
-		# not in metacpan so make acordingly
+		# not in metacpan so make accordingly
 		$cpan_version = '!mcpan' if $found == 0;
 	};
 	return $cpan_version;
@@ -681,7 +681,7 @@ sub mod_in_dist {
 	$dist =~ s/-/::/g;
 	if ( $module =~ /$dist/ ) {
 
-		# Do We need to do a degree of seperation test also
+		# Do We need to do a degree of separation test also
 		my $dist_score = split /::/, $dist;
 		my $mod_score  = split /::/, $module;
 		unless ( ( $dist_score + 1 ) == $mod_score ) {
@@ -912,8 +912,9 @@ also B<use_ok>, I<plus some other patterns along the way.>
 
 Assume first package found is your packages name
 
-=item * get_module_version mod_in_dist
+=item * get_module_version
 
+side affect of re-factoring, helps with code readability
 
 =item * min_version
 
@@ -922,6 +923,7 @@ I<note this is not a full scan, suggest you use L<perlver> for a full scan>.
 
 =item * mod_in_dist
 
+Check if module is in a distribution and use that version number, rather than 'undef'
 
 =item * remove_noisy_children
 
