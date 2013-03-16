@@ -5,6 +5,9 @@ use Moo;
 with qw( App::Midgen::Roles );
 use App::Midgen::Output;
 
+# Load time and dependancies negate excuition time
+# use namespace::clean -except => 'meta';
+
 our $VERSION = '0.14';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
@@ -562,7 +565,7 @@ sub remove_twins {
 				if ( looks_like_number($version) ) {
 
 					#Check parent version against a twins version
-					if ( $version == $required_ref->{ $sorted_modules[$n] } ) {
+					if ( $version eq $required_ref->{ $sorted_modules[$n] } ) {
 						say $dum_parient . ' -> ' . $version . ' is the parent of these twins' if $self->{twins};
 						$required_ref->{$dum_parient} = $version;
 						$self->{found_twins} = 1;
@@ -827,6 +830,7 @@ sub _output_footer {
 	return;
 }
 
+no Moo;
 
 1;
 

@@ -4,6 +4,9 @@ use v5.10;
 use Moo::Role;
 use MooX::Types::MooseLike::Base qw(:all);
 
+# Load time and dependancies negate excuition time
+# use namespace::clean -except => 'meta';
+
 our $VERSION = '0.14';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
@@ -169,27 +172,30 @@ has 'found_twins' => (
 
 has 'mcpan' => (
 	is   => 'rw',
-	isa  => Object,
+	isa => InstanceOf['MetaCPAN::API',],
 	lazy => 1,
 );
 
 has 'output' => (
 	is   => 'rw',
-	isa  => Object,
+	isa  => InstanceOf['App::Midgen::Output',],
 	lazy => 1,
 );
 
 has 'scanner' => (
 	is   => 'rw',
-	isa  => Object,
+	isa  => InstanceOf['Perl::PrereqScanner',],
 	lazy => 1,
 );
 
 has 'ppi_document' => (
 	is   => 'rw',
-	isa  => Object,
+	isa  => InstanceOf['PPI::Document',],
 	lazy => 1,
 );
+
+no Moo::Role;
+
 1;
 
 __END__

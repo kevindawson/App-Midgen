@@ -3,6 +3,9 @@ package App::Midgen::Output;
 use v5.10;
 use Moo;
 
+# Load time and dependancies negate excuition time
+# use namespace::clean -except => 'meta';
+
 our $VERSION = '0.14';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
@@ -451,6 +454,8 @@ sub no_index {
 	}
 	return @dirs_found;
 }
+
+no Moo;
 
 1;
 
