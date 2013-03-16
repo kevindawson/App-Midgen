@@ -20,7 +20,7 @@ BEGIN {
   use_ok('Getopt::Long',           '2.390');
   use_ok('MetaCPAN::API',          '0.430');
   use_ok('Module::CoreList',       '2.840');
-  use_ok('Moo',                    '1.000008');
+  use_ok('Moo',                    '1.001');
   use_ok('MooX::Types::MooseLike', '0.230');
   use_ok('PPI',                    '1.215');
   use_ok('Perl::MinimumVersion',   '1.320');

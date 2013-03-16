@@ -12,7 +12,7 @@ requires File::Spec             3.400
 requires Getopt::Long           2.390
 requires MetaCPAN::API          0.430
 requires Module::CoreList       2.840
-requires Moo                    1.000008
+requires Moo                    1.001
 requires MooX::Types::MooseLike 0.230
 requires PPI                    1.215
 requires Perl::MinimumVersion   1.320
