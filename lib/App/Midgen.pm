@@ -662,7 +662,7 @@ sub get_module_version {
 		}
 	}
 	finally {
-		# not in metacpan so make accordingly
+		# not in metacpan so mark accordingly
 		$cpan_version = '!mcpan' if $found == 0;
 	};
 	return $cpan_version;
