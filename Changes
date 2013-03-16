@@ -1,8 +1,8 @@
 Revision history for App-Midgen
 
 0.14 2013-03-17
- - Now using Perl::PrereqScanner to do most of the grunt work as 
-   pointed out by Mithaldu++ daxim++ thanks guys.
+ - Now using Perl::PrereqScanner to do most of the grunt work as pointed
+   out by Mithaldu++ daxim++ thanks guys.
  - Switche to using MetaCPAN due to a write issue with CPAN, neilb++
  - As a side affect of MetaCPAN we no longer have an 'undef' version type,
    we also run noisy children against test requires
