@@ -682,9 +682,10 @@ sub mod_in_dist {
 	if ( $module =~ /$dist/ ) {
 
 		# Do We need to do a degree of separation test also
-		my $dist_score = split /::/, $dist;
-		my $mod_score  = split /::/, $module;
-		unless ( ( $dist_score + 1 ) == $mod_score ) {
+		# my $dist_score = split /::/, $dist;
+		# my $mod_score  = split /::/, $module;
+		# unless ( ( $dist_score + 1 ) == $mod_score ) {
+		if ( not $self->degree_separation( $dist, $module ) ) {
 			print 'Warning: this is out side of my scope, manual intervention required -> ';
 			print "module - $module  -> in dist - $dist \n";
 		}
@@ -707,10 +708,31 @@ sub mod_in_dist {
 		}
 	}
 
-
 	return;
 }
 
+#######
+# composed method degree of separation
+# parent A::B - child A::B::C
+#######
+sub degree_separation {
+	my $self   = shift;
+	my $parent = shift;
+	my $child  = shift;
+
+	# Use of implicit split to @_ is deprecated
+	my $parent_score = @{ [ split /::/, $parent ] };
+	my $child_score  = @{ [ split /::/, $child ] };
+	p $parent_score;
+	p $child_score;
+
+	if ( ( $parent_score + 1 ) == $child_score ) {
+		return 1;
+	} else {
+		return 0;
+	}
+
+}
 
 #######
 # find min perl version
