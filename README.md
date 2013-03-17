@@ -8,7 +8,7 @@ why DSL because it's nice and clean, so now I can generate the contents when I w
 rather than as I add new use and require statments, and because adam kicked me :)
 
 
-### Version 0.12
+### Version 0.14
 
 ## Synopsis
 
@@ -28,7 +28,6 @@ Now with a added Getopt --help or -?
     --output         change format
     --core           show perl core modules
     --verbose        take a little peek as to what is going on
-    --parent         show the base|parent includes as we find them
     --mojo           show the Mojo catch as we find them
     --noisy_children show them as we find them
     --twins          show twins as we find them
@@ -71,14 +70,6 @@ _Food for thought, if we update our Modules, don't we want our users to use the 
 
     --verbose or -v
         Show filename that we are checking, as we go
-
-    --parent or -p
-        alternative --base or -b
-
-        Turn on extra output to show the base|parent modules, as we find
-        them, suggest you incorporate it with verbose for maximum affect
-
-         midgen -vp
 
     --mojo or -m
         Turn on extra output to show the /Mojo/ to Mojolicious catch, as we
