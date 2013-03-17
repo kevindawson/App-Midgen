@@ -461,7 +461,7 @@ sub remove_noisy_children {
 
 	my $n = 0;
 	while ( $sorted_modules[$n] ) {
-		my $parent_name  = $sorted_modules[$n];
+		my $parent_name = $sorted_modules[$n];
 
 		my $child_name;
 		if ( ( $n + 1 ) <= $#sorted_modules ) {
@@ -473,7 +473,7 @@ sub remove_noisy_children {
 
 			# Checking for one degree of separation
 			# ie A::B -> A::B::C is ok but A::B::C::D is not
-			if ( $self->degree_separation( $parent_name, $child_name ) ) {	
+			if ( $self->degree_separation( $parent_name, $child_name ) == 1 ) {
 
 				# Test for same version number
 				if ( $required_ref->{ $sorted_modules[ $n - 1 ] } eq $required_ref->{ $sorted_modules[$n] } ) {
@@ -516,7 +516,7 @@ sub remove_twins {
 	my $n = 0;
 	while ( $sorted_modules[$n] ) {
 
-		my $dum_name = $sorted_modules[$n];
+		my $dum_name    = $sorted_modules[$n];
 		my $dum_parient = $dum_name;
 		$dum_parient =~ s/(::\w+)$//;
 
@@ -524,14 +524,14 @@ sub remove_twins {
 		my $dee_name;
 		if ( ( $n + 1 ) <= $#sorted_modules ) {
 			$n++;
-			$dee_name = $sorted_modules[$n];
+			$dee_name    = $sorted_modules[$n];
 			$dee_parient = $dee_name;
 			$dee_parient =~ s/(::\w+)$//;
 		}
 
 		# Checking for same patient and score
 		# if ( $dum_parient eq $dee_parient && $dum_score == $dee_score ) {
-		if ( $dum_parient eq $dee_parient && $self->degree_separation( $dum_name, $dee_name ) ) {
+		if ( $dum_parient eq $dee_parient && $self->degree_separation( $dum_name, $dee_name ) == 0 ) {
 
 			# Test for same version number
 			if ( $required_ref->{ $sorted_modules[ $n - 1 ] } eq $required_ref->{ $sorted_modules[$n] } ) {
@@ -669,7 +669,7 @@ sub mod_in_dist {
 	$dist =~ s/-/::/g;
 	if ( $module =~ /$dist/ ) {
 
-		if ( not $self->degree_separation( $dist, $module ) ) {
+		if ( $self->degree_separation( $dist, $module ) > 1 ) {
 			print 'Warning: this is out side of my scope, manual intervention required -> ';
 			print "module - $module  -> in dist - $dist \n";
 		}
@@ -706,14 +706,10 @@ sub degree_separation {
 	my $parent_score = @{ [ split /::/, $parent ] };
 	my $child_score  = @{ [ split /::/, $child ] };
 	say 'parent - ' . $parent . ' score - ' . $parent_score if $self->{debug};
-	say 'child - ' . $child . ' score - ' . $child_score if $self->{debug};
+	say 'child - ' . $child . ' score - ' . $child_score    if $self->{debug};
 
-	if ( ( $parent_score + 1 ) == $child_score ) {
-		return 1;
-	} else {
-		return 0;
-	}
-
+	# switch around for a positive number
+	return $child_score - $parent_score;
 }
 
 #######
