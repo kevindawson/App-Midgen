@@ -842,7 +842,7 @@ __END__
 
 =head1 NAME
 
-App::Midgen - Check B<requires> & B<test_rerquires> of your Package for CPAN inclusion.
+App::Midgen - Check B<requires> & B<test_requires> of your Package for CPAN inclusion.
 
 =head1 VERSION
 
