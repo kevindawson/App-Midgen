@@ -8,7 +8,7 @@ use App::Midgen::Output;
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.15';
+our $VERSION = '0.16';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -846,7 +846,7 @@ App::Midgen - Check B<requires> & B<test_rerquires> of your Package for CPAN inc
 
 =head1 VERSION
 
-This document describes App::Midgen version: 0.15
+This document describes App::Midgen version: 0.16
 
 =head1 SYNOPSIS
 
@@ -898,6 +898,10 @@ For more info and sample output see L<wiki|https://github.com/kevindawson/App-Mi
 =head1 METHODS
 
 =over 4
+
+=item * degree_separation
+
+now a seperate Method, returns an integer.
 
 =item * find_required_modules
 

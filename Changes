@@ -1,5 +1,8 @@
 Revision history for App-Midgen
 
+0.16 2013-03-17
+ - Fix bug in code - Use of implicit split to @_ is deprecated
+
 0.15 2013-03-17
  - Silly mistake, fix version number, removed trayling zeros
 
