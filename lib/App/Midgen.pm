@@ -79,7 +79,7 @@ sub _initialise {
 
 	$self->{output}  = App::Midgen::Output->new();
 	$self->{scanner} = Perl::PrereqScanner->new();
-	$self->{mcpan}   = MetaCPAN::API->new() || die "arse: $!\n";
+	$self->{mcpan}   = MetaCPAN::API->new() || croak "arse: $ERRNO";
 
 	return;
 }
