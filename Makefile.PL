@@ -5,29 +5,29 @@ requires_from lib/App/Midgen.pm
 
 perl_version 5.010001
 
-requires Carp                   1.260
-requires Cwd                    3.400
-requires Data::Printer          0.350
-requires File::Spec             3.400
-requires Getopt::Long           2.390
-requires MetaCPAN::API          0.430
-requires Module::CoreList       2.840
+requires Carp                   1.26
+requires Cwd                    3.4
+requires Data::Printer          0.35
+requires File::Spec             3.4
+requires Getopt::Long           2.39
+requires MetaCPAN::API          0.43
+requires Module::CoreList       2.84
 requires Moo                    1.001
-requires MooX::Types::MooseLike 0.230
+requires MooX::Types::MooseLike 0.23
 requires PPI                    1.215
-requires Perl::MinimumVersion   1.320
+requires Perl::MinimumVersion   1.32
 requires Perl::PrereqScanner    1.015
-requires Pod::Usage             1.610
-requires Scalar::Util           1.270
-requires Time::Stamp            1.300
-requires Try::Tiny              0.120
-requires constant               1.250
-requires version                0.990200
+requires Pod::Usage             1.61
+requires Scalar::Util           1.27
+requires Time::Stamp            1.3
+requires Try::Tiny              0.12
+requires constant               1.25
+requires version                0.9902
 
-test_requires Test::More 0.980
+test_requires Test::More 0.98
 
-recommends Test::Pod           1.460
-recommends Test::Pod::Coverage 1.080
+recommends Test::Pod           1.46
+recommends Test::Pod::Coverage 1.08
 
 install_script midgen
 

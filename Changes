@@ -1,5 +1,8 @@
 Revision history for App-Midgen
 
+0.15 2013-03-17
+ - Silly mistake, fix version number, removed trayling zeros
+
 0.14 2013-03-17
  - Now using Perl::PrereqScanner to do most of the grunt work as pointed
    out by Mithaldu++ daxim++ thanks guys.

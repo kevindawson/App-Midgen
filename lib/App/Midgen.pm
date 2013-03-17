@@ -8,7 +8,7 @@ use App::Midgen::Output;
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.14';
+our $VERSION = '0.15';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -628,7 +628,7 @@ sub get_module_version {
 
 		# quick n dirty, get version number if module is classed as a distribution in metacpan
 		my $mod = $self->{mcpan}->release( distribution => $module );
-		$cpan_version = version->parse( $mod->{version_numified} )->numify;
+		$cpan_version = $mod->{version_numified};
 
 		# $cpan_version = $mod->{version_numified};
 
@@ -643,7 +643,7 @@ sub get_module_version {
 			# mark all perl core modules with either 'core' or '0'
 			if ( $dist eq 'perl' ) {
 				if ( $self->{zero} ) {
-					$cpan_version = version->parse(0)->numify;
+					$cpan_version = 0;
 				} else {
 					$cpan_version = 'core';
 				}
@@ -655,7 +655,7 @@ sub get_module_version {
 				my $mod = $self->{mcpan}->release( distribution => $dist );
 
 				# $cpan_version = $mod->{version_numified};
-				$cpan_version = version->parse( $mod->{version_numified} )->numify;
+				$cpan_version = $mod->{version_numified};
 				$found        = 1;
 				$self->mod_in_dist( $dist, $module, $require_type, $mod->{version_numified} ) if $require_type;
 			}
@@ -694,14 +694,14 @@ sub mod_in_dist {
 			when ('requires') {
 
 				# Add a what should be a parent
-				$self->{$require_type}{$dist} = version->parse($version)->numify
+				$self->{$require_type}{$dist} = $version
 					if !$self->{$require_type}{$dist};
 			}
 			when ('test_requires') {
 
 				# say 'test_requires';
 				next if $self->{requires}{$dist};
-				$self->{$require_type}{$dist} = version->parse($version)->numify
+				$self->{$require_type}{$dist} = $version
 					if !$self->{$require_type}{$dist};
 			}
 		}
@@ -846,7 +846,7 @@ App::Midgen - Check B<requires> & B<test_rerquires> of your Package for CPAN inc
 
 =head1 VERSION
 
-This document describes App::Midgen version: 0.14
+This document describes App::Midgen version: 0.15
 
 =head1 SYNOPSIS
 
