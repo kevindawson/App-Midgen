@@ -461,25 +461,19 @@ sub remove_noisy_children {
 
 	my $n = 0;
 	while ( $sorted_modules[$n] ) {
-
 		my $parent_name  = $sorted_modules[$n];
-		my @p_score      = split /::/, $parent_name;
-		my $parent_score = @p_score;
 
-		my $child_score;
+		my $child_name;
 		if ( ( $n + 1 ) <= $#sorted_modules ) {
 			$n++;
-
-			# Use of implicit split to @_ is deprecated
-			my $child_name = $sorted_modules[$n];
-			$child_score = @{ [ split /::/, $child_name ] };
+			$child_name = $sorted_modules[$n];
 		}
 
 		if ( $sorted_modules[$n] =~ /^$sorted_modules[$n-1]::/ ) {
 
 			# Checking for one degree of separation
 			# ie A::B -> A::B::C is ok but A::B::C::D is not
-			if ( ( $parent_score + 1 ) == $child_score ) {
+			if ( $self->degree_separation( $parent_name, $child_name ) ) {	
 
 				# Test for same version number
 				if ( $required_ref->{ $sorted_modules[ $n - 1 ] } eq $required_ref->{ $sorted_modules[$n] } ) {
@@ -522,27 +516,22 @@ sub remove_twins {
 	my $n = 0;
 	while ( $sorted_modules[$n] ) {
 
-		my $dum_name    = $sorted_modules[$n];
-		my @p_score     = split /::/, $dum_name;
-		my $dum_score   = @p_score;
+		my $dum_name = $sorted_modules[$n];
 		my $dum_parient = $dum_name;
 		$dum_parient =~ s/(::\w+)$//;
 
-		my $dee_score;
 		my $dee_parient;
 		my $dee_name;
 		if ( ( $n + 1 ) <= $#sorted_modules ) {
 			$n++;
-
-			# Use of implicit split to @_ is deprecated
-			$dee_name    = $sorted_modules[$n];
-			$dee_score   = @{ [ split /::/, $dee_name ] };
+			$dee_name = $sorted_modules[$n];
 			$dee_parient = $dee_name;
 			$dee_parient =~ s/(::\w+)$//;
 		}
 
 		# Checking for same patient and score
-		if ( $dum_parient eq $dee_parient && $dum_score == $dee_score ) {
+		# if ( $dum_parient eq $dee_parient && $dum_score == $dee_score ) {
+		if ( $dum_parient eq $dee_parient && $self->degree_separation( $dum_name, $dee_name ) ) {
 
 			# Test for same version number
 			if ( $required_ref->{ $sorted_modules[ $n - 1 ] } eq $required_ref->{ $sorted_modules[$n] } ) {
@@ -677,20 +666,14 @@ sub mod_in_dist {
 	my $require_type = shift;
 	my $version      = shift;
 
-	# say 'bong';
 	$dist =~ s/-/::/g;
 	if ( $module =~ /$dist/ ) {
 
-		# Do We need to do a degree of separation test also
-		# my $dist_score = split /::/, $dist;
-		# my $mod_score  = split /::/, $module;
-		# unless ( ( $dist_score + 1 ) == $mod_score ) {
 		if ( not $self->degree_separation( $dist, $module ) ) {
 			print 'Warning: this is out side of my scope, manual intervention required -> ';
 			print "module - $module  -> in dist - $dist \n";
 		}
 
-		# say 'require_type - ' . $require_type;
 		given ($require_type) {
 			when ('requires') {
 
@@ -700,7 +683,6 @@ sub mod_in_dist {
 			}
 			when ('test_requires') {
 
-				# say 'test_requires';
 				next if $self->{requires}{$dist};
 				$self->{$require_type}{$dist} = $version
 					if !$self->{$require_type}{$dist};
@@ -723,8 +705,8 @@ sub degree_separation {
 	# Use of implicit split to @_ is deprecated
 	my $parent_score = @{ [ split /::/, $parent ] };
 	my $child_score  = @{ [ split /::/, $child ] };
-	p $parent_score;
-	p $child_score;
+	say 'parent - ' . $parent . ' score - ' . $parent_score if $self->{debug};
+	say 'child - ' . $child . ' score - ' . $child_score if $self->{debug};
 
 	if ( ( $parent_score + 1 ) == $child_score ) {
 		return 1;
