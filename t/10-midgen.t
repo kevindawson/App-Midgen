@@ -34,12 +34,12 @@ my $midgen1 = App::Midgen->new();
 foreach my $attribute (@attributes) {
 	is( $midgen1->{$attribute}, 0, "default found $attribute" );
 }
-is( $midgen1->{output_format}, 'dsl', "default found output_format" );
+is( $midgen1->{format}, 'dsl', "default found format" );
 
 my $midgen2 = App::Midgen->new(
 	core           => 1,
 	verbose        => 1,
-	output_format  => 'mi',
+	format  => 'mi',
 	mojo           => 1,
 	noisy_children => 1,
 	twins          => 1,
@@ -51,7 +51,7 @@ App::Midgen->new();
 foreach my $attribute (@attributes) {
 	is( $midgen2->{$attribute}, 1, "defined found $attribute" );
 }
-is( $midgen2->{output_format}, 'mi', "defined found output_format" );
+is( $midgen2->{format}, 'mi', "defined found output_format" );
 
 
 done_testing();
