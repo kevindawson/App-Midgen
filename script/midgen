@@ -8,7 +8,7 @@ BEGIN {
   $PPI::XS_DISABLE = 1;    # noise control - Prevent warning
 }
 
-our $VERSION = '0.16';
+our $VERSION = '0.17_01';
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -142,7 +142,7 @@ midgen - Check B<requires> & B<test_requires> of your package for CPAN inclusion
 
 =head1 VERSION
 
-This document describes midgen version: 0.16
+This document describes midgen version: 0.17_01
 
 =head1 SYNOPSIS
 

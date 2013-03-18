@@ -8,7 +8,7 @@ use App::Midgen::Output;
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.16';
+our $VERSION = '0.17_01';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -858,7 +858,7 @@ App::Midgen - Check B<requires> & B<test_requires> of your package for CPAN incl
 
 =head1 VERSION
 
-This document describes App::Midgen version: 0.16
+This document describes App::Midgen version: 0.17_01
 
 =head1 SYNOPSIS
 

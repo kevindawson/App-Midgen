@@ -6,7 +6,7 @@ use Moo;
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.16';
+our $VERSION = '0.17_01';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -471,7 +471,7 @@ App::Midgen::Output - A collection of output orientated methods used by L<App::M
 
 =head1 VERSION
 
-This document describes App::Midgen::Output version: 0.16
+This document describes App::Midgen::Output version: 0.17_01
 
 =head1 METHODS
 
