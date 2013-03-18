@@ -458,8 +458,7 @@ sub remove_noisy_children {
 		push @sorted_modules, $module_name;
 	}
 
-	p @sorted_modules;# if $self->{debug};
-	# next if $parent_name =~ m/Mojo/sxm;
+	p @sorted_modules if $self->{debug};
 
 	my $n = 0;
 	while ( $sorted_modules[$n] ) {
@@ -509,8 +508,7 @@ sub remove_twins {
 		push @sorted_modules, $module_name;
 	}
 
-	p @sorted_modules;# if $self->{debug};
-	# next if $dum_name =~ m/Mojo/sxm;
+	p @sorted_modules if $self->{debug};
 
 	# exit if only 1 Module found
 	return if $#sorted_modules == 0;
