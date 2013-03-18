@@ -8,9 +8,6 @@ use MooX::Types::MooseLike::Base qw(:all);
 # use namespace::clean -except => 'meta';
 
 our $VERSION = '0.16';
-use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
-local $OUTPUT_AUTOFLUSH = 1;
-
 use Carp;
 
 #######
@@ -65,16 +62,14 @@ has 'noisy_children' => (
 	required => 1,
 );
 
-has 'output_format' => (
+has 'format' => (
 	is  => 'ro',
 	isa => sub {
 		my $format = { dsl => 1, mi => 1, build => 1, dzil => 1, dist => 1 };
 		croak 'not a supported output format' unless defined $format->{ $_[0] };
 		return;
 	},
-	default => sub {
-		'dsl';
-	},
+	default => 'dsl',
 	required => 1,
 );
 
@@ -228,7 +223,7 @@ none as such, but we do have
 
 =item * noisy_children
 
-=item * output_format
+=item * format
 
 =item * padre
 
