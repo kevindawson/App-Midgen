@@ -50,14 +50,17 @@ sub run {
 	$self->find_required_modules();
 	$self->find_required_test_modules();
 
-	$self->remove_noisy_children( $self->{requires} );
-	$self->remove_twins( $self->{requires} );
+
+	$self->remove_noisy_children( $self->{requires} ) if $self->{noisy_children};
+	$self->remove_twins( $self->{requires} ) if $self->{twins};
+
 
 	# Run a second time if we found any twins, this will sort out twins and triplets etc
 	$self->remove_noisy_children( $self->{requires} ) if $self->{found_twins};
 
 	# Now we have switched to MetaCPAN-Api we can hunt for noisy children in test requires
-	$self->remove_noisy_children( $self->{test_requires} );
+	$self->remove_noisy_children( $self->{test_requires} ) if $self->{noisy_children};
+
 
 	$self->_output_main_body( 'requires',      $self->{requires} );
 	$self->_output_main_body( 'test_requires', $self->{test_requires} );
@@ -381,12 +384,14 @@ sub _process_found_modules {
 				# don't include our own test packages here
 				next;
 			}
-		#	when (/Mojo/sxm) {
+			when (/Mojo/sxm) {
 
 				# $self->_check_mojo_core($module);
-				# $module = 'Mojolicious' if $self->_check_mojo_core($module);
+				if ( $self->{mojo} ){				
+					$module = 'Mojolicious' if $self->_check_mojo_core($module);
+				}
 				## $self->_check_mojo_core($module, $require_type);
-		#	}
+			}
 		}
 
 		if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm && !$self->{padre} ) {
@@ -477,7 +482,7 @@ sub remove_noisy_children {
 
 				# Test for same version number
 				if ( $required_ref->{ $sorted_modules[ $n - 1 ] } eq $required_ref->{ $sorted_modules[$n] } ) {
-					if ( $self->{noisy_children} ) {
+					if ( $self->{verbose} ) {
 						print "\n";
 						say 'delete miscreant noisy child '
 							. $sorted_modules[$n] . ' => '
@@ -586,7 +591,7 @@ sub _check_mojo_core {
 
 	$mojo_module_ver = $self->get_module_version($mojo_module);
 
-	if ( $self->{mojo} ) {
+	if ( $self->{verbose} ) {
 		say 'looks like we found another mojo core module';
 		say $mojo_module . ' version ' . $mojo_module_ver;
 	}
@@ -648,10 +653,12 @@ sub get_module_version {
 			try {
 				my $mod = $self->{mcpan}->release( distribution => $dist );
 
-				# $cpan_version = $mod->{version_numified};
+				# This is where we add a dist version to a nacked module
 				$cpan_version = $mod->{version_numified};
 				$found        = 1;
-				$self->mod_in_dist( $dist, $module, $require_type, $mod->{version_numified} ) if $require_type;
+				if ( $self->{twins} or $self->{noisy_children} ){ 
+					$self->mod_in_dist( $dist, $module, $require_type, $mod->{version_numified} ) if $require_type;
+				}
 			}
 		}
 	}
@@ -757,7 +764,7 @@ sub min_version {
 sub _output_header {
 	my $self = shift;
 
-	given ( $self->{output_format} ) {
+	given ( $self->{format} ) {
 
 		when ('mi') {
 			$self->{output}->header_mi( $self->{package_name}, $self->get_module_version('inc::Module::Install') );
@@ -786,7 +793,7 @@ sub _output_main_body {
 	my $title        = shift || 'title missing';
 	my $required_ref = shift || return;
 
-	given ( $self->{output_format} ) {
+	given ( $self->{format} ) {
 
 		when ('mi') {
 			$self->{output}->body_mi( $title, $required_ref );
@@ -813,7 +820,7 @@ sub _output_main_body {
 sub _output_footer {
 	my $self = shift;
 
-	given ( $self->{output_format} ) {
+	given ( $self->{format} ) {
 
 		when ('mi') {
 			$self->{output}->footer_mi( $self->{package_name} );
