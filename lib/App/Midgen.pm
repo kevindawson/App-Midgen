@@ -381,11 +381,12 @@ sub _process_found_modules {
 				# don't include our own test packages here
 				next;
 			}
-			when (/Mojo/sxm) {
+		#	when (/Mojo/sxm) {
 
 				# $self->_check_mojo_core($module);
-				$module = 'Mojolicious' if $self->_check_mojo_core($module);
-			}
+				# $module = 'Mojolicious' if $self->_check_mojo_core($module);
+				## $self->_check_mojo_core($module, $require_type);
+		#	}
 		}
 
 		if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm && !$self->{padre} ) {
@@ -457,12 +458,12 @@ sub remove_noisy_children {
 		push @sorted_modules, $module_name;
 	}
 
-	p @sorted_modules if $self->{debug};
+	p @sorted_modules;# if $self->{debug};
+	# next if $parent_name =~ m/Mojo/sxm;
 
 	my $n = 0;
 	while ( $sorted_modules[$n] ) {
 		my $parent_name = $sorted_modules[$n];
-
 		my $child_name;
 		if ( ( $n + 1 ) <= $#sorted_modules ) {
 			$n++;
@@ -508,7 +509,8 @@ sub remove_twins {
 		push @sorted_modules, $module_name;
 	}
 
-	p @sorted_modules if $self->{debug};
+	p @sorted_modules;# if $self->{debug};
+	# next if $dum_name =~ m/Mojo/sxm;
 
 	# exit if only 1 Module found
 	return if $#sorted_modules == 0;
@@ -573,6 +575,9 @@ sub remove_twins {
 sub _check_mojo_core {
 	my $self        = shift;
 	my $mojo_module = shift;
+	my $require_type = shift;
+
+
 	my $mojo_module_ver;
 	state $mojo_ver;
 
@@ -590,10 +595,12 @@ sub _check_mojo_core {
 
 	# true if undef or version numbers match
 	# undef is true as Mojo is missing version numbers in all sub modules - Fing idiots
+
 	if ( $mojo_module_ver eq 'undef' ) {
 		return 1;
 	} elsif ( defined $mojo_module_ver ) {
 		if ( $mojo_ver == $mojo_module_ver ) {
+		##	$self->{$require_type}{'Mojolicious'} = $mojo_ver if not $self->{'requires'}{'Mojolicious'};
 			return 1;
 		}
 	} else {
@@ -842,7 +849,7 @@ __END__
 
 =head1 NAME
 
-App::Midgen - Check B<requires> & B<test_requires> of your Package for CPAN inclusion.
+App::Midgen - Check B<requires> & B<test_requires> of your package for CPAN inclusion.
 
 =head1 VERSION
 
