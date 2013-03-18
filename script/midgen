@@ -5,14 +5,14 @@ use strict;
 use warnings FATAL => 'all';
 
 BEGIN {
-	$PPI::XS_DISABLE = 1; # noise control - Prevent warning
+  $PPI::XS_DISABLE = 1;    # noise control - Prevent warning
 }
 
 our $VERSION = '0.16';
-use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
+use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Data::Printer { caller_info => 1, colored => 1, };
+use Data::Printer {caller_info => 1, colored => 1,};
 
 # we are doing this so we can run from git during development
 # perl ~/GitHub/App-Midgen/script/midgen
@@ -23,62 +23,107 @@ use App::Midgen;
 use Time::Stamp 'gmstamp';
 
 #######
+# get options from ~/.midgenrc
+#######
+
+# Encode and decode JSON
+use JSON::Tiny;
+my $json = JSON::Tiny->new;
+
+use File::Spec;
+use File::Slurp qw(read_file write_file);
+
+my $midgenrc = File::Spec->catfile($ENV{HOME}, '.midgenrc');
+
+my $config;
+if (-e $midgenrc) {
+  $config = $json->decode(read_file($midgenrc));
+}
+
+
+#######
 # Start of Menu
 #######
 use Getopt::Long;
 Getopt::Long::Configure('bundling');
 use Pod::Usage;
-my $help           = 0;
-my $core           = 0;    # show perl core modules as well
-my $verbose        = 0;    # option variable with default value (false)
-my @output         = 'dsl';
-my $mojo           = 0;    # show the Mojo detection
-my $noisy_children = 0;    # unwanted noisy children
-my $twins          = 0;    # unwanted twins
-my $zero           = 0;    # display 0 instead of core
-my $debug          = 0;    # lots of good stuff here :)
+my $help = 0;
+my $core = $config->{core} || 0;    # show perl core modules as well
+my $verbose
+  = $config->{verbose} || 0;    # option variable with default value (false)
+my @format = $config->{format} || 'dsl';
+my $mojo   = $config->{mojo}   || 0;       # show the Mojo detection
+my $noisy_children  = $config->{noisy_children}  || 0;       # unwanted noisy children
+my $twins  = $config->{twins}  || 0;       # unwanted twins
+my $zero   = $config->{zero}   || 0;       # display 0 instead of core
+my $debug = 0;                             # lots of good stuff here :)
+my $write = 0;                             # write current configuration
 GetOptions(
-	'verbose|v'        => \$verbose,
-	'core|c'           => \$core,
-	'help|h|?'         => \$help,
-	'mojo|m'           => \$mojo,
-	'output|o=s'       => \@output,
-	'twins|t'          => \$twins,
-	'noisy_children|n' => \$noisy_children,
-	'zero|z'           => \$zero,
-	'debug|d'          => sub {
-		$core           = 1;
-		$verbose        = 1;
-		$mojo           = 1;
-		$noisy_children = 1;
-		$twins          = 1;
-		$debug          = 1;
-	},
+  'verbose|v!' => \$verbose,
+  'core|c!'    => \$core,
+  'help|h|?'   => \$help,
+  'mojo|m!'    => \$mojo,
+  'format|f=s' => \@format,
+  'twins|t!'   => \$twins,
+  'noisy_children|n!'   => \$noisy_children,
+  'zero|z!'    => \$zero,
+  'debug|d'    => sub {
+    $core    = 1;
+    $verbose = 1;
+    $mojo    = 1;
+    $noisy_children   = 1;
+    $twins   = 1;
+    $debug   = 1;
+  },
+  'write|w' => \$write,
 ) or pod2usage(2);
 pod2usage(1) if $help;
 
 #######
-# End of Menu
+# run App::Midgen
 #######
 
 say 'Running midgen v' . $VERSION;
 say 'Stamped -> ' . gmstamp($BASETIME);
 
 my $midgen = App::Midgen->new(
-	core           => $core,
-	verbose        => $verbose,
-	output_format  => $output[-1],
-	mojo           => $mojo,
-	noisy_children => $noisy_children,
-	twins          => $twins,
-	zero           => $zero,
-	debug          => $debug,
+  core    => $core,
+  verbose => $verbose,
+  format  => $format[-1],
+  mojo    => $mojo,
+  noisy_children   => $noisy_children,
+  twins   => $twins,
+  zero    => $zero,
+  debug   => $debug,
 );
 
 p $midgen if $debug;
 
 $midgen->run();
 
+#######
+# write config to ~/.midgenrc
+#######
+if ($write) {
+  my $midgenrc_data = $json->encode(
+    {
+      core    => $core,
+      verbose => $verbose,
+      format  => $format[-1],
+      mojo    => $mojo,
+      noisy_children   => $noisy_children,
+      twins   => $twins,
+      zero    => $zero,
+    }
+  );
+
+  p $midgenrc_data;
+  write_file($midgenrc, $midgenrc_data);
+}
+
+#######
+# time and exit
+#######
 my $run_time = time - $BASETIME;
 say 'I just spent ' . $run_time . 's doing all that for you enjoy';
 say '__END__';
@@ -101,7 +146,7 @@ This document describes midgen version: 0.16
 
 =head1 SYNOPSIS
 
-Change to the root of your package and run
+Change to the root of your package and run, cmd line options always overright options from ~/.midgenrc if you have one.
 
  midgen
 
@@ -123,25 +168,25 @@ Prints a help message and exits.
 
  Options:
    --help           brief help message
-   --output         change format
+   --format         change output format
    --core           show perl core modules
    --verbose        take a little peek as to what is going on
-   --mojo           show the Mojo catch as we find them
-   --noisy_children show them as we find them
-   --twins          show twins as we find them
+   --mojo           enable this under dev feature
+   --noisy_children enable this under dev feature
+   --twins          enable this under dev feature
    --zero           show a 0 instead of core
-   --debug          lots of stuff very
+   --debug          a vast amount of noise, re self dev
 
-=item B<--output or -o>
+=item B<--format or -f>
 
 By default we output to STDOUT in 'dsl' format, 
 so you can check, copy n paste or select an alternative format as shown below.
 
- midgen -o dsl		# Module::Include::DSL
- midgen -o mi		# Module::Include
- midgen -o build	# Build
- midgen -o dzil		# Dist::Zilla
- midgen -o dist		# dist.ini
+ midgen -f dsl		# Module::Include::DSL
+ midgen -f mi		# Module::Include
+ midgen -f build	# Build
+ midgen -f dzil		# Dist::Zilla
+ midgen -f dist		# dist.ini
 
 =item B<--core or -c>
 
@@ -158,20 +203,24 @@ Show file names that we are checking, as we go
 
 =item B<--mojo or -m>
 
-Turn on extra output to show the /Mojo/ to Mojolicious catch, as we find them,
+Enable this dev feature to turn on extra output to show the /Mojo/ 
+to Mojolicious catch, as we find them,
 suggest you incorporate it with verbose for maximum affect
 
  midgen -vm
 
 =item B<--noisy_children or -n>
 
-Turn on extra output to show the modules considered to be noisy children, as we find them
+Enable this dev feature to turn on extra output to show the modules 
+considered to be noisy children, as we find them,
+suggest you incorporate it with verbose for maximum affect
 
- midgen -n
+ midgen -vn
 
 =item B<--twins or -t>
 
-Turn on extra output to show the modules that are twins, as we find them, 
+Enable this dev feature to turn on extra output to show the modules 
+that are twins, as we find them, as we find them,
 suggest you incorporate it with noisy_children for maximum affect
 
  midgen -nt
@@ -180,8 +229,13 @@ suggest you incorporate it with noisy_children for maximum affect
 
 Use a '0' instead of 'core' for core module version number, suggest you incorporate it with core for maximum affect
 
-
  midgen -cz
+
+=item B<--write or -w>
+
+you can now write your current options to ~/.midgenrc in JSON format, to be used again, don't forget to use the Getopt --no-option to negate
+
+ midgen --no-v -w
 
 =item B<--debug or -d>
 
