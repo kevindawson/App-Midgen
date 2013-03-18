@@ -8,8 +8,10 @@ perl_version 5.010001
 requires Carp                   1.26
 requires Cwd                    3.4
 requires Data::Printer          0.35
+requires File::Slurp            9999.19
 requires File::Spec             3.4
 requires Getopt::Long           2.39
+requires JSON::Tiny             0.25
 requires MetaCPAN::API          0.43
 requires Module::CoreList       2.84
 requires Moo                    1.001
