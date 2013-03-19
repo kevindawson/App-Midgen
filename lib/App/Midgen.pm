@@ -429,7 +429,7 @@ sub _store_modules {
 			$self->{$require_type}{$module} = $version if $self->{core};
 		}
 		default {
-			if ( $self->_is_core_module($module) ) {
+			if ( $self->_in_corelist($module) ) {
 				$self->{$require_type}{$module} = $version if ( $self->{dual_life} || $self->{core} );
 			} else {
 				$self->{$require_type}{$module} = $version;
@@ -441,17 +441,17 @@ sub _store_modules {
 }
 
 #######
-# composed method _is_core_module
+# composed method _in_corelist
 #######
-sub _is_core_module {
+sub _in_corelist {
 	my $self   = shift;
 	my $module = shift;
 
 	# hash with core modules to process regardless
 	my $ignore_core = { 'File::Path' => 1, 'Test::More' => 1, };
+
 	if ( !$ignore_core->{$module} ) {
 
-		# next if Module::CoreList->first_release($module);
 		if ( Module::CoreList->first_release($module) ) {
 			return 1;
 		} else {
