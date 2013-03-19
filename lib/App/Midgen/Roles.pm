@@ -26,6 +26,18 @@ has 'core' => (
 	required => 1,
 );
 
+has 'dual_life' => (
+	is  => 'ro',
+	isa => sub {
+		croak "$_[0] this is not a Bool"
+			unless is_Bool( $_[0] );
+	},
+	default => sub {
+		0;
+	},
+	required => 1,
+);
+
 has 'debug' => (
 	is  => 'ro',
 	isa => sub {
@@ -69,7 +81,7 @@ has 'format' => (
 		croak 'not a supported output format' unless defined $format->{ $_[0] };
 		return;
 	},
-	default => 'dsl',
+	default  => 'dsl',
 	required => 1,
 );
 
@@ -167,25 +179,25 @@ has 'found_twins' => (
 
 has 'mcpan' => (
 	is   => 'rw',
-	isa => InstanceOf['MetaCPAN::API',],
+	isa  => InstanceOf [ 'MetaCPAN::API', ],
 	lazy => 1,
 );
 
 has 'output' => (
 	is   => 'rw',
-	isa  => InstanceOf['App::Midgen::Output',],
+	isa  => InstanceOf [ 'App::Midgen::Output', ],
 	lazy => 1,
 );
 
 has 'scanner' => (
 	is   => 'rw',
-	isa  => InstanceOf['Perl::PrereqScanner',],
+	isa  => InstanceOf [ 'Perl::PrereqScanner', ],
 	lazy => 1,
 );
 
 has 'ppi_document' => (
 	is   => 'rw',
-	isa  => InstanceOf['PPI::Document',],
+	isa  => InstanceOf [ 'PPI::Document', ],
 	lazy => 1,
 );
 
