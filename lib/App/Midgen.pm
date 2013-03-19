@@ -52,7 +52,7 @@ sub run {
 
 
 	$self->remove_noisy_children( $self->{requires} ) if $self->{noisy_children};
-	$self->remove_twins( $self->{requires} ) if $self->{twins};
+	$self->remove_twins( $self->{requires} )          if $self->{twins};
 
 
 	# Run a second time if we found any twins, this will sort out twins and triplets etc
@@ -387,7 +387,7 @@ sub _process_found_modules {
 			when (/Mojo/sxm) {
 
 				# $self->_check_mojo_core($module);
-				if ( $self->{mojo} ){				
+				if ( $self->{mojo} ) {
 					$module = 'Mojolicious' if $self->_check_mojo_core($module);
 				}
 				## $self->_check_mojo_core($module, $require_type);
@@ -404,25 +404,6 @@ sub _process_found_modules {
 		next if defined $self->{test_requires}{$module};
 
 		p $module if $self->{debug};
-
-		# hash with core modules to process regardless
-		my $ignore_core = { 'File::Path' => 1, 'Test::More' => 1, };
-		if ( !$ignore_core->{$module} ) {
-
-			# next if Module::CoreList->first_release($module);
-			if ( Module::CoreList->first_release($module) ) {
-
-				# Skip if we are not interested in core modules
-				next if !$self->{core};
-
-				# Assign a temp value to indicate a core module
-				if ( $self->{core} && !$self->{zero} ) {
-					$self->{$require_type}{$module} = 'core';
-				} elsif ( $self->{core} && $self->{zero} ) {
-					$self->{$require_type}{$module} = 0;
-				}
-			}
-		}
 
 		$self->_store_modules( $require_type, $module );
 	}
@@ -442,14 +423,43 @@ sub _store_modules {
 	given ($version) {
 
 		when ('!mcpan') {
-			$self->{$require_type}{$module} = '!mcpan' if not defined $self->{$require_type}{$module};
+			$self->{$require_type}{$module} = '!mcpan';
+		}
+		when ( 0 || 'core' ) {
+			$self->{$require_type}{$module} = $version if $self->{core};
 		}
 		default {
-			$self->{$require_type}{$module} = $version;
+			if ( $self->_is_core_module($module) ) {
+				$self->{$require_type}{$module} = $version if ( $self->{dual_life} || $self->{core} );
+			} else {
+				$self->{$require_type}{$module} = $version;
+			}
 		}
 	}
 
 	return;
+}
+
+#######
+# composed method _is_core_module
+#######
+sub _is_core_module {
+	my $self   = shift;
+	my $module = shift;
+
+	# hash with core modules to process regardless
+	my $ignore_core = { 'File::Path' => 1, 'Test::More' => 1, };
+	if ( !$ignore_core->{$module} ) {
+
+		# next if Module::CoreList->first_release($module);
+		if ( Module::CoreList->first_release($module) ) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+
+	return 0;
 }
 
 #######
@@ -541,7 +551,7 @@ sub remove_twins {
 			# Test for same version number
 			if ( $required_ref->{ $sorted_modules[ $n - 1 ] } eq $required_ref->{ $sorted_modules[$n] } ) {
 
-				if ( $self->{twins} ) {
+				if ( $self->{verbose} ) {
 					print "\n";
 					say 'i have found twins';
 					say $dum_name . ' ('
@@ -560,7 +570,7 @@ sub remove_twins {
 
 					#Check parent version against a twins version
 					if ( $version eq $required_ref->{ $sorted_modules[$n] } ) {
-						say $dum_parient . ' -> ' . $version . ' is the parent of these twins' if $self->{twins};
+						say $dum_parient . ' -> ' . $version . ' is the parent of these twins' if $self->{verbose};
 						$required_ref->{$dum_parient} = $version;
 						$self->{found_twins} = 1;
 					}
@@ -576,8 +586,8 @@ sub remove_twins {
 # _check_mojo_core
 #######
 sub _check_mojo_core {
-	my $self        = shift;
-	my $mojo_module = shift;
+	my $self         = shift;
+	my $mojo_module  = shift;
 	my $require_type = shift;
 
 
@@ -603,7 +613,7 @@ sub _check_mojo_core {
 		return 1;
 	} elsif ( defined $mojo_module_ver ) {
 		if ( $mojo_ver == $mojo_module_ver ) {
-		##	$self->{$require_type}{'Mojolicious'} = $mojo_ver if not $self->{'requires'}{'Mojolicious'};
+			##	$self->{$require_type}{'Mojolicious'} = $mojo_ver if not $self->{'requires'}{'Mojolicious'};
 			return 1;
 		}
 	} else {
@@ -656,7 +666,7 @@ sub get_module_version {
 				# This is where we add a dist version to a nacked module
 				$cpan_version = $mod->{version_numified};
 				$found        = 1;
-				if ( $self->{twins} or $self->{noisy_children} ){ 
+				if ( $self->{twins} or $self->{noisy_children} ) {
 					$self->mod_in_dist( $dist, $module, $require_type, $mod->{version_numified} ) if $require_type;
 				}
 			}
@@ -668,6 +678,7 @@ sub get_module_version {
 	};
 	return $cpan_version;
 }
+
 #######
 # composed method
 #######
