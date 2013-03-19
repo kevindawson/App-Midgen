@@ -47,33 +47,35 @@ if (-e $midgenrc) {
 use Getopt::Long;
 Getopt::Long::Configure('bundling');
 use Pod::Usage;
-my $help = 0;
-my $core = $config->{core} || 0;    # show perl core modules as well
+my $help      = 0;
+my $core      = $config->{core} || 0;         # show perl core modules as well
+my $dual_life = $config->{dual_life} || 0;    # show dule-life modules
 my $verbose
   = $config->{verbose} || 0;    # option variable with default value (false)
 my @format = $config->{format} || 'dsl';
 my $mojo   = $config->{mojo}   || 0;       # show the Mojo detection
-my $noisy_children  = $config->{noisy_children}  || 0;       # unwanted noisy children
-my $twins  = $config->{twins}  || 0;       # unwanted twins
-my $zero   = $config->{zero}   || 0;       # display 0 instead of core
-my $debug = 0;                             # lots of good stuff here :)
-my $write = 0;                             # write current configuration
+my $noisy_children = $config->{noisy_children} || 0;  # unwanted noisy children
+my $twins          = $config->{twins}          || 0;  # unwanted twins
+my $zero  = $config->{zero} || 0;    # display 0 instead of core
+my $debug = 0;                       # lots of good stuff here :)
+my $write = 0;                       # write current configuration
 GetOptions(
-  'verbose|v!' => \$verbose,
-  'core|c!'    => \$core,
-  'help|h|?'   => \$help,
-  'mojo|m!'    => \$mojo,
-  'format|f=s' => \@format,
-  'twins|t!'   => \$twins,
-  'noisy_children|n!'   => \$noisy_children,
-  'zero|z!'    => \$zero,
-  'debug|d'    => sub {
-    $core    = 1;
-    $verbose = 1;
-    $mojo    = 1;
-    $noisy_children   = 1;
-    $twins   = 1;
-    $debug   = 1;
+  'verbose|v!'        => \$verbose,
+  'core|c!'           => \$core,
+  'dual_life|l!'      => \$dual_life,
+  'help|h|?'          => \$help,
+  'mojo|m!'           => \$mojo,
+  'format|f=s'        => \@format,
+  'twins|t!'          => \$twins,
+  'noisy_children|n!' => \$noisy_children,
+  'zero|z!'           => \$zero,
+  'debug|d'           => sub {
+    $core           = 1;
+    $verbose        = 1;
+    $mojo           = 1;
+    $noisy_children = 1;
+    $twins          = 1;
+    $debug          = 1;
   },
   'write|w' => \$write,
 ) or pod2usage(2);
@@ -87,14 +89,15 @@ say 'Running midgen v' . $VERSION;
 say 'Stamped -> ' . gmstamp($BASETIME);
 
 my $midgen = App::Midgen->new(
-  core    => $core,
-  verbose => $verbose,
-  format  => $format[-1],
-  mojo    => $mojo,
-  noisy_children   => $noisy_children,
-  twins   => $twins,
-  zero    => $zero,
-  debug   => $debug,
+  core           => $core,
+  dual_life      => $dual_life,
+  verbose        => $verbose,
+  format         => $format[-1],
+  mojo           => $mojo,
+  noisy_children => $noisy_children,
+  twins          => $twins,
+  zero           => $zero,
+  debug          => $debug,
 );
 
 p $midgen if $debug;
@@ -107,13 +110,14 @@ $midgen->run();
 if ($write) {
   my $midgenrc_data = $json->encode(
     {
-      core    => $core,
-      verbose => $verbose,
-      format  => $format[-1],
-      mojo    => $mojo,
-      noisy_children   => $noisy_children,
-      twins   => $twins,
-      zero    => $zero,
+      core           => $core,
+      dual_life      => $dual_life,
+      verbose        => $verbose,
+      format         => $format[-1],
+      mojo           => $mojo,
+      noisy_children => $noisy_children,
+      twins          => $twins,
+      zero           => $zero,
     }
   );
 
