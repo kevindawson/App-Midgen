@@ -73,18 +73,6 @@ has 'format' => (
 	required => 1,
 );
 
-has 'padre' => (
-	is  => 'ro',
-	isa => sub {
-		croak "$_[0] this is not a Bool"
-			unless is_Bool( $_[0] );
-	},
-	default => sub {
-		0;
-	},
-	required => 1,
-);
-
 has 'verbose' => (
 	is  => 'ro',
 	isa => sub {
@@ -212,8 +200,6 @@ none as such, but we do have
 =item * experimental
 
 =item * format
-
-=item * padre
 
 =item * verbose
 
