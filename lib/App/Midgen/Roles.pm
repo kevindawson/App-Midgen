@@ -50,19 +50,7 @@ has 'debug' => (
 	required => 1,
 );
 
-has 'mojo' => (
-	is  => 'ro',
-	isa => sub {
-		croak "$_[0] this is not a Bool"
-			unless is_Bool( $_[0] );
-	},
-	default => sub {
-		0;
-	},
-	required => 1,
-);
-
-has 'noisy_children' => (
+has 'experimental' => (
 	is  => 'ro',
 	isa => sub {
 		croak "$_[0] this is not a Bool"
@@ -98,18 +86,6 @@ has 'padre' => (
 );
 
 has 'verbose' => (
-	is  => 'ro',
-	isa => sub {
-		croak "$_[0] this is not a Bool"
-			unless is_Bool( $_[0] );
-	},
-	default => sub {
-		0;
-	},
-	required => 1,
-);
-
-has 'twins' => (
 	is  => 'ro',
 	isa => sub {
 		croak "$_[0] this is not a Bool"
@@ -231,15 +207,13 @@ none as such, but we do have
 
 =item * debug
 
-=item * mojo
+=item * dual_life
 
-=item * noisy_children
+=item * experimental
 
 =item * format
 
 =item * padre
-
-=item * twins
 
 =item * verbose
 

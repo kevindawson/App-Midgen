@@ -6,7 +6,7 @@ use warnings FATAL => 'all';
 use English qw( -no_match_vars ); # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Test::More tests => 34;
+use Test::More tests => 32;
 
 ######
 # let's check our subs/methods.
@@ -27,7 +27,7 @@ foreach my $subs (@subs) {
 }
 
 my @attributes = qw(
-	core verbose mojo noisy_children twins zero debug
+	core dual_life verbose experimental zero debug
 );
 my $midgen1 = App::Midgen->new();
 
@@ -37,23 +37,23 @@ foreach my $attribute (@attributes) {
 is( $midgen1->{format}, 'dsl', "default found format" );
 
 my $midgen2 = App::Midgen->new(
-	core           => 1,
-	verbose        => 1,
-	format  => 'mi',
-	mojo           => 1,
-	noisy_children => 1,
-	twins          => 1,
-	zero           => 1,
-	debug          => 1,
+	core         => 1,
+	dual_life    => 1,
+	verbose      => 1,
+	format       => 'mi',
+	experimental => 1,
+	zero         => 1,
+	debug        => 1,
 );
 App::Midgen->new();
 
 foreach my $attribute (@attributes) {
 	is( $midgen2->{$attribute}, 1, "defined found $attribute" );
 }
-is( $midgen2->{format}, 'mi', "defined found output_format" );
+is( $midgen2->{format}, 'mi', "defined found output format" );
 
 
 done_testing();
 
 __END__
+

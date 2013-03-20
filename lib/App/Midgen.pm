@@ -51,15 +51,15 @@ sub run {
 	$self->find_required_test_modules();
 
 
-	$self->remove_noisy_children( $self->{requires} ) if $self->{noisy_children};
-	$self->remove_twins( $self->{requires} )          if $self->{twins};
+	$self->remove_noisy_children( $self->{requires} ) if $self->{experimental};
+	$self->remove_twins( $self->{requires} )          if $self->{experimental};
 
 
 	# Run a second time if we found any twins, this will sort out twins and triplets etc
 	$self->remove_noisy_children( $self->{requires} ) if $self->{found_twins};
 
 	# Now we have switched to MetaCPAN-Api we can hunt for noisy children in test requires
-	$self->remove_noisy_children( $self->{test_requires} ) if $self->{noisy_children};
+	$self->remove_noisy_children( $self->{test_requires} ) if $self->{experimental};
 
 
 	$self->_output_main_body( 'requires',      $self->{requires} );
@@ -387,7 +387,7 @@ sub _process_found_modules {
 			when (/Mojo/sxm) {
 
 				# $self->_check_mojo_core($module);
-				if ( $self->{mojo} ) {
+				if ( $self->{experimental} ) {
 					$module = 'Mojolicious' if $self->_check_mojo_core($module);
 				}
 				## $self->_check_mojo_core($module, $require_type);
@@ -666,7 +666,7 @@ sub get_module_version {
 				# This is where we add a dist version to a nacked module
 				$cpan_version = $mod->{version_numified};
 				$found        = 1;
-				if ( $self->{twins} or $self->{noisy_children} ) {
+				if ( $self->{experimental} ) {
 					$self->mod_in_dist( $dist, $module, $require_type, $mod->{version_numified} ) if $require_type;
 				}
 			}
@@ -885,14 +885,15 @@ See L<midgen> for cmd line option info.
  
 =head1 DESCRIPTION
 
-This is an aid to present a packages module requirements by scanning 
+This is an aid to show you a packages module requirements by scanning 
 the package, 
-then displaying in a familiar format with the current version number 
+then display in a familiar format with the current version number 
 from MetaCPAN.
 
-This started out as a way of generating the core for a Module::Install::DSL Makefile.PL, 
-why DSL because it's nice and clean, 
-so now you can generate the contents and check when you want, 
+This started out as a way of generating the formatted contents for 
+a Module::Install::DSL Makefile.PL, 
+you can now see the dual-life and perl core modules as well, 
+this enables you to see which modules have been used, 
 yes it's another L<PPI> powered app.
 
 All output goes to STDOUT, so you can use it as you see fit.
@@ -914,7 +915,7 @@ don't we want our users to use the current version,
 so should we not by default do the same with others Modules. 
 Thus we always show the current version number, regardless.>
 
-We also display some other info to complement the modules we have found.
+We also display some other info to complement this package. 
 
 For more info and sample output see L<wiki|https://github.com/kevindawson/App-Midgen/wiki>
 
