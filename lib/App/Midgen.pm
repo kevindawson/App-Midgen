@@ -386,18 +386,14 @@ sub _process_found_modules {
 			}
 			when (/Mojo/sxm) {
 
-				# $self->_check_mojo_core($module);
-				if ( $self->{experimental} ) {
+					if ( $self->{experimental} ) {
 					$module = 'Mojolicious' if $self->_check_mojo_core($module);
 				}
-				## $self->_check_mojo_core($module, $require_type);
 			}
-		}
-
-		if ( $module =~ /^Padre/sxm && $module !~ /^Padre::Plugin::/sxm && !$self->{padre} ) {
-
-			# mark all Padre core as just Padre, for plugins
-			$module = 'Padre';
+			when (/^Padre/sxm ){
+				# mark all Padre core as just Padre, for plugins
+				$module = 'Padre';
+			}
 		}
 
 		next if defined $self->{requires}{$module};
