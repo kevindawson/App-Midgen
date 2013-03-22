@@ -16,7 +16,7 @@ my @subs = qw(
 	find_required_modules find_required_test_modules
 	first_package_name remove_noisy_children mcpan
 	remove_twins found_twins run min_version output
-	package_name package_names padre ppi_document
+	package_name package_names numify ppi_document
 	scanner get_module_version mod_in_dist
 );
 
