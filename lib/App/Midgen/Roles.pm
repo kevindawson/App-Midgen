@@ -73,6 +73,12 @@ has 'format' => (
 	required => 1,
 );
 
+has 'numify' => (
+	is      => 'rw',
+	isa     => Bool,
+	lazy    => 1,
+);
+
 has 'verbose' => (
 	is  => 'ro',
 	isa => sub {
@@ -113,13 +119,19 @@ has 'package_names' => (
 	lazy => 1,
 );
 
-has 'requires' => (
+has 'package_requires' => (
 	is   => 'rw',
 	isa  => HashRef,
 	lazy => 1,
 );
 
 has 'test_requires' => (
+	is   => 'rw',
+	isa  => HashRef,
+	lazy => 1,
+);
+
+has 'modules' => (
 	is   => 'rw',
 	isa  => HashRef,
 	lazy => 1,
