@@ -23,6 +23,7 @@ use PPI;
 use Perl::MinimumVersion;
 use Perl::PrereqScanner;
 use Scalar::Util qw(looks_like_number);
+use Term::ANSIColor qw( colored colorstrip );
 use Try::Tiny;
 
 use constant {
@@ -50,19 +51,21 @@ sub run {
 	$self->find_required_modules();
 	$self->find_required_test_modules();
 
+	## p $self->{modules} if $self->{experimental};
+	# p $self->{package_requires};
 
-	$self->remove_noisy_children( $self->{requires} ) if $self->{experimental};
-	$self->remove_twins( $self->{requires} )          if $self->{experimental};
+	$self->remove_noisy_children( $self->{package_requires} ) if $self->{experimental};
+	$self->remove_twins( $self->{package_requires} )          if $self->{experimental};
 
 
 	# Run a second time if we found any twins, this will sort out twins and triplets etc
-	$self->remove_noisy_children( $self->{requires} ) if $self->{found_twins};
+	$self->remove_noisy_children( $self->{package_requires} ) if $self->{found_twins};
 
 	# Now we have switched to MetaCPAN-Api we can hunt for noisy children in test requires
 	$self->remove_noisy_children( $self->{test_requires} ) if $self->{experimental};
 
 
-	$self->_output_main_body( 'requires',      $self->{requires} );
+	$self->_output_main_body( 'requires',      $self->{package_requires} );
 	$self->_output_main_body( 'test_requires', $self->{test_requires} );
 	$self->_output_main_body( 'recommends',    $self->{recommends} );
 
@@ -83,6 +86,10 @@ sub _initialise {
 	$self->{output}  = App::Midgen::Output->new();
 	$self->{scanner} = Perl::PrereqScanner->new();
 	$self->{mcpan}   = MetaCPAN::API->new() || croak "arse: $ERRNO";
+	$self->{numify} = 0;
+
+	$ENV{ANSI_COLORS_DISABLED} = 1 if not $self->{experimental};
+
 
 	return;
 }
@@ -201,7 +208,7 @@ sub _find_makefile_requires {
 	my $prereqs = $self->{scanner}->scan_ppi_document( $self->{ppi_document} );
 	my @modules = $prereqs->required_modules;
 
-	$self->_process_found_modules( 'requires', \@modules );
+	$self->_process_found_modules( 'package_requires', \@modules );
 	return;
 }
 
@@ -288,7 +295,7 @@ sub _recommends_in_single_quote {
 				p $module if $self->{debug};
 
 				# if we have found it already ignore it - or - contains ;|=
-				if ( !$self->{requires}{$module} && !$self->{test_requires}{$module} && $module !~ /[;|=]/ ) {
+				if ( !$self->{package_requires}{$module} && !$self->{test_requires}{$module} && $module !~ /[;|=]/ ) {
 					push @modules, $module;
 				}
 
@@ -304,7 +311,7 @@ sub _recommends_in_single_quote {
 				p $module if $self->{debug};
 
 				# if we have found it already ignore it - or - contains ;|=
-				if ( !$self->{requires}{$module} && !$self->{test_requires}{$module} && $module !~ /[;|=]/ ) {
+				if ( !$self->{package_requires}{$module} && !$self->{test_requires}{$module} && $module !~ /[;|=]/ ) {
 					push @modules, $module;
 				}
 
@@ -339,7 +346,7 @@ sub _recommends_in_double_quote {
 				p $module if $self->{debug};
 
 				# if we have found it already ignore it
-				if ( !$self->{requires}{$module} && !$self->{test_requires}{$module} ) {
+				if ( !$self->{package_requires}{$module} && !$self->{test_requires}{$module} ) {
 					push @modules, $module;
 				}
 			}
@@ -396,9 +403,10 @@ sub _process_found_modules {
 			}
 		}
 
-		next if defined $self->{requires}{$module};
-		next if defined $self->{test_requires}{$module};
-
+		## next if defined $self->{package_requires}{$module};
+		## next if defined $self->{test_requires}{$module};
+		$self->{modules}{$module}{count} += 1 ; 
+		next if defined $self->{modules}{$module}{location}; 
 		p $module if $self->{debug};
 
 		$self->_store_modules( $require_type, $module );
@@ -419,16 +427,26 @@ sub _store_modules {
 	given ($version) {
 
 		when ('!mcpan') {
-			$self->{$require_type}{$module} = '!mcpan';
+			$self->{$require_type}{$module} = colored( '!mcpan', 'magenta' );
+			$self->{modules}{$module}{location} = $require_type;
+			$self->{modules}{$module}{version} = '!mcpan';
 		}
 		when ( 0 || 'core' ) {
 			$self->{$require_type}{$module} = $version if $self->{core};
+			$self->{modules}{$module}{location} = $require_type;
+			$self->{modules}{$module}{version} = $version if $self->{core};
 		}
 		default {
 			if ( $self->_in_corelist($module) ) {
-				$self->{$require_type}{$module} = $version if ( $self->{dual_life} || $self->{core} );
+				$self->{$require_type}{$module} = colored( $version, 'bright_yellow' ) if ( $self->{dual_life} || $self->{core} );
+				$self->{modules}{$module}{location} = $require_type if ( $self->{dual_life} || $self->{core} );
+				$self->{modules}{$module}{version} = $version if ( $self->{dual_life} || $self->{core} );
+				$self->{modules}{$module}{dual_life} = 1;
 			} else {
-				$self->{$require_type}{$module} = $version;
+				$self->{$require_type}{$module} = colored( $version, 'yellow' );
+				$self->{$require_type}{$module} = colored( version->parse($version)->numify, 'yellow' ) if $self->{numify};
+				$self->{modules}{$module}{location} = $require_type;
+				$self->{modules}{$module}{version} = $version;
 			}
 		}
 	}
@@ -449,6 +467,7 @@ sub _in_corelist {
 	if ( !$ignore_core->{$module} ) {
 
 		if ( Module::CoreList->first_release($module) ) {
+			$self->{modules}{$module}{corelist} = 1;
 			return 1;
 		} else {
 			return 0;
@@ -487,7 +506,7 @@ sub remove_noisy_children {
 			if ( $self->degree_separation( $parent_name, $child_name ) == 1 ) {
 
 				# Test for same version number
-				if ( $required_ref->{ $sorted_modules[ $n - 1 ] } eq $required_ref->{ $sorted_modules[$n] } ) {
+				if ( colorstrip($required_ref->{ $sorted_modules[ $n - 1 ] }) eq colorstrip($required_ref->{ $sorted_modules[$n] }) ) {
 					if ( $self->{verbose} ) {
 						print "\n";
 						say 'delete miscreant noisy child '
@@ -687,26 +706,25 @@ sub mod_in_dist {
 
 	$dist =~ s/-/::/g;
 	if ( $module =~ /$dist/ ) {
-
+		# p $dist;
 		if ( $self->degree_separation( $dist, $module ) > 1 ) {
 			print 'Warning: this is out side of my scope, manual intervention required -> ';
 			print "module - $module  -> in dist - $dist \n";
 		}
 
 		given ($require_type) {
-			when ('requires') {
+			when ('package_requires') {
 
 				# Add a what should be a parent
-				$self->{$require_type}{$dist} = $version
-					if !$self->{$require_type}{$dist};
+				$self->{$require_type}{$dist} = colored( $version, 'bright_cyan' ) if !$self->{$require_type}{$dist};
 			}
 			when ('test_requires') {
 
-				next if $self->{requires}{$dist};
-				$self->{$require_type}{$dist} = $version
-					if !$self->{$require_type}{$dist};
+				next if $self->{package_requires}{$dist};
+				$self->{$require_type}{$dist} = colored( $version, 'bright_cyan' ) if !$self->{$require_type}{$dist};
 			}
 		}
+		## $self->{found_twins} = 1;
 	}
 
 	return;
@@ -773,21 +791,20 @@ sub _output_header {
 
 	given ( $self->{format} ) {
 
+		when ('dsl') {
+			$self->{output}->header_dsl( $self->{package_name}, $self->get_module_version('inc::Module::Install::DSL') );
+		}
 		when ('mi') {
 			$self->{output}->header_mi( $self->{package_name}, $self->get_module_version('inc::Module::Install') );
 		}
-		when ('dsl') {
-			$self->{output}
-				->header_dsl( $self->{package_name}, $self->get_module_version('inc::Module::Install::DSL') );
-		}
-		when ('build') {
-			$self->{output}->header_build( $self->{package_name} );
+		when ('dist') {
+			$self->{output}->header_dist( $self->{package_name} );
 		}
 		when ('dzil') {
 			$self->{output}->header_dzil( $self->{package_name} );
 		}
-		when ('dist') {
-			$self->{output}->header_dist( $self->{package_name} );
+		when ('build') {
+			$self->{output}->header_build( $self->{package_name} );
 		}
 	}
 	return;
@@ -802,20 +819,20 @@ sub _output_main_body {
 
 	given ( $self->{format} ) {
 
-		when ('mi') {
-			$self->{output}->body_mi( $title, $required_ref );
-		}
 		when ('dsl') {
 			$self->{output}->body_dsl( $title, $required_ref );
 		}
-		when ('build') {
-			$self->{output}->body_build( $title, $required_ref );
+		when ('mi') {
+			$self->{output}->body_mi( $title, $required_ref );
+		}
+		when ('dist') {
+			$self->{output}->body_dist( $title, $required_ref );
 		}
 		when ('dzil') {
 			$self->{output}->body_dzil( $title, $required_ref );
 		}
-		when ('dist') {
-			$self->{output}->body_dist( $title, $required_ref );
+		when ('build') {
+			$self->{output}->body_build( $title, $required_ref );
 		}
 	}
 
@@ -829,20 +846,20 @@ sub _output_footer {
 
 	given ( $self->{format} ) {
 
-		when ('mi') {
-			$self->{output}->footer_mi( $self->{package_name} );
-		}
 		when ('dsl') {
 			$self->{output}->footer_dsl( $self->{package_name} );
 		}
-		when ('build') {
-			$self->{output}->footer_build( $self->{package_name} );
+		when ('mi') {
+			$self->{output}->footer_mi( $self->{package_name} );
+		}
+		when ('dist') {
+			$self->{output}->footer_dist( $self->{package_name} );
 		}
 		when ('dzil') {
 			$self->{output}->footer_dzil( $self->{package_name} );
 		}
-		when ('dist') {
-			$self->{output}->footer_dist( $self->{package_name} );
+		when ('build') {
+			$self->{output}->footer_build( $self->{package_name} );
 		}
 	}
 
