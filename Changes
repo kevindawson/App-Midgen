@@ -1,8 +1,12 @@
 Revision history for App-Midgen
 
-{{$NEXT}}
+0.17_03 2013-03-23
  - spelling mauke++
-
+ - refactor option names, inspired by mauke++
+ - changed default output, no extra processing, only distribution version
+   for modules without a version number mst++
+ - All extra passing is now done in via experimental option
+ - Add color to experimental output only via Term-ANSIColor
 
 0.16 2013-03-17
  - Fix bug in code - Use of implicit split to @_ is deprecated
@@ -11,11 +15,11 @@ Revision history for App-Midgen
  - Silly mistake, fix version number, removed trayling zeros
 
 0.14 2013-03-17
- - Now using Perl::PrereqScanner to do most of the grunt work as pointed
-   out by Mithaldu++ daxim++ thanks guys.
- - Switche to using MetaCPAN due to a write issue with CPAN, neilb++
- - As a side affect of MetaCPAN we no longer have an 'undef' version type,
-   we also run noisy children against test requires
+ - Now using Perl-PrereqScanner to do most of the grunt work as pointed out
+   by Mithaldu++ daxim++ thanks guys.
+ - Switche to using MetaCPAN-API due to a write issue with CPAN, neilb++
+ - As a side affect of MetaCPAN-API we no longer have an 'undef' version
+   type, we also run noisy children against test requires
  - All version numbers are now numified
  - Added a time stamp, as we lost the free one from CPAN 
 
