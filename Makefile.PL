@@ -13,7 +13,7 @@ requires File::Spec             3.4
 requires Getopt::Long           2.39
 requires JSON::Tiny             0.25
 requires MetaCPAN::API          0.43
-requires Module::CoreList       2.84
+requires Module::CoreList       2.85
 requires Moo                    1.001
 requires MooX::Types::MooseLike 0.23
 requires PPI                    1.215
@@ -21,9 +21,10 @@ requires Perl::MinimumVersion   1.32
 requires Perl::PrereqScanner    1.015
 requires Pod::Usage             1.61
 requires Scalar::Util           1.27
+requires Term::ANSIColor        4.02
 requires Time::Stamp            1.3
 requires Try::Tiny              0.12
-requires constant               1.25
+requires constant               1.27
 requires version                0.9902
 
 test_requires Test::More 0.98
