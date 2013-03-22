@@ -10,6 +10,8 @@ our $VERSION = '0.17_02';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
+use Term::ANSIColor qw( :constants colored );
+
 # use Carp;
 # use Data::Printer { caller_info => 1, colored => 1, };
 use constant { BLANK => qq{ }, NONE => q{}, THREE => 3, };
@@ -26,7 +28,7 @@ sub header_dsl {
 	$package_name =~ s{::}{/}g;
 
 	print "\n";
-	say 'use inc::Module::Install::DSL ' . $mi_ver . q{;};
+	say 'use inc::Module::Install::DSL ' . colored($mi_ver, 'yellow') . q{;};
 	print "\n";
 	if ( $package_name ne NONE ) {
 		say 'all_from lib/' . $package_name . '.pm';
@@ -56,9 +58,11 @@ sub body_dsl {
 	foreach my $module_name ( sort keys %{$required_ref} ) {
 
 		if ( $module_name =~ /^Win32/sxm ) {
-			printf "%s %-*s %s if win32\n", $title, $pm_length, $module_name, $required_ref->{$module_name};
+			printf "%s %-*s %s %s\n", $title, $pm_length, $module_name, $required_ref->{$module_name}, colored('if win32', 'bright_green') ;
 		} else {
 			printf "%s %-*s %s\n", $title, $pm_length, $module_name, $required_ref->{$module_name};
+			# printf "%s %-*s %s\n", $title, $pm_length, $module_name, colored( $required_ref->{$module_name}, 'green' );
+
 		}
 	}
 	print "\n";
@@ -72,7 +76,7 @@ sub footer_dsl {
 	my $package_name = shift // NONE;
 	$package_name =~ s{::}{-}g;
 
-	print "\n";
+	print BRIGHT_BLACK "\n";
 	say '# ToDo you should consider the following';
 	say "homepage    https://github.com/.../$package_name";
 	say "bugtracker  https://github.com/.../$package_name/issues";
@@ -98,7 +102,7 @@ sub footer_dsl {
 		print "\n";
 	}
 
-	print "\n";
+	print CLEAR "\n";
 
 	return;
 }
@@ -113,7 +117,7 @@ sub header_mi {
 	my $mi_ver       = shift // NONE;
 
 	print "\n";
-	say 'use inc::Module::Install ' . $mi_ver . q{;};
+	say 'use inc::Module::Install ' . colored($mi_ver, 'yellow') . q{;};
 	print "\n";
 	if ( $package_name ne NONE ) {
 		$package_name =~ s{::}{-}g;
@@ -165,7 +169,7 @@ sub footer_mi {
 	my $package_name = shift // NONE;
 	$package_name =~ s{::}{-}g;
 
-	print "\n";
+	print BRIGHT_BLACK "\n";
 	say '# ToDo you should consider the following';
 	say "homepage    'https://github.com/.../$package_name';";
 	say "bugtracker  'https://github.com/.../$package_name/issues';";
@@ -198,7 +202,7 @@ sub footer_mi {
 	}
 
 	say 'WriteAll';
-	print "\n";
+	print CLEAR "\n";
 
 	return;
 }
@@ -317,7 +321,7 @@ sub footer_dzil {
 	my $package_name = shift // NONE;
 	$package_name =~ s{::}{-}g;
 
-	print "\n";
+	print BRIGHT_BLACK "\n";
 	say '# ToDo you should consider the following';
 	say "'META_MERGE' => {";
 	say "\t'resources' => {";
@@ -330,7 +334,7 @@ sub footer_dzil {
 	say "\t\t'Fred Bloggs <fred\@bloggs.org>',";
 	say "\t],";
 	say "},";
-	print "\n";
+	print CLEAR "\n";
 
 	return;
 }
@@ -392,7 +396,7 @@ sub footer_dist {
 	my $package_name = shift // NONE;
 	$package_name =~ s{::}{-}g;
 
-	print "\n";
+	print BRIGHT_BLACK "\n";
 	my @no_index = $self->no_index;
 	if (@no_index) {
 		say '[MetaNoIndex]';
@@ -431,7 +435,7 @@ sub footer_dist {
 	say '[Meta::Contributors]';
 	say 'contributor = brian d foy (ADOPTME) <brian.d.foy@gmail.com>';
 	say 'contributor = Fred Bloggs <fred@bloggs.org>';
-	print "\n";
+	print CLEAR "\n";
 
 	return;
 }
