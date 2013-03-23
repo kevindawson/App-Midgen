@@ -73,12 +73,6 @@ has 'format' => (
 	required => 1,
 );
 
-has 'numify' => (
-	is      => 'rw',
-	isa     => Bool,
-	lazy    => 1,
-);
-
 has 'verbose' => (
 	is  => 'ro',
 	isa => sub {
@@ -106,6 +100,12 @@ has 'zero' => (
 #######
 # some encapsulated attributes
 #######
+
+has 'numify' => (
+	is      => 'rw',
+	isa     => Bool,
+	lazy    => 1,
+);
 
 has 'package_name' => (
 	is   => 'rw',
