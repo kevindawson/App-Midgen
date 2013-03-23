@@ -61,8 +61,6 @@ sub body_dsl {
 			printf "%s %-*s %s %s\n", $title, $pm_length, $module_name, $required_ref->{$module_name}, colored('if win32', 'bright_green') ;
 		} else {
 			printf "%s %-*s %s\n", $title, $pm_length, $module_name, $required_ref->{$module_name};
-			# printf "%s %-*s %s\n", $title, $pm_length, $module_name, colored( $required_ref->{$module_name}, 'green' );
-
 		}
 	}
 	print "\n";
@@ -82,7 +80,7 @@ sub footer_dsl {
 	say "bugtracker  https://github.com/.../$package_name/issues";
 	say "repository  git://github.com/.../$package_name.git";
 
-	print "\n";
+	print CLEAR "\n";
 	if ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'share' ) ) {
 		say 'install_share';
 		print "\n";
@@ -102,7 +100,7 @@ sub footer_dsl {
 		print "\n";
 	}
 
-	print CLEAR "\n";
+	print "\n";
 
 	return;
 }
@@ -151,7 +149,7 @@ sub body_mi {
 
 		if ( $module_name =~ /^Win32/sxm ) {
 			my $sq_key = "'$module_name'";
-			printf "%s %-*s => '%s' if win32;\n", $title, $pm_length + 2, $sq_key, $required_ref->{$module_name};
+			printf "%s %-*s => '%s' %s;\n", $title, $pm_length + 2, $sq_key, $required_ref->{$module_name}, colored('if win32', 'bright_green') ;
 		} else {
 			my $sq_key = "'$module_name'";
 			printf "%s %-*s => '%s';\n", $title, $pm_length + 2, $sq_key, $required_ref->{$module_name};
@@ -181,6 +179,7 @@ sub footer_mi {
 	say "\t\t'Fred Bloggs <fred\@bloggs.org>',";
 	say "\t],";
 	say ");\n";
+	print CLEAR;
 
 	if ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'share' ) ) {
 		say 'install_share;';
@@ -202,7 +201,7 @@ sub footer_mi {
 	}
 
 	say 'WriteAll';
-	print CLEAR "\n";
+	print "\n";
 
 	return;
 }
@@ -396,7 +395,7 @@ sub footer_dist {
 	my $package_name = shift // NONE;
 	$package_name =~ s{::}{-}g;
 
-	print BRIGHT_BLACK "\n";
+	print "\n";
 	my @no_index = $self->no_index;
 	if (@no_index) {
 		say '[MetaNoIndex]';
@@ -422,7 +421,7 @@ sub footer_dist {
 		print "\n";
 	}
 
-	say '# ToDo you should consider the following';
+	say BRIGHT_BLACK '# ToDo you should consider the following';
 	say '[MetaResources]';
 	say "homepage          = https://github.com/.../$package_name";
 	say "bugtracker.web    = https://github.com/.../$package_name/issues";
