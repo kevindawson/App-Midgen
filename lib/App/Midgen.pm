@@ -51,8 +51,7 @@ sub run {
 	$self->find_required_modules();
 	$self->find_required_test_modules();
 
-	## p $self->{modules} if $self->{experimental};
-	# p $self->{package_requires};
+	p $self->{modules} if $self->{experimental};
 
 	$self->remove_noisy_children( $self->{package_requires} ) if $self->{experimental};
 	$self->remove_twins( $self->{package_requires} )          if $self->{experimental};
@@ -86,10 +85,7 @@ sub _initialise {
 	$self->{output}  = App::Midgen::Output->new();
 	$self->{scanner} = Perl::PrereqScanner->new();
 	$self->{mcpan}   = MetaCPAN::API->new() || croak "arse: $ERRNO";
-	$self->{numify} = 0;
-
-	$ENV{ANSI_COLORS_DISABLED} = 1 if not $self->{experimental};
-
+	$self->{numify}  = 0;
 
 	return;
 }
@@ -391,13 +387,15 @@ sub _process_found_modules {
 				# don't include our own test packages here
 				next;
 			}
-			when (/Mojo/sxm) {
 
-					if ( $self->{experimental} ) {
-					$module = 'Mojolicious' if $self->_check_mojo_core($module);
-				}
-			}
-			when (/^Padre/sxm ){
+			# when (/Mojo/sxm) {
+
+			# if ( $self->{experimental} ) {
+			# next if $self->_check_mojo_core($module, $require_type);
+			# }
+			# }
+			when (/^Padre/sxm) {
+
 				# mark all Padre core as just Padre, for plugins
 				$module = 'Padre';
 			}
@@ -405,8 +403,8 @@ sub _process_found_modules {
 
 		## next if defined $self->{package_requires}{$module};
 		## next if defined $self->{test_requires}{$module};
-		$self->{modules}{$module}{count} += 1 ; 
-		next if defined $self->{modules}{$module}{location}; 
+		$self->{modules}{$module}{count} += 1;
+		next if defined $self->{modules}{$module}{location};
 		p $module if $self->{debug};
 
 		$self->_store_modules( $require_type, $module );
@@ -423,13 +421,14 @@ sub _store_modules {
 	my $module       = shift;
 	p $module if $self->{debug};
 
+	$self->_in_corelist($module) if not defined $self->{modules}{$module}{corelist};
 	my $version = $self->get_module_version( $module, $require_type );
 	given ($version) {
 
 		when ('!mcpan') {
 			$self->{$require_type}{$module} = colored( '!mcpan', 'magenta' );
 			$self->{modules}{$module}{location} = $require_type;
-			$self->{modules}{$module}{version} = '!mcpan';
+			$self->{modules}{$module}{version}  = '!mcpan';
 		}
 		when ( 0 || 'core' ) {
 			$self->{$require_type}{$module} = $version if $self->{core};
@@ -437,16 +436,19 @@ sub _store_modules {
 			$self->{modules}{$module}{version} = $version if $self->{core};
 		}
 		default {
-			if ( $self->_in_corelist($module) ) {
-				$self->{$require_type}{$module} = colored( $version, 'bright_yellow' ) if ( $self->{dual_life} || $self->{core} );
+			# if ( $self->_in_corelist($module) ) {
+			if ( $self->{modules}{$module}{corelist} ) {
+				$self->{$require_type}{$module} = colored( $version, 'bright_yellow' )
+					if ( $self->{dual_life} || $self->{core} );
 				$self->{modules}{$module}{location} = $require_type if ( $self->{dual_life} || $self->{core} );
-				$self->{modules}{$module}{version} = $version if ( $self->{dual_life} || $self->{core} );
+				$self->{modules}{$module}{version}  = $version      if ( $self->{dual_life} || $self->{core} );
 				$self->{modules}{$module}{dual_life} = 1;
 			} else {
 				$self->{$require_type}{$module} = colored( $version, 'yellow' );
-				$self->{$require_type}{$module} = colored( version->parse($version)->numify, 'yellow' ) if $self->{numify};
+				$self->{$require_type}{$module} = colored( version->parse($version)->numify, 'yellow' )
+					if $self->{numify};
 				$self->{modules}{$module}{location} = $require_type;
-				$self->{modules}{$module}{version} = $version;
+				$self->{modules}{$module}{version}  = $version;
 			}
 		}
 	}
@@ -461,6 +463,8 @@ sub _in_corelist {
 	my $self   = shift;
 	my $module = shift;
 
+	#return 1 if defined $self->{modules}{$module}{corelist};
+
 	# hash with core modules to process regardless
 	my $ignore_core = { 'File::Path' => 1, 'Test::More' => 1, };
 
@@ -470,6 +474,7 @@ sub _in_corelist {
 			$self->{modules}{$module}{corelist} = 1;
 			return 1;
 		} else {
+			$self->{modules}{$module}{corelist} = 0;
 			return 0;
 		}
 	}
@@ -506,7 +511,9 @@ sub remove_noisy_children {
 			if ( $self->degree_separation( $parent_name, $child_name ) == 1 ) {
 
 				# Test for same version number
-				if ( colorstrip($required_ref->{ $sorted_modules[ $n - 1 ] }) eq colorstrip($required_ref->{ $sorted_modules[$n] }) ) {
+				if ( colorstrip( $required_ref->{ $sorted_modules[ $n - 1 ] } ) eq
+					colorstrip( $required_ref->{ $sorted_modules[$n] } ) )
+				{
 					if ( $self->{verbose} ) {
 						print "\n";
 						say 'delete miscreant noisy child '
@@ -621,16 +628,11 @@ sub _check_mojo_core {
 		say $mojo_module . ' version ' . $mojo_module_ver;
 	}
 
-	# true if undef or version numbers match
-	# undef is true as Mojo is missing version numbers in all sub modules - Fing idiots
-
-	if ( $mojo_module_ver eq 'undef' ) {
+	if ( $mojo_ver == $mojo_module_ver ) {
+		$self->{$require_type}{'Mojolicious'} = colored( $mojo_module_ver, 'bright_blue' )
+			if !$self->{modules}{'Mojolicious'};
+		$self->{modules}{'Mojolicious'}{location} = $require_type;
 		return 1;
-	} elsif ( defined $mojo_module_ver ) {
-		if ( $mojo_ver == $mojo_module_ver ) {
-			##	$self->{$require_type}{'Mojolicious'} = $mojo_ver if not $self->{'requires'}{'Mojolicious'};
-			return 1;
-		}
 	} else {
 		return 0;
 	}
@@ -681,9 +683,11 @@ sub get_module_version {
 				# This is where we add a dist version to a nacked module
 				$cpan_version = $mod->{version_numified};
 				$found        = 1;
-				if ( $self->{experimental} ) {
-					$self->mod_in_dist( $dist, $module, $require_type, $mod->{version_numified} ) if $require_type;
-				}
+
+				#				if ( $self->{experimental} ) {
+				$self->mod_in_dist( $dist, $module, $require_type, $mod->{version_numified} ) if $require_type;
+
+				#				}
 			}
 		}
 	}
@@ -706,11 +710,8 @@ sub mod_in_dist {
 
 	$dist =~ s/-/::/g;
 	if ( $module =~ /$dist/ ) {
-		# p $dist;
-		if ( $self->degree_separation( $dist, $module ) > 1 ) {
-			print 'Warning: this is out side of my scope, manual intervention required -> ';
-			print "module - $module  -> in dist - $dist \n";
-		}
+
+		say "module - $module  -> in dist - $dist" if $self->{verbose};
 
 		given ($require_type) {
 			when ('package_requires') {
@@ -724,7 +725,7 @@ sub mod_in_dist {
 				$self->{$require_type}{$dist} = colored( $version, 'bright_cyan' ) if !$self->{$require_type}{$dist};
 			}
 		}
-		## $self->{found_twins} = 1;
+
 	}
 
 	return;
@@ -792,7 +793,8 @@ sub _output_header {
 	given ( $self->{format} ) {
 
 		when ('dsl') {
-			$self->{output}->header_dsl( $self->{package_name}, $self->get_module_version('inc::Module::Install::DSL') );
+			$self->{output}
+				->header_dsl( $self->{package_name}, $self->get_module_version('inc::Module::Install::DSL') );
 		}
 		when ('mi') {
 			$self->{output}->header_mi( $self->{package_name}, $self->get_module_version('inc::Module::Install') );
@@ -905,8 +907,8 @@ from MetaCPAN.
 
 This started out as a way of generating the formatted contents for 
 a Module::Install::DSL Makefile.PL, 
-you can now see the dual-life and perl core modules as well, 
-this enables you to see which modules have been used, 
+you can now see the B<dual-life> and B<perl core> modules as well, 
+this enables you to see which modules you have used, 
 yes it's another L<PPI> powered app.
 
 All output goes to STDOUT, so you can use it as you see fit.
@@ -915,7 +917,7 @@ All output goes to STDOUT, so you can use it as you see fit.
 
 =over 4
 
-=item * NN.nnnnnn we got the current version number from MetaCPAN (numify).
+=item * NN.nnnnnn we got the current version number from MetaCPAN.
 
 =item * 'core' indicates the module is a perl core module.
 
@@ -928,7 +930,7 @@ don't we want our users to use the current version,
 so should we not by default do the same with others Modules. 
 Thus we always show the current version number, regardless.>
 
-We also display some other info to complement this package. 
+We also display some other complementary information relevant to this package. 
 
 For more info and sample output see L<wiki|https://github.com/kevindawson/App-Midgen/wiki>
 
@@ -1039,7 +1041,7 @@ modify it under the same terms as Perl 5 itself.
 =head1 SEE ALSO
 
 L<Perl::PrereqScanner>,
-L<Module::Install::DSL>,
+L<Module::Install::DSL>
 
 =head1 DISCLAIMER OF WARRANTY
 
