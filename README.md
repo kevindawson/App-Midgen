@@ -67,17 +67,13 @@ _Food for thought, if we update our Modules, don't we want our users to use the 
          midgen -f dzil         # Dist::Zilla
          midgen -f dist         # dist.ini
 
-    --dual_life or -l
-        Shows modules that are in Perl core and CPAN, some modules have a
-        version number eg; constant, Carp
-
-         midgen -l
 
     --dual_life or -l
         Shows modules that are in Perl core and CPAN, some modules have a
         version number eg; constant, Carp
 
          midgen -l
+
 
     --core or -c
         Shows all modules that are in Perl core, including dual-life, some
@@ -85,10 +81,12 @@ _Food for thought, if we update our Modules, don't we want our users to use the 
 
          midgen -c
 
+
     --verbose or -v
         Show file names that we are checking, as we go
 
          midgen -v
+
 
     --experimental or -x
         This experimental feature turns on extra passing, that removes twins
@@ -98,11 +96,13 @@ _Food for thought, if we update our Modules, don't we want our users to use the 
 
          midgen -x
 
+
     --zero or z
         Use a '0' instead of 'core' for core module version number, suggest
         you incorporate it with core for maximum affect
 
          midgen -cz
+
 
     --write or -w
         you can now write your current options to ~/.midgenrc in JSON format
@@ -111,6 +111,7 @@ _Food for thought, if we update our Modules, don't we want our users to use the 
         negate an option, or you can edit/delete the file, your choice.
 
          midgen --no-z -w
+
 
     --debug or -d
         Provides a vast amount of output, relevant to development also
