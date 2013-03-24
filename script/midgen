@@ -164,7 +164,7 @@ Prints a help message and exits.
    --verbose        take a little peek as to what is going on
    --experimental   this feature under development
    --zero           show a 0 instead of core
-   --debug          provides vast amount of output, re self dev
+   --debug          relevant to self development
 
 =item B<--format or -f>
 
@@ -180,7 +180,7 @@ so you can check, copy n paste or select an alternative format as shown below.
 =item B<--dual_life or -l>
 
 Shows modules that are in Perl core and CPAN, 
-some modules have a version number eg; constant, Carp
+some modules have a version number eg; constant, Carp.
 
  midgen -l
 
@@ -188,13 +188,13 @@ some modules have a version number eg; constant, Carp
 
 Shows all modules that are in Perl core, 
 including dual-life, 
-some have a version of 0 eg; strict, English
+some have a version of 0 eg; strict, English.
 
  midgen -c
 
 =item B<--verbose or -v>
 
-Show file names that we are checking, as we go
+Show file names that we are checking, as we go.
 
  midgen -v
 
@@ -212,7 +212,7 @@ if so don't enable it.
 =item B<--zero or z>
 
 Use a '0' instead of 'core' for core module version number, 
-suggest you incorporate it with core for maximum affect
+suggest you incorporate it with core for maximum affect.
 
  midgen -cz
 
@@ -229,11 +229,9 @@ or you can edit/delete the file, your choice.
 =item B<--debug or -d>
 
 Provides a vast amount of output, relevant to development also enables 
-(core, verbose)
+(core, verbose), uses L<Data::Printer>.
 
-uses L<Data::Printer>
-
-suggest you consider redirecting STDERR when the debug option is used
+Suggest you consider redirecting STDERR when the debug option is used.
 
  midgen -d 2>debug.txt
 
