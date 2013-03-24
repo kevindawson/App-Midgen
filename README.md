@@ -3,12 +3,17 @@ App::Midgen
 
 Generate or Check the 'requires' and 'test requires' for Makefile.PL
 
-This started out as a way of generating the core for a Module::Install::DSL Makefile.PL, 
-why DSL because it's nice and clean, so now I can generate the contents when I want, 
-rather than as I add new use and require statments, and because adam kicked me :)
+This is an aid to show you a packages module requirements by scanning the package, 
+then display in a familiar format with the current version number from MetaCPAN.
 
+This started as a way of generating the formatted contents for a 
+Module::Install::DSL Makefile.PL, which has now grown to support other output 
+formats, as well as the ability to show dual-life and perl core modules, 
+This enables you to see which modules you have used,
 
-### Version 0.16
+All output goes to STDOUT, so you can use it as you see fit.
+
+### Version 0.18
 
 ## Synopsis
 
@@ -25,14 +30,13 @@ Now with a added Getopt --help or -?
     midgen [options]
 
     --help           brief help message
-    --output         change format
-    --core           show perl core modules
+    --format         change output format
+    --dual_life      show dual-life modules
+    --core           show all perl core modules
     --verbose        take a little peek as to what is going on
-    --mojo           show the Mojo catch as we find them
-    --noisy_children show them as we find them
-    --twins          show twins as we find them
+    --experimental   this feature under development
     --zero           show a 0 instead of core
-    --debug          lot's of stuff very
+    --debug          provides vast amount of output, re self dev
 
 
 ## Description
@@ -43,7 +47,7 @@ It try s to remove unwanted noise and duplication along the way.
 * Ignores all sub modules of current Module
 * Noisy Children parent A::B noisy Children A::B::C or A::B::D all with same version number.
 * Twins E::F::G and E::F::H and a parent E::F and re-test for noisy children, catching triplets along the way.
-* Mojolicious catch, mofphs Mojo::Base into Mojolicious
+
 
 _Food for thought, if we update our Modules, don't we want our users to use the current version, so should we not by default do the same with others Modules._
 
@@ -52,44 +56,46 @@ _Food for thought, if we update our Modules, don't we want our users to use the 
     --help or -h or -?
         Print a brief help message and exits.
 
-    --output or -o
+    --format or -f
         By default we output to STDOUT in 'dsl' format, so you can check,
         copy n paste or select an alternative format as shown below.
 
-         midgen -o dsl          # Module::Include::DSL
-         midgen -o mi           # Module::Include
-         midgen -o build        # Build
-         midgen -o dzil         # Dist::Zilla
-         midgen -o dist         # dist.ini
+         midgen -f dsl          # Module::Include::DSL
+         midgen -f mi           # Module::Include
+         midgen -f build        # Build
+         midgen -f dzil         # Dist::Zilla
+         midgen -f dist         # dist.ini
+
+    --dual_life or -l
+        Shows modules that are in Perl core and CPAN, some modules have a
+        version number eg; constant, Carp
+
+         midgen -l
+
+    --dual_life or -l
+        Shows modules that are in Perl core and CPAN, some modules have a
+        version number eg; constant, Carp
+
+         midgen -l
 
     --core or -c
-         * Shows modules that are in Perl core
-         * some modules have a version number eg; constant, Carp
-         * some have a version of 0 eg; strict, English
-         * also show any recommends that we found
+        Shows all modules that are in Perl core, including dual-life, some
+        have a version of 0 eg; strict, English
+
+         midgen -c
 
     --verbose or -v
-        Show filename that we are checking, as we go
+        Show file names that we are checking, as we go
 
-    --mojo or -m
-        Turn on extra output to show the /Mojo/ to Mojolicious catch, as we
-        find them, suggest you incorporate it with verbose for maximum
-        affect
+         midgen -v
 
-         midgen -vm
+    --experimental or -x
+        This experimental feature turns on extra passing, that removes twins
+        and noisy_children, replacing them with there parent(dist), giving a
+        minimalist output, you might conceive this as controversial, if so
+        don't enable it.
 
-    --noisy_children or -n
-        Turn on extra output to show the modules considered to be noisy
-        children, as we find them
-
-         midgen -n
-
-    --twins or -t
-        Turn on extra output to show the modules that are twins, as we find
-        them, suggest you incorporate it with noisy_children for maximum
-        affect
-
-         midgen -nt
+         midgen -x
 
     --zero or z
         Use a '0' instead of 'core' for core module version number, suggest
@@ -97,8 +103,17 @@ _Food for thought, if we update our Modules, don't we want our users to use the 
 
          midgen -cz
 
+    --write or -w
+        you can now write your current options to ~/.midgenrc in JSON format
+        (core, dual_life, format, zero), to be used again. I you want to
+        edit your ~./midgenrc file, you could use the Getopt --no-option to
+        negate an option, or you can edit/delete the file, your choice.
+
+         midgen --no-z -w
+
     --debug or -d
-        equivalent of -cnmptv and some :))
+        Provides a vast amount of output, relevant to development also
+        enables (core, verbose)
 
         uses Data::Printer
 
@@ -106,4 +121,5 @@ _Food for thought, if we update our Modules, don't we want our users to use the 
         used
 
          midgen -d 2>debug.txt
+
 
