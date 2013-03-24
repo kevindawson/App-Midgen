@@ -1,12 +1,13 @@
 Revision history for App-Midgen
 
-0.17_03 2013-03-23
+0.18 2013-03-24
  - spelling mauke++
  - refactor option names, inspired by mauke++
  - changed default output, no extra processing, only distribution version
    for modules without a version number mst++
  - Add cmd option to show dual-line module versions
  - All extra passing is now done in via experimental option
+ - Add ablity to read options from ~/.midgenrc and write as well.
  - Add color to experimental output only via Term-ANSIColor
 
 0.16 2013-03-17

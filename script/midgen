@@ -218,7 +218,7 @@ suggest you incorporate it with core for maximum affect
 
 =item B<--write or -w>
 
-you can now write your current options to ~/.midgenrc in JSON format 
+You can now write your current options to ~/.midgenrc in JSON format 
 (core, dual_life, format, zero), 
 to be used again. I you want to edit your ~./midgenrc file, 
 you could use the Getopt --no-option to negate an option, 
