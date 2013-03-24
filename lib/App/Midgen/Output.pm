@@ -28,7 +28,7 @@ sub header_dsl {
 	$package_name =~ s{::}{/}g;
 
 	print "\n";
-	say 'use inc::Module::Install::DSL ' . colored($mi_ver, 'yellow') . q{;};
+	say 'use inc::Module::Install::DSL ' . colored( $mi_ver, 'yellow' ) . q{;};
 	print "\n";
 	if ( $package_name ne NONE ) {
 		say 'all_from lib/' . $package_name . '.pm';
@@ -58,12 +58,12 @@ sub body_dsl {
 	foreach my $module_name ( sort keys %{$required_ref} ) {
 
 		if ( $module_name =~ /^Win32/sxm ) {
-			printf "%s %-*s %s %s\n", $title, $pm_length, $module_name, $required_ref->{$module_name}, colored('if win32', 'bright_green') ;
+			printf "%s %-*s %s %s\n", $title, $pm_length, $module_name, $required_ref->{$module_name},
+				colored( 'if win32', 'bright_green' );
 		} else {
 			printf "%s %-*s %s\n", $title, $pm_length, $module_name, $required_ref->{$module_name};
 		}
 	}
-	print "\n";
 	return;
 }
 #######
@@ -115,7 +115,7 @@ sub header_mi {
 	my $mi_ver       = shift // NONE;
 
 	print "\n";
-	say 'use inc::Module::Install ' . colored($mi_ver, 'yellow') . q{;};
+	say 'use inc::Module::Install ' . colored( $mi_ver, 'yellow' ) . q{;};
 	print "\n";
 	if ( $package_name ne NONE ) {
 		$package_name =~ s{::}{-}g;
@@ -149,14 +149,15 @@ sub body_mi {
 
 		if ( $module_name =~ /^Win32/sxm ) {
 			my $sq_key = "'$module_name'";
-			printf "%s %-*s => '%s' %s;\n", $title, $pm_length + 2, $sq_key, $required_ref->{$module_name}, colored('if win32', 'bright_green') ;
+			printf "%s %-*s => '%s' %s;\n", $title, $pm_length + 2, $sq_key, $required_ref->{$module_name},
+				colored( 'if win32', 'bright_green' );
 		} else {
 			my $sq_key = "'$module_name'";
 			printf "%s %-*s => '%s';\n", $title, $pm_length + 2, $sq_key, $required_ref->{$module_name};
 		}
 
 	}
-	print "\n";
+
 	return;
 }
 #######
@@ -248,7 +249,7 @@ sub body_build {
 
 	}
 	say '},';
-	print "\n";
+
 	return;
 }
 #######
@@ -309,7 +310,7 @@ sub body_dzil {
 
 	}
 	say '},';
-	print "\n";
+
 	return;
 }
 #######
@@ -384,7 +385,7 @@ sub body_dist {
 		printf "%-*s = %s\n", $pm_length, $module_name, $required_ref->{$module_name};
 
 	}
-	print "\n";
+
 	return;
 }
 #######
@@ -476,6 +477,11 @@ App::Midgen::Output - A collection of output orientated methods used by L<App::M
 
 This document describes App::Midgen::Output version: 0.17_03
 
+=head1 DESCRIPTION
+
+The output format uses colour to add visualization of module version number 
+types, be that mcpan, dual-life or added distribution.
+
 =head1 METHODS
 
 =over 4
@@ -516,9 +522,13 @@ Suggest some of your local directories you can 'no_index'
 
 =back
 
+=head1 DEPENDENCIES
+
+L<Term::ANSIColor>
+
 =head1 SEE ALSO
 
-L<App::Midgen>,
+L<App::Midgen>
 
 =head1 AUTHOR
 
