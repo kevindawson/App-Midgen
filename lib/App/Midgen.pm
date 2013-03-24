@@ -980,9 +980,7 @@ catching triplets along the way.
 
 =item * run
 
-
 =back
-
 
 =head1 CONFIGURATION AND ENVIRONMENT
   
