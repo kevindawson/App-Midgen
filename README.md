@@ -53,26 +53,26 @@ _Food for thought, if we update our Modules, don't we want our users to use the 
 
 ## Options
 
-    --help or -h or -?
-        Print a brief help message and exits.
+--help or -h or -?
+    Print a brief help message and exits.
 
 
-    --format or -f
-        By default we output to STDOUT in 'dsl' format, so you can check,
-        copy n paste or select an alternative format as shown below.
+--format or -f
+    By default we output to STDOUT in 'dsl' format, so you can check,
+    copy n paste or select an alternative format as shown below.
 
-         midgen -f dsl          # Module::Include::DSL
-         midgen -f mi           # Module::Include
-         midgen -f build        # Build
-         midgen -f dzil         # Dist::Zilla
-         midgen -f dist         # dist.ini
+    midgen -f dsl          # Module::Include::DSL
+    midgen -f mi           # Module::Include
+    midgen -f build        # Build
+    midgen -f dzil         # Dist::Zilla
+    midgen -f dist         # dist.ini
 
 
-    --dual_life or -l
-        Shows modules that are in Perl core and CPAN, some modules have a
-        version number eg; constant, Carp
+--dual_life or -l
+Shows modules that are in Perl core and CPAN, some modules have a
+version number eg; constant, Carp
 
-         midgen -l
+ midgen -l
 
 
     --core or -c
