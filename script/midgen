@@ -78,6 +78,7 @@ pod2usage(1) if $help;
 
 say 'Running midgen v' . $VERSION;
 say 'Stamped -> ' . gmstamp($BASETIME);
+say 'Honouring $ENV{ANSI_COLORS_DISABLED}' if $ENV{ANSI_COLORS_DISABLED};
 
 my $midgen = App::Midgen->new(
 	core         => $core,
