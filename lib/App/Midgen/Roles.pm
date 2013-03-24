@@ -102,9 +102,9 @@ has 'zero' => (
 #######
 
 has 'numify' => (
-	is      => 'rw',
-	isa     => Bool,
-	lazy    => 1,
+	is   => 'rw',
+	isa  => Bool,
+	lazy => 1,
 );
 
 has 'package_name' => (
