@@ -905,11 +905,11 @@ the package,
 then display in a familiar format with the current version number 
 from MetaCPAN.
 
-This started out as a way of generating the formatted contents for 
-a Module::Install::DSL Makefile.PL, 
-you can now see the B<dual-life> and B<perl core> modules as well, 
-this enables you to see which modules you have used, 
-yes it's another L<PPI> powered app.
+This started as a way of generating the formatted contents for 
+a Module::Install::DSL Makefile.PL, which has now grown to support other 
+output formats, as well as the ability to show B<dual-life> and 
+B<perl core> modules, see L<midgen> for option info.
+This enables you to see which modules you have used, 
 
 All output goes to STDOUT, so you can use it as you see fit.
 
@@ -991,7 +991,7 @@ App::Midgen requires no configuration files or environment variables.
 
 =head1 DEPENDENCIES
 
-L<App::Midgen::Roles>, L<App::Midgen::Output>,
+L<App::Midgen::Roles>, L<App::Midgen::Output>
 
 =head1 INCOMPATIBILITIES
 
