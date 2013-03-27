@@ -17,6 +17,7 @@ use Cwd;
 use Data::Printer { caller_info => 1, colored => 1, };
 use File::Find qw(find);
 use File::Spec;
+use List::MoreUtils qw(firstidx);
 use MetaCPAN::API;
 use Module::CoreList;
 use PPI;
@@ -51,7 +52,7 @@ sub run {
 	$self->find_required_modules();
 	$self->find_required_test_modules();
 
-	p $self->{modules} if $self->{experimental};
+	##p $self->{modules} if $self->{experimental};
 
 	$self->remove_noisy_children( $self->{package_requires} ) if $self->{experimental};
 	$self->remove_twins( $self->{package_requires} )          if $self->{experimental};
@@ -167,7 +168,13 @@ sub find_required_test_modules {
 	my $self = shift;
 
 	# By default we shell only check t\ (to xt\ or not?)
-	my @posiable_directories_to_search = map { File::Spec->catfile( $Working_Dir, $_ ) } qw( t );
+	my @posiable_directories_to_search;
+	if ( not $self->{experimental} ) {
+		@posiable_directories_to_search = map { File::Spec->catfile( $Working_Dir, $_ ) } qw( t );
+	} else {
+		@posiable_directories_to_search = map { File::Spec->catfile( $Working_Dir, $_ ) } qw( t xt );
+	}
+
 	my @directories_to_search = ();
 	for my $directory (@posiable_directories_to_search) {
 		if ( defined -d $directory ) {
@@ -300,9 +307,11 @@ sub _recommends_in_single_quote {
 					$self->_process_found_modules( 'recommends', \@modules );
 				}
 
-			} elsif ( $module =~ /::/ && $module =~ /use/ ) {
+			} elsif ( $module =~ /::/ && $module =~ /use|require/ ) {
 
-				$module =~ s/^use\s//;
+				# todo
+				#p $module;
+				$module =~ s/^(use|require)\s//;
 				$module =~ s/(\s[\s|\w|\n|.|;]+)$//;
 				p $module if $self->{debug};
 
@@ -388,12 +397,12 @@ sub _process_found_modules {
 				next;
 			}
 
-			# when (/Mojo/sxm) {
+			when (/Mojo/sxm) {
 
-			# if ( $self->{experimental} ) {
-			# next if $self->_check_mojo_core($module, $require_type);
-			# }
-			# }
+				if ( $self->{experimental} ) {
+					next if $self->_check_mojo_core( $module, $require_type );
+				}
+			}
 			when (/^Padre/sxm) {
 
 				# mark all Padre core as just Padre, for plugins
@@ -447,8 +456,12 @@ sub _store_modules {
 				$self->{$require_type}{$module} = colored( $version, 'yellow' );
 				$self->{$require_type}{$module} = colored( version->parse($version)->numify, 'yellow' )
 					if $self->{numify};
+
 				$self->{modules}{$module}{location} = $require_type;
 				$self->{modules}{$module}{version}  = $version;
+
+				$self->{$require_type}{$module} = colored( $version, 'bright_cyan' )
+					if $self->{modules}{$module}{'distribution'};
 			}
 		}
 	}
@@ -489,47 +502,56 @@ sub remove_noisy_children {
 	my $self = shift;
 	my $required_ref = shift || return;
 	my @sorted_modules;
+
 	foreach my $module_name ( sort keys %{$required_ref} ) {
 		push @sorted_modules, $module_name;
 	}
 
 	p @sorted_modules if $self->{debug};
 
-	my $n = 0;
-	while ( $sorted_modules[$n] ) {
-		my $parent_name = $sorted_modules[$n];
-		my $child_name;
-		if ( ( $n + 1 ) <= $#sorted_modules ) {
-			$n++;
-			$child_name = $sorted_modules[$n];
-		}
+	foreach my $parent_name (@sorted_modules) {
+		my $outer_index = firstidx { $_ eq $parent_name } @sorted_modules;
 
-		if ( $sorted_modules[$n] =~ /^$sorted_modules[$n-1]::/ ) {
+		# inc so we don't end up with parent eq child
+		$outer_index++;
+		foreach my $inner_index ( $outer_index .. $#sorted_modules ) {
+			my $child_name = $sorted_modules[$inner_index];
 
-			# Checking for one degree of separation
-			# ie A::B -> A::B::C is ok but A::B::C::D is not
-			if ( $self->degree_separation( $parent_name, $child_name ) == 1 ) {
+			# we just caught an undef
+			next if not defined $child_name;
+			if ( $child_name =~ /^ $parent_name ::/x ) {
 
-				# Test for same version number
-				if ( colorstrip( $required_ref->{ $sorted_modules[ $n - 1 ] } ) eq
-					colorstrip( $required_ref->{ $sorted_modules[$n] } ) )
-				{
-					if ( $self->{verbose} ) {
-						print "\n";
-						say 'delete miscreant noisy child '
-							. $sorted_modules[$n] . ' => '
-							. $required_ref->{ $sorted_modules[$n] };
+				# Checking for one degree of separation
+				# ie A::B -> A::B::C is ok but A::B::C::D is not
+				if ( $self->degree_separation( $parent_name, $child_name ) == 1 ) {
+
+					# Test for same version number
+					if ( colorstrip( $required_ref->{$parent_name} ) eq colorstrip( $required_ref->{$child_name} ) ) {
+						if ( $self->{verbose} or $self->{experimental} ) {
+							print "\n";
+							say 'delete miscreant noisy child ' . $child_name . ' => ' . $required_ref->{$child_name};
+						}
+						try {
+							delete $required_ref->{$child_name};
+							splice @sorted_modules, $inner_index, 1;
+						};
+						p @sorted_modules if $self->{debug};
+
+						# we need to redo as we just deleted a child
+						redo;
+
+					} else {
+
+						# not my child so lets try the next one
+						next;
 					}
-					try {
-						delete $required_ref->{ $sorted_modules[$n] };
-						splice @sorted_modules, $n, 1;
-						$n--;
-					};
-					p @sorted_modules if $self->{debug};
 				}
+			} else {
+
+				# no more like the parent so lets start again
+				last;
 			}
 		}
-		$n++ if ( $n == $#sorted_modules );
 	}
 	return;
 }
@@ -573,7 +595,7 @@ sub remove_twins {
 			# Test for same version number
 			if ( $required_ref->{ $sorted_modules[ $n - 1 ] } eq $required_ref->{ $sorted_modules[$n] } ) {
 
-				if ( $self->{verbose} ) {
+				if ( $self->{verbose} or $self->{experimental} ) {
 					print "\n";
 					say 'i have found twins';
 					say $dum_name . ' ('
@@ -681,8 +703,9 @@ sub get_module_version {
 				my $mod = $self->{mcpan}->release( distribution => $dist );
 
 				# This is where we add a dist version to a nacked module
-				$cpan_version = $mod->{version_numified};
-				$found        = 1;
+				$cpan_version                           = $mod->{version_numified};
+				$found                                  = 1;
+				$self->{modules}{$module}{distribution} = $dist;
 
 				#				if ( $self->{experimental} ) {
 				$self->mod_in_dist( $dist, $module, $require_type, $mod->{version_numified} ) if $require_type;
@@ -695,6 +718,16 @@ sub get_module_version {
 		# not in metacpan so mark accordingly
 		$cpan_version = '!mcpan' if $found == 0;
 	};
+
+	# sienfific numbers in a version string, O what fun.
+	if ( $cpan_version =~ m/\d+e/ ) {
+
+		# a bit of de crapy-fying
+		# catch Test::Kwalitee::Extra 6e-06
+		say $module . ' Unique Release Sequence Indicator ' . $cpan_version if $self->{verbose};
+		$cpan_version = version->parse($cpan_version)->numify;
+	}
+
 	return $cpan_version;
 }
 
@@ -713,19 +746,15 @@ sub mod_in_dist {
 
 		say "module - $module  -> in dist - $dist" if $self->{verbose};
 
-		given ($require_type) {
-			when ('package_requires') {
+		# add dist to output hash so we can get rind of cruff later
+		if ( $self->{experimental} ) {
 
-				# Add a what should be a parent
-				$self->{$require_type}{$dist} = colored( $version, 'bright_cyan' ) if !$self->{$require_type}{$dist};
-			}
-			when ('test_requires') {
-
-				next if $self->{package_requires}{$dist};
-				$self->{$require_type}{$dist} = colored( $version, 'bright_cyan' ) if !$self->{$require_type}{$dist};
-			}
+			$self->{$require_type}{$dist} = colored( $version, 'bright_cyan' )
+				if not defined $self->{modules}{$module}{location};
 		}
 
+		$self->{$require_type}{$module} = colored( $version, 'bright_cyan' )
+			if not defined $self->{modules}{$module}{location};
 	}
 
 	return;
