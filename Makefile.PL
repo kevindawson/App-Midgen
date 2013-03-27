@@ -12,6 +12,7 @@ requires File::Slurp            9999.19
 requires File::Spec             3.4
 requires Getopt::Long           2.39
 requires JSON::Tiny             0.25
+requires List::MoreUtils        0.33
 requires MetaCPAN::API          0.43
 requires Module::CoreList       2.85
 requires Moo                    1.001
