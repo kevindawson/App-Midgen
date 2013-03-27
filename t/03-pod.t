@@ -3,13 +3,16 @@
 use strict;
 use warnings FATAL => 'all';
 
-use English qw( -no_match_vars ); # Avoids regex performance penalty
+use English qw( -no_match_vars );
 local $OUTPUT_AUTOFLUSH = 1;
 
 use Test::More;
 
-eval 'use Test::Pod 1.45';
-plan skip_all => "Test::Pod 1.45 required for testing POD" if $@;
+my $mod_ver = 1.45;
+eval 'use Test::Pod $mod_ver';
+eval 'Test::Pod->VERSION($mod_ver)';
+plan skip_all => "Test::Pod $mod_ver required for testing POD" if $EVAL_ERROR;
+
 all_pod_files_ok();
 
 done_testing();
