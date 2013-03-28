@@ -1,5 +1,9 @@
 Revision history for App-Midgen
 
+{{$NEXT}}
+ - re-write noisy children
+ - add cfile format option for cpanfile
+
 0.18 2013-03-24
  - spelling mauke++
  - refactor option names, inspired by mauke++
