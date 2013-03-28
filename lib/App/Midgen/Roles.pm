@@ -65,7 +65,7 @@ has 'experimental' => (
 has 'format' => (
 	is  => 'ro',
 	isa => sub {
-		my $format = { dsl => 1, mi => 1, build => 1, dzil => 1, dist => 1 };
+		my $format = { dsl => 1, mi => 1, build => 1, dzil => 1, dist => 1, cfile => 1, };
 		croak 'not a supported output format' unless defined $format->{ $_[0] };
 		return;
 	},

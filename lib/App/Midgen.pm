@@ -831,6 +831,9 @@ sub _output_header {
 		when ('dist') {
 			$self->{output}->header_dist( $self->{package_name} );
 		}
+		when ('cfile') {
+			$self->{output}->header_cfile( $self->{package_name} );
+		}
 		when ('dzil') {
 			$self->{output}->header_dzil( $self->{package_name} );
 		}
@@ -859,6 +862,9 @@ sub _output_main_body {
 		when ('dist') {
 			$self->{output}->body_dist( $title, $required_ref );
 		}
+		when ('cfile') {
+			$self->{output}->body_cfile( $title, $required_ref );
+		}
 		when ('dzil') {
 			$self->{output}->body_dzil( $title, $required_ref );
 		}
@@ -885,6 +891,9 @@ sub _output_footer {
 		}
 		when ('dist') {
 			$self->{output}->footer_dist( $self->{package_name} );
+		}
+		when ('cfile') {
+			$self->{output}->footer_cfile( $self->{package_name} );
 		}
 		when ('dzil') {
 			$self->{output}->footer_dzil( $self->{package_name} );

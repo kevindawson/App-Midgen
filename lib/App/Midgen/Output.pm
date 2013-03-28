@@ -459,6 +459,123 @@ sub no_index {
 	return @dirs_found;
 }
 
+#######
+# header_cfile
+#######
+sub header_cfile {
+	my $self         = shift;
+	my $package_name = shift // NONE;
+	my $mi_ver       = shift // NONE;
+
+	$package_name =~ s{::}{/}g;
+
+	print "\n";
+#	say 'use inc::Module::Install::DSL ' . colored( $mi_ver, 'yellow' ) . q{;};
+	print "\n";
+#	if ( $package_name ne NONE ) {
+#		say 'all_from lib/' . $package_name . '.pm';
+#		say 'requires_from lib/' . $package_name . '.pm';
+#	}
+
+	print "\n";
+	return;
+}
+#######
+# body_cfile
+#######
+sub body_cfile {
+	my $self         = shift;
+	my $title        = shift;
+	my $required_ref = shift;
+	say "requires 'perl', '".$App::Midgen::Min_Version."';" if $title eq 'requires';
+	print "\n";
+
+	my $pm_length = 0;
+	foreach my $module_name ( sort keys %{$required_ref} ) {
+		if ( length $module_name > $pm_length ) {
+			$pm_length = length $module_name;
+		}
+	}
+
+
+given ( $title ){
+	when ('requires'||'recommends'){	
+	foreach my $module_name ( sort keys %{$required_ref} ) {
+
+
+#		if ( $module_name =~ /^Win32/sxm ) {
+#			printf "%s %-*s %s %s\n", $title, $pm_length, $module_name, $required_ref->{$module_name},
+#				colored( 'if win32', 'bright_green' );
+#		} else {
+			my $mod_name = "'$module_name',";
+			printf "%s %-*s '%s';\n", $title, $pm_length + 3, $mod_name, $required_ref->{$module_name};
+#		}
+	}
+}
+	when ('test_requires'){
+	say 'on test => sub {';
+	foreach my $module_name ( sort keys %{$required_ref} ) {
+
+
+#		if ( $module_name =~ /^Win32/sxm ) {
+#			printf "%s %-*s %s %s\n", $title, $pm_length, $module_name, $required_ref->{$module_name},
+#				colored( 'if win32', 'bright_green' );
+#		} else {
+			my $mod_name = "'$module_name',";
+			printf "\t%s %-*s %s;\n", 'requires', $pm_length + 3, $mod_name, $required_ref->{$module_name};
+#		}
+	}
+	say '};';
+
+
+	}
+
+	}
+
+
+	return;
+}
+#######
+# footer_cfile
+#######
+sub footer_cfile {
+	my $self = shift;
+	my $package_name = shift // NONE;
+	$package_name =~ s{::}{-}g;
+
+	print BRIGHT_BLACK "\n";
+#	say '# ToDo you should consider the following';
+#	say "homepage    https://github.com/.../$package_name";
+#	say "bugtracker  https://github.com/.../$package_name/issues";
+#	say "repository  git://github.com/.../$package_name.git";
+
+	print CLEAR "\n";
+#	if ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'share' ) ) {
+#		say 'install_share';
+#		print "\n";
+#	}
+
+#	if ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'script' ) ) {
+#		say 'install_script ...';
+#		print "\n";
+#	} elsif ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'bin' ) ) {
+#		say "install_script bin/...";
+#		print "\n";
+#	}
+
+#	my @no_index = $self->no_index;
+#	if (@no_index) {
+#		say "no_index directory qw{ @no_index }";
+#		print "\n";
+#	}
+
+	print "\n";
+
+	return;
+}
+
+
+
 no Moo;
 
 1;
