@@ -135,8 +135,8 @@ This document describes midgen version: 0.19_02
 
 =head1 SYNOPSIS
 
-Change to the root of your package and run, 
-command line options always overwrite options from ~/.midgenrc if you have one.
+Change to the root of your package and run, command line options always
+ overwrite options from ~/.midgenrc if you have one.
 
  midgen
 
@@ -168,8 +168,8 @@ Prints a help message and exits.
 
 =item B<--format or -f>
 
-By default we output to STDOUT in 'dsl' format, 
-so you can check, copy n paste or select an alternative format as shown below.
+By default we output to STDOUT in 'dsl' format, so you can check,
+ copy n paste or select an alternative format as shown below.
 
  midgen -f dsl		# Module::Include::DSL
  midgen -f mi		# Module::Include
@@ -180,16 +180,15 @@ so you can check, copy n paste or select an alternative format as shown below.
 
 =item B<--dual_life or -l>
 
-Shows modules that are in Perl core and CPAN, 
-some modules have a version number eg; constant, Carp.
+Shows modules that are in Perl core and CPAN, some modules have a version
+ number eg; constant, Carp.
 
  midgen -l
 
 =item B<--core or -c>
 
-Shows all modules that are in Perl core, 
-including dual-life, 
-some have a version of 0 eg; strict, English.
+Shows all modules that are in Perl core, including dual-life,
+ some have a version of 0 eg; strict, English.
 
  midgen -c
 
@@ -201,36 +200,32 @@ Show file names that we are checking, as we go.
 
 =item B<--experimental or -x>
 
-This experimental feature turns on extra passing, 
-that removes twins and noisy_children, 
-replacing them with there parent(dist), 
-giving a minimalist output, 
-you might conceive this as controversial, 
-if so don't enable it.
+This experimental feature turns on extra passing, that removes twins and noisy_children,
+ replacing them with there parent(dist), giving a minimalist output,
+ you might conceive this as controversial, if so don't enable it.
 
  midgen -x
 
 =item B<--zero or z>
 
-Use a '0' instead of 'core' for core module version number, 
-suggest you incorporate it with core for maximum affect.
+Use a '0' instead of 'core' for core module version number,
+ suggest you incorporate it with core for maximum affect.
 
  midgen -cz
 
 =item B<--write or -w>
 
-You can now write your current options to ~/.midgenrc in JSON format 
-(core, dual_life, format, zero), 
-to be used again. I you want to edit your ~./midgenrc file, 
-you could use the Getopt --no-option to negate an option, 
-or you can edit/delete the file, your choice.
+You can now write your current options to ~/.midgenrc in JSON format
+ (core, dual_life, format, zero), to be used again.
+ I you want to edit your ~./midgenrc file, you could use the Getopt
+ --no-option to negate an option, or you can edit/delete the file, your choice.
 
  midgen --no-z -w
 
 =item B<--debug or -d>
 
-Provides a vast amount of output, relevant to development also enables 
-(core, verbose), uses L<Data::Printer>.
+Provides a vast amount of output, relevant to development also enables
+ (core, verbose), uses L<Data::Printer>.
 
 Suggest you consider redirecting STDERR when the debug option is used.
 
