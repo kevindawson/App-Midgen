@@ -113,35 +113,41 @@ has 'package_name' => (
 	lazy => 1,
 );
 
-has 'package_names' => (
-	is   => 'rw',
-	isa  => ArrayRef,
-	lazy => 1,
-);
+#has 'package_names' => (
+#	is   => 'rw',
+#	isa  => ArrayRef,
+#	lazy => 1,
+#);
 
-has 'package_requires' => (
-	is   => 'rw',
-	isa  => HashRef,
-	lazy => 1,
-);
+#has 'package_requires' => (
+#	is   => 'rw',
+#	isa  => HashRef,
+#	lazy => 1,
+#);
 
-has 'test_requires' => (
-	is   => 'rw',
-	isa  => HashRef,
-	lazy => 1,
-);
+#has 'test_requires' => (
+#	is   => 'rw',
+#	isa  => HashRef,
+#	lazy => 1,
+#);
 
-has 'modules' => (
-	is   => 'rw',
-	isa  => HashRef,
-	lazy => 1,
-);
+#has 'modules' => (
+#	is   => 'rw',
+#	isa  => HashRef,
+#	lazy => 1,
+#);
 
-has 'recommends' => (
-	is   => 'rw',
-	isa  => HashRef,
-	lazy => 1,
-);
+#has 'recommends' => (
+#	is   => 'rw',
+#	isa  => HashRef,
+#	lazy => 1,
+#);
+
+#has 'test_develop' => (
+#	is   => 'rw',
+#	isa  => HashRef,
+#	lazy => 1,
+#);
 
 has 'found_twins' => (
 	is      => 'rw',
@@ -150,32 +156,58 @@ has 'found_twins' => (
 	default => sub {
 		0;
 	},
-	required => 1,
 );
 
-has 'mcpan' => (
-	is   => 'rw',
-	isa  => InstanceOf [ 'MetaCPAN::API', ],
+#has 'mcpan' => (
+#	is   => 'rw',
+#	isa  => InstanceOf [ 'MetaCPAN::API', ],
+#	lazy => 1,
+#	handles => [ qw( module new release ) ],
+#);
+
+#has 'output' => (
+#	is   => 'rw',
+#	isa  => InstanceOf [ 'App::Midgen::Output', ],
+#	lazy => 1,
+#);
+
+#has 'scanner' => (
+#	is   => 'rw',
+#	isa  => InstanceOf [ 'Perl::PrereqScanner', ],
+#	lazy => 1,
+#);
+
+#has 'ppi_document' => (
+#	is   => 'rw',
+#	isa  => InstanceOf [ 'PPI::Document', ],
+#	lazy => 1,
+#);
+
+has 'xtest' => (
+	is => 'rw',
+	isa => Str,
 	lazy => 1,
+	default => sub {
+		'test_requires';
+	},
 );
 
-has 'output' => (
-	is   => 'rw',
-	isa  => InstanceOf [ 'App::Midgen::Output', ],
+has 'develop' => (
+	is => 'ro',
+	isa => Bool,
 	lazy => 1,
+	builder => '_develop',
 );
 
-has 'scanner' => (
-	is   => 'rw',
-	isa  => InstanceOf [ 'Perl::PrereqScanner', ],
-	lazy => 1,
-);
-
-has 'ppi_document' => (
-	is   => 'rw',
-	isa  => InstanceOf [ 'PPI::Document', ],
-	lazy => 1,
-);
+sub _develop {
+	my $self = shift;
+#	return 'running builder';
+	if ( $self->{experimental} && $self->{format} eq 'cfile' ){
+		return 1;
+	} else {
+		return 0;
+	}
+}
 
 no Moo::Role;
 
