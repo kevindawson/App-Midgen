@@ -239,12 +239,12 @@ sub body_build {
 			$pm_length = length $module_name;
 		}
 	}
-	say $title . ' => {';
+	say '"'.$title.'"'. ' => {';
 
 	foreach my $module_name ( sort keys %{$required_ref} ) {
 
-		my $sq_key = "'$module_name'";
-		printf "\t %-*s => '%s',\n", $pm_length + 2, $sq_key, $required_ref->{$module_name};
+		my $sq_key = "\"$module_name\"";
+		printf "\t %-*s => \"%s\",\n", $pm_length + 2, $sq_key, $required_ref->{$module_name};
 
 	}
 	say '},';
