@@ -358,7 +358,7 @@ sub _xtests_includes {
 
 	} elsif ( $module =~ /::/ && $module =~ /use|require/ ) {
 
-		$module =~ s/^(use|require)\s//;
+		$module =~ s/^(use|require)\s+//;
 		$module =~ s/(\s[\s|\w|\n|.|;]+)$//;
 		$module =~ s/\s+([\$|\w|\n]+)$//;
 		p $module if $self->debug;
