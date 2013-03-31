@@ -218,7 +218,7 @@ sub header_build {
 	if ( $package_name ne NONE ) {
 		print "\n";
 		$package_name =~ s{::}{-}g;
-		say 'NAME => ' . $package_name;
+		say '"dist_name" => "' . $package_name.'",';
 		print "\n";
 	}
 
