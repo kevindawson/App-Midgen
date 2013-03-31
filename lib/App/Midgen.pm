@@ -108,8 +108,11 @@ sub first_package_name {
 	p $self->{package_names} if $self->debug;
 
 	# We will assume the first package found is our Package Name, pot lock :)
-	$self->package_name( $self->{package_names}[0] );
-	say 'Package: ' . $self->package_name if $self->verbose;
+	# due to Milla not being a dist we go and get dist-name
+	my $mcpan_module_info = $self->{mcpan}->module( $self->{package_names}[0] );
+	$self->{distribution_name} = $mcpan_module_info->{distribution};
+	$self->{distribution_name} =~ s{-}{::}g;
+	say 'Package: ' . $self->{distribution_name} if $self->verbose;
 
 	return;
 }
@@ -396,14 +399,13 @@ sub _process_found_modules {
 
 		#deal with ''
 		next if $module eq NONE;
-
 		given ($module) {
 			when (/perl/sxm) {
 
 				# ignore perl we will get it from minperl required
 				next;
 			}
-			when (/^$self->package_name/sxm) {
+			when (/^$self->{distribution_name}/sxm) {
 
 				# don't include our own packages here
 				next;
@@ -839,22 +841,22 @@ sub _output_header {
 	given ( $self->format ) {
 
 		when ('dsl') {
-			$self->{output}->header_dsl( $self->package_name, $self->get_module_version('inc::Module::Install::DSL') );
+			$self->{output}->header_dsl( $self->{distribution_name}, $self->get_module_version('inc::Module::Install::DSL') );
 		}
 		when ('mi') {
-			$self->{output}->header_mi( $self->package_name, $self->get_module_version('inc::Module::Install') );
+			$self->{output}->header_mi( $self->{distribution_name}, $self->get_module_version('inc::Module::Install') );
 		}
 		when ('dist') {
-			$self->{output}->header_dist( $self->package_name );
+			$self->{output}->header_dist( $self->{distribution_name} );
 		}
 		when ('cfile') {
-			$self->{output}->header_cfile( $self->package_name, $self->get_module_version('inc::Module::Install') );
+			$self->{output}->header_cfile( $self->{distribution_name}, $self->get_module_version('inc::Module::Install') );
 		}
 		when ('dzil') {
-			$self->{output}->header_dzil( $self->package_name );
+			$self->{output}->header_dzil( $self->{distribution_name} );
 		}
 		when ('build') {
-			$self->{output}->header_build( $self->package_name );
+			$self->{output}->header_build( $self->{distribution_name} );
 		}
 	}
 	return;
@@ -900,22 +902,22 @@ sub _output_footer {
 	given ( $self->format ) {
 
 		when ('dsl') {
-			$self->{output}->footer_dsl( $self->package_name );
+			$self->{output}->footer_dsl( $self->{distribution_name} );
 		}
 		when ('mi') {
-			$self->{output}->footer_mi( $self->package_name );
+			$self->{output}->footer_mi( $self->{distribution_name} );
 		}
 		when ('dist') {
-			$self->{output}->footer_dist( $self->package_name );
+			$self->{output}->footer_dist( $self->{distribution_name} );
 		}
 		when ('cfile') {
-			$self->{output}->footer_cfile( $self->package_name );
+			$self->{output}->footer_cfile( $self->{distribution_name} );
 		}
 		when ('dzil') {
-			$self->{output}->footer_dzil( $self->package_name );
+			$self->{output}->footer_dzil( $self->{distribution_name} );
 		}
 		when ('build') {
-			$self->{output}->footer_build( $self->package_name );
+			$self->{output}->footer_build( $self->{distribution_name} );
 		}
 	}
 
