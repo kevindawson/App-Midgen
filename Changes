@@ -1,8 +1,10 @@
 Revision history for App-Midgen
 
-{{$NEXT}}
+0.19_03 2013-04-44
  - re-write noisy children
  - add cfile format option for cpanfile
+ - refactor my roles, comment out cruff
+ - some eol and pod tweaks
 
 0.18 2013-03-24
  - spelling mauke++

@@ -628,6 +628,12 @@ The output format uses colour to add visualization of module version number
 
 =item * footer_mi
 
+=item * header_cfile
+
+=item * body_cfile
+
+=item * footer_cfile
+
 =item * header_build
 
 =item * body_build
