@@ -6,7 +6,7 @@ use warnings FATAL => 'all';
 use English qw( -no_match_vars ); # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Test::More tests => 27;
+use Test::More tests => 26;
 
 ######
 # let's check our subs/methods.
@@ -16,7 +16,7 @@ my @subs = qw(
 	find_required_modules find_required_test_modules
 	first_package_name remove_noisy_children run
 	remove_twins found_twins min_version mod_in_dist
-	package_name numify get_module_version
+	numify get_module_version
 );
 
 use_ok( 'App::Midgen', @subs );
