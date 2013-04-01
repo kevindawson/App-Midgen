@@ -109,9 +109,14 @@ sub first_package_name {
 
 	# We will assume the first package found is our Package Name, pot lock :)
 	# due to Milla not being a dist we go and get dist-name
-	my $mcpan_module_info = $self->{mcpan}->module( $self->{package_names}[0] );
-	$self->{distribution_name} = $mcpan_module_info->{distribution};
-	$self->{distribution_name} =~ s{-}{::}g;
+	try {
+		my $mcpan_module_info = $self->{mcpan}->module( $self->{package_names}[0] );
+		$self->{distribution_name} = $mcpan_module_info->{distribution};
+		$self->{distribution_name} =~ s{-}{::}g;
+	}
+	catch {
+		$self->{distribution_name} = $self->{package_names}[0];
+	};
 	say 'Package: ' . $self->{distribution_name} if $self->verbose;
 
 	return;
