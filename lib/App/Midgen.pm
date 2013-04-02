@@ -225,6 +225,10 @@ sub _find_makefile_requires {
 	my $prereqs = $self->{scanner}->scan_ppi_document( $self->{ppi_document} );
 	my @modules = $prereqs->required_modules;
 
+	if ( /^Dist::Zilla::Role::PluginBundle/ ~~ @modules ){
+	say 'found - '. $_;
+	}
+
 	$self->_process_found_modules( 'package_requires', \@modules );
 	return;
 }
