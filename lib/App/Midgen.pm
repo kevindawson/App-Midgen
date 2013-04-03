@@ -229,7 +229,6 @@ sub _find_makefile_requires {
 
 	if ( /^Dist::Zilla::Role::PluginBundle/ ~~ @modules ){
 
-	$self->experimental(0);
 	$self->{skip_not_mcpan} = 1;
 
 	my $ppi_tqs = $self->{ppi_document}->find('PPI::Token::Quote::Single');
@@ -569,6 +568,10 @@ sub remove_noisy_children {
 
 	foreach my $parent_name (@sorted_modules) {
 		my $outer_index = firstidx { $_ eq $parent_name } @sorted_modules;
+
+		# lets just skip these at the moment
+		##next if $parent_name =~ /^Dist::Zilla::Plugin/;
+		##next if $parent_name =~ /^Dist::Zilla::Role/;
 
 		# inc so we don't end up with parent eq child
 		$outer_index++;
