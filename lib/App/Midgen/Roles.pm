@@ -51,7 +51,7 @@ has 'debug' => (
 );
 
 has 'experimental' => (
-	is  => 'rw',
+	is  => 'ro',
 	isa => sub {
 		croak "$_[0] this is not a Bool"
 			unless is_Bool( $_[0] );
