@@ -225,8 +225,38 @@ sub _find_makefile_requires {
 	my $prereqs = $self->{scanner}->scan_ppi_document( $self->{ppi_document} );
 	my @modules = $prereqs->required_modules;
 
+	$self->{skip_not_mcpan} = 0;
+
 	if ( /^Dist::Zilla::Role::PluginBundle/ ~~ @modules ){
-	say 'found - '. $_;
+
+	$self->experimental(0);
+	$self->{skip_not_mcpan} = 1;
+
+	my $ppi_tqs = $self->{ppi_document}->find('PPI::Token::Quote::Single');
+	if ($ppi_tqs) {
+
+		# my @modules;
+		foreach my $include ( @{$ppi_tqs} ) {
+
+			my $module = $include->content;
+			##p $module;
+			$module =~ s/^[']//;
+			$module =~ s/[']$//;
+
+			next if $module =~ m/^Dist::Zilla::Role::PluginBundle/;
+			next if $module =~ m{[.|$|\\|/|-|%|@|]};
+			next if $module eq NONE;
+
+			push @modules, 'Dist::Zilla::Plugin::' . $module;
+			##p @module;
+
+			## $self->_xtests_includes($module);
+		}
+	}
+
+	## p @modules;
+
+
 	}
 
 	$self->_process_found_modules( 'package_requires', \@modules );
@@ -463,7 +493,7 @@ sub _store_modules {
 	given ($version) {
 
 		when ('!mcpan') {
-			$self->{$require_type}{$module} = colored( '!mcpan', 'magenta' );
+			$self->{$require_type}{$module} = colored( '!mcpan', 'magenta' ) if not $self->{skip_not_mcpan};
 			$self->{modules}{$module}{location} = $require_type;
 			$self->{modules}{$module}{version}  = '!mcpan';
 		}
