@@ -7,7 +7,7 @@ use MooX::Types::MooseLike::Base qw(:all);
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.19_04';
+our $VERSION = '0.20';
 use Carp;
 
 #######
@@ -225,7 +225,7 @@ App::Midgen::Roles - Package Options and Attributes used by L<App::Midgen>
 
 =head1 VERSION
 
-This document describes App::Midgen::Roles version: 0.19_04
+This document describes App::Midgen::Roles version: 0.20
 
 =head1 METHODS
 

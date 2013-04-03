@@ -8,7 +8,7 @@ use App::Midgen::Output;
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.19_04';
+our $VERSION = '0.20';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -582,9 +582,13 @@ sub remove_noisy_children {
 			next if not defined $child_name;
 			if ( $child_name =~ /^ $parent_name ::/x ) {
 
+				my $valied_seperation = 1;
+				# as we only do this against -x, why not be extra vigalint with dzil
+				$valied_seperation = 3 if $parent_name =~ /^Dist::Zilla/;
+
 				# Checking for one degree of separation
 				# ie A::B -> A::B::C is ok but A::B::C::D is not
-				if ( $self->degree_separation( $parent_name, $child_name ) == 1 ) {
+				if ( $self->degree_separation( $parent_name, $child_name ) <= $valied_seperation ) {
 
 					# Test for same version number
 					if ( colorstrip( $required_ref->{$parent_name} ) eq colorstrip( $required_ref->{$child_name} ) ) {
@@ -982,7 +986,7 @@ App::Midgen - Check B<requires> & B<test_requires> of your package for CPAN incl
 
 =head1 VERSION
 
-This document describes App::Midgen version: 0.19_04
+This document describes App::Midgen version: 0.20
 
 =head1 SYNOPSIS
 

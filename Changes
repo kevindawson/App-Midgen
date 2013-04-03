@@ -1,10 +1,12 @@
 Revision history for App-Midgen
 
-0.19_03 2013-04-44
+0.20 2013-04-03
  - re-write noisy children
- - add cfile format option for cpanfile
+ - add cfile output format option for cpanfile prereqs
  - refactor my roles, comment out cruff
  - some eol and pod tweaks
+ - Add first attamp at finding dzill plugins
+ - Add dzill children to experimental option
 
 0.18 2013-03-24
  - spelling mauke++

@@ -13,7 +13,7 @@ This enables you to see which modules you have used,
 
 All output goes to STDOUT, so you can use it as you see fit.
 
-### Version 0.18
+### Version 0.20
 
 ## Synopsis
 
