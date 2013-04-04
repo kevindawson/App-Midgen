@@ -6,7 +6,7 @@ use Moo;
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.20';
+our $VERSION = '0.21';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -462,9 +462,9 @@ sub no_index {
 }
 
 #######
-# header_cfile
+# header_cpanfile
 #######
-sub header_cfile {
+sub header_cpanfile {
 	my $self         = shift;
 	my $package_name = shift // NONE;
 	my $mi_ver       = shift // NONE;
@@ -489,9 +489,9 @@ sub header_cfile {
 	return;
 }
 #######
-# body_cfile
+# body_cpanfile
 #######
-sub body_cfile {
+sub body_cpanfile {
 	my $self         = shift;
 	my $title        = shift;
 	my $required_ref = shift;
@@ -548,9 +548,9 @@ sub body_cfile {
 	return;
 }
 #######
-# footer_cfile
+# footer_cpanfile
 #######
-sub footer_cfile {
+sub footer_cpanfile {
 	my $self = shift;
 	my $package_name = shift // NONE;
 	$package_name =~ s{::}{-}g;
@@ -605,7 +605,7 @@ App::Midgen::Output - A collection of output orientated methods used by L<App::M
 
 =head1 VERSION
 
-This document describes App::Midgen::Output version: 0.20
+This document describes App::Midgen::Output version: 0.21
 
 =head1 DESCRIPTION
 
@@ -628,11 +628,11 @@ The output format uses colour to add visualization of module version number
 
 =item * footer_mi
 
-=item * header_cfile
+=item * header_cpanfile
 
-=item * body_cfile
+=item * body_cpanfile
 
-=item * footer_cfile
+=item * footer_cpanfile
 
 =item * header_build
 

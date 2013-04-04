@@ -1,5 +1,8 @@
 Revision history for App-Midgen
 
+0.21 2013-04-04
+ - Rename output format option from cfile to cpanfile
+
 0.20 2013-04-03
  - re-write noisy children
  - add cfile output format option for cpanfile prereqs

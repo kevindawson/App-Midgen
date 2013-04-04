@@ -13,7 +13,7 @@ This enables you to see which modules you have used,
 
 All output goes to STDOUT, so you can use it as you see fit.
 
-### Version 0.20
+### Version 0.21
 
 ## Synopsis
 
@@ -65,7 +65,7 @@ By default we output to STDOUT in 'dsl' format, so you can check, copy n paste o
     midgen -f build        # Build
     midgen -f dzil         # Dist::Zilla
     midgen -f dist         # dist.ini
-
+    midgen -f cpanfile     # cpanfile prereqs
 
 ####--dual_life or -l
 Shows modules that are in Perl core and CPAN, some modules have a

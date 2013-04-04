@@ -8,7 +8,7 @@ BEGIN {
 	$PPI::XS_DISABLE = 1; # noise control - Prevent warning
 }
 
-our $VERSION = '0.20';
+our $VERSION = '0.21';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -131,7 +131,7 @@ midgen - Check B<requires> & B<test_requires> of your package for CPAN inclusion
 
 =head1 VERSION
 
-This document describes midgen version: 0.20
+This document describes midgen version: 0.21
 
 =head1 SYNOPSIS
 
@@ -176,7 +176,7 @@ By default we output to STDOUT in 'dsl' format, so you can check,
  midgen -f build	# Build
  midgen -f dzil		# Dist::Zilla
  midgen -f dist		# dist.ini
- midgen -f cfile    # cpanfile
+ midgen -f cpanfile	# cpanfile prereqs
 
 =item B<--dual_life or -l>
 

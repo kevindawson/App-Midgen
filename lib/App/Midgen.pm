@@ -8,7 +8,7 @@ use App::Midgen::Output;
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.20';
+our $VERSION = '0.21';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -227,33 +227,33 @@ sub _find_makefile_requires {
 
 	$self->{skip_not_mcpan} = 0;
 
-	if ( /^Dist::Zilla::Role::PluginBundle/ ~~ @modules ){
+	if ( /^Dist::Zilla::Role::PluginBundle/ ~~ @modules ) {
 
-	$self->{skip_not_mcpan} = 1;
+		$self->{skip_not_mcpan} = 1;
 
-	my $ppi_tqs = $self->{ppi_document}->find('PPI::Token::Quote::Single');
-	if ($ppi_tqs) {
+		my $ppi_tqs = $self->{ppi_document}->find('PPI::Token::Quote::Single');
+		if ($ppi_tqs) {
 
-		# my @modules;
-		foreach my $include ( @{$ppi_tqs} ) {
+			# my @modules;
+			foreach my $include ( @{$ppi_tqs} ) {
 
-			my $module = $include->content;
-			##p $module;
-			$module =~ s/^[']//;
-			$module =~ s/[']$//;
+				my $module = $include->content;
+				##p $module;
+				$module =~ s/^[']//;
+				$module =~ s/[']$//;
 
-			next if $module =~ m/^Dist::Zilla::Role::PluginBundle/;
-			next if $module =~ m{[.|$|\\|/|-|%|@|]};
-			next if $module eq NONE;
+				next if $module =~ m/^Dist::Zilla::Role::PluginBundle/;
+				next if $module =~ m{[.|$|\\|/|-|%|@|]};
+				next if $module eq NONE;
 
-			push @modules, 'Dist::Zilla::Plugin::' . $module;
-			##p @module;
+				push @modules, 'Dist::Zilla::Plugin::' . $module;
+				##p @module;
 
-			## $self->_xtests_includes($module);
+				## $self->_xtests_includes($module);
+			}
 		}
-	}
 
-	## p @modules;
+		## p @modules;
 
 
 	}
@@ -583,7 +583,8 @@ sub remove_noisy_children {
 			if ( $child_name =~ /^ $parent_name ::/x ) {
 
 				my $valied_seperation = 1;
-				# as we only do this against -x, why not be extra vigalint with dzil
+
+				# as we only do this against -x, why not be extra vigilant with dzil
 				$valied_seperation = 3 if $parent_name =~ /^Dist::Zilla/;
 
 				# Checking for one degree of separation
@@ -767,7 +768,7 @@ sub get_module_version {
 			try {
 				my $mod = $self->{mcpan}->release( distribution => $dist );
 
-				# This is where we add a dist version to a nacked module
+				# This is where we add a dist version to a knackered module
 				$cpan_version                           = $mod->{version_numified};
 				$found                                  = 1;
 				$self->{modules}{$module}{distribution} = $dist;
@@ -784,10 +785,10 @@ sub get_module_version {
 		$cpan_version = '!mcpan' if $found == 0;
 	};
 
-	# sienfific numbers in a version string, O what fun.
+	# scientific numbers in a version string, O what fun.
 	if ( $cpan_version =~ m/\d+e/ ) {
 
-		# a bit of de crapy-fying
+		# a bit of de crappy-flying
 		# catch Test::Kwalitee::Extra 6e-06
 		say $module . ' Unique Release Sequence Indicator ' . $cpan_version if $self->verbose;
 		$cpan_version = version->parse($cpan_version)->numify;
@@ -887,7 +888,8 @@ sub _output_header {
 	given ( $self->format ) {
 
 		when ('dsl') {
-			$self->{output}->header_dsl( $self->{distribution_name}, $self->get_module_version('inc::Module::Install::DSL') );
+			$self->{output}
+				->header_dsl( $self->{distribution_name}, $self->get_module_version('inc::Module::Install::DSL') );
 		}
 		when ('mi') {
 			$self->{output}->header_mi( $self->{distribution_name}, $self->get_module_version('inc::Module::Install') );
@@ -895,8 +897,9 @@ sub _output_header {
 		when ('dist') {
 			$self->{output}->header_dist( $self->{distribution_name} );
 		}
-		when ('cfile') {
-			$self->{output}->header_cfile( $self->{distribution_name}, $self->get_module_version('inc::Module::Install') );
+		when ('cpanfile') {
+			$self->{output}
+				->header_cpanfile( $self->{distribution_name}, $self->get_module_version('inc::Module::Install') );
 		}
 		when ('dzil') {
 			$self->{output}->header_dzil( $self->{distribution_name} );
@@ -926,8 +929,8 @@ sub _output_main_body {
 		when ('dist') {
 			$self->{output}->body_dist( $title, $required_ref );
 		}
-		when ('cfile') {
-			$self->{output}->body_cfile( $title, $required_ref );
+		when ('cpanfile') {
+			$self->{output}->body_cpanfile( $title, $required_ref );
 		}
 		when ('dzil') {
 			$self->{output}->body_dzil( $title, $required_ref );
@@ -956,8 +959,8 @@ sub _output_footer {
 		when ('dist') {
 			$self->{output}->footer_dist( $self->{distribution_name} );
 		}
-		when ('cfile') {
-			$self->{output}->footer_cfile( $self->{distribution_name} );
+		when ('cpanfile') {
+			$self->{output}->footer_cpanfile( $self->{distribution_name} );
 		}
 		when ('dzil') {
 			$self->{output}->footer_dzil( $self->{distribution_name} );
@@ -986,7 +989,7 @@ App::Midgen - Check B<requires> & B<test_requires> of your package for CPAN incl
 
 =head1 VERSION
 
-This document describes App::Midgen version: 0.20
+This document describes App::Midgen version: 0.21
 
 =head1 SYNOPSIS
 
@@ -1011,7 +1014,7 @@ This started as a way of generating the formatted contents for
 a Module::Install::DSL Makefile.PL, which has now grown to support other 
 output formats, as well as the ability to show B<dual-life> and 
 B<perl core> modules, see L<midgen> for option info.
-This enables you to see which modules you have used, 
+This enables you to see which modules you have used, we even try and list Dist-Zilla Plugins.
 
 All output goes to STDOUT, so you can use it as you see fit.
 
@@ -1042,7 +1045,7 @@ For more info and sample output see L<wiki|https://github.com/kevindawson/App-Mi
 
 =item * degree_separation
 
-now a seperate Method, returns an integer.
+now a separate Method, returns an integer.
 
 =item * find_required_modules
 
@@ -1125,6 +1128,8 @@ Matt S. Trout E<lt>mst@shadowcat.co.ukE<gt>
 Tommy Butler E<lt>ace@tommybutler.meE<gt>
 
 Neil Bowers E<lt>neilb@cpan.orgE<gt>
+
+Tatsuhiko Miyagawa E<lt>miyagawa@bulknews.netE<gt>
 
 =head1 COPYRIGHT
 
