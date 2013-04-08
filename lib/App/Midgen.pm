@@ -13,7 +13,7 @@ use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 use Carp;
-use Cwd;
+use Cwd qw(cwd);
 use Data::Printer { caller_info => 1, colored => 1, };
 use File::Find qw(find);
 use File::Spec;
@@ -24,7 +24,7 @@ use PPI;
 use Perl::MinimumVersion;
 use Perl::PrereqScanner;
 use Scalar::Util qw(looks_like_number);
-use Term::ANSIColor qw( colored colorstrip );
+use Term::ANSIColor qw( :constants colored colorstrip );
 use Try::Tiny;
 
 use constant {
@@ -37,7 +37,6 @@ use version;
 # stop rlib from Fing all over cwd
 our $Working_Dir = cwd();
 our $Min_Version = 0;
-
 
 
 #######
@@ -105,17 +104,17 @@ sub first_package_name {
 		find( sub { _find_package_names($self); }, File::Spec->catfile( $Working_Dir, 'lib' ) );
 	};
 
-	p $self->{package_names} if $self->debug;
+	p $self->package_names if $self->debug;
 
 	# We will assume the first package found is our Package Name, pot lock :)
 	# due to Milla not being a dist we go and get dist-name
 	try {
-		my $mcpan_module_info = $self->{mcpan}->module( $self->{package_names}[0] );
+		my $mcpan_module_info = $self->{mcpan}->module( $self->package_names->[0] );
 		$self->{distribution_name} = $mcpan_module_info->{distribution};
 		$self->{distribution_name} =~ s{-}{::}g;
 	}
 	catch {
-		$self->{distribution_name} = $self->{package_names}[0];
+		$self->{distribution_name} = $self->package_names->[0];
 	};
 	say 'Package: ' . $self->{distribution_name} if $self->verbose;
 
@@ -142,7 +141,7 @@ sub _find_package_names {
 	};
 
 	# Extract package names
-	push @{ $self->{package_names} }, $self->{ppi_document}->find_first('PPI::Statement::Package')->namespace;
+	push @{ $self->package_names }, $self->{ppi_document}->find_first('PPI::Statement::Package')->namespace;
 	$files_checked++;
 
 	return;
@@ -457,7 +456,12 @@ sub _process_found_modules {
 			when (/Mojo/sxm) {
 
 				if ( $self->experimental ) {
-					next if $self->_check_mojo_core( $module, $require_type );
+					if ( $self->_check_mojo_core( $module, $require_type ) ){
+					print BRIGHT_BLACK "\n";
+					say 'swapping out '. $module .' for Mojolicious';
+					print CLEAR;
+					next;
+					} #if $self->_check_mojo_core( $module, $require_type );
 				}
 			}
 			when (/^Padre/sxm) {
@@ -594,8 +598,9 @@ sub remove_noisy_children {
 					# Test for same version number
 					if ( colorstrip( $required_ref->{$parent_name} ) eq colorstrip( $required_ref->{$child_name} ) ) {
 						if ( $self->verbose or $self->experimental ) {
-							print "\n";
+							print BRIGHT_BLACK "\n";
 							say 'delete miscreant noisy child ' . $child_name . ' => ' . $required_ref->{$child_name};
+							print CLEAR;
 						}
 						try {
 							delete $required_ref->{$child_name};
@@ -662,13 +667,15 @@ sub remove_twins {
 			if ( $required_ref->{ $sorted_modules[ $n - 1 ] } eq $required_ref->{ $sorted_modules[$n] } ) {
 
 				if ( $self->verbose or $self->experimental ) {
-					print "\n";
-					say 'i have found twins';
-					say $dum_name . ' ('
-						. $required_ref->{ $sorted_modules[ $n - 1 ] }
-						. ') <-twins-> '
-						. $dee_name . ' ('
-						. $required_ref->{ $sorted_modules[$n] } . ')';
+					print BRIGHT_BLACK "\n";
+					# say 'i have found twins';
+					print $dum_name . ' => '
+						. $required_ref->{ $sorted_modules[ $n - 1 ] };
+					print BRIGHT_BLACK ' <-twins-> '
+						. $dee_name . ' => '
+						. $required_ref->{ $sorted_modules[$n] };
+					print CLEAR "\n";
+
 				}
 
 				#Check for vailed parent
