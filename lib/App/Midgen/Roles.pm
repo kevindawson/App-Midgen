@@ -113,11 +113,12 @@ has 'numify' => (
 #	lazy => 1,
 #);
 
-#has 'package_names' => (
-#	is   => 'rw',
-#	isa  => ArrayRef,
-#	lazy => 1,
-#);
+has 'package_names' => (
+	is   => 'rw',
+	isa  => ArrayRef,
+	default => sub { +[] },
+	lazy => 1,
+);
 
 #has 'package_requires' => (
 #	is   => 'rw',
