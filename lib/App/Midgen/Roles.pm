@@ -111,7 +111,7 @@ has 'quiet' => (
 
 
 #######
-# some encapsulated attributes
+# some encapsulated -> attributes
 #######
 
 has 'numify' => (
@@ -123,11 +123,20 @@ has 'numify' => (
 	lazy => 1,
 );
 
-#has 'distribution_name' => (
+#has 'skip_not_mcpan_stamp' => (
 #	is   => 'rw',
-#	isa  => Str,
+#	isa  => Bool,
+#	default => sub { 
+#		0;
+#	},
 #	lazy => 1,
 #);
+
+has 'distribution_name' => (
+	is   => 'rw',
+	isa  => Str,
+	lazy => 1,
+);
 
 has 'package_names' => (
 	is   => 'rw',
@@ -183,10 +192,21 @@ has 'mcpan' => (
 	builder => '_build_mcpan',
 	handles => [ qw( module release ) ],
 );
-
 sub _build_mcpan {
 	my $self = shift;
 	MetaCPAN::API->new();
+}
+
+has 'output' => (
+	is   => 'rw',
+	isa  => InstanceOf [ 'App::Midgen::Output', ],
+	lazy => 1,
+	builder => '_build_output',
+#	handles => [ qw( ... ) ],
+);
+sub _build_output {
+	my $self = shift;
+	App::Midgen::Output->new();
 }
 
 has 'scanner' => (
@@ -196,17 +216,16 @@ has 'scanner' => (
 	builder => '_build_scanner',
 	handles => [ qw( scan_ppi_document ) ],
 );
-
 sub _build_scanner {
 	my $self = shift;
 	Perl::PrereqScanner->new();
 }
 
-#has 'ppi_document' => (
-#	is   => 'rw',
-#	isa  => InstanceOf [ 'PPI::Document', ],
-#	lazy => 1,
-#);
+has 'ppi_document' => (
+	is   => 'rw',
+	isa  => Object,
+	lazy => 1,
+);
 
 has 'xtest' => (
 	is => 'rw',
@@ -223,11 +242,10 @@ has 'develop' => (
 	lazy => 1,
 	builder => '_develop',
 );
-
 sub _develop {
 	my $self = shift;
 #	return 'running builder';
-	if ( $self->{experimental} && $self->{format} eq 'cfile' ){
+	if ( $self->experimental && $self->format eq 'cfile' ){
 		return 1;
 	} else {
 		return 0;
