@@ -97,6 +97,19 @@ has 'zero' => (
 	required => 1,
 );
 
+has 'quiet' => (
+	is  => 'ro',
+	isa => sub {
+		croak "$_[0] this is not a Bool"
+			unless is_Bool( $_[0] );
+	},
+	default => sub {
+		0;
+	},
+	required => 1,
+);
+
+
 #######
 # some encapsulated attributes
 #######
@@ -104,6 +117,9 @@ has 'zero' => (
 has 'numify' => (
 	is   => 'rw',
 	isa  => Bool,
+	default => sub { 
+		0;
+	},
 	lazy => 1,
 );
 
@@ -116,13 +132,14 @@ has 'numify' => (
 has 'package_names' => (
 	is   => 'rw',
 	isa  => ArrayRef,
-	default => sub { +[] },
+	default => sub { [] },
 	lazy => 1,
 );
 
 #has 'package_requires' => (
 #	is   => 'rw',
 #	isa  => HashRef,
+#	default => sub { {} },
 #	lazy => 1,
 #);
 
@@ -159,24 +176,31 @@ has 'found_twins' => (
 	},
 );
 
-#has 'mcpan' => (
-#	is   => 'rw',
-#	isa  => InstanceOf [ 'MetaCPAN::API', ],
-#	lazy => 1,
-#	handles => [ qw( module new release ) ],
-#);
+has 'mcpan' => (
+	is   => 'rw',
+	isa  => InstanceOf [ 'MetaCPAN::API', ],
+	lazy => 1,
+	builder => '_build_mcpan',
+	handles => [ qw( module release ) ],
+);
 
-#has 'output' => (
-#	is   => 'rw',
-#	isa  => InstanceOf [ 'App::Midgen::Output', ],
-#	lazy => 1,
-#);
+sub _build_mcpan {
+	my $self = shift;
+	MetaCPAN::API->new();
+}
 
-#has 'scanner' => (
-#	is   => 'rw',
-#	isa  => InstanceOf [ 'Perl::PrereqScanner', ],
-#	lazy => 1,
-#);
+has 'scanner' => (
+	is   => 'rw',
+	isa  => InstanceOf [ 'Perl::PrereqScanner', ],
+	lazy => 1,
+	builder => '_build_scanner',
+	handles => [ qw( scan_ppi_document ) ],
+);
+
+sub _build_scanner {
+	my $self = shift;
+	Perl::PrereqScanner->new();
+}
 
 #has 'ppi_document' => (
 #	is   => 'rw',
