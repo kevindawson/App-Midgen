@@ -12,7 +12,7 @@ our $VERSION = '0.21';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Carp;
+#use Carp;
 use Cwd qw(cwd);
 use Data::Printer { caller_info => 1, colored => 1, };
 use File::Find qw(find);
@@ -72,7 +72,7 @@ sub run {
 	$self->_output_main_body( 'recommends',    $self->{recommends} );
 	$self->_output_main_body( 'test_develop',  $self->{test_develop} ) if $self->develop;
 
-	$self->_output_footer();
+	$self->_output_footer();# if not $self->quiet;
 
 	return;
 }
@@ -87,9 +87,9 @@ sub _initialise {
 	say 'working in dir: ' . $Working_Dir if $self->debug;
 
 	$self->{output}  = App::Midgen::Output->new();
-	$self->{scanner} = Perl::PrereqScanner->new();
-	$self->{mcpan}   = MetaCPAN::API->new() || croak "arse: $ERRNO";
-	$self->numify(0);
+	#$self->scanner = Perl::PrereqScanner->new();
+	#$self->{mcpan}   = MetaCPAN::API->new() || croak "arse: $ERRNO";
+	#$self->numify(0);
 
 	return;
 }
@@ -109,7 +109,7 @@ sub first_package_name {
 	# We will assume the first package found is our Package Name, pot lock :)
 	# due to Milla not being a dist we go and get dist-name
 	try {
-		my $mcpan_module_info = $self->{mcpan}->module( $self->package_names->[0] );
+		my $mcpan_module_info = $self->mcpan->module( $self->package_names->[0] );
 		$self->{distribution_name} = $mcpan_module_info->{distribution};
 		$self->{distribution_name} =~ s{-}{::}g;
 	}
@@ -221,7 +221,7 @@ sub _find_makefile_requires {
 		$self->min_version() if $is_script;
 	};
 
-	my $prereqs = $self->{scanner}->scan_ppi_document( $self->{ppi_document} );
+	my $prereqs = $self->scanner->scan_ppi_document( $self->{ppi_document} );
 	my @modules = $prereqs->required_modules;
 
 	$self->{skip_not_mcpan} = 0;
@@ -316,7 +316,7 @@ sub _find_makefile_test_requires {
 	# Load a Document from a file and check use and require contents
 	$self->{ppi_document} = PPI::Document->new($filename);
 
-	my $prereqs = $self->{scanner}->scan_ppi_document( $self->{ppi_document} );
+	my $prereqs = $self->scanner->scan_ppi_document( $self->{ppi_document} );
 	my @modules = $prereqs->required_modules;
 
 	p @modules if $self->debug;
@@ -436,6 +436,7 @@ sub _process_found_modules {
 
 		#deal with ''
 		next if $module eq NONE;
+
 		given ($module) {
 			when (/perl/sxm) {
 
@@ -457,11 +458,13 @@ sub _process_found_modules {
 
 				if ( $self->experimental ) {
 					if ( $self->_check_mojo_core( $module, $require_type ) ){
+					if ( not $self->quiet ){
 					print BRIGHT_BLACK "\n";
 					say 'swapping out '. $module .' for Mojolicious';
 					print CLEAR;
+					}
 					next;
-					} #if $self->_check_mojo_core( $module, $require_type );
+					} 
 				}
 			}
 			when (/^Padre/sxm) {
@@ -597,10 +600,12 @@ sub remove_noisy_children {
 
 					# Test for same version number
 					if ( colorstrip( $required_ref->{$parent_name} ) eq colorstrip( $required_ref->{$child_name} ) ) {
+						if ( not $self->quiet ){
 						if ( $self->verbose or $self->experimental ) {
 							print BRIGHT_BLACK "\n";
 							say 'delete miscreant noisy child ' . $child_name . ' => ' . $required_ref->{$child_name};
 							print CLEAR;
+						}
 						}
 						try {
 							delete $required_ref->{$child_name};
@@ -665,7 +670,7 @@ sub remove_twins {
 
 			# Test for same version number
 			if ( $required_ref->{ $sorted_modules[ $n - 1 ] } eq $required_ref->{ $sorted_modules[$n] } ) {
-
+				if ( not $self->quiet ){
 				if ( $self->verbose or $self->experimental ) {
 					print BRIGHT_BLACK "\n";
 					# say 'i have found twins';
@@ -676,6 +681,7 @@ sub remove_twins {
 						. $required_ref->{ $sorted_modules[$n] };
 					print CLEAR "\n";
 
+				}
 				}
 
 				#Check for vailed parent
@@ -748,7 +754,7 @@ sub get_module_version {
 		$module =~ s/::/-/g;
 
 		# quick n dirty, get version number if module is classed as a distribution in metacpan
-		my $mod = $self->{mcpan}->release( distribution => $module );
+		my $mod = $self->mcpan->release( distribution => $module );
 		$cpan_version = $mod->{version_numified};
 
 		# $cpan_version = $mod->{version_numified};
@@ -758,7 +764,7 @@ sub get_module_version {
 	catch {
 		try {
 			$module =~ s/-/::/g;
-			my $mcpan_module_info = $self->{mcpan}->module($module);
+			my $mcpan_module_info = $self->mcpan->module($module);
 			$dist = $mcpan_module_info->{distribution};
 
 			# mark all perl core modules with either 'core' or '0'
@@ -773,7 +779,7 @@ sub get_module_version {
 		};
 		if ( $found == 0 ) {
 			try {
-				my $mod = $self->{mcpan}->release( distribution => $dist );
+				my $mod = $self->mcpan->release( distribution => $dist );
 
 				# This is where we add a dist version to a knackered module
 				$cpan_version                           = $mod->{version_numified};
@@ -906,7 +912,8 @@ sub _output_header {
 		}
 		when ('cpanfile') {
 			$self->{output}
-				->header_cpanfile( $self->{distribution_name}, $self->get_module_version('inc::Module::Install') );
+				->header_cpanfile( $self->{distribution_name}, $self->get_module_version('inc::Module::Install') ) if not $self->quiet;
+
 		}
 		when ('dzil') {
 			$self->{output}->header_dzil( $self->{distribution_name} );
