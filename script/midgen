@@ -52,6 +52,7 @@ my $dual_life    = $config->{dual_life} || 0;
 my $verbose      = 0;
 my @format       = $config->{format} || 'dsl';
 my $experimental = 0;
+my $quiet = $config->{quiet} || 0;
 my $zero         = $config->{zero} || 0;
 my $debug        = 0;
 my $write        = 0;
@@ -62,6 +63,7 @@ GetOptions(
 	'help|h|?'       => \$help,
 	'experimental|x' => \$experimental,
 	'format|f=s'     => \@format,
+	'quiet|q' => \$quiet,
 	'zero|z!'        => \$zero,
 	'debug|d'        => sub {
 		$core    = 1;
@@ -80,12 +82,19 @@ say 'Running midgen v' . $VERSION;
 say 'Stamped -> ' . gmstamp($BASETIME);
 say 'Honouring $ENV{ANSI_COLORS_DISABLED}' if $ENV{ANSI_COLORS_DISABLED};
 
+# quiet dominates over verbose and debug
+if ( $quiet eq 1 ){
+	$verbose = 0;
+	$debug = 0;
+}
+
 my $midgen = App::Midgen->new(
 	core         => $core,
 	dual_life    => $dual_life,
 	verbose      => $verbose,
 	format       => $format[-1],
 	experimental => $experimental,
+	quiet        => $quiet,
 	zero         => $zero,
 	debug        => $debug,
 );
@@ -102,6 +111,7 @@ if ($write) {
 		{   core      => $core,
 			dual_life => $dual_life,
 			format    => $format[-1],
+			quiet     => $quiet,
 			zero      => $zero,
 		}
 	);
@@ -114,7 +124,7 @@ if ($write) {
 # time and exit
 #######
 my $run_time = time - $BASETIME;
-say 'I just spent ' . $run_time . 's doing all that for you enjoy';
+say 'I just spent ' . $run_time . 's doing all that, for you, enjoy';
 say '__END__';
 
 exit(0);
@@ -161,10 +171,10 @@ Prints a help message and exits.
    --format         change output format
    --dual_life      show dual-life modules
    --core           show all perl core modules
-   --verbose        take a little peek as to what is going on
+   --verbose        show detailed progress of files we are processing
    --experimental   this feature under development
    --zero           show a 0 instead of core
-   --debug          relevant to self development
+   --debug          show much more information relevant to self development
 
 =item B<--format or -f>
 
