@@ -257,6 +257,18 @@ sub body_build {
 sub footer_build {
 	my $self = shift;
 
+	if ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'script' ) ) {
+		print "\n";
+		say '"script_files" => [';
+		print "\t\"script/...\"\n";
+		say ']';
+	} elsif ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'bin' ) ) {
+		print "\n";
+		say '"script_files" => [';
+		print "\t\"bin/...\"\n";
+		say ']';
+	}
+
 	print "\n";
 
 	return;
