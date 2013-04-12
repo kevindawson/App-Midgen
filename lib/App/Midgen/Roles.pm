@@ -2,7 +2,7 @@ package App::Midgen::Roles;
 
 use v5.10;
 use Moo::Role;
-use Types::Standard qw( ArrayRef Bool Str );
+use Types::Standard qw( ArrayRef Bool Object Str );
 use Type::Tiny;
 #use MooX::Types::MooseLike::Base qw(:all);
 
@@ -129,12 +129,13 @@ has 'found_twins' => (
 	default => sub { 0 },
 );
 
-#has 'mcpan' => (
-#	is   => 'rw',
-#	isa  => InstanceOf [ 'MetaCPAN::API', ],
-#	lazy => 1,
-#	handles => [ qw( module new release ) ],
-#);
+has 'mcpan' => (
+	is   => 'rw',
+	isa  => Object,
+	lazy => 1,
+	default => sub { MetaCPAN::API->new() },
+	handles => [ qw( module new release ) ],
+);
 
 #has 'output' => (
 #	is   => 'rw',
@@ -142,11 +143,13 @@ has 'found_twins' => (
 #	lazy => 1,
 #);
 
-#has 'scanner' => (
-#	is   => 'rw',
-#	isa  => InstanceOf [ 'Perl::PrereqScanner', ],
-#	lazy => 1,
-#);
+has 'scanner' => (
+	is   => 'rw',
+	isa  => Object,
+	lazy => 1,
+	default => sub { Perl::PrereqScanner->new() },
+	handles => [ qw( scan_ppi_document ) ],
+);
 
 #has 'ppi_document' => (
 #	is   => 'rw',

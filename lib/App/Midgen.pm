@@ -88,8 +88,8 @@ sub _initialise {
 	say 'working in dir: ' . $Working_Dir if $self->debug;
 
 	$self->{output}  = App::Midgen::Output->new();
-	$self->{scanner} = Perl::PrereqScanner->new();
-	$self->{mcpan}   = MetaCPAN::API->new() || croak "arse: $ERRNO";
+#	$self->{scanner} = Perl::PrereqScanner->new();
+#	$self->{mcpan}   = MetaCPAN::API->new() || croak "arse: $ERRNO";
 	$self->numify(0);
 
 	return;
@@ -110,7 +110,7 @@ sub first_package_name {
 	# We will assume the first package found is our Package Name, pot lock :)
 	# due to Milla not being a dist we go and get dist-name
 	try {
-		my $mcpan_module_info = $self->{mcpan}->module( $self->package_names->[0] );
+		my $mcpan_module_info = $self->mcpan->module( $self->package_names->[0] );
 		my $distribution_name = $mcpan_module_info->{distribution};
 		$distribution_name =~ s{-}{::}g;
 		$self->distribution_name( $distribution_name );
@@ -223,7 +223,7 @@ sub _find_makefile_requires {
 		$self->min_version() if $is_script;
 	};
 
-	my $prereqs = $self->{scanner}->scan_ppi_document( $self->{ppi_document} );
+	my $prereqs = $self->scanner->scan_ppi_document( $self->{ppi_document} );
 	my @modules = $prereqs->required_modules;
 
 	$self->{skip_not_mcpan} = 0;
@@ -318,7 +318,7 @@ sub _find_makefile_test_requires {
 	# Load a Document from a file and check use and require contents
 	$self->{ppi_document} = PPI::Document->new($filename);
 
-	my $prereqs = $self->{scanner}->scan_ppi_document( $self->{ppi_document} );
+	my $prereqs = $self->scanner->scan_ppi_document( $self->{ppi_document} );
 	my @modules = $prereqs->required_modules;
 
 	p @modules if $self->debug;
@@ -751,7 +751,7 @@ sub get_module_version {
 		$module =~ s/::/-/g;
 
 		# quick n dirty, get version number if module is classed as a distribution in metacpan
-		my $mod = $self->{mcpan}->release( distribution => $module );
+		my $mod = $self->mcpan->release( distribution => $module );
 		$cpan_version = $mod->{version_numified};
 
 		# $cpan_version = $mod->{version_numified};
@@ -761,7 +761,7 @@ sub get_module_version {
 	catch {
 		try {
 			$module =~ s/-/::/g;
-			my $mcpan_module_info = $self->{mcpan}->module($module);
+			my $mcpan_module_info = $self->mcpan->module($module);
 			$dist = $mcpan_module_info->{distribution};
 
 			# mark all perl core modules with either 'core' or '0'
@@ -776,7 +776,7 @@ sub get_module_version {
 		};
 		if ( $found == 0 ) {
 			try {
-				my $mod = $self->{mcpan}->release( distribution => $dist );
+				my $mod = $self->mcpan->release( distribution => $dist );
 
 				# This is where we add a dist version to a knackered module
 				$cpan_version                           = $mod->{version_numified};
