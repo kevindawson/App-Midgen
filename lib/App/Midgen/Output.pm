@@ -100,7 +100,7 @@ sub footer_dsl {
 		print "\n";
 	}
 
-	print "\n";
+#	print "\n";
 
 	return;
 }
@@ -490,9 +490,9 @@ sub body_cpanfile {
 	my $required_ref = shift;
 
 	if ( $title eq 'requires' ) {
-		print BRIGHT_BLACK "\n";
-		say '# cpanfile';
-		print CLEAR;
+#		print BRIGHT_BLACK "\n";
+#		say '# cpanfile';
+#		print CLEAR;
 		say "requires 'perl', '$App::Midgen::Min_Version';";
 	}
 	print "\n";
@@ -548,14 +548,14 @@ sub footer_cpanfile {
 	my $package_name = shift // NONE;
 	$package_name =~ s{::}{-}g;
 
-	print BRIGHT_BLACK "\n";
+#	print BRIGHT_BLACK "\n";
 
 	#	say '# ToDo you should consider the following';
 	#	say "homepage    https://github.com/.../$package_name";
 	#	say "bugtracker  https://github.com/.../$package_name/issues";
 	#	say "repository  git://github.com/.../$package_name.git";
 
-	print CLEAR "\n";
+#	print CLEAR "\n";
 
 	#	if ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'share' ) ) {
 	#		say 'install_share';

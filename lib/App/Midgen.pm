@@ -90,7 +90,7 @@ sub _initialise {
 #	$self->output  = App::Midgen::Output->new();
 #	$self->{scanner} = Perl::PrereqScanner->new();
 #	$self->{mcpan}   = MetaCPAN::API->new() || croak "arse: $ERRNO";
-	$self->numify(0);
+#	$self->numify(0);
 
 	return;
 }
@@ -601,10 +601,12 @@ sub remove_noisy_children {
 
 					# Test for same version number
 					if ( colorstrip( $required_ref->{$parent_name} ) eq colorstrip( $required_ref->{$child_name} ) ) {
+						if ( not $self->quiet ){
 						if ( $self->verbose or $self->experimental ) {
 							print BRIGHT_BLACK "\n";
 							say 'delete miscreant noisy child ' . $child_name . ' => ' . $required_ref->{$child_name};
 							print CLEAR;
+						}
 						}
 						try {
 							delete $required_ref->{$child_name};
@@ -669,7 +671,7 @@ sub remove_twins {
 
 			# Test for same version number
 			if ( $required_ref->{ $sorted_modules[ $n - 1 ] } eq $required_ref->{ $sorted_modules[$n] } ) {
-
+				if ( not $self->quiet ){
 				if ( $self->verbose or $self->experimental ) {
 					print BRIGHT_BLACK "\n";
 					# say 'i have found twins';
@@ -679,6 +681,7 @@ sub remove_twins {
 						. $dee_name . ' => '
 						. $required_ref->{ $sorted_modules[$n] };
 					print CLEAR "\n";
+				}
 				}
 
 				#Check for vailed parent

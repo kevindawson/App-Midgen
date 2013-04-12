@@ -69,6 +69,13 @@ has 'zero' => (
 	default => sub { 0 },
 );
 
+has 'quiet' => (
+	is  => 'ro',
+	isa => Bool,
+	required => 1,
+	default => sub { 0 },
+);
+
 #######
 # some encapsulated attributes
 #######
