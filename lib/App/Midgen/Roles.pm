@@ -3,6 +3,7 @@ package App::Midgen::Roles;
 use v5.10;
 use Moo::Role;
 use Types::Standard qw( ArrayRef Bool Object Str );
+
 #use Type::Tiny;
 #use MooX::Types::MooseLike::Base qw(:all);
 
@@ -17,31 +18,31 @@ use Carp;
 #######
 
 has 'core' => (
-	is  => 'ro',
-	isa => Bool,
+	is       => 'ro',
+	isa      => Bool,
 	required => 1,
-	default => sub { 0 },
+	default  => sub {0},
 );
 
 has 'dual_life' => (
-	is  => 'ro',
-	isa => Bool,
+	is       => 'ro',
+	isa      => Bool,
 	required => 1,
-	default => sub { 0 },
+	default  => sub {0},
 );
 
 has 'debug' => (
-	is  => 'ro',
-	isa => Bool,
+	is       => 'ro',
+	isa      => Bool,
 	required => 1,
-	default => sub { 0 },
+	default  => sub {0},
 );
 
 has 'experimental' => (
-	is  => 'ro',
-	isa => Bool,
+	is       => 'ro',
+	isa      => Bool,
 	required => 1,
-	default => sub { 0 },
+	default  => sub {0},
 );
 
 has 'format' => (
@@ -56,24 +57,24 @@ has 'format' => (
 );
 
 has 'verbose' => (
-	is  => 'ro',
-	isa => Bool,
+	is       => 'ro',
+	isa      => Bool,
 	required => 1,
-	default => sub { 0 },
+	default  => sub {0},
 );
 
 has 'zero' => (
-	is  => 'ro',
-	isa => Bool,
+	is       => 'ro',
+	isa      => Bool,
 	required => 1,
-	default => sub { 0 },
+	default  => sub {0},
 );
 
 has 'quiet' => (
-	is  => 'ro',
-	isa => Bool,
+	is       => 'ro',
+	isa      => Bool,
 	required => 1,
-	default => sub { 0 },
+	default  => sub {0},
 );
 
 #######
@@ -93,9 +94,9 @@ has 'distribution_name' => (
 );
 
 has 'package_names' => (
-	is   => 'rw',
-	isa  => ArrayRef,
-	lazy => 1,
+	is      => 'rw',
+	isa     => ArrayRef,
+	lazy    => 1,
 	default => sub { [] },
 );
 
@@ -133,57 +134,59 @@ has 'found_twins' => (
 	is      => 'rw',
 	isa     => Bool,
 	lazy    => 1,
-	default => sub { 0 },
+	default => sub {0},
 );
 
 has 'mcpan' => (
-	is   => 'rw',
-	isa  => Object,
-	lazy => 1,
+	is      => 'rw',
+	isa     => Object,
+	lazy    => 1,
 	default => sub { MetaCPAN::API->new() },
-	handles => [ qw( module release ) ],
+	handles => [qw( module release )],
 );
 
 has 'output' => (
-	is   => 'rw',
-	isa  => Object,
-	lazy => 1,
+	is      => 'rw',
+	isa     => Object,
+	lazy    => 1,
 	default => sub { App::Midgen::Output->new() },
 );
 
 has 'scanner' => (
-	is   => 'rw',
-	isa  => Object,
-	lazy => 1,
+	is      => 'rw',
+	isa     => Object,
+	lazy    => 1,
 	default => sub { Perl::PrereqScanner->new() },
-	handles => [ qw( scan_ppi_document ) ],
+	handles => [qw( scan_ppi_document )],
 );
 
 has 'ppi_document' => (
-	is   => 'rw',
-	isa  => Object,
-#	isa  => InstanceOf [ 'PPI::Document', ],
+	is  => 'rw',
+	isa => Object,
+
+	#	isa  => InstanceOf [ 'PPI::Document', ],
 	lazy => 1,
 );
 
 has 'xtest' => (
-	is => 'rw',
-	isa => Str,
-	lazy => 1,
-	default => sub { 'test_requires' },
+	is      => 'rw',
+	isa     => Str,
+	lazy    => 1,
+	default => sub {'test_requires'},
 );
 
 has 'develop' => (
-	is => 'ro',
-	isa => Bool,
-	lazy => 1,
+	is      => 'ro',
+	isa     => Bool,
+	lazy    => 1,
 	builder => '_build_develop',
 );
 
 sub _build_develop {
 	my $self = shift;
-#	return 'running builder';
-	if ( $self->{experimental} && $self->{format} eq 'cfile' ){
+
+	#	return 'running builder';
+	if ( $self->{experimental} && $self->{format} eq 'cfile' ) {
 		return 1;
 	} else {
 		return 0;

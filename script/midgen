@@ -52,7 +52,7 @@ my $dual_life    = $config->{dual_life} || 0;
 my $verbose      = 0;
 my @format       = $config->{format} || 'dsl';
 my $experimental = 0;
-my $quiet = $config->{quiet} || 0;
+my $quiet        = $config->{quiet} || 0;
 my $zero         = $config->{zero} || 0;
 my $debug        = 0;
 my $write        = 0;
@@ -63,7 +63,7 @@ GetOptions(
 	'help|h|?'       => \$help,
 	'experimental|x' => \$experimental,
 	'format|f=s'     => \@format,
-	'quiet|q'		 => \$quiet,
+	'quiet|q'        => \$quiet,
 	'zero|z!'        => \$zero,
 	'debug|d'        => sub {
 		$core    = 1;
@@ -83,9 +83,9 @@ say 'Stamped -> ' . gmstamp($BASETIME);
 say 'Honouring $ENV{ANSI_COLORS_DISABLED}' if $ENV{ANSI_COLORS_DISABLED};
 
 # quiet dominates over verbose and debug
-if ( $quiet eq 1 ){
+if ( $quiet == 1 ) {
 	$verbose = 0;
-	$debug = 0;
+	$debug   = 0;
 }
 
 my $midgen = App::Midgen->new(
