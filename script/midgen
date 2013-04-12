@@ -52,6 +52,7 @@ my $dual_life    = $config->{dual_life} || 0;
 my $verbose      = 0;
 my @format       = $config->{format} || 'dsl';
 my $experimental = 0;
+my $quiet = $config->{quiet} || 0;
 my $zero         = $config->{zero} || 0;
 my $debug        = 0;
 my $write        = 0;
