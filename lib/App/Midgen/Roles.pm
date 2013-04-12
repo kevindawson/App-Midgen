@@ -3,7 +3,7 @@ package App::Midgen::Roles;
 use v5.10;
 use Moo::Role;
 use Types::Standard qw( ArrayRef Bool Object Str );
-use Type::Tiny;
+#use Type::Tiny;
 #use MooX::Types::MooseLike::Base qw(:all);
 
 # Load time and dependencies negate execution time
@@ -134,14 +134,15 @@ has 'mcpan' => (
 	isa  => Object,
 	lazy => 1,
 	default => sub { MetaCPAN::API->new() },
-	handles => [ qw( module new release ) ],
+	handles => [ qw( module release ) ],
 );
 
-#has 'output' => (
-#	is   => 'rw',
-#	isa  => InstanceOf [ 'App::Midgen::Output', ],
-#	lazy => 1,
-#);
+has 'output' => (
+	is   => 'rw',
+	isa  => Object,
+	lazy => 1,
+	default => sub { App::Midgen::Output->new() },
+);
 
 has 'scanner' => (
 	is   => 'rw',
@@ -151,11 +152,12 @@ has 'scanner' => (
 	handles => [ qw( scan_ppi_document ) ],
 );
 
-#has 'ppi_document' => (
-#	is   => 'rw',
+has 'ppi_document' => (
+	is   => 'rw',
+	isa  => Object,
 #	isa  => InstanceOf [ 'PPI::Document', ],
-#	lazy => 1,
-#);
+	lazy => 1,
+);
 
 has 'xtest' => (
 	is => 'rw',
@@ -168,10 +170,10 @@ has 'develop' => (
 	is => 'ro',
 	isa => Bool,
 	lazy => 1,
-	builder => '_develop',
+	builder => '_build_develop',
 );
 
-sub _develop {
+sub _build_develop {
 	my $self = shift;
 #	return 'running builder';
 	if ( $self->{experimental} && $self->{format} eq 'cfile' ){

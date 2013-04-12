@@ -87,7 +87,7 @@ sub _initialise {
 	# let's give Output a copy, to stop it being Fup as well suspect Tiny::Path as-well
 	say 'working in dir: ' . $Working_Dir if $self->debug;
 
-	$self->{output}  = App::Midgen::Output->new();
+#	$self->output  = App::Midgen::Output->new();
 #	$self->{scanner} = Perl::PrereqScanner->new();
 #	$self->{mcpan}   = MetaCPAN::API->new() || croak "arse: $ERRNO";
 	$self->numify(0);
@@ -137,13 +137,13 @@ sub _find_package_names {
 	return if $filename !~ /[.]pm$/sxm;
 
 	# Load a Document from a file
-	$self->{ppi_document} = PPI::Document->new($filename);
+	$self->ppi_document( PPI::Document->new($filename) );
 	try {
 		$self->min_version();
 	};
 
 	# Extract package names
-	push @{ $self->package_names }, $self->{ppi_document}->find_first('PPI::Statement::Package')->namespace;
+	push @{ $self->package_names }, $self->ppi_document->find_first('PPI::Statement::Package')->namespace;
 	$files_checked++;
 
 	return;
@@ -211,7 +211,7 @@ sub find_required_test_modules {
 sub _find_makefile_requires {
 	my $self     = shift;
 	my $filename = $_;
-	$self->{ppi_document} = PPI::Document->new($filename);
+	$self->ppi_document( PPI::Document->new($filename) );
 	my $is_script = 0;
 
 	given ($filename) {
@@ -223,7 +223,7 @@ sub _find_makefile_requires {
 		$self->min_version() if $is_script;
 	};
 
-	my $prereqs = $self->scanner->scan_ppi_document( $self->{ppi_document} );
+	my $prereqs = $self->scanner->scan_ppi_document( $self->ppi_document );
 	my @modules = $prereqs->required_modules;
 
 	$self->{skip_not_mcpan} = 0;
@@ -232,7 +232,7 @@ sub _find_makefile_requires {
 
 		$self->{skip_not_mcpan} = 1;
 
-		my $ppi_tqs = $self->{ppi_document}->find('PPI::Token::Quote::Single');
+		my $ppi_tqs = $self->ppi_document->find('PPI::Token::Quote::Single');
 		if ($ppi_tqs) {
 
 			# my @modules;
@@ -270,8 +270,8 @@ sub _is_perlfile {
 	my $self     = shift;
 	my $filename = shift;
 
-	$self->{ppi_document} = PPI::Document->new($filename);
-	my $ppi_tc = $self->{ppi_document}->find('PPI::Token::Comment');
+	$self->ppi_document( PPI::Document->new($filename) );
+	my $ppi_tc = $self->ppi_document->find('PPI::Token::Comment');
 
 	my $not_a_pl_file = 0;
 
@@ -281,10 +281,10 @@ sub _is_perlfile {
 		$not_a_pl_file = 1 if $ppi_tc->[0]->content =~ m/^#!.+perl.*$/;
 	}
 
-	if ( $self->{ppi_document}->find('PPI::Statement::Package') || $not_a_pl_file ) {
+	if ( $self->ppi_document->find('PPI::Statement::Package') || $not_a_pl_file ) {
 		if ( $self->verbose ) {
 
-			print "looking for requires in (package) -> " if $self->{ppi_document}->find('PPI::Statement::Package');
+			print "looking for requires in (package) -> " if $self->ppi_document->find('PPI::Statement::Package');
 			print "looking for requires in (shebang) -> " if $ppi_tc->[0]->content =~ /perl/;
 			say $filename ;
 		}
@@ -316,9 +316,9 @@ sub _find_makefile_test_requires {
 	say 'looking for test_requires in: ' . $filename if $self->verbose;
 
 	# Load a Document from a file and check use and require contents
-	$self->{ppi_document} = PPI::Document->new($filename);
+	$self->ppi_document( PPI::Document->new($filename) );
 
-	my $prereqs = $self->scanner->scan_ppi_document( $self->{ppi_document} );
+	my $prereqs = $self->scanner->scan_ppi_document( $self->ppi_document );
 	my @modules = $prereqs->required_modules;
 
 	p @modules if $self->debug;
@@ -345,7 +345,7 @@ sub _xtests_in_single_quote {
 
 	# Hack for use_ok in test files, Ouch!
 	# Now lets double check the ptq-Single hidden in a test file
-	my $ppi_tqs = $self->{ppi_document}->find('PPI::Token::Quote::Single');
+	my $ppi_tqs = $self->ppi_document->find('PPI::Token::Quote::Single');
 	if ($ppi_tqs) {
 
 		foreach my $include ( @{$ppi_tqs} ) {
@@ -365,7 +365,7 @@ sub _xtests_in_double_quote {
 	my $self = shift;
 
 	# Now lets double check the ptq-Doubles hidden in a test file - why O why - rtfm pbp
-	my $ppi_tqd = $self->{ppi_document}->find('PPI::Token::Quote::Double');
+	my $ppi_tqd = $self->ppi_document->find('PPI::Token::Quote::Double');
 	if ($ppi_tqd) {
 
 		# my @modules;
@@ -862,7 +862,7 @@ sub min_version {
 	my $self = shift;
 
 	# Create the version checking object
-	my $object = Perl::MinimumVersion->new( $self->{ppi_document} );
+	my $object = Perl::MinimumVersion->new( $self->ppi_document );
 
 	# Find the minimum version
 	my $minimum_version = $object->minimum_version;
@@ -898,24 +898,24 @@ sub _output_header {
 	given ( $self->format ) {
 
 		when ('dsl') {
-			$self->{output}
-				->header_dsl( $self->{distribution_name}, $self->get_module_version('inc::Module::Install::DSL') );
+			$self->output
+				->header_dsl( $self->distribution_name, $self->get_module_version('inc::Module::Install::DSL') );
 		}
 		when ('mi') {
-			$self->{output}->header_mi( $self->{distribution_name}, $self->get_module_version('inc::Module::Install') );
+			$self->output->header_mi( $self->distribution_name, $self->get_module_version('inc::Module::Install') );
 		}
 		when ('dist') {
-			$self->{output}->header_dist( $self->{distribution_name} );
+			$self->output->header_dist( $self->distribution_name );
 		}
 		when ('cpanfile') {
-			$self->{output}
-				->header_cpanfile( $self->{distribution_name}, $self->get_module_version('inc::Module::Install') );
+			$self->output
+				->header_cpanfile( $self->distribution_name, $self->get_module_version('inc::Module::Install') );
 		}
 		when ('dzil') {
-			$self->{output}->header_dzil( $self->{distribution_name} );
+			$self->output->header_dzil( $self->distribution_name );
 		}
 		when ('build') {
-			$self->{output}->header_build( $self->{distribution_name} );
+			$self->output->header_build( $self->distribution_name );
 		}
 	}
 	return;
@@ -931,22 +931,22 @@ sub _output_main_body {
 	given ( $self->format ) {
 
 		when ('dsl') {
-			$self->{output}->body_dsl( $title, $required_ref );
+			$self->output->body_dsl( $title, $required_ref );
 		}
 		when ('mi') {
-			$self->{output}->body_mi( $title, $required_ref );
+			$self->output->body_mi( $title, $required_ref );
 		}
 		when ('dist') {
-			$self->{output}->body_dist( $title, $required_ref );
+			$self->output->body_dist( $title, $required_ref );
 		}
 		when ('cpanfile') {
-			$self->{output}->body_cpanfile( $title, $required_ref );
+			$self->output->body_cpanfile( $title, $required_ref );
 		}
 		when ('dzil') {
-			$self->{output}->body_dzil( $title, $required_ref );
+			$self->output->body_dzil( $title, $required_ref );
 		}
 		when ('build') {
-			$self->{output}->body_build( $title, $required_ref );
+			$self->output->body_build( $title, $required_ref );
 		}
 	}
 
@@ -961,22 +961,22 @@ sub _output_footer {
 	given ( $self->format ) {
 
 		when ('dsl') {
-			$self->{output}->footer_dsl( $self->{distribution_name} );
+			$self->output->footer_dsl( $self->distribution_name );
 		}
 		when ('mi') {
-			$self->{output}->footer_mi( $self->{distribution_name} );
+			$self->output->footer_mi( $self->distribution_name );
 		}
 		when ('dist') {
-			$self->{output}->footer_dist( $self->{distribution_name} );
+			$self->output->footer_dist( $self->distribution_name );
 		}
 		when ('cpanfile') {
-			$self->{output}->footer_cpanfile( $self->{distribution_name} );
+			$self->output->footer_cpanfile( $self->distribution_name );
 		}
 		when ('dzil') {
-			$self->{output}->footer_dzil( $self->{distribution_name} );
+			$self->output->footer_dzil( $self->distribution_name );
 		}
 		when ('build') {
-			$self->{output}->footer_build( $self->{distribution_name} );
+			$self->output->footer_build( $self->distribution_name );
 		}
 	}
 
