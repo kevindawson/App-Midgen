@@ -2,7 +2,7 @@ package App::Midgen::Roles;
 
 use v5.10;
 use Moo::Role;
-use Types::Standard qw( Bool Str );
+use Types::Standard qw( ArrayRef Bool Str );
 use Type::Tiny;
 #use MooX::Types::MooseLike::Base qw(:all);
 
@@ -85,11 +85,12 @@ has 'numify' => (
 #	lazy => 1,
 #);
 
-#has 'package_names' => (
-#	is   => 'rw',
-#	isa  => ArrayRef,
-#	lazy => 1,
-#);
+has 'package_names' => (
+	is   => 'rw',
+	isa  => ArrayRef,
+	default => sub { [] },
+	lazy => 1,
+);
 
 #has 'package_requires' => (
 #	is   => 'rw',
