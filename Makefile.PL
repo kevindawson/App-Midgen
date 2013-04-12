@@ -40,3 +40,4 @@ bugtracker  https://github.com/kevindawson/App-Midgen/issues
 repository  git://github.com/kevindawson/App-Midgen.git
 
 no_index directory  qw{ inc t xt }
+
