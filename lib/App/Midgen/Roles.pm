@@ -19,29 +19,29 @@ use Carp;
 has 'core' => (
 	is  => 'ro',
 	isa => Bool,
-	default => sub { 0 },
 	required => 1,
+	default => sub { 0 },
 );
 
 has 'dual_life' => (
 	is  => 'ro',
 	isa => Bool,
-	default => sub { 0 },
 	required => 1,
+	default => sub { 0 },
 );
 
 has 'debug' => (
 	is  => 'ro',
 	isa => Bool,
-	default => sub { 0 },
 	required => 1,
+	default => sub { 0 },
 );
 
 has 'experimental' => (
 	is  => 'ro',
 	isa => Bool,
-	default => sub { 0 },
 	required => 1,
+	default => sub { 0 },
 );
 
 has 'format' => (
@@ -51,22 +51,22 @@ has 'format' => (
 		croak 'not a supported output format' unless defined $format->{ $_[0] };
 		return;
 	},
-	default  => 'dsl',
 	required => 1,
+	default  => 'dsl',
 );
 
 has 'verbose' => (
 	is  => 'ro',
 	isa => Bool,
-	default => sub { 0 },
 	required => 1,
+	default => sub { 0 },
 );
 
 has 'zero' => (
 	is  => 'ro',
 	isa => Bool,
-	default => sub { 0 },
 	required => 1,
+	default => sub { 0 },
 );
 
 #######
@@ -88,8 +88,8 @@ has 'numify' => (
 has 'package_names' => (
 	is   => 'rw',
 	isa  => ArrayRef,
-	default => sub { [] },
 	lazy => 1,
+	default => sub { [] },
 );
 
 #has 'package_requires' => (
@@ -158,9 +158,7 @@ has 'xtest' => (
 	is => 'rw',
 	isa => Str,
 	lazy => 1,
-	default => sub {
-		'test_requires';
-	},
+	default => sub { 'test_requires' },
 );
 
 has 'develop' => (
