@@ -495,7 +495,7 @@ sub body_cpanfile {
 #		print BRIGHT_BLACK "\n";
 #		say '# cpanfile';
 #		print CLEAR;
-		say 'requires \'perl\', \'' . $App::Midgen::Min_Version . q{';};
+		say "requires 'perl', '$App::Midgen::Min_Version';";
 	}
 	print "\n";
 
