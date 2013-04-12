@@ -19,63 +19,28 @@ use Carp;
 has 'core' => (
 	is  => 'ro',
 	isa => Bool,
-	default => sub {
-#		croak "$_[0] this is not a Bool" unless check( $_[0] );
-		0;
-	},
-#	isa => sub {
-#		croak "$_[0] this is not a Bool"
-#			unless is_Bool( $_[0] );
-#	},
-#	default => sub {
-#		0;
-#	},
+	default => sub { 0 },
 	required => 1,
 );
 
 has 'dual_life' => (
 	is  => 'ro',
 	isa => Bool,
-	default => sub {
-#		croak "$_[0] this is not a Bool" unless check( $_[0] );
-		0;
-	},
-
-#	isa => sub {
-#		croak "$_[0] this is not a Bool"
-#			unless is_Bool( $_[0] );
-#	},
-#	default => sub {
-#		0;
-#	},
+	default => sub { 0 },
 	required => 1,
 );
 
 has 'debug' => (
 	is  => 'ro',
 	isa => Bool,
-	default => sub {
-#		croak "$_[0] this is not a Bool" unless check( $_[0] );
-		0;
-	},
-
-#	isa => sub {
-#		croak "$_[0] this is not a Bool"
-#			unless is_Bool( $_[0] );
-#	},
-#	default => sub {
-#		0;
-#	},
+	default => sub { 0 },
 	required => 1,
 );
 
 has 'experimental' => (
 	is  => 'ro',
 	isa => Bool,
-	default => sub {
-#		croak "$_[0] this is not a Bool" unless check( $_[0] );
-		0;
-	},
+	default => sub { 0 },
 	required => 1,
 );
 
@@ -93,35 +58,14 @@ has 'format' => (
 has 'verbose' => (
 	is  => 'ro',
 	isa => Bool,
-	default => sub {
-#		croak "$_[0] this is not a Bool" unless check( $_[0] );
-		0;
-	},
-
-#	isa => sub {
-#		croak "$_[0] this is not a Bool"
-#			unless is_Bool( $_[0] );
-#	},
-#	default => sub {
-#		0;
-#	},
+	default => sub { 0 },
 	required => 1,
 );
 
 has 'zero' => (
 	is  => 'ro',
 	isa => Bool,
-	default => sub {
-#		croak "$_[0] this is not a Bool" unless check( $_[0] );
-		0;
-	},
-#	isa => sub {
-#		croak "$_[0] this is not a Bool"
-#			unless is_Bool( $_[0] );
-#	},
-#	default => sub {
-#		0;
-#	},
+	default => sub { 0 },
 	required => 1,
 );
 
@@ -181,9 +125,7 @@ has 'found_twins' => (
 	is      => 'rw',
 	isa     => Bool,
 	lazy    => 1,
-	default => sub {
-		0;
-	},
+	default => sub { 0 },
 );
 
 #has 'mcpan' => (
