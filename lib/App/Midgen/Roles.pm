@@ -2,7 +2,9 @@ package App::Midgen::Roles;
 
 use v5.10;
 use Moo::Role;
-use MooX::Types::MooseLike::Base qw(:all);
+use Types::Standard qw( Bool Str );
+use Type::Tiny;
+#use MooX::Types::MooseLike::Base qw(:all);
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
@@ -16,47 +18,62 @@ use Carp;
 
 has 'core' => (
 	is  => 'ro',
-	isa => sub {
-		croak "$_[0] this is not a Bool"
-			unless is_Bool( $_[0] );
-	},
+	isa => Bool,
 	default => sub {
+#		croak "$_[0] this is not a Bool" unless check( $_[0] );
 		0;
 	},
+#	isa => sub {
+#		croak "$_[0] this is not a Bool"
+#			unless is_Bool( $_[0] );
+#	},
+#	default => sub {
+#		0;
+#	},
 	required => 1,
 );
 
 has 'dual_life' => (
 	is  => 'ro',
-	isa => sub {
-		croak "$_[0] this is not a Bool"
-			unless is_Bool( $_[0] );
-	},
+	isa => Bool,
 	default => sub {
+#		croak "$_[0] this is not a Bool" unless check( $_[0] );
 		0;
 	},
+
+#	isa => sub {
+#		croak "$_[0] this is not a Bool"
+#			unless is_Bool( $_[0] );
+#	},
+#	default => sub {
+#		0;
+#	},
 	required => 1,
 );
 
 has 'debug' => (
 	is  => 'ro',
-	isa => sub {
-		croak "$_[0] this is not a Bool"
-			unless is_Bool( $_[0] );
-	},
+	isa => Bool,
 	default => sub {
+#		croak "$_[0] this is not a Bool" unless check( $_[0] );
 		0;
 	},
+
+#	isa => sub {
+#		croak "$_[0] this is not a Bool"
+#			unless is_Bool( $_[0] );
+#	},
+#	default => sub {
+#		0;
+#	},
 	required => 1,
 );
 
 has 'experimental' => (
 	is  => 'ro',
-	isa => sub {
-		croak "$_[0] this is not a Bool"
-			unless is_Bool( $_[0] );
-	},
+	isa => Bool,
 	default => sub {
+#		croak "$_[0] this is not a Bool" unless check( $_[0] );
 		0;
 	},
 	required => 1,
@@ -75,25 +92,36 @@ has 'format' => (
 
 has 'verbose' => (
 	is  => 'ro',
-	isa => sub {
-		croak "$_[0] this is not a Bool"
-			unless is_Bool( $_[0] );
-	},
+	isa => Bool,
 	default => sub {
+#		croak "$_[0] this is not a Bool" unless check( $_[0] );
 		0;
 	},
+
+#	isa => sub {
+#		croak "$_[0] this is not a Bool"
+#			unless is_Bool( $_[0] );
+#	},
+#	default => sub {
+#		0;
+#	},
 	required => 1,
 );
 
 has 'zero' => (
 	is  => 'ro',
-	isa => sub {
-		croak "$_[0] this is not a Bool"
-			unless is_Bool( $_[0] );
-	},
+	isa => Bool,
 	default => sub {
+#		croak "$_[0] this is not a Bool" unless check( $_[0] );
 		0;
 	},
+#	isa => sub {
+#		croak "$_[0] this is not a Bool"
+#			unless is_Bool( $_[0] );
+#	},
+#	default => sub {
+#		0;
+#	},
 	required => 1,
 );
 
