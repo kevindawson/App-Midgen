@@ -111,13 +111,14 @@ sub first_package_name {
 	# due to Milla not being a dist we go and get dist-name
 	try {
 		my $mcpan_module_info = $self->{mcpan}->module( $self->package_names->[0] );
-		$self->{distribution_name} = $mcpan_module_info->{distribution};
-		$self->{distribution_name} =~ s{-}{::}g;
+		my $distribution_name = $mcpan_module_info->{distribution};
+		$distribution_name =~ s{-}{::}g;
+		$self->distribution_name( $distribution_name );
 	}
 	catch {
-		$self->{distribution_name} = $self->package_names->[0];
+		$self->distribution_name( $self->package_names->[0] );
 	};
-	say 'Package: ' . $self->{distribution_name} if $self->verbose;
+	say 'Package: ' . $self->distribution_name if $self->verbose;
 
 	return;
 }
@@ -437,13 +438,15 @@ sub _process_found_modules {
 
 		#deal with ''
 		next if $module eq NONE;
+
+		my $distribution_name = $self->distribution_name;
 		given ($module) {
 			when (/perl/sxm) {
 
 				# ignore perl we will get it from minperl required
 				next;
 			}
-			when (/^$self->{distribution_name}/sxm) {
+			when (/^$distribution_name/sxm) {
 
 				# don't include our own packages here
 				next;

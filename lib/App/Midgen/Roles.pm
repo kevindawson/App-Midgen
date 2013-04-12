@@ -79,11 +79,11 @@ has 'numify' => (
 	lazy => 1,
 );
 
-#has 'distribution_name' => (
-#	is   => 'rw',
-#	isa  => Str,
-#	lazy => 1,
-#);
+has 'distribution_name' => (
+	is   => 'rw',
+	isa  => Str,
+	lazy => 1,
+);
 
 has 'package_names' => (
 	is   => 'rw',
