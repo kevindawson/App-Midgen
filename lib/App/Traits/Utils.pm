@@ -10,7 +10,7 @@ use Types::Standard qw( ArrayRef Bool Object Str );
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.21';
+our $VERSION = '0.21_03';
 use Carp;
 
 has 'parent' => (
