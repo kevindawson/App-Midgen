@@ -2,7 +2,12 @@ package App::Midgen;
 
 use v5.10;
 use Moo;
-with qw( App::Midgen::Roles );
+with qw(
+	App::Midgen::Roles
+);
+#	App::Midgen::Trait::Bloggs
+#);
+use MooX::StrictConstructor;
 use App::Midgen::Output;
 
 # Load time and dependencies negate execution time
@@ -909,6 +914,7 @@ sub degree_separation {
   # switch around for a positive number
   return $child_score - $parent_score;
 }
+
 
 #######
 # find min perl version
