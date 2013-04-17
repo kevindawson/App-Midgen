@@ -8,7 +8,7 @@ use App::Midgen::Output;
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.21_01';
+our $VERSION = '0.21_05';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -917,8 +917,8 @@ sub _output_header {
 		when ('dzil') {
 			$self->output->header_dzil( $self->distribution_name );
 		}
-		when ('build') {
-			$self->output->header_build( $self->distribution_name );
+		when ('mb') {
+			$self->output->header_mb( $self->distribution_name );
 		}
 	}
 	return;
@@ -948,8 +948,8 @@ sub _output_main_body {
 		when ('dzil') {
 			$self->output->body_dzil( $title, $required_ref );
 		}
-		when ('build') {
-			$self->output->body_build( $title, $required_ref );
+		when ('mb') {
+			$self->output->body_mb( $title, $required_ref );
 		}
 	}
 
@@ -978,8 +978,8 @@ sub _output_footer {
 		when ('dzil') {
 			$self->output->footer_dzil( $self->distribution_name );
 		}
-		when ('build') {
-			$self->output->footer_build( $self->distribution_name );
+		when ('mb') {
+			$self->output->footer_mb( $self->distribution_name );
 		}
 	}
 
@@ -1002,7 +1002,7 @@ App::Midgen - Check B<requires> & B<test_requires> of your package for CPAN incl
 
 =head1 VERSION
 
-This document describes App::Midgen version: 0.21_01
+This document describes App::Midgen version: 0.21_05
 
 =head1 SYNOPSIS
 

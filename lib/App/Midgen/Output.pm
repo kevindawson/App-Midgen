@@ -6,7 +6,7 @@ use Moo;
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.21_01';
+our $VERSION = '0.21_05';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -209,9 +209,9 @@ sub footer_mi {
 
 
 #######
-# header_build
+# header_mb
 #######
-sub header_build {
+sub header_mb {
 	my $self = shift;
 	my $package_name = shift // NONE;
 
@@ -225,9 +225,9 @@ sub header_build {
 	return;
 }
 #######
-# body_build
+# body_mb
 #######
-sub body_build {
+sub body_mb {
 	my $self         = shift;
 	my $title        = shift;
 	my $required_ref = shift;
@@ -252,9 +252,9 @@ sub body_build {
 	return;
 }
 #######
-# footer_build
+# footer_mb
 #######
-sub footer_build {
+sub footer_mb {
 	my $self = shift;
 
 	if ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'script' ) ) {
@@ -618,7 +618,7 @@ App::Midgen::Output - A collection of output orientated methods used by L<App::M
 
 =head1 VERSION
 
-This document describes App::Midgen::Output version: 0.21_01
+This document describes App::Midgen::Output version: 0.21_05
 
 =head1 DESCRIPTION
 
@@ -647,11 +647,11 @@ The output format uses colour to add visualization of module version number
 
 =item * footer_cpanfile
 
-=item * header_build
+=item * header_mb
 
-=item * body_build
+=item * body_mb
 
-=item * footer_build
+=item * footer_mb
 
 =item * header_dzil
 

@@ -7,7 +7,7 @@ use MooX::Types::MooseLike::Base qw(:all);
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.21_01';
+our $VERSION = '0.21_05';
 use Carp;
 
 #######
@@ -65,7 +65,7 @@ has 'experimental' => (
 has 'format' => (
 	is  => 'ro',
 	isa => sub {
-		my $format = { dsl => 1, mi => 1, build => 1, dzil => 1, dist => 1, cpanfile => 1, };
+		my $format = { dsl => 1, mi => 1, mb => 1, dzil => 1, dist => 1, cpanfile => 1, };
 		croak 'not a supported output format' unless defined $format->{ $_[0] };
 		return;
 	},
@@ -268,7 +268,7 @@ App::Midgen::Roles - Package Options and Attributes used by L<App::Midgen>
 
 =head1 VERSION
 
-This document describes App::Midgen::Roles version: 0.21_01
+This document describes App::Midgen::Roles version: 0.21_05
 
 =head1 METHODS
 
@@ -285,6 +285,8 @@ none as such, but we do have
 =item * dual_life
 
 =item * experimental
+
+=item * quiet
 
 =item * format
 

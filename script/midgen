@@ -8,7 +8,7 @@ BEGIN {
 	$PPI::XS_DISABLE = 1; # noise control - Prevent warning
 }
 
-our $VERSION = '0.21_01';
+our $VERSION = '0.21_05';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -141,7 +141,7 @@ midgen - Check B<requires> & B<test_requires> of your package for CPAN inclusion
 
 =head1 VERSION
 
-This document describes midgen version: 0.21_01
+This document describes midgen version: 0.21_05
 
 =head1 SYNOPSIS
 
@@ -183,7 +183,7 @@ By default we output to STDOUT in 'dsl' format, so you can check,
 
  midgen -f dsl		# Module::Include::DSL
  midgen -f mi		# Module::Include
- midgen -f build	# Build
+ midgen -f mb		# Module::Build
  midgen -f dzil		# Dist::Zilla
  midgen -f dist		# dist.ini
  midgen -f cpanfile	# cpanfile prereqs
@@ -213,6 +213,7 @@ Show file names that we are checking, as we go.
 This experimental feature turns on extra passing, that removes twins and noisy_children,
  replacing them with there parent(dist), giving a minimalist output,
  you might conceive this as controversial, if so don't enable it.
+ If you find it to noisy you can add a '-q' for --quiet.
 
  midgen -x
 
