@@ -16,7 +16,7 @@ my $found_version_string  = version->parse( $Test::Pod::Coverage::VERSION );
 my $comp = $found_version_string  <=> $requied_version_string ;
 
 if ( $comp == -1 ){
-	plan skip_all => "Test::Pod $requied_version_string required for testing POD coverage, I only found $found_version_string ";
+	plan skip_all => "Test::Pod::Coverage $requied_version_string required for testing POD Coverage, I only found $found_version_string.";
 }
 
 all_pod_coverage_ok();
