@@ -82,11 +82,12 @@ say 'Running midgen v' . $VERSION;
 say 'Stamped -> ' . gmstamp($BASETIME);
 say 'Honouring $ENV{ANSI_COLORS_DISABLED}' if $ENV{ANSI_COLORS_DISABLED};
 
+# ToDo moved to around
 # quiet dominates over verbose and debug
-if ( $quiet eq 1 ){
-	$verbose = 0;
-	$debug = 0;
-}
+#if ( $quiet eq 1 ){
+#	$verbose = 0;
+#	$debug = 0;
+#}
 
 my $midgen = App::Midgen->new(
 	core         => $core,

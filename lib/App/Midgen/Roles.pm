@@ -3,6 +3,7 @@ package App::Midgen::Roles;
 use v5.10;
 use Moo::Role;
 use MooX::Types::MooseLike::Base qw(:all);
+use Data::Printer { caller_info => 1, colored => 1, };
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
@@ -109,6 +110,17 @@ has 'quiet' => (
 	required => 1,
 );
 
+around [ qw( debug verbose ) ] => sub {
+	my $orig = shift;
+    my $self = shift;
+    my $content = $self->$orig(@_);
+
+	if ( $self->quiet == 1 && $self->experimental == 1  ){
+	return 0;
+	} else {
+	return $content;
+	}
+};
 
 #######
 # some encapsulated -> attributes

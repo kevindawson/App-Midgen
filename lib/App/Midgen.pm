@@ -54,7 +54,8 @@ sub run {
 	$self->find_required_modules();
 	$self->find_required_test_modules();
 
-	##p $self->{modules} if $self->experimental;
+	# ToDo look at doing this with -vv
+	p $self->{modules} if ( $self->experimental && $self->verbose );
 
 	$self->remove_noisy_children( $self->{package_requires} ) if $self->experimental;
 	$self->remove_twins( $self->{package_requires} )          if $self->experimental;
@@ -473,9 +474,10 @@ sub _process_found_modules {
 			}
 		}
 
-		## next if defined $self->{package_requires}{$module};
-		## next if defined $self->{test_requires}{$module};
+		# lets keep track of how many times a module include is found
 		$self->{modules}{$module}{count} += 1;
+
+		# don't process already found modules
 		next if defined $self->{modules}{$module}{location};
 		p $module if $self->debug;
 
@@ -822,7 +824,9 @@ sub mod_in_dist {
 	$dist =~ s/-/::/g;
 	if ( $module =~ /$dist/ ) {
 
+		print BRIGHT_BLACK;
 		say "module - $module  -> in dist - $dist" if $self->verbose;
+		print CLEAR;
 
 		# add dist to output hash so we can get rind of cruff later
 		if ( $self->experimental ) {
