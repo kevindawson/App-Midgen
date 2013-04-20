@@ -27,11 +27,7 @@ use Scalar::Util qw(looks_like_number);
 use Term::ANSIColor qw( :constants colored colorstrip );
 use Try::Tiny;
 
-use constant {
-	BLANK => qq{ },
-	NONE  => q{},
-	THREE => 3,
-};
+use constant { BLANK => q{ }, NONE  => q{}, THREE => 3, };
 use version;
 
 # stop rlib from Fing all over cwd
@@ -392,7 +388,7 @@ sub _xtests_includes {
 		p $module if $self->debug;
 
 		# if we have found it already ignore it - or - contains ;|=
-		if ( not defined $self->{modules}{$module}{location} && $module !~ /[;|=]/ ) {
+		if ( not defined $self->{modules}{$module}{location} and $module !~ /[;|=]/ ) {
 			push @modules, $module;
 		}
 
@@ -401,13 +397,23 @@ sub _xtests_includes {
 		$module =~ s/^(use|require)\s+//;
 		$module =~ s/(\s[\s|\w|\n|.|;]+)$//;
 		$module =~ s/\s+([\$|\w|\n]+)$//;
+		$module =~ s/\s+$//;
 		p $module if $self->debug;
 
 		# if we have found it already ignore it - or - contains ;|=
-		if ( not defined $self->{modules}{$module}{location} && $module !~ /[;|=]/ ) {
+		if ( not defined $self->{modules}{$module}{location} and $module !~ /[;|=]/ ) {
 			push @modules, $module;
 		}
 	}
+	# lets catch -> use Test::Requires { 'Test::Pod' => 1.46 };
+	elsif ( $module =~ /^\w+::\w+/ ) {
+		$module =~ s/(\s.+)$//;
+		p $module if $self->debug;
+
+		if ( not defined $self->{modules}{$module}{location} and $module !~ /[;|=]/ ) {
+			push @modules, $module;
+		}
+	} 
 
 	# if we found a module, process it
 	if ( scalar @modules > 0 ) {
@@ -449,7 +455,6 @@ sub _process_found_modules {
 				next;
 			}
 			when (/^t::/sxm) {
-
 				# don't include our own test packages here
 				next;
 			}
@@ -464,7 +469,7 @@ sub _process_found_modules {
 					print CLEAR;
 					}
 					next;
-					} 
+					}
 				}
 			}
 			when (/^Padre/sxm) {
@@ -592,8 +597,8 @@ sub remove_noisy_children {
 
 				my $valied_seperation = 1;
 
-				# as we only do this against -x, why not be extra vigilant with dzil
-				$valied_seperation = 3 if $parent_name =~ /^Dist::Zilla/;
+				# as we only do this against -x, why not be extra vigilant
+				$valied_seperation = THREE if $parent_name =~ /^Dist::Zilla|Moose|Mouse/;
 
 				# Checking for one degree of separation
 				# ie A::B -> A::B::C is ok but A::B::C::D is not
@@ -804,7 +809,9 @@ sub get_module_version {
 
 		# a bit of de crappy-flying
 		# catch Test::Kwalitee::Extra 6e-06
+		print BRIGHT_BLACK;
 		say $module . ' Unique Release Sequence Indicator ' . $cpan_version if $self->verbose;
+		print CLEAR;
 		$cpan_version = version->parse($cpan_version)->numify;
 	}
 
@@ -1019,11 +1026,10 @@ Now with a Getopt --help or -?
  midgen -?
 
 See L<midgen> for cmd line option info.
- 
+
 =head1 DESCRIPTION
 
-This is an aid to show you a packages module requirements by scanning 
-the package, 
+This is an aid to show your packages module includes by scanning it's files, 
 then display in a familiar format with the current version number 
 from MetaCPAN.
 
@@ -1035,7 +1041,7 @@ This enables you to see which modules you have used, we even try and list Dist-Z
 
 All output goes to STDOUT, so you can use it as you see fit.
 
-=head3 MetaCPAN Version Number Displayed
+B<MetaCPAN Version Number Displayed>
 
 =over 4
 
@@ -1052,7 +1058,8 @@ don't we want our users to use the current version,
 so should we not by default do the same with others Modules. 
 Thus we always show the current version number, regardless.>
 
-We also display some other complementary information relevant to this package. 
+We also display some other complementary information relevant to this package
+ and your chosen output format.
 
 For more info and sample output see L<wiki|https://github.com/kevindawson/App-Midgen/wiki>
 
@@ -1105,7 +1112,7 @@ catching triplets along the way.
 =back
 
 =head1 CONFIGURATION AND ENVIRONMENT
-  
+
 App::Midgen requires no configuration files or environment variables.
 
 =head1 DEPENDENCIES
