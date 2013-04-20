@@ -12,9 +12,7 @@ local $OUTPUT_AUTOFLUSH = 1;
 
 use Term::ANSIColor qw( :constants colored );
 
-# use Carp;
-use Data::Printer { caller_info => 1, colored => 1, };
-use constant { BLANK => qq{ }, NONE => q{}, THREE => 3, };
+use constant { BLANK => q{ }, NONE => q{}, THREE => 3, };
 use File::Spec;
 
 #######
@@ -506,7 +504,6 @@ sub body_cpanfile {
 		}
 	}
 
-	#p $title;
 	given ($title) {
 		when ('requires') {
 			foreach my $module_name ( sort keys %{$required_ref} ) {
