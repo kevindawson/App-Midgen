@@ -1,5 +1,6 @@
 use strict;
 use warnings FATAL => 'all';
+
 use English qw( -no_match_vars );
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -11,5 +12,4 @@ all_pod_coverage_ok();
 done_testing();
 
 __END__
-
 
