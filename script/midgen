@@ -49,7 +49,7 @@ use Pod::Usage;
 my $help         = 0;
 my $core         = $config->{core} || 0;
 my $dual_life    = $config->{dual_life} || 0;
-my $verbose      = 0;
+my $verbose      = 1;
 my @format       = $config->{format} || 'dsl';
 my $experimental = 0;
 my $quiet = $config->{quiet} || 0;
@@ -57,7 +57,7 @@ my $zero         = $config->{zero} || 0;
 my $debug        = 0;
 my $write        = 0;
 GetOptions(
-	'verbose|v'      => \$verbose,
+	'verbose|v+'      => \$verbose,
 	'core|c!'        => \$core,
 	'dual_life|l!'   => \$dual_life,
 	'help|h|?'       => \$help,
@@ -67,7 +67,7 @@ GetOptions(
 	'zero|z!'        => \$zero,
 	'debug|d'        => sub {
 		$core    = 1;
-		$verbose = 1;
+		$verbose = 3;
 		$debug   = 1;
 	},
 	'write|w' => \$write,

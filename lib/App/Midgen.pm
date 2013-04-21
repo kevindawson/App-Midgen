@@ -27,7 +27,7 @@ use Scalar::Util qw(looks_like_number);
 use Term::ANSIColor qw( :constants colored colorstrip );
 use Try::Tiny;
 
-use constant { BLANK => q{ }, NONE  => q{}, THREE => 3, };
+use constant { BLANK => q{ }, NONE  => q{}, TWO => 2, THREE => 3, };
 use version;
 
 # stop rlib from Fing all over cwd
@@ -51,7 +51,8 @@ sub run {
 	$self->find_required_test_modules();
 
 	# ToDo look at doing this with -vv
-	p $self->{modules} if ( $self->experimental && $self->verbose );
+	p $self->verbose;
+	p $self->{modules} if ( $self->verbose == THREE );
 
 	$self->remove_noisy_children( $self->{package_requires} ) if $self->experimental;
 	$self->remove_twins( $self->{package_requires} )          if $self->experimental;
@@ -209,8 +210,8 @@ sub _find_makefile_requires {
 	my $is_script = 0;
 
 	given ($filename) {
-		when (m/[.]pm$/) { say 'looking for requires in (.pm)-> ' . $filename if $self->verbose; }
-		when (m/[.]\w{2,4}$/) { say 'rejecting ' . $filename if $self->verbose; return; }
+		when (m/[.]pm$/) { say 'looking for requires in (.pm)-> ' . $filename if $self->verbose >= TWO; }
+		when (m/[.]\w{2,4}$/) { say 'rejecting ' . $filename if $self->verbose >= TWO; return; }
 		default { return if not $self->_is_perlfile($filename); $is_script = 1; }
 	}
 	try {
@@ -276,7 +277,7 @@ sub _is_perlfile {
 	}
 
 	if ( $self->ppi_document->find('PPI::Statement::Package') || $not_a_pl_file ) {
-		if ( $self->verbose ) {
+		if ( $self->verbose >= TWO ) {
 
 			print "looking for requires in (package) -> " if $self->ppi_document->find('PPI::Statement::Package');
 			print "looking for requires in (shebang) -> " if $ppi_tc->[0]->content =~ /perl/;
@@ -307,7 +308,7 @@ sub _find_makefile_test_requires {
 	my $filename = $_;
 	return if $filename !~ /[.]t|pm$/sxm;
 
-	say 'looking for test_requires in: ' . $filename if $self->verbose;
+	say 'looking for test_requires in: ' . $filename if $self->verbose >= TWO;
 
 	# Load a Document from a file and check use and require contents
 	$self->ppi_document( PPI::Document->new($filename) );
@@ -413,7 +414,7 @@ sub _xtests_includes {
 		if ( not defined $self->{modules}{$module}{location} and $module !~ /[;|=]/ ) {
 			push @modules, $module;
 		}
-	} 
+	}
 
 	# if we found a module, process it
 	if ( scalar @modules > 0 ) {
@@ -464,7 +465,7 @@ sub _process_found_modules {
 				if ( $self->experimental ) {
 					if ( $self->_check_mojo_core( $module, $require_type ) ){
 					if ( not $self->quiet ){
-					print BRIGHT_BLACK "\n";
+					print BRIGHT_BLACK;
 					say 'swapping out '. $module .' for Mojolicious';
 					print CLEAR;
 					}
@@ -607,7 +608,7 @@ sub remove_noisy_children {
 					# Test for same version number
 					if ( colorstrip( $required_ref->{$parent_name} ) eq colorstrip( $required_ref->{$child_name} ) ) {
 						if ( not $self->quiet ){
-						if ( $self->verbose or $self->experimental ) {
+						if ( $self->verbose ) {
 							print BRIGHT_BLACK "\n";
 							say 'delete miscreant noisy child ' . $child_name . ' => ' . $required_ref->{$child_name};
 							print CLEAR;
@@ -677,7 +678,7 @@ sub remove_twins {
 			# Test for same version number
 			if ( $required_ref->{ $sorted_modules[ $n - 1 ] } eq $required_ref->{ $sorted_modules[$n] } ) {
 				if ( not $self->quiet ){
-				if ( $self->verbose or $self->experimental ) {
+				if ( $self->verbose ) {
 					print BRIGHT_BLACK "\n";
 					# say 'i have found twins';
 					print $dum_name . ' => '
@@ -731,8 +732,10 @@ sub _check_mojo_core {
 	$mojo_module_ver = $self->get_module_version($mojo_module);
 
 	if ( $self->verbose ) {
-		say 'looks like we found another mojo core module';
+		print BRIGHT_BLACK;
+#		say 'looks like we found another mojo core module';
 		say $mojo_module . ' version ' . $mojo_module_ver;
+		print CLEAR;
 	}
 
 	if ( $mojo_ver == $mojo_module_ver ) {
@@ -810,7 +813,7 @@ sub get_module_version {
 		# a bit of de crappy-flying
 		# catch Test::Kwalitee::Extra 6e-06
 		print BRIGHT_BLACK;
-		say $module . ' Unique Release Sequence Indicator ' . $cpan_version if $self->verbose;
+		say $module . ' Unique Release Sequence Indicator ' . $cpan_version if $self->verbose >= 1;
 		print CLEAR;
 		$cpan_version = version->parse($cpan_version)->numify;
 	}
@@ -832,7 +835,7 @@ sub mod_in_dist {
 	if ( $module =~ /$dist/ ) {
 
 		print BRIGHT_BLACK;
-		say "module - $module  -> in dist - $dist" if $self->verbose;
+		say "module - $module  -> in dist - $dist" if $self->verbose >= 1;
 		print CLEAR;
 
 		# add dist to output hash so we can get rind of cruff later
@@ -1029,14 +1032,14 @@ See L<midgen> for cmd line option info.
 
 =head1 DESCRIPTION
 
-This is an aid to show your packages module includes by scanning it's files, 
-then display in a familiar format with the current version number 
-from MetaCPAN.
+This is an aid to show your packages module includes by scanning it's files,
+ then display in a familiar format with the current version number
+ from MetaCPAN.
 
-This started as a way of generating the formatted contents for 
-a Module::Install::DSL Makefile.PL, which has now grown to support other 
-output formats, as well as the ability to show B<dual-life> and 
-B<perl core> modules, see L<midgen> for option info.
+This started as a way of generating the formatted contents for
+ a Module::Install::DSL Makefile.PL, which has now grown to support other
+ output formats, as well as the ability to show B<dual-life> and
+ B<perl core> modules, see L<midgen> for option info.
 This enables you to see which modules you have used, we even try and list Dist-Zilla Plugins.
 
 All output goes to STDOUT, so you can use it as you see fit.
@@ -1053,10 +1056,10 @@ B<MetaCPAN Version Number Displayed>
 
 =back
 
-I<Food for thought, if we update our Modules, 
-don't we want our users to use the current version, 
-so should we not by default do the same with others Modules. 
-Thus we always show the current version number, regardless.>
+I<Food for thought, if we update our Modules,
+ don't we want our users to use the current version,
+ so should we not by default do the same with others Modules.
+ Thus we always show the current version number, regardless.>
 
 We also display some other complementary information relevant to this package
  and your chosen output format.
@@ -1077,8 +1080,8 @@ Search for Includes B<use> and B<require> in package modules
 
 =item * find_required_test_modules
 
-Search for Includes B<use> and B<require> in test scripts, 
-also B<use_ok>, I<plus some other patterns along the way.>
+Search for Includes B<use> and B<require> in test scripts,
+ also B<use_ok>, I<plus some other patterns along the way.>
 
 =item * first_package_name
 
@@ -1090,8 +1093,8 @@ side affect of re-factoring, helps with code readability
 
 =item * min_version
 
-Uses L<Perl::MinimumVersion> to find the minimum version of your package by taking a quick look, 
-I<note this is not a full scan, suggest you use L<perlver> for a full scan>.
+Uses L<Perl::MinimumVersion> to find the minimum version of your package by taking a quick look,
+ I<note this is not a full scan, suggest you use L<perlver> for a full scan>.
 
 =item * mod_in_dist
 
@@ -1103,9 +1106,9 @@ Parent A::B has noisy Children A::B::C and A::B::D all with same version number.
 
 =item * remove_twins
 
-Twins E::F::G and E::F::H  have a parent E::F with same version number, 
-so we add a parent E::F and re-test for noisy children, 
-catching triplets along the way.
+Twins E::F::G and E::F::H  have a parent E::F with same version number,
+ so we add a parent E::F and re-test for noisy children,
+ catching triplets along the way.
 
 =item * run
 
@@ -1121,23 +1124,23 @@ L<App::Midgen::Roles>, L<App::Midgen::Output>
 
 =head1 INCOMPATIBILITIES
 
-After some reflection, we do not scan xt/... 
-as the methods by which the modules  are Included are various, 
-this is best left to the module Author. 
+After some reflection, we do not scan xt/...
+ as the methods by which the modules  are Included are various,
+ this is best left to the module Author.
 
 =head1 WARNINGS
 
-As our mantra is to show the current version of a module, 
-we do this by asking MetaCPAN directly so we are going to need to 
-connect to L<http://api.metacpan.org/v0/>.
+As our mantra is to show the current version of a module,
+ we do this by asking MetaCPAN directly so we are going to need to
+ connect to L<http://api.metacpan.org/v0/>.
 
 
 =head1 BUGS AND LIMITATIONS
 
 Please report any bugs or feature requests to
-through the web interface at
+ through the web interface at
 L<https://github.com/kevindawson/App-Midgen/issues>.
-If reporting a Bug, also supply the Module info, midgen failed against.
+ If reporting a Bug, also supply the Module info, midgen failed against.
 
 =head1 AUTHOR
 
@@ -1157,14 +1160,14 @@ Tatsuhiko Miyagawa E<lt>miyagawa@bulknews.netE<gt>
 
 =head1 COPYRIGHT
 
-Copyright E<copy> 2013 the App:Midgen L</AUTHOR> and L</CONTRIBUTORS> 
-as listed above.
+Copyright E<copy> 2013 the App:Midgen L</AUTHOR> and L</CONTRIBUTORS>
+ as listed above.
 
 
 =head1 LICENSE
 
-This program is free software; you can redistribute it and/or
-modify it under the same terms as Perl 5 itself.
+This program is free software; you can redistribute it and/or modify
+ it under the same terms as Perl 5 itself.
 
 =head1 SEE ALSO
 

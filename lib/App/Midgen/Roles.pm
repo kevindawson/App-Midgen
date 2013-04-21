@@ -53,10 +53,11 @@ has 'debug' => (
 
 has 'experimental' => (
 	is  => 'ro',
-	isa => sub {
-		croak "$_[0] this is not a Bool"
-			unless is_Bool( $_[0] );
-	},
+	isa => Bool,
+#	isa => sub {
+#		croak "$_[0] this is not a Bool"
+#			unless is_Bool( $_[0] );
+#	},
 	default => sub {
 		0;
 	},
@@ -76,15 +77,27 @@ has 'format' => (
 
 has 'verbose' => (
 	is  => 'ro',
-	isa => sub {
-		croak "$_[0] this is not a Bool"
-			unless is_Bool( $_[0] );
-	},
+	isa => Int,
+#	isa => sub {
+#		croak "$_[0] this is not a Bool"
+#			unless is_Bool( $_[0] );
+#	},
 	default => sub {
-		0;
+		1;
 	},
 	required => 1,
 );
+#has 'verbose' => (
+#	is  => 'ro',
+#	isa => sub {
+#		croak "$_[0] this is not a Bool"
+#			unless is_Bool( $_[0] );
+#	},
+#	default => sub {
+#		0;
+#	},
+#	required => 1,
+#);
 
 has 'zero' => (
 	is  => 'ro',
@@ -129,7 +142,7 @@ around [ qw( debug verbose ) ] => sub {
 has 'numify' => (
 	is   => 'rw',
 	isa  => Bool,
-	default => sub { 
+	default => sub {
 		0;
 	},
 	lazy => 1,
@@ -138,7 +151,7 @@ has 'numify' => (
 #has 'skip_not_mcpan_stamp' => (
 #	is   => 'rw',
 #	isa  => Bool,
-#	default => sub { 
+#	default => sub {
 #		0;
 #	},
 #	lazy => 1,
