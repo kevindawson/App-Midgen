@@ -17,10 +17,11 @@ use Carp;
 
 has 'core' => (
 	is  => 'ro',
-	isa => sub {
-		croak "$_[0] this is not a Bool"
-			unless is_Bool( $_[0] );
-	},
+	isa => Bool,
+#	isa => sub {
+#		croak "$_[0] this is not a Bool"
+#			unless is_Bool( $_[0] );
+#	},
 	default => sub {
 		0;
 	},
@@ -29,10 +30,11 @@ has 'core' => (
 
 has 'dual_life' => (
 	is  => 'ro',
-	isa => sub {
-		croak "$_[0] this is not a Bool"
-			unless is_Bool( $_[0] );
-	},
+	isa => Bool,
+#	isa => sub {
+#		croak "$_[0] this is not a Bool"
+#			unless is_Bool( $_[0] );
+#	},
 	default => sub {
 		0;
 	},
@@ -41,10 +43,11 @@ has 'dual_life' => (
 
 has 'debug' => (
 	is  => 'ro',
-	isa => sub {
-		croak "$_[0] this is not a Bool"
-			unless is_Bool( $_[0] );
-	},
+	isa => Bool,
+#	isa => sub {
+#		croak "$_[0] this is not a Bool"
+#			unless is_Bool( $_[0] );
+#	},
 	default => sub {
 		0;
 	},
@@ -87,24 +90,14 @@ has 'verbose' => (
 	},
 	required => 1,
 );
-#has 'verbose' => (
-#	is  => 'ro',
+
+has 'zero' => (
+	is  => 'ro',
+	isa => Bool,
 #	isa => sub {
 #		croak "$_[0] this is not a Bool"
 #			unless is_Bool( $_[0] );
 #	},
-#	default => sub {
-#		0;
-#	},
-#	required => 1,
-#);
-
-has 'zero' => (
-	is  => 'ro',
-	isa => sub {
-		croak "$_[0] this is not a Bool"
-			unless is_Bool( $_[0] );
-	},
 	default => sub {
 		0;
 	},
@@ -113,10 +106,11 @@ has 'zero' => (
 
 has 'quiet' => (
 	is  => 'ro',
-	isa => sub {
-		croak "$_[0] this is not a Bool"
-			unless is_Bool( $_[0] );
-	},
+	isa => Bool,
+#	isa => sub {
+#		croak "$_[0] this is not a Bool"
+#			unless is_Bool( $_[0] );
+#	},
 	default => sub {
 		0;
 	},
@@ -147,15 +141,6 @@ has 'numify' => (
 	},
 	lazy => 1,
 );
-
-#has 'skip_not_mcpan_stamp' => (
-#	is   => 'rw',
-#	isa  => Bool,
-#	default => sub {
-#		0;
-#	},
-#	lazy => 1,
-#);
 
 has 'distribution_name' => (
 	is   => 'rw',
