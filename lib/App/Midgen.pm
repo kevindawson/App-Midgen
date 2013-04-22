@@ -684,7 +684,7 @@ sub remove_twins {
 			if ( $required_ref->{ $sorted_modules[ $n - 1 ] } eq $required_ref->{ $sorted_modules[$n] } ) {
 				if ( not $self->quiet ) {
 					if ( $self->verbose ) {
-						print BRIGHT_BLACK "\n";
+						print BRIGHT_BLACK;
 
 						# say 'i have found twins';
 						print $dum_name . ' => ' . $required_ref->{ $sorted_modules[ $n - 1 ] };
@@ -890,7 +890,6 @@ sub min_version {
 		  version->parse($Min_Version) > version->parse($minimum_version)
 		? version->parse($Min_Version)->numify
 		: version->parse($minimum_version)->numify;
-
 
 	my $minimum_explicit_version = $object->minimum_explicit_version;
 	$Min_Version =
