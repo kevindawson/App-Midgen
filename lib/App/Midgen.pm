@@ -4,21 +4,15 @@ use v5.10;
 use Moo;
 with qw( App::Midgen::Roles );
 use App::Midgen::Output;
-
+# turn of experimental warnings
 no if $] > 5.017010, warnings => 'experimental';
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-use version;
 our $VERSION = '0.21_06';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
-
-my $compair_version = version->parse(v5.17.11) <=> version->parse($PERL_VERSION);
-
-#no warnings 'experimental' if $compair_version lt 1;
-
 
 #use Carp;
 use Cwd qw(cwd);

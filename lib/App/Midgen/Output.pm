@@ -2,20 +2,15 @@ package App::Midgen::Output;
 
 use v5.10;
 use Moo;
-
+# turn of experimental warnings
 no if $] > 5.017010, warnings => 'experimental';
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-use version;
 our $VERSION = '0.21_06';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
-#no if $] > 5.17.10, warnings => 'experimental::smartmatch';
-my $compair_version = version->parse(v5.17.11) <=> version->parse($PERL_VERSION);
-
-#no warnings 'experimental' if $compair_version lt 1;
 
 use Term::ANSIColor qw( :constants colored );
 
