@@ -612,7 +612,7 @@ sub remove_noisy_children {
 					if ( colorstrip( $required_ref->{$parent_name} ) eq colorstrip( $required_ref->{$child_name} ) ) {
 						if ( not $self->quiet ) {
 							if ( $self->verbose ) {
-								print BRIGHT_BLACK "\n";
+								print BRIGHT_BLACK;
 								say 'delete miscreant noisy child '
 									. $child_name . ' => '
 									. $required_ref->{$child_name};
