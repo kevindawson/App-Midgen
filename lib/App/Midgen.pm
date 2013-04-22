@@ -4,14 +4,19 @@ use v5.10;
 use Moo;
 with qw( App::Midgen::Roles );
 use App::Midgen::Output;
-no warnings 'experimental';
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
+use version;
 our $VERSION = '0.21_06';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
+
+my $compair_version = version->parse(v5.17.11) <=> version->parse($PERL_VERSION);
+
+#no warnings 'experimental' if $compair_version lt 1;
+
 
 #use Carp;
 use Cwd qw(cwd);
@@ -28,7 +33,7 @@ use Scalar::Util qw(looks_like_number);
 use Term::ANSIColor qw( :constants colored colorstrip );
 use Try::Tiny;
 
-use constant { BLANK => q{ }, NONE  => q{}, TWO => 2, THREE => 3, };
+use constant { BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3, };
 use version;
 
 # stop rlib from Fing all over cwd
@@ -70,7 +75,7 @@ sub run {
 	$self->_output_main_body( 'recommends',    $self->{recommends} );
 	$self->_output_main_body( 'test_develop',  $self->{test_develop} ) if $self->develop;
 
-	$self->_output_footer();# if not $self->quiet;
+	$self->_output_footer(); # if not $self->quiet;
 
 	return;
 }
@@ -107,7 +112,7 @@ sub first_package_name {
 		my $mcpan_module_info = $self->mcpan->module( $self->package_names->[0] );
 		my $distribution_name = $mcpan_module_info->{distribution};
 		$distribution_name =~ s{-}{::}g;
-		$self->distribution_name( $distribution_name );
+		$self->distribution_name($distribution_name);
 	}
 	catch {
 		$self->distribution_name( $self->package_names->[0] );
@@ -406,6 +411,7 @@ sub _xtests_includes {
 			push @modules, $module;
 		}
 	}
+
 	# lets catch -> use Test::Requires { 'Test::Pod' => 1.46 };
 	elsif ( $module =~ /^\w+::\w+/ && $self->experimental ) {
 		$module =~ s/(\s.+)$//;
@@ -456,6 +462,7 @@ sub _process_found_modules {
 				next;
 			}
 			when (/^t::/sxm) {
+
 				# don't include our own test packages here
 				next;
 			}
@@ -463,13 +470,13 @@ sub _process_found_modules {
 			when (/Mojo/sxm) {
 
 				if ( $self->experimental ) {
-					if ( $self->_check_mojo_core( $module, $require_type ) ){
-					if ( not $self->quiet ){
-					print BRIGHT_BLACK;
-					say 'swapping out '. $module .' for Mojolicious';
-					print CLEAR;
-					}
-					next;
+					if ( $self->_check_mojo_core( $module, $require_type ) ) {
+						if ( not $self->quiet ) {
+							print BRIGHT_BLACK;
+							say 'swapping out ' . $module . ' for Mojolicious';
+							print CLEAR;
+						}
+						next;
 					}
 				}
 			}
@@ -607,12 +614,14 @@ sub remove_noisy_children {
 
 					# Test for same version number
 					if ( colorstrip( $required_ref->{$parent_name} ) eq colorstrip( $required_ref->{$child_name} ) ) {
-						if ( not $self->quiet ){
-						if ( $self->verbose ) {
-							print BRIGHT_BLACK "\n";
-							say 'delete miscreant noisy child ' . $child_name . ' => ' . $required_ref->{$child_name};
-							print CLEAR;
-						}
+						if ( not $self->quiet ) {
+							if ( $self->verbose ) {
+								print BRIGHT_BLACK "\n";
+								say 'delete miscreant noisy child '
+									. $child_name . ' => '
+									. $required_ref->{$child_name};
+								print CLEAR;
+							}
 						}
 						try {
 							delete $required_ref->{$child_name};
@@ -677,18 +686,16 @@ sub remove_twins {
 
 			# Test for same version number
 			if ( $required_ref->{ $sorted_modules[ $n - 1 ] } eq $required_ref->{ $sorted_modules[$n] } ) {
-				if ( not $self->quiet ){
-				if ( $self->verbose ) {
-					print BRIGHT_BLACK "\n";
-					# say 'i have found twins';
-					print $dum_name . ' => '
-						. $required_ref->{ $sorted_modules[ $n - 1 ] };
-					print BRIGHT_BLACK ' <-twins-> '
-						. $dee_name . ' => '
-						. $required_ref->{ $sorted_modules[$n] };
-					print CLEAR "\n";
+				if ( not $self->quiet ) {
+					if ( $self->verbose ) {
+						print BRIGHT_BLACK "\n";
 
-				}
+						# say 'i have found twins';
+						print $dum_name . ' => ' . $required_ref->{ $sorted_modules[ $n - 1 ] };
+						print BRIGHT_BLACK ' <-twins-> ' . $dee_name . ' => ' . $required_ref->{ $sorted_modules[$n] };
+						print CLEAR "\n";
+
+					}
 				}
 
 				#Check for vailed parent
@@ -733,7 +740,8 @@ sub _check_mojo_core {
 
 	if ( $self->verbose ) {
 		print BRIGHT_BLACK;
-#		say 'looks like we found another mojo core module';
+
+		#		say 'looks like we found another mojo core module';
 		say $mojo_module . ' version ' . $mojo_module_ver;
 		print CLEAR;
 	}
@@ -914,8 +922,8 @@ sub _output_header {
 	given ( $self->format ) {
 
 		when ('dsl') {
-			$self->output
-				->header_dsl( $self->distribution_name, $self->get_module_version('inc::Module::Install::DSL') );
+			$self->output->header_dsl( $self->distribution_name,
+				$self->get_module_version('inc::Module::Install::DSL') );
 		}
 		when ('mi') {
 			$self->output->header_mi( $self->distribution_name, $self->get_module_version('inc::Module::Install') );
@@ -924,8 +932,9 @@ sub _output_header {
 			$self->output->header_dist( $self->distribution_name );
 		}
 		when ('cpanfile') {
-			$self->output
-				->header_cpanfile( $self->distribution_name, $self->get_module_version('inc::Module::Install') ) if not $self->quiet;
+			$self->output->header_cpanfile( $self->distribution_name,
+				$self->get_module_version('inc::Module::Install') )
+				if not $self->quiet;
 
 		}
 		when ('dzil') {

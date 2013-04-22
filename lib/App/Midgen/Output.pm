@@ -2,14 +2,20 @@ package App::Midgen::Output;
 
 use v5.10;
 use Moo;
-no warnings 'experimental';
+
+#no warnings 'experimental';
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
+use version;
 our $VERSION = '0.21_06';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
+
+my $compair_version = version->parse(v5.17.11) <=> version->parse($PERL_VERSION);
+
+#no warnings 'experimental' if $compair_version lt 1;
 
 use Term::ANSIColor qw( :constants colored );
 
@@ -99,7 +105,7 @@ sub footer_dsl {
 		print "\n";
 	}
 
-#	print "\n";
+	#	print "\n";
 
 	return;
 }
@@ -217,7 +223,7 @@ sub header_mb {
 	if ( $package_name ne NONE ) {
 		print "\n";
 		$package_name =~ s{::}{-}g;
-		say '"dist_name" => "' . $package_name. q{",};
+		say '"dist_name" => "' . $package_name . q{",};
 		print "\n";
 	}
 
@@ -238,7 +244,7 @@ sub body_mb {
 			$pm_length = length $module_name;
 		}
 	}
-	say q{"}.$title.'" => {';
+	say q{"} . $title . '" => {';
 
 	foreach my $module_name ( sort keys %{$required_ref} ) {
 
@@ -491,9 +497,10 @@ sub body_cpanfile {
 
 	if ( $title eq 'requires' ) {
 		print "\n";
-#		print BRIGHT_BLACK "\n";
-#		say '# cpanfile';
-#		print CLEAR;
+
+		#		print BRIGHT_BLACK "\n";
+		#		say '# cpanfile';
+		#		print CLEAR;
 		say "requires 'perl', '$App::Midgen::Min_Version';";
 	}
 	print "\n";
@@ -548,14 +555,14 @@ sub footer_cpanfile {
 	my $package_name = shift // NONE;
 	$package_name =~ s{::}{-}g;
 
-#	print BRIGHT_BLACK "\n";
+	#	print BRIGHT_BLACK "\n";
 
 	#	say '# ToDo you should consider the following';
 	#	say "homepage    https://github.com/.../$package_name";
 	#	say "bugtracker  https://github.com/.../$package_name/issues";
 	#	say "repository  git://github.com/.../$package_name.git";
 
-#	print CLEAR "\n";
+	#	print CLEAR "\n";
 
 	#	if ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'share' ) ) {
 	#		say 'install_share';

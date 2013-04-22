@@ -16,54 +16,30 @@ use Carp;
 #######
 
 has 'core' => (
-	is  => 'ro',
-	isa => Bool,
-#	isa => sub {
-#		croak "$_[0] this is not a Bool"
-#			unless is_Bool( $_[0] );
-#	},
-	default => sub {
-		0;
-	},
+	is       => 'ro',
+	isa      => Bool,
+	default  => sub {0},
 	required => 1,
 );
 
 has 'dual_life' => (
-	is  => 'ro',
-	isa => Bool,
-#	isa => sub {
-#		croak "$_[0] this is not a Bool"
-#			unless is_Bool( $_[0] );
-#	},
-	default => sub {
-		0;
-	},
+	is       => 'ro',
+	isa      => Bool,
+	default  => sub {0},
 	required => 1,
 );
 
 has 'debug' => (
-	is  => 'ro',
-	isa => Bool,
-#	isa => sub {
-#		croak "$_[0] this is not a Bool"
-#			unless is_Bool( $_[0] );
-#	},
-	default => sub {
-		0;
-	},
+	is       => 'ro',
+	isa      => Bool,
+	default  => sub {0},
 	required => 1,
 );
 
 has 'experimental' => (
-	is  => 'ro',
-	isa => Bool,
-#	isa => sub {
-#		croak "$_[0] this is not a Bool"
-#			unless is_Bool( $_[0] );
-#	},
-	default => sub {
-		0;
-	},
+	is       => 'ro',
+	isa      => Bool,
+	default  => sub {0},
 	required => 1,
 );
 
@@ -79,53 +55,35 @@ has 'format' => (
 );
 
 has 'verbose' => (
-	is  => 'ro',
-	isa => Int,
-#	isa => sub {
-#		croak "$_[0] this is not a Bool"
-#			unless is_Bool( $_[0] );
-#	},
-	default => sub {
-		1;
-	},
+	is       => 'ro',
+	isa      => Int,
+	default  => sub {1},
 	required => 1,
 );
 
 has 'zero' => (
-	is  => 'ro',
-	isa => Bool,
-#	isa => sub {
-#		croak "$_[0] this is not a Bool"
-#			unless is_Bool( $_[0] );
-#	},
-	default => sub {
-		0;
-	},
+	is       => 'ro',
+	isa      => Bool,
+	default  => sub {0},
 	required => 1,
 );
 
 has 'quiet' => (
-	is  => 'ro',
-	isa => Bool,
-#	isa => sub {
-#		croak "$_[0] this is not a Bool"
-#			unless is_Bool( $_[0] );
-#	},
-	default => sub {
-		0;
-	},
+	is       => 'ro',
+	isa      => Bool,
+	default  => sub {0},
 	required => 1,
 );
 
-around [ qw( debug verbose ) ] => sub {
-	my $orig = shift;
-    my $self = shift;
-    my $content = $self->$orig(@_);
+around [qw( debug verbose )] => sub {
+	my $orig    = shift;
+	my $self    = shift;
+	my $content = $self->$orig(@_);
 
-	if ( $self->quiet == 1 && $self->experimental == 1  ){
-	return 0;
+	if ( $self->quiet == 1 && $self->experimental == 1 ) {
+		return 0;
 	} else {
-	return $content;
+		return $content;
 	}
 };
 
@@ -134,12 +92,10 @@ around [ qw( debug verbose ) ] => sub {
 #######
 
 has 'numify' => (
-	is   => 'rw',
-	isa  => Bool,
-	default => sub {
-		0;
-	},
-	lazy => 1,
+	is      => 'rw',
+	isa     => Bool,
+	default => sub {0},
+	lazy    => 1,
 );
 
 has 'distribution_name' => (
@@ -149,10 +105,10 @@ has 'distribution_name' => (
 );
 
 has 'package_names' => (
-	is   => 'rw',
-	isa  => ArrayRef,
+	is      => 'rw',
+	isa     => ArrayRef,
 	default => sub { [] },
-	lazy => 1,
+	lazy    => 1,
 );
 
 #has 'package_requires' => (
@@ -196,36 +152,40 @@ has 'found_twins' => (
 );
 
 has 'mcpan' => (
-	is   => 'rw',
-	isa  => InstanceOf [ 'MetaCPAN::API', ],
-	lazy => 1,
+	is      => 'rw',
+	isa     => InstanceOf [ 'MetaCPAN::API', ],
+	lazy    => 1,
 	builder => '_build_mcpan',
-	handles => [ qw( module release ) ],
+	handles => [qw( module release )],
 );
+
 sub _build_mcpan {
 	my $self = shift;
 	MetaCPAN::API->new();
 }
 
 has 'output' => (
-	is   => 'rw',
-	isa  => InstanceOf [ 'App::Midgen::Output', ],
-	lazy => 1,
+	is      => 'rw',
+	isa     => InstanceOf [ 'App::Midgen::Output', ],
+	lazy    => 1,
 	builder => '_build_output',
-#	handles => [ qw( ... ) ],
+
+	#	handles => [ qw( ... ) ],
 );
+
 sub _build_output {
 	my $self = shift;
 	App::Midgen::Output->new();
 }
 
 has 'scanner' => (
-	is   => 'rw',
-	isa  => InstanceOf [ 'Perl::PrereqScanner', ],
-	lazy => 1,
+	is      => 'rw',
+	isa     => InstanceOf [ 'Perl::PrereqScanner', ],
+	lazy    => 1,
 	builder => '_build_scanner',
-	handles => [ qw( scan_ppi_document ) ],
+	handles => [qw( scan_ppi_document )],
 );
+
 sub _build_scanner {
 	my $self = shift;
 	Perl::PrereqScanner->new();
@@ -238,24 +198,26 @@ has 'ppi_document' => (
 );
 
 has 'xtest' => (
-	is => 'rw',
-	isa => Str,
-	lazy => 1,
+	is      => 'rw',
+	isa     => Str,
+	lazy    => 1,
 	default => sub {
 		'test_requires';
 	},
 );
 
 has 'develop' => (
-	is => 'ro',
-	isa => Bool,
-	lazy => 1,
+	is      => 'ro',
+	isa     => Bool,
+	lazy    => 1,
 	builder => '_develop',
 );
+
 sub _develop {
 	my $self = shift;
-#	return 'running builder';
-	if ( $self->experimental && $self->format eq 'cfile' ){
+
+	#	return 'running builder';
+	if ( $self->experimental && $self->format eq 'cfile' ) {
 		return 1;
 	} else {
 		return 0;
@@ -301,6 +263,10 @@ none as such, but we do have
 =item * format
 
 =item * verbose
+
+0 -> off
+1 -> default
+2 -> show files
 
 =item * zero
 

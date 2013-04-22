@@ -2,16 +2,19 @@
 
 use 5.010001;
 use strict;
-use warnings FATAL => 'all';
-no warnings 'experimental';
+use warnings; # FATAL => 'all';
 
 BEGIN {
 	$PPI::XS_DISABLE = 1; # noise control - Prevent warning
 }
-
+use version;
 our $VERSION = '0.21_06';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
+
+my $compair_version = version->parse(v5.17.11) <=> version->parse($PERL_VERSION);
+say '$compair_version = ' . $compair_version;
+my $no_warn_exp  = 'experimental';
 
 use Data::Printer { caller_info => 1, colored => 1, };
 
@@ -53,18 +56,18 @@ my $dual_life    = $config->{dual_life} || 0;
 my $verbose      = 1;
 my @format       = $config->{format} || 'dsl';
 my $experimental = 0;
-my $quiet = $config->{quiet} || 0;
+my $quiet        = $config->{quiet} || 0;
 my $zero         = $config->{zero} || 0;
 my $debug        = 0;
 my $write        = 0;
 GetOptions(
-	'verbose|v+'      => \$verbose,
+	'verbose|v+'     => \$verbose,
 	'core|c!'        => \$core,
 	'dual_life|l!'   => \$dual_life,
 	'help|h|?'       => \$help,
 	'experimental|x' => \$experimental,
 	'format|f=s'     => \@format,
-	'quiet|q' => \$quiet,
+	'quiet|q'        => \$quiet,
 	'zero|z!'        => \$zero,
 	'debug|d'        => sub {
 		$core    = 1;
