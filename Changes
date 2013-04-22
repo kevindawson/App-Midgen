@@ -1,7 +1,13 @@
 Revision history for App-Midgen
 
+0.21_06 2013-04-22
+ - Rename output format option from build to mb, azawawi++
+ - switch --verbose option over to support -v and -vv
+ - re-write using test-requires, we also find includes as well
+ - Turn off experimental warnings if > v17.5.10 rjbs++
+
 0.21 2013-04-04
- - Rename output format option from cfile to cpanfile
+ - Rename output format option from cfile to cpanfile miyagawa++
 
 0.20 2013-04-03
  - re-write noisy children
