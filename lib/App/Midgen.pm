@@ -51,7 +51,6 @@ sub run {
 	$self->find_required_test_modules();
 
 	# ToDo look at doing this with -vv
-	p $self->verbose;
 	p $self->{modules} if ( $self->verbose == THREE );
 
 	$self->remove_noisy_children( $self->{package_requires} ) if $self->experimental;
@@ -407,7 +406,7 @@ sub _xtests_includes {
 		}
 	}
 	# lets catch -> use Test::Requires { 'Test::Pod' => 1.46 };
-	elsif ( $module =~ /^\w+::\w+/ ) {
+	elsif ( $module =~ /^\w+::\w+/ && $self->experimental ) {
 		$module =~ s/(\s.+)$//;
 		p $module if $self->debug;
 
