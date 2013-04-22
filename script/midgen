@@ -2,21 +2,29 @@
 
 use 5.010001;
 use strict;
-use warnings; # FATAL => 'all';
+use warnings FATAL => 'all';
+no if $] > 5.017010, warnings => 'experimental';
 
 BEGIN {
 	$PPI::XS_DISABLE = 1; # noise control - Prevent warning
 }
+
 use version;
 our $VERSION = '0.21_06';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 my $compair_version = version->parse(v5.17.11) <=> version->parse($PERL_VERSION);
-say '$compair_version = ' . $compair_version;
-my $no_warn_exp  = 'experimental';
+say $];
+say '$compair_version = '.$compair_version;
+#no if ( $compair_version lt 1) , warnings => 'experimental::smartmatch';
+
+
+# no if $compair_version lt 1, warnings => 'experimental';
 
 use Data::Printer { caller_info => 1, colored => 1, };
+
+exit(0);
 
 # we are doing this so we can run from git during development
 # perl ~/GitHub/App-Midgen/script/midgen

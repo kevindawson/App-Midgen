@@ -5,6 +5,8 @@ use Moo;
 with qw( App::Midgen::Roles );
 use App::Midgen::Output;
 
+no if $] > 5.017010, warnings => 'experimental';
+
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
