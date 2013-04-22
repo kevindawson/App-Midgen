@@ -2,6 +2,7 @@ package App::Midgen::Output;
 
 use v5.10;
 use Moo;
+no warnings 'experimental';
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';

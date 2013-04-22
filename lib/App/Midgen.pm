@@ -4,6 +4,7 @@ use v5.10;
 use Moo;
 with qw( App::Midgen::Roles );
 use App::Midgen::Output;
+no warnings 'experimental';
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
