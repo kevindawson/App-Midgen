@@ -6,7 +6,7 @@ use warnings FATAL => 'all';
 use English qw( -no_match_vars );    # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Test::More tests => 26;
+use Test::More tests => 27;
 
 BEGIN {
   use_ok('App::Midgen');
@@ -36,7 +36,8 @@ BEGIN {
   use_ok('constant',               '1.27');
   use_ok('version',                '0.9902');
 
-  use_ok('Test::More', '0.98');
+  use_ok('Test::More',     '0.98');
+  use_ok('Test::Requires', '0.06');
 }
 
 diag("Testing App::Midgen v$App::Midgen::VERSION");

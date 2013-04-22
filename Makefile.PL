@@ -14,7 +14,7 @@ requires Getopt::Long           2.39
 requires JSON::Tiny             0.25
 requires List::MoreUtils        0.33
 requires MetaCPAN::API          0.43
-requires Module::CoreList       2.85
+requires Module::CoreList       2.87
 requires Moo                    1.001
 requires MooX::Types::MooseLike 0.23
 requires PPI                    1.215
@@ -28,7 +28,8 @@ requires Try::Tiny              0.12
 requires constant               1.27
 requires version                0.9902
 
-test_requires Test::More 0.98
+test_requires Test::More     0.98
+test_requires Test::Requires 0.06
 
 recommends Test::Pod           1.46
 recommends Test::Pod::Coverage 1.08
