@@ -24,8 +24,6 @@ say '$compair_version = '.$compair_version;
 
 use Data::Printer { caller_info => 1, colored => 1, };
 
-exit(0);
-
 # we are doing this so we can run from git during development
 # perl ~/GitHub/App-Midgen/script/midgen
 use FindBin qw($Bin);
