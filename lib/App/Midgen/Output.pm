@@ -3,7 +3,7 @@ package App::Midgen::Output;
 use v5.10;
 use Moo;
 # turn of experimental warnings
-no if $] > 5.017010, warnings => 'experimental';
+no if $] > 5.017010, warnings => 'experimental::given';
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
