@@ -5,7 +5,7 @@ use Moo;
 with qw( App::Midgen::Roles );
 use App::Midgen::Output;
 # turn of experimental warnings
-no if $] > 5.017010, warnings => 'experimental';
+no if $] > 5.017010, warnings => 'experimental::smartmatch';
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
@@ -762,15 +762,17 @@ sub get_module_version {
 	my $cpan_version;
 	my $found = 0;
 	my $dist;
+	p $module if $self->debug;
 
 	try {
 		$module =~ s/::/-/g;
 
 		# quick n dirty, get version number if module is classed as a distribution in metacpan
 		my $mod = $self->mcpan->release( distribution => $module );
+#		p $mod;
 		$cpan_version = $mod->{version_numified};
 
-		# $cpan_version = $mod->{version_numified};
+		p $cpan_version if $self->debug;
 
 		$found = 1;
 	}
@@ -1138,8 +1140,11 @@ As our mantra is to show the current version of a module,
  we do this by asking MetaCPAN directly so we are going to need to
  connect to L<http://api.metacpan.org/v0/>.
 
-
 =head1 BUGS AND LIMITATIONS
+
+There may be some modules on CPAN that when MetaCPAN-API asks for there
+ version string, it is provided with the wrong infomation, as the contents
+ of there Meta files are out of sync with there current version string.
 
 Please report any bugs or feature requests to
  through the web interface at
