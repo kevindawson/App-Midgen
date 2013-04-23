@@ -3,10 +3,10 @@
 use v5.10;
 use strict;
 use warnings FATAL => 'all';
-use English qw( -no_match_vars ); # Avoids regex performance penalty
+use English qw( -no_match_vars ); 
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Test::More tests => 26;
+use Test::More tests => 24;
 
 ######
 # let's check our subs/methods.
@@ -26,7 +26,7 @@ foreach my $subs (@subs) {
 }
 
 my @attributes = qw(
-	core dual_life verbose experimental zero debug
+	core debug dual_life experimental zero
 );
 my $midgen1 = App::Midgen->new();
 
