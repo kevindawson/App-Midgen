@@ -497,8 +497,9 @@ sub body_cpanfile {
 		#		say '# cpanfile';
 		#		print CLEAR;
 		say "requires 'perl', '$App::Midgen::Min_Version';";
+		print "\n";
 	}
-	print "\n";
+#	print "\n";
 
 	my $pm_length = 0;
 	foreach my $module_name ( sort keys %{$required_ref} ) {
@@ -515,11 +516,13 @@ sub body_cpanfile {
 			}
 		}
 		when ('test_requires') {
+			print "\n";
 			say 'on test => sub {';
 			foreach my $module_name ( sort keys %{$required_ref} ) {
 				my $mod_name = "'$module_name',";
 				printf "\t%s %-*s '%s';\n", 'requires', $pm_length + THREE, $mod_name, $required_ref->{$module_name};
 			}
+			print "\n" if %{$required_ref};
 		}
 		when ('recommends') {
 			foreach my $module_name ( sort keys %{$required_ref} ) {
@@ -529,6 +532,7 @@ sub body_cpanfile {
 			say '};';
 		}
 		when ('test_develop') {
+			print "\n";
 			say 'on develop => sub {';
 			foreach my $module_name ( sort keys %{$required_ref} ) {
 				my $mod_name = "'$module_name',";
