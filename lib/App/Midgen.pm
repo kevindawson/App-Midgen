@@ -65,7 +65,6 @@ sub run {
 	# Now we have switched to MetaCPAN-Api we can hunt for noisy children in test requires
 	$self->remove_noisy_children( $self->{test_requires} ) if $self->experimental;
 
-
 	$self->_output_main_body( 'requires',      $self->{package_requires} );
 	$self->_output_main_body( 'test_requires', $self->{test_requires} );
 	$self->_output_main_body( 'recommends',    $self->{recommends} );
@@ -303,7 +302,7 @@ sub _find_makefile_test_requires {
 	$self->xtest('test_develop') if $directorie =~ m/xt$/;
 
 	# p $prerequisites;
-	##p $self->format;
+	#p $self->xtest;
 	##p $self->develop;
 
 	my $filename = $_;
@@ -326,8 +325,8 @@ sub _find_makefile_test_requires {
 	}
 
 	#These are really recommends
-	$self->_xtests_in_single_quote();
-	$self->_xtests_in_double_quote();
+	$self->_xtests_in_single_quote();# if $self->experimental; 
+	$self->_xtests_in_double_quote();# if $self->experimental;
 
 	return;
 }
@@ -348,6 +347,8 @@ sub _xtests_in_single_quote {
 			my $module = $include->content;
 			$module =~ s/^[']//;
 			$module =~ s/[']$//;
+			
+			p $module if $self->debug;
 
 			$self->_xtests_includes($module);
 		}
@@ -369,6 +370,8 @@ sub _xtests_in_double_quote {
 			my $module = $include->content;
 			$module =~ s/^["]//;
 			$module =~ s/["]$//;
+
+			p $module if $self->debug;
 
 			$self->_xtests_includes($module);
 		}
@@ -409,18 +412,23 @@ sub _xtests_includes {
 	}
 
 	# lets catch -> use Test::Requires { 'Test::Pod' => 1.46 };
-	elsif ( $module =~ /^\w+::\w+/ && $self->experimental ) {
+	elsif ( $module =~ /^\w+::\w+/ ) {
 		$module =~ s/(\s.+)$//;
 		p $module if $self->debug;
 
 		if ( not defined $self->{modules}{$module}{location} and $module !~ /[;|=]/ ) {
 			push @modules, $module;
+			if ( $self->xtest eq 'test_requires' ){
+				$self->xtest('recommends')
+			}
 		}
 	}
 
 	# if we found a module, process it
 	if ( scalar @modules > 0 ) {
-		if ( $self->develop && $self->xtest eq 'test_develop' ) {
+		if ( $self->xtest eq 'test_requires' ) {
+			$self->_process_found_modules( 'test_requires', \@modules );
+		} elsif ( $self->develop && $self->xtest eq 'test_develop' ) {
 			$self->_process_found_modules( 'test_develop', \@modules );
 		} else {
 			$self->_process_found_modules( 'recommends', \@modules );
@@ -442,10 +450,11 @@ sub _process_found_modules {
 	foreach my $module ( @{$modules_ref} ) {
 
 		p $module if $self->debug;
+		p $require_type if $self->debug;
 
 		#deal with ''
 		next if $module eq NONE;
-		my $distribution_name = $self->distribution_name;
+		my $distribution_name = $self->distribution_name // 'm/t';
 		given ($module) {
 			when (/perl/sxm) {
 
@@ -539,6 +548,7 @@ sub _store_modules {
 			}
 		}
 	}
+	p $self->{modules}{$module} if $self->debug;
 
 	return;
 }
@@ -949,7 +959,7 @@ sub _output_header {
 sub _output_main_body {
 	my $self         = shift;
 	my $title        = shift || 'title missing';
-	my $required_ref = shift || return;
+	my $required_ref = shift;# || return;
 
 	given ( $self->format ) {
 
