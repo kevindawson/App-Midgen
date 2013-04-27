@@ -13,7 +13,7 @@ use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 use Term::ANSIColor qw( :constants colored );
-
+use Data::Printer { caller_info => 1, colored => 1, };
 use constant { BLANK => q{ }, NONE => q{}, THREE => 3, };
 use File::Spec;
 
@@ -44,7 +44,7 @@ sub header_dsl {
 sub body_dsl {
 	my $self         = shift;
 	my $title        = shift;
-	my $required_ref = shift;
+	my $required_ref = shift || return;
 	say 'perl_version ' . $App::Midgen::Min_Version if $title eq 'requires';
 	print "\n";
 
@@ -133,7 +133,7 @@ sub header_mi {
 sub body_mi {
 	my $self         = shift;
 	my $title        = shift;
-	my $required_ref = shift;
+	my $required_ref = shift || return;
 
 	my $pm_length = 0;
 	foreach my $module_name ( sort keys %{$required_ref} ) {
@@ -230,7 +230,7 @@ sub header_mb {
 sub body_mb {
 	my $self         = shift;
 	my $title        = shift;
-	my $required_ref = shift;
+	my $required_ref = shift || return;
 	print "\n";
 
 	my $pm_length = 0;
@@ -261,12 +261,12 @@ sub footer_mb {
 		print "\n";
 		say '"script_files" => [';
 		print "\t\"script/...\"\n";
-		say ']';
+		say '],';
 	} elsif ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'bin' ) ) {
 		print "\n";
 		say '"script_files" => [';
 		print "\t\"bin/...\"\n";
-		say ']';
+		say '],';
 	}
 
 	print "\n";
@@ -298,7 +298,7 @@ sub header_dzil {
 sub body_dzil {
 	my $self         = shift;
 	my $title        = shift;
-	my $required_ref = shift;
+	my $required_ref = shift || return;
 	print "\n";
 
 	my $pm_length = 0;
@@ -375,7 +375,7 @@ sub header_dist {
 sub body_dist {
 	my $self         = shift;
 	my $title        = shift;
-	my $required_ref = shift;
+	my $required_ref = shift || return;;
 	print "\n";
 
 	my $pm_length = 0;
@@ -506,17 +506,10 @@ sub body_cpanfile {
 			$pm_length = length $module_name;
 		}
 	}
-
 	given ($title) {
 		when ('requires') {
 			foreach my $module_name ( sort keys %{$required_ref} ) {
 
-				my $mod_name = "'$module_name',";
-				printf "%s %-*s '%s';\n", $title, $pm_length + THREE, $mod_name, $required_ref->{$module_name};
-			}
-		}
-		when ('recommends') {
-			foreach my $module_name ( sort keys %{$required_ref} ) {
 				my $mod_name = "'$module_name',";
 				printf "%s %-*s '%s';\n", $title, $pm_length + THREE, $mod_name, $required_ref->{$module_name};
 			}
@@ -527,13 +520,19 @@ sub body_cpanfile {
 				my $mod_name = "'$module_name',";
 				printf "\t%s %-*s '%s';\n", 'requires', $pm_length + THREE, $mod_name, $required_ref->{$module_name};
 			}
+		}
+		when ('recommends') {
+			foreach my $module_name ( sort keys %{$required_ref} ) {
+				my $mod_name = "'$module_name',";
+				printf "\t%s %-*s '%s';\n", 'recommends', $pm_length + THREE, $mod_name, $required_ref->{$module_name};
+			}
 			say '};';
 		}
 		when ('test_develop') {
 			say 'on develop => sub {';
 			foreach my $module_name ( sort keys %{$required_ref} ) {
 				my $mod_name = "'$module_name',";
-				printf "\t%s %-*s '%s';\n", 'requires', $pm_length + THREE, $mod_name, $required_ref->{$module_name};
+				printf "\t%s %-*s '%s';\n", 'recommends', $pm_length + THREE, $mod_name, $required_ref->{$module_name};
 			}
 			say '};';
 		}
