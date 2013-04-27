@@ -217,7 +217,7 @@ sub _develop {
 	my $self = shift;
 
 	#	return 'running builder';
-	if ( $self->experimental && $self->format eq 'cfile' ) {
+	if ( $self->experimental && $self->format eq 'cpanfile' ) {
 		return 1;
 	} else {
 		return 0;
