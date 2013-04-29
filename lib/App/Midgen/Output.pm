@@ -527,7 +527,7 @@ sub body_cpanfile {
 		when ('recommends') {
 			foreach my $module_name ( sort keys %{$required_ref} ) {
 				my $mod_name = "'$module_name',";
-				printf "\t%s %-*s '%s';\n", 'recommends', $pm_length + THREE, $mod_name, $required_ref->{$module_name};
+				printf "\t%s %-*s '%s';\n", 'suggests', $pm_length + THREE, $mod_name, $required_ref->{$module_name};
 			}
 			say '};';
 		}
