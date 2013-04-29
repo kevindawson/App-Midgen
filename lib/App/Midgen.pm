@@ -2,7 +2,11 @@ package App::Midgen;
 
 use v5.10;
 use Moo;
-with qw( App::Midgen::Roles );
+with qw( 
+	App::Midgen::Roles
+	App::Midgen::Role::TestRequires
+	App::Midgen::Role::UseOk
+);
 use App::Midgen::Output;
 
 # turn of experimental warnings
@@ -355,11 +359,14 @@ sub _find_makefile_test_requires {
 #  $self->_xtests_test_requires();
 
   #These are really recommends
-#  $self->_xtests_in_single_quote();    # if $self->experimental;
-#  $self->_xtests_in_double_quote();    # if $self->experimental;
+  $self->_xtests_in_single_quote();    # if $self->experimental;
+  $self->_xtests_in_double_quote();    # if $self->experimental;
 
   return;
 }
+
+
+=begin  BlockComment  # BlockCommentNo_1
 
 #######
 # composed method - _xtests_test_requires
@@ -561,6 +568,14 @@ if (grep { $_->isa('PPI::Token::QuoteLike::Words') } @$hunk) {
 	return;
 }
 
+=end    BlockComment  # BlockCommentNo_1
+
+=cut
+
+
+
+=begin  BlockComment  # BlockCommentNo_2
+
 
 #######
 # composed method - _xtests_in_single_quote
@@ -578,7 +593,7 @@ sub _xtests_in_single_quote {
       $module =~ s/^[']//;
       $module =~ s/[']$//;
 
-      p $module if $self->debug;
+      p $module;# if $self->debug;
 
       $self->_xtests_includes($module);
     }
@@ -673,6 +688,11 @@ sub _xtests_includes {
 
   return;
 }
+
+
+=end    BlockComment  # BlockCommentNo_2
+
+=cut
 
 
 #######
