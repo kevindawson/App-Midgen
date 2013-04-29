@@ -9,7 +9,7 @@ use Data::Printer { caller_info => 1, colored => 1, };
 # use namespace::clean -except => 'meta';
 
 our $VERSION = '0.21_07';
-
+use constant {BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3,};
 
 
 #######
@@ -166,7 +166,8 @@ if (grep { $_->isa('PPI::Token::QuoteLike::Words') } @$hunk) {
 #      p $type_close;
       $module =~ s{$type_close}{};
 #      p $module;
-      push @modules, $module;
+#      push @modules, $module;
+      push @modules, split(BLANK, $module);
 
     }
 
