@@ -2,8 +2,8 @@ package App::Midgen::Role::TestRequires;
 
 use v5.10;
 use Moo::Role;
-#use MooX::Types::MooseLike::Base qw(:all);
-use Data::Printer { caller_info => 1, colored => 1, };
+
+use Data::Printer {caller_info => 1, colored => 1,};
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
@@ -63,33 +63,23 @@ sub _xtests_test_requires {
 
   foreach my $hunk (@chunks) {
 
-	# looking for use Test::Requires { 'Test::Pod' => 1.46 };
+    # looking for use Test::Requires { 'Test::Pod' => 1.46 };
     if (grep { $_->isa('PPI::Structure::Constructor') } @$hunk) {
 
       # hack for List
       my @hunkdata = @$hunk;
 
-      # now we have an array
-#      p @hunkdata;
-
       foreach my $ppi_sc (@hunkdata) {
         if ($ppi_sc->isa('PPI::Structure::Constructor')) {
-
-#          p $ppi_sc;
-#          say $ppi_sc;
-
-#          p $ppi_sc->{children};
 
           foreach my $ppi_s (@{$ppi_sc->{children}}) {
             if ($ppi_s->isa('PPI::Statement')) {
               p $ppi_s if $self->debug;
 
-
               foreach my $element (@{$ppi_s->{children}}) {
                 if ( $element->isa('PPI::Token::Quote::Single')
                   || $element->isa('PPI::Token::Quote::Double'))
                 {
-
 
                   my $module = $element;
 
@@ -97,7 +87,7 @@ sub _xtests_test_requires {
                   $module =~ s/['|"]$//;
                   if ($module =~ m/\A[A-Z]/) {
                     say 'found module - ' . $module if $self->debug;
-                    push @modules, $module;    # if $module =~ m/\A[A-Z]/;
+                    push @modules, $module;
                   }
 
                 }
@@ -108,16 +98,12 @@ sub _xtests_test_requires {
                 {
                   my $version_string = $element;
 
-                  #                 p $version_string;
                   $version_string =~ s/^['|"]//;
                   $version_string =~ s/['|"]$//;
                   next if $version_string !~ m/\A[\d|v]/;
                   if ($version_string =~ m/\A[\d|v]/) {
 
-                    push @version_strings,
-                      $version_string;    # if =~ m/\A[\d|v]/;
-
-
+                    push @version_strings, $version_string;
                     say 'found version_string - ' . $version_string
                       if $self->debug;
                   }
@@ -131,57 +117,35 @@ sub _xtests_test_requires {
     }
 
 # looking for use Test::Requires qw(MIME::Types);
-if (grep { $_->isa('PPI::Token::QuoteLike::Words') } @$hunk) {
+    if (grep { $_->isa('PPI::Token::QuoteLike::Words') } @$hunk) {
 
-  # hack for List
-  my @hunkdata = @$hunk;
+      # hack for List
+      my @hunkdata = @$hunk;
 
-  # now we have an array
-#  p @hunkdata;
+      foreach my $ppi_tqw (@hunkdata) {
+        if ($ppi_tqw->isa('PPI::Token::QuoteLike::Words')) {
 
-  foreach my $ppi_tqw (@hunkdata) {
-    if ($ppi_tqw->isa('PPI::Token::QuoteLike::Words')) {
+          my $operator = $ppi_tqw->{operator};
+          my @type = split(//, $ppi_tqw->{sections}->[0]->{type});
 
-#      p $ppi_tqw;
-#     p $ppi_tqw->{content};
-#      p $ppi_tqw->{operator};
-      my $operator = $ppi_tqw->{operator};
+          my $module = $ppi_tqw->{content};
+          $module =~ s/$operator//;
+          my $type_open = '\A\\' . $type[0];
 
-#      p $ppi_tqw->{sections}->[0]->{type};
+          $module =~ s{$type_open}{};
+          my $type_close = '\\' . $type[1] . '\Z';
 
-      my @type = split(//, $ppi_tqw->{sections}->[0]->{type});
-#      p @type;
+          $module =~ s{$type_close}{};
+          push @modules, split(BLANK, $module);
 
-      my $module = $ppi_tqw->{content};
-      $module =~ s/$operator//; 
-#	  $module =~ s/\A$ppi_tqw->{operator}//;
-
-#      p $module;
-
-# my $type_open = "$type[0]";
-      my $type_open = '\A\\' . $type[0];
-#      p $type_open;
-      $module =~ s{$type_open}{};
-      my $type_close = '\\' . $type[1] . '\Z';
-#      p $type_close;
-      $module =~ s{$type_close}{};
-#      p $module;
-#      push @modules, $module;
-      push @modules, split(BLANK, $module);
-
+        }
+      }
     }
-
   }
-
-}
-
-
-
-  }
-  p @modules if $self->debug;
+  p @modules         if $self->debug;
   p @version_strings if $self->debug;
 
-  # if we found a module, process it
+  # if we found a module, process it with the correct catogery
   if (scalar @modules > 0) {
 
     if ($self->format eq 'cpanfile') {
@@ -199,23 +163,9 @@ if (grep { $_->isa('PPI::Token::QuoteLike::Words') } @$hunk) {
     else {
       $self->_process_found_modules('recommends', \@modules);
     }
-
-
-#    if ($self->develop && $self->xtest eq 'test_develop') {
-#      $self->_process_found_modules('recommends', \@modules);
-#    }
-#    else {
-#      $self->_process_found_modules('test_requires', \@modules);
-#    }
-
   }
-
-	return;
+  return;
 }
-
-
-
-
 
 
 no Moo::Role;
