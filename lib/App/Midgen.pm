@@ -2,10 +2,10 @@ package App::Midgen;
 
 use v5.10;
 use Moo;
-with qw( 
-	App::Midgen::Roles
-	App::Midgen::Role::TestRequires
-	App::Midgen::Role::UseOk
+with qw(
+  App::Midgen::Roles
+  App::Midgen::Role::TestRequires
+  App::Midgen::Role::UseOk
 );
 use App::Midgen::Output;
 
@@ -341,12 +341,13 @@ sub _find_makefile_test_requires {
   $self->ppi_document(PPI::Document->new($filename));
 
   # do extra test early checkinf for Test::Requires before hand
-  $self->_xtests_test_requires(); 
-if ( $self->xtest eq 'test_develop' ){
-#  $self->_xtests_test_requires(); 
-  $self->_xtests_in_single_quote();
-  $self->_xtests_in_double_quote();
-}
+  $self->_xtests_test_requires();
+  if ($self->xtest eq 'test_develop') {
+
+#  $self->_xtests_test_requires();
+    $self->_xtests_in_single_quote();
+    $self->_xtests_in_double_quote();
+  }
   my $prereqs = $self->scanner->scan_ppi_document($self->ppi_document);
   my @modules = $prereqs->required_modules;
 
@@ -360,11 +361,12 @@ if ( $self->xtest eq 'test_develop' ){
   }
 
   # check inside Test::Requires
-if ( $self->xtest eq 'test_requires' ){
-  $self->_xtests_in_single_quote();
-  $self->_xtests_in_double_quote();
-#  $self->_xtests_test_requires(); 
-}
+  if ($self->xtest eq 'test_requires') {
+    $self->_xtests_in_single_quote();
+    $self->_xtests_in_double_quote();
+
+#  $self->_xtests_test_requires();
+  }
 
 
   # These are really recommends looking for use_ok
