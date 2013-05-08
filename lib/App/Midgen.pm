@@ -6,7 +6,7 @@ with qw(
 	App::Midgen::Roles
 	App::Midgen::Role::TestRequires
 	App::Midgen::Role::UseOk
-	App::Midgen::Role::ToDo
+	App::Midgen::Role::ExtraTests
 );
 use App::Midgen::Output;
 
