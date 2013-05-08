@@ -162,7 +162,7 @@ __END__
 
 =head1 NAME
 
-App::Midgen::Roles - Package Options and Attributes used by L<App::Midgen>
+App::Midgen::Roles::ExtraTests - used by L<App::Midgen>
 
 =head1 VERSION
 
@@ -176,73 +176,7 @@ none as such, but we do have
 
 =over 4
 
-=item * core
-
-=item * debug
-
-=item * dual_life
-
-=item * experimental
-
-=item * quiet
-
-=item * format
-
-=item * verbose
-
-0 -> off
-1 -> default
-2 -> show files
-
-=item * zero
-
-=back
-
-for more info see L<midgen>
-
-=head2 ACCESSORS
-
-=over 4
-
-=item * found_twins
-
-Used as a flag to re-run noisy children after discovery of twins
-
-=item * mcpan
-
-accessor to MetaCPAN::API object
-
-=item * output
-
-accessor to App::Midgen::Output object
-
-=item * package_name
-
-Our best guess as to this packages name
-
-=item * package_names
-
-Some package names we found along the way
-
-=item * ppi_document
-
-I encapsulated this and got a nifty speed increase
-
-=item * recommends
-
-Some where to store recommend modules and version info in
-
-=item * requires
-
-Some where to store required modules and version info in
-
-=item * scanner
-
-accessor to Perl::PrereqScanner object
-
-=item * test_requires
-
-Some where to store test_required modules and version info in
+=item * ToDo
 
 
 =back
