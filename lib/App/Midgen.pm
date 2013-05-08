@@ -3,9 +3,10 @@ package App::Midgen;
 use v5.10;
 use Moo;
 with qw(
-  App::Midgen::Roles
-  App::Midgen::Role::TestRequires
-  App::Midgen::Role::UseOk
+	App::Midgen::Roles
+	App::Midgen::Role::TestRequires
+	App::Midgen::Role::UseOk
+	App::Midgen::Role::ToDo
 );
 use App::Midgen::Output;
 
@@ -16,12 +17,12 @@ no if $] > 5.017010, warnings => 'experimental::smartmatch';
 # use namespace::clean -except => 'meta';
 
 our $VERSION = '0.21_08';
-use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
+use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 #use Carp;
 use Cwd qw(cwd);
-use Data::Printer {caller_info => 1, colored => 1,};
+use Data::Printer { caller_info => 1, colored => 1, };
 use File::Find qw(find);
 use File::Spec;
 use List::MoreUtils qw(firstidx);
@@ -34,7 +35,7 @@ use Scalar::Util qw(looks_like_number);
 use Term::ANSIColor qw( :constants colored colorstrip );
 use Try::Tiny;
 
-use constant {BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3,};
+use constant { BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3, };
 use version;
 
 # stop rlib from Fing all over cwd
@@ -46,114 +47,113 @@ our $Min_Version = 0;
 # run
 #######
 sub run {
-  my $self = shift;
+	my $self = shift;
 
-  $self->_initialise();
-  try {
-    $self->first_package_name();
-  };
-  $self->_output_header();
+	$self->_initialise();
+	try {
+		$self->first_package_name();
+	};
+	$self->_output_header();
 
-  $self->find_required_modules();
-  $self->find_required_test_modules();
+	$self->find_required_modules();
+	$self->find_required_test_modules();
 
-  # ToDo look at doing this with -vv
-  p $self->{modules} if ($self->verbose == THREE);
+	# ToDo look at doing this with -vv
+	p $self->{modules} if ( $self->verbose == THREE );
 
-  $self->remove_noisy_children($self->{package_requires})
-    if $self->experimental;
-  $self->remove_twins($self->{package_requires}) if $self->experimental;
+	$self->remove_noisy_children( $self->{package_requires} )
+		if $self->experimental;
+	$self->remove_twins( $self->{package_requires} ) if $self->experimental;
 
 
-# Run a second time if we found any twins, this will sort out twins and triplets etc
-  $self->remove_noisy_children($self->{package_requires})
-    if $self->found_twins;
+	# Run a second time if we found any twins, this will sort out twins and triplets etc
+	$self->remove_noisy_children( $self->{package_requires} )
+		if $self->found_twins;
 
-# Now we have switched to MetaCPAN-Api we can hunt for noisy children in test requires
-  $self->remove_noisy_children($self->{test_requires}) if $self->experimental;
+	# Now we have switched to MetaCPAN-Api we can hunt for noisy children in test requires
+	$self->remove_noisy_children( $self->{test_requires} ) if $self->experimental;
 
-  $self->_output_main_body('requires',      $self->{package_requires});
-  $self->_output_main_body('test_requires', $self->{test_requires});
-  $self->_output_main_body('recommends',    $self->{recommends});
-  $self->_output_main_body('test_develop',  $self->{test_develop})
-    if $self->develop;
+	$self->_output_main_body( 'requires',      $self->{package_requires} );
+	$self->_output_main_body( 'test_requires', $self->{test_requires} );
+	$self->_output_main_body( 'recommends',    $self->{recommends} );
+	$self->_output_main_body( 'test_develop',  $self->{test_develop} )
+		if $self->develop;
 
-  $self->_output_footer();    # if not $self->quiet;
+	$self->_output_footer(); # if not $self->quiet;
 
-  return;
+	return;
 }
 
 #######
 # initialise
 #######
 sub _initialise {
-  my $self = shift;
+	my $self = shift;
 
-# let's give Output a copy, to stop it being Fup as well suspect Tiny::Path as-well
-  say 'working in dir: ' . $Working_Dir if $self->debug;
+	# let's give Output a copy, to stop it being Fup as well suspect Tiny::Path as-well
+	say 'working in dir: ' . $Working_Dir if $self->debug;
 
-  #$self->output = App::Midgen::Output->new();
+	#$self->output = App::Midgen::Output->new();
 
-  return;
+	return;
 }
 
 #######
 # first_package_name
 #######
 sub first_package_name {
-  my $self = shift;
+	my $self = shift;
 
-  try {
-    find(
-      sub { _find_package_names($self); },
-      File::Spec->catfile($Working_Dir, 'lib')
-    );
-  };
+	try {
+		find(
+			sub { _find_package_names($self); },
+			File::Spec->catfile( $Working_Dir, 'lib' )
+		);
+	};
 
-  p $self->package_names if $self->debug;
+	p $self->package_names if $self->debug;
 
-  # We will assume the first package found is our Package Name, pot lock :)
-  # due to Milla not being a dist we go and get dist-name
-  try {
-    my $mcpan_module_info = $self->mcpan->module($self->package_names->[0]);
-    my $distribution_name = $mcpan_module_info->{distribution};
-    $distribution_name =~ s{-}{::}g;
-    $self->distribution_name($distribution_name);
-  }
-  catch {
-    $self->distribution_name($self->package_names->[0]);
-  };
-  say 'Package: ' . $self->distribution_name if $self->verbose;
+	# We will assume the first package found is our Package Name, pot lock :)
+	# due to Milla not being a dist we go and get dist-name
+	try {
+		my $mcpan_module_info = $self->mcpan->module( $self->package_names->[0] );
+		my $distribution_name = $mcpan_module_info->{distribution};
+		$distribution_name =~ s{-}{::}g;
+		$self->distribution_name($distribution_name);
+	}
+	catch {
+		$self->distribution_name( $self->package_names->[0] );
+	};
+	say 'Package: ' . $self->distribution_name if $self->verbose;
 
-  return;
+	return;
 }
 #######
 # find_package_name
 #######
 sub _find_package_names {
-  my $self     = shift;
-  my $filename = $_;
-  state $files_checked;
-  if (defined $files_checked) {
-    return if $files_checked >= THREE;
-  }
+	my $self     = shift;
+	my $filename = $_;
+	state $files_checked;
+	if ( defined $files_checked ) {
+		return if $files_checked >= THREE;
+	}
 
-  # Only check in pm files
-  return if $filename !~ /[.]pm$/sxm;
+	# Only check in pm files
+	return if $filename !~ /[.]pm$/sxm;
 
-  # Load a Document from a file
-  $self->ppi_document(PPI::Document->new($filename));
+	# Load a Document from a file
+	$self->ppi_document( PPI::Document->new($filename) );
 
-  try {
-    $self->min_version();
-  };
+	try {
+		$self->min_version();
+	};
 
-  # Extract package names
-  push @{$self->package_names},
-    $self->ppi_document->find_first('PPI::Statement::Package')->namespace;
-  $files_checked++;
+	# Extract package names
+	push @{ $self->package_names }, $self->ppi_document->find_first('PPI::Statement::Package')->namespace;
+	$files_checked++;
 
-  return;
+	return;
 }
 
 
@@ -161,59 +161,57 @@ sub _find_package_names {
 # find_required_modules
 #######
 sub find_required_modules {
-  my $self = shift;
+	my $self = shift;
 
-  # By default we shell only check lib and script (to bin or not?)
-  my @posiable_directories_to_search
-    = map { File::Spec->catfile($Working_Dir, $_) } qw( script bin lib );
+	# By default we shell only check lib and script (to bin or not?)
+	my @posiable_directories_to_search = map { File::Spec->catfile( $Working_Dir, $_ ) } qw( script bin lib );
 
-  my @directories_to_search = ();
-  for my $directory (@posiable_directories_to_search) {
-    if (defined -d $directory) {
-      push @directories_to_search, $directory;
-    }
-  }
-  p @directories_to_search if $self->debug;
+	my @directories_to_search = ();
+	foreach my $directory (@posiable_directories_to_search) {
+		if ( defined -d $directory ) {
+			push @directories_to_search, $directory;
+		}
+	}
+	p @directories_to_search if $self->debug;
 
-  try {
-    find(sub { _find_makefile_requires($self); }, @directories_to_search);
-  };
+	try {
+		find( sub { _find_makefile_requires($self); }, @directories_to_search );
+	};
 
-  return;
+	return;
 
 }
 #######
 # find_required_modules
 #######
 sub find_required_test_modules {
-  my $self = shift;
+	my $self = shift;
 
-  # By default we shell only check t\ (to xt\ or not?)
-  my @posiable_directories_to_search;
-  if (not $self->experimental) {
-    @posiable_directories_to_search
-      = map { File::Spec->catfile($Working_Dir, $_) } qw( t );
-  }
-  else {
-    @posiable_directories_to_search
-      = map { File::Spec->catfile($Working_Dir, $_) } qw( t xt );
-  }
+	# By default we shell only check t\ (to xt\ or not?)
+	my @posiable_directories_to_search;
+	if ( not $self->experimental ) {
+		@posiable_directories_to_search = map { File::Spec->catfile( $Working_Dir, $_ ) } qw( t );
+	} else {
+		@posiable_directories_to_search = map { File::Spec->catfile( $Working_Dir, $_ ) } qw( t xt );
+	}
 
-  my @directories_to_search = ();
-  for my $directory (@posiable_directories_to_search) {
-    if (defined -d $directory) {
-      push @directories_to_search, $directory;
-    }
-  }
+	my @directories_to_search = ();
+	foreach my $directory (@posiable_directories_to_search) {
+		if ( defined -d $directory ) {
+			push @directories_to_search, $directory;
+		}
+	}
 
-  try {
-    foreach my $directorie (@directories_to_search) {
-      find(sub { _find_makefile_test_requires($self, $directorie); },
-        $directorie);
-    }
-  };
+	try {
+		foreach my $directorie (@directories_to_search) {
+			find(
+				sub { _find_makefile_test_requires( $self, $directorie ); },
+				$directorie
+			);
+		}
+	};
 
-  return;
+	return;
 
 }
 
@@ -221,98 +219,90 @@ sub find_required_test_modules {
 # _find_makefile_requires
 #######
 sub _find_makefile_requires {
-  my $self     = shift;
-  my $filename = $_;
-  $self->ppi_document(PPI::Document->new($filename));
-  my $is_script = 0;
+	my $self     = shift;
+	my $filename = $_;
+	$self->ppi_document( PPI::Document->new($filename) );
+	my $is_script = 0;
 
-  given ($filename) {
-    when (m/[.]pm$/) {
-      say 'looking for requires in (.pm)-> ' . $filename
-        if $self->verbose >= TWO;
-    }
-    when (m/[.]\w{2,4}$/) {
-      say 'rejecting ' . $filename if $self->verbose >= TWO;
-      return;
-    }
-    default { return if not $self->_is_perlfile($filename); $is_script = 1; }
-  }
-  try {
-    $self->min_version() if $is_script;
-  };
+	given ($filename) {
+		when (m/[.]pm$/) {
+			say 'looking for requires in (.pm)-> ' . $filename
+				if $self->verbose >= TWO;
+		}
+		when (m/[.]\w{2,4}$/) {
+			say 'rejecting ' . $filename if $self->verbose >= TWO;
+			return;
+		}
+		default { return if not $self->_is_perlfile($filename); $is_script = 1; }
+	}
+	try {
+		$self->min_version() if $is_script;
+	};
 
-  my $prereqs = $self->scanner->scan_ppi_document($self->ppi_document);
-  my @modules = $prereqs->required_modules;
+	my $prereqs = $self->scanner->scan_ppi_document( $self->ppi_document );
+	my @modules = $prereqs->required_modules;
 
-  $self->{skip_not_mcpan_stamp} = 0;
+	$self->{skip_not_mcpan_stamp} = 0;
 
-  if (/^Dist::Zilla::Role::PluginBundle/ ~~ @modules) {
+	if ( /^Dist::Zilla::Role::PluginBundle/ ~~ @modules ) {
 
-    $self->{skip_not_mcpan_stamp} = 1;
+		$self->{skip_not_mcpan_stamp} = 1;
 
-    my $ppi_tqs = $self->ppi_document->find('PPI::Token::Quote::Single');
-    if ($ppi_tqs) {
+		my $ppi_tqs = $self->ppi_document->find('PPI::Token::Quote::Single');
+		if ($ppi_tqs) {
 
-      # my @modules;
-      foreach my $include (@{$ppi_tqs}) {
+			# my @modules;
+			foreach my $include ( @{$ppi_tqs} ) {
 
-        my $module = $include->content;
-        ##p $module;
-        $module =~ s/^[']//;
-        $module =~ s/[']$//;
+				my $module = $include->content;
+				##p $module;
+				$module =~ s/^[']//;
+				$module =~ s/[']$//;
 
-        next if $module =~ m/^Dist::Zilla::Role::PluginBundle/;
-        next if $module =~ m{[.|$|\\|/|-|%|@|]};
-        next if $module eq NONE;
+				next if $module =~ m/^Dist::Zilla::Role::PluginBundle/;
+				next if $module =~ m{[.|$|\\|/|-|%|@|]};
+				next if $module eq NONE;
 
-        push @modules, 'Dist::Zilla::Plugin::' . $module;
-        ##p @module;
+				push @modules, 'Dist::Zilla::Plugin::' . $module;
+			}
+		}
+	}
 
-        ## $self->_xtests_includes($module);
-      }
-    }
-
-    ## p @modules;
-
-
-  }
-
-  $self->_process_found_modules('package_requires', \@modules);
-  return;
+	$self->_process_found_modules( 'package_requires', \@modules );
+	return;
 }
 
 ########
 # is this a perl file
 #######
 sub _is_perlfile {
-  my $self     = shift;
-  my $filename = shift;
+	my $self     = shift;
+	my $filename = shift;
 
-  $self->ppi_document(PPI::Document->new($filename));
-  my $ppi_tc = $self->ppi_document->find('PPI::Token::Comment');
+	$self->ppi_document( PPI::Document->new($filename) );
+	my $ppi_tc = $self->ppi_document->find('PPI::Token::Comment');
 
-  my $not_a_pl_file = 0;
+	my $not_a_pl_file = 0;
 
-  if ($ppi_tc) {
+	if ($ppi_tc) {
 
-    # check first token-comment for a she-bang
-    $not_a_pl_file = 1 if $ppi_tc->[0]->content =~ m/^#!.+perl.*$/;
-  }
+		# check first token-comment for a she-bang
+		$not_a_pl_file = 1 if $ppi_tc->[0]->content =~ m/^#!.+perl.*$/;
+	}
 
-  if ($self->ppi_document->find('PPI::Statement::Package') || $not_a_pl_file) {
-    if ($self->verbose >= TWO) {
+	if ( $self->ppi_document->find('PPI::Statement::Package') || $not_a_pl_file ) {
+		if ( $self->verbose >= TWO ) {
 
-      print "looking for requires in (package) -> "
-        if $self->ppi_document->find('PPI::Statement::Package');
-      print "looking for requires in (shebang) -> "
-        if $ppi_tc->[0]->content =~ /perl/;
-      say $filename ;
-    }
-    return 1;
-  }
-  else {
-    return 0;
-  }
+			print "looking for requires in (package) -> "
+				if $self->ppi_document->find('PPI::Statement::Package');
+			print "looking for requires in (shebang) -> "
+				if $ppi_tc->[0]->content =~ /perl/;
+			say $filename ;
+		}
+		return 1;
+	} else {
+		return 0;
+	}
 
 }
 
@@ -321,59 +311,47 @@ sub _is_perlfile {
 # _find_makefile_test_requires
 #######
 sub _find_makefile_test_requires {
-  my $self       = shift;
-  my $directorie = shift;
-  ##p $directorie;
-  my $prerequisites
-    = ($directorie =~ m/xt$/) ? 'test_develop' : 'test_requires';
-  $self->xtest('test_develop') if $directorie =~ m/xt$/;
+	my $self       = shift;
+	my $directorie = shift;
+	##p $directorie;
+	my $prerequisites = ( $directorie =~ m/xt$/ ) ? 'test_develop' : 'test_requires';
+	$self->xtest('test_develop') if $directorie =~ m/xt$/;
 
-  # p $prerequisites;
-  #p $self->xtest;
-  ##p $self->develop;
+	my $filename = $_;
+	return if $filename !~ /[.]t|pm$/sxm;
 
-  my $filename = $_;
-  return if $filename !~ /[.]t|pm$/sxm;
+	say 'looking for test_requires in: ' . $filename if $self->verbose >= TWO;
 
-  say 'looking for test_requires in: ' . $filename if $self->verbose >= TWO;
+	# Load a Document from a file and check use and require contents
+	$self->ppi_document( PPI::Document->new($filename) );
 
-  # Load a Document from a file and check use and require contents
-  $self->ppi_document(PPI::Document->new($filename));
+	# do extra test early check for Test::Requires before hand
+	$self->xtests_test_requires();
 
-  # do extra test early checkinf for Test::Requires before hand
-  $self->_xtests_test_requires();
-  if ($self->xtest eq 'test_develop') {
+	# do extra test early check for use_ok in BEGIN blocks before hand
+	$self->xtests_use_ok();
 
-#  $self->_xtests_test_requires();
-    $self->_xtests_in_single_quote();
-    $self->_xtests_in_double_quote();
-  }
-  my $prereqs = $self->scanner->scan_ppi_document($self->ppi_document);
-  my @modules = $prereqs->required_modules;
+	my $prereqs = $self->scanner->scan_ppi_document( $self->ppi_document );
+	my @modules = $prereqs->required_modules;
 
-  p @modules if $self->debug;
+	p @modules if $self->debug;
 
-  if ($self->develop && $self->xtest eq 'test_develop') {
-    $self->_process_found_modules('test_develop', \@modules);
-  }
-  else {
-    $self->_process_found_modules('test_requires', \@modules);
-  }
+	if ( scalar @modules > 0 ) {
 
-  # check inside Test::Requires
-  if ($self->xtest eq 'test_requires') {
-    $self->_xtests_in_single_quote();
-    $self->_xtests_in_double_quote();
+		if ( $self->format eq 'cpanfile' ) {
+			# $self->xtest eq 'test_requires' -> t/
+			# $self->xtest eq 'test_develop' -> xt/
+			if ( $self->xtest eq 'test_requires' ) {
+				$self->_process_found_modules( 'test_requires', \@modules );
+			} elsif ( $self->develop && $self->xtest eq 'test_develop' ) {
+				$self->_process_found_modules( 'test_develop', \@modules );
+			}
+		} else {
+			$self->_process_found_modules( 'test_requires', \@modules );
+		}
+	}
 
-#  $self->_xtests_test_requires();
-  }
-
-
-  # These are really recommends looking for use_ok
-#  $self->_xtests_in_single_quote();    # if $self->experimental;
-#  $self->_xtests_in_double_quote();    # if $self->experimental;
-
-  return;
+	return;
 }
 
 
@@ -381,460 +359,442 @@ sub _find_makefile_test_requires {
 # composed method - _process_found_modules
 #######
 sub _process_found_modules {
-  my $self         = shift;
-  my $require_type = shift;
-  my $modules_ref  = shift;
+	my $self         = shift;
+	my $require_type = shift;
+	my $modules_ref  = shift;
 
-  foreach my $module (@{$modules_ref}) {
+	foreach my $module ( @{$modules_ref} ) {
 
-    p $module       if $self->debug;
-    p $require_type if $self->debug;
+		p $module       if $self->debug;
+		p $require_type if $self->debug;
 
-    #deal with ''
-    next if $module eq NONE;
-    my $distribution_name = $self->distribution_name // 'm/t';
-    given ($module) {
-      when (/perl/sxm) {
+		#deal with ''
+		next if $module eq NONE;
+		my $distribution_name = $self->distribution_name // 'm/t';
+		given ($module) {
+			when (/perl/sxm) {
 
-        # ignore perl we will get it from minperl required
-        next;
-      }
-      when (/\A\Q$distribution_name\E/sxm) {
+				# ignore perl we will get it from minperl required
+				next;
+			}
+			when (/\A\Q$distribution_name\E/sxm) {
 
-        # don't include our own packages here
-        next;
-      }
-      when (/^t::/sxm) {
+				# don't include our own packages here
+				next;
+			}
+			when (/^t::/sxm) {
 
-        # don't include our own test packages here
-        next;
-      }
+				# don't include our own test packages here
+				next;
+			}
 
-      when (/Mojo/sxm) {
+			when (/Mojo/sxm) {
 
-        if ($self->experimental) {
-          if ($self->_check_mojo_core($module, $require_type)) {
-            if (not $self->quiet) {
-              print BRIGHT_BLACK;
-              say 'swapping out ' . $module . ' for Mojolicious';
-              print CLEAR;
-            }
-            next;
-          }
-        }
-      }
-      when (/^Padre/sxm) {
+				if ( $self->experimental ) {
+					if ( $self->_check_mojo_core( $module, $require_type ) ) {
+						if ( not $self->quiet ) {
+							print BRIGHT_BLACK;
+							say 'swapping out ' . $module . ' for Mojolicious';
+							print CLEAR;
+						}
+						next;
+					}
+				}
+			}
+			when (/^Padre/sxm) {
 
-        # mark all Padre core as just Padre, for plugins
-        $module = 'Padre';
-      }
-    }
+				# mark all Padre core as just Padre, for plugins
+				$module = 'Padre';
+			}
+		}
 
-    # lets keep track of how many times a module include is found
-    $self->{modules}{$module}{count} += 1;
+		# lets keep track of how many times a module include is found
+		$self->{modules}{$module}{count} += 1;
 
-    # don't process already found modules
-    next if defined $self->{modules}{$module}{location};
-    p $module if $self->debug;
+		# don't process already found modules
+		next if defined $self->{modules}{$module}{location};
+		p $module if $self->debug;
 
-    $self->_store_modules($require_type, $module);
-  }
-  return;
+		$self->_store_modules( $require_type, $module );
+	}
+	return;
 }
 
 #######
 # composed method - _store_modules
 #######
 sub _store_modules {
-  my $self         = shift;
-  my $require_type = shift;
-  my $module       = shift;
-  p $module if $self->debug;
+	my $self         = shift;
+	my $require_type = shift;
+	my $module       = shift;
+	p $module if $self->debug;
 
-  $self->_in_corelist($module)
-    if not defined $self->{modules}{$module}{corelist};
-  my $version = $self->get_module_version($module, $require_type);
-  given ($version) {
+	$self->_in_corelist($module)
+		if not defined $self->{modules}{$module}{corelist};
+	my $version = $self->get_module_version( $module, $require_type );
+	given ($version) {
 
-    when ('!mcpan') {
-      $self->{$require_type}{$module} = colored('!mcpan', 'magenta')
-        if not $self->{skip_not_mcpan_stamp};
-      $self->{modules}{$module}{location} = $require_type;
-      $self->{modules}{$module}{version}  = '!mcpan';
-    }
-    when (0 || 'core') {
-      $self->{$require_type}{$module} = $version if $self->core;
-      $self->{modules}{$module}{location} = $require_type;
-      $self->{modules}{$module}{version} = $version if $self->core;
-    }
-    default {
-      # if ( $self->_in_corelist($module) ) {
-      if ($self->{modules}{$module}{corelist}) {
-        $self->{$require_type}{$module} = colored($version, 'bright_yellow')
-          if ($self->dual_life || $self->core);
-        $self->{modules}{$module}{location} = $require_type
-          if ($self->dual_life || $self->core);
-        $self->{modules}{$module}{version} = $version
-          if ($self->dual_life || $self->core);
-        $self->{modules}{$module}{dual_life} = 1;
-      }
-      else {
-        $self->{$require_type}{$module} = colored($version, 'yellow');
-        $self->{$require_type}{$module}
-          = colored(version->parse($version)->numify, 'yellow')
-          if $self->numify;
+		when ('!mcpan') {
+			$self->{$require_type}{$module} = colored( '!mcpan', 'magenta' )
+				if not $self->{skip_not_mcpan_stamp};
+			$self->{modules}{$module}{location} = $require_type;
+			$self->{modules}{$module}{version}  = '!mcpan';
+		}
+		when ( 0 || 'core' ) {
+			$self->{$require_type}{$module} = $version if $self->core;
+			$self->{modules}{$module}{location} = $require_type;
+			$self->{modules}{$module}{version} = $version if $self->core;
+		}
+		default {
+			# if ( $self->_in_corelist($module) ) {
+			if ( $self->{modules}{$module}{corelist} ) {
+				$self->{$require_type}{$module} = colored( $version, 'bright_yellow' )
+					if ( $self->dual_life || $self->core );
+				$self->{modules}{$module}{location} = $require_type
+					if ( $self->dual_life || $self->core );
+				$self->{modules}{$module}{version} = $version
+					if ( $self->dual_life || $self->core );
+				$self->{modules}{$module}{dual_life} = 1;
+			} else {
+				$self->{$require_type}{$module} = colored( $version, 'yellow' );
+				$self->{$require_type}{$module} = colored( version->parse($version)->numify, 'yellow' )
+					if $self->numify;
 
-        $self->{modules}{$module}{location} = $require_type;
-        $self->{modules}{$module}{version}  = $version;
+				$self->{modules}{$module}{location} = $require_type;
+				$self->{modules}{$module}{version}  = $version;
 
-        $self->{$require_type}{$module} = colored($version, 'bright_cyan')
-          if $self->{modules}{$module}{'distribution'};
-      }
-    }
-  }
-  p $self->{modules}{$module} if $self->debug;
+				$self->{$require_type}{$module} = colored( $version, 'bright_cyan' )
+					if $self->{modules}{$module}{'distribution'};
+			}
+		}
+	}
+	p $self->{modules}{$module} if $self->debug;
 
-  return;
+	return;
 }
 
 #######
 # composed method _in_corelist
 #######
 sub _in_corelist {
-  my $self   = shift;
-  my $module = shift;
+	my $self   = shift;
+	my $module = shift;
 
-  #return 1 if defined $self->{modules}{$module}{corelist};
+	#return 1 if defined $self->{modules}{$module}{corelist};
 
-  # hash with core modules to process regardless
-  my $ignore_core = {'File::Path' => 1, 'Test::More' => 1,};
+	# hash with core modules to process regardless
+	my $ignore_core = { 'File::Path' => 1, 'Test::More' => 1, };
 
-  if (!$ignore_core->{$module}) {
+	if ( !$ignore_core->{$module} ) {
 
-    if (Module::CoreList->first_release($module)) {
-      $self->{modules}{$module}{corelist} = 1;
-      return 1;
-    }
-    else {
-      $self->{modules}{$module}{corelist} = 0;
-      return 0;
-    }
-  }
+		if ( Module::CoreList->first_release($module) ) {
+			$self->{modules}{$module}{corelist} = 1;
+			return 1;
+		} else {
+			$self->{modules}{$module}{corelist} = 0;
+			return 0;
+		}
+	}
 
-  return 0;
+	return 0;
 }
 
 #######
 # remove_noisy_children
 #######
 sub remove_noisy_children {
-  my $self = shift;
-  my $required_ref = shift || return;
-  my @sorted_modules;
+	my $self = shift;
+	my $required_ref = shift || return;
+	my @sorted_modules;
 
-  foreach my $module_name (sort keys %{$required_ref}) {
-    push @sorted_modules, $module_name;
-  }
+	foreach my $module_name ( sort keys %{$required_ref} ) {
+		push @sorted_modules, $module_name;
+	}
 
-  p @sorted_modules if $self->debug;
+	p @sorted_modules if $self->debug;
 
-  foreach my $parent_name (@sorted_modules) {
-    my $outer_index = firstidx { $_ eq $parent_name } @sorted_modules;
+	foreach my $parent_name (@sorted_modules) {
+		my $outer_index = firstidx { $_ eq $parent_name } @sorted_modules;
 
-    # lets just skip these at the moment
-    ##next if $parent_name =~ /^Dist::Zilla::Plugin/;
-    ##next if $parent_name =~ /^Dist::Zilla::Role/;
+		# lets just skip these at the moment
+		##next if $parent_name =~ /^Dist::Zilla::Plugin/;
+		##next if $parent_name =~ /^Dist::Zilla::Role/;
 
-    # inc so we don't end up with parent eq child
-    $outer_index++;
-    foreach my $inner_index ($outer_index .. $#sorted_modules) {
-      my $child_name = $sorted_modules[$inner_index];
+		# inc so we don't end up with parent eq child
+		$outer_index++;
+		foreach my $inner_index ( $outer_index .. $#sorted_modules ) {
+			my $child_name = $sorted_modules[$inner_index];
 
-      # we just caught an undef
-      next if not defined $child_name;
-      if ($child_name =~ /^ $parent_name ::/x) {
+			# we just caught an undef
+			next if not defined $child_name;
+			if ( $child_name =~ /^ $parent_name ::/x ) {
 
-        my $valied_seperation = 1;
+				my $valied_seperation = 1;
 
-        # as we only do this against -x, why not be extra vigilant
-        $valied_seperation = THREE
-          if $parent_name =~ /^Dist::Zilla|Moose|Mouse/;
+				# as we only do this against -x, why not be extra vigilant
+				$valied_seperation = THREE
+					if $parent_name =~ /^Dist::Zilla|Moose|Mouse/;
 
-        # Checking for one degree of separation
-        # ie A::B -> A::B::C is ok but A::B::C::D is not
-        if ($self->degree_separation($parent_name, $child_name)
-          <= $valied_seperation)
-        {
+				# Checking for one degree of separation
+				# ie A::B -> A::B::C is ok but A::B::C::D is not
+				if ( $self->degree_separation( $parent_name, $child_name ) <= $valied_seperation ) {
 
-          # Test for same version number
-          if (colorstrip($required_ref->{$parent_name}) eq
-            colorstrip($required_ref->{$child_name}))
-          {
-            if (not $self->quiet) {
-              if ($self->verbose) {
-                print BRIGHT_BLACK;
-                say 'delete miscreant noisy child '
-                  . $child_name . ' => '
-                  . $required_ref->{$child_name};
-                print CLEAR;
-              }
-            }
-            try {
-              delete $required_ref->{$child_name};
-              splice @sorted_modules, $inner_index, 1;
-            };
-            p @sorted_modules if $self->debug;
+					# Test for same version number
+					if ( colorstrip( $required_ref->{$parent_name} ) eq colorstrip( $required_ref->{$child_name} ) ) {
+						if ( not $self->quiet ) {
+							if ( $self->verbose ) {
+								print BRIGHT_BLACK;
+								say 'delete miscreant noisy child '
+									. $child_name . ' => '
+									. $required_ref->{$child_name};
+								print CLEAR;
+							}
+						}
+						try {
+							delete $required_ref->{$child_name};
+							splice @sorted_modules, $inner_index, 1;
+						};
+						p @sorted_modules if $self->debug;
 
-            # we need to redo as we just deleted a child
-            redo;
+						# we need to redo as we just deleted a child
+						redo;
 
-          }
-          else {
+					} else {
 
-            # not my child so lets try the next one
-            next;
-          }
-        }
-      }
-      else {
+						# not my child so lets try the next one
+						next;
+					}
+				}
+			} else {
 
-        # no more like the parent so lets start again
-        last;
-      }
-    }
-  }
-  return;
+				# no more like the parent so lets start again
+				last;
+			}
+		}
+	}
+	return;
 }
 
 #######
 # remove_twins
 #######
 sub remove_twins {
-  my $self = shift;
-  my $required_ref = shift || return;
-  my @sorted_modules;
-  foreach my $module_name (sort keys %{$required_ref}) {
-    push @sorted_modules, $module_name;
-  }
+	my $self = shift;
+	my $required_ref = shift || return;
+	my @sorted_modules;
+	foreach my $module_name ( sort keys %{$required_ref} ) {
+		push @sorted_modules, $module_name;
+	}
 
-  p @sorted_modules if $self->debug;
+	p @sorted_modules if $self->debug;
 
-  # exit if only 1 Module found
-  return if $#sorted_modules == 0;
+	# exit if only 1 Module found
+	return if $#sorted_modules == 0;
 
-  my $n = 0;
-  while ($sorted_modules[$n]) {
+	my $n = 0;
+	while ( $sorted_modules[$n] ) {
 
-    my $dum_name    = $sorted_modules[$n];
-    my $dum_parient = $dum_name;
-    $dum_parient =~ s/(::\w+)$//;
+		my $dum_name    = $sorted_modules[$n];
+		my $dum_parient = $dum_name;
+		$dum_parient =~ s/(::\w+)$//;
 
-    my $dee_parient;
-    my $dee_name;
-    if (($n + 1) <= $#sorted_modules) {
-      $n++;
-      $dee_name    = $sorted_modules[$n];
-      $dee_parient = $dee_name;
-      $dee_parient =~ s/(::\w+)$//;
-    }
+		my $dee_parient;
+		my $dee_name;
+		if ( ( $n + 1 ) <= $#sorted_modules ) {
+			$n++;
+			$dee_name    = $sorted_modules[$n];
+			$dee_parient = $dee_name;
+			$dee_parient =~ s/(::\w+)$//;
+		}
 
-    # Checking for same patient and score
-    # if ( $dum_parient eq $dee_parient && $dum_score == $dee_score ) {
-    if ( $dum_parient eq $dee_parient
-      && $self->degree_separation($dum_name, $dee_name) == 0)
-    {
+		# Checking for same patient and score
+		# if ( $dum_parient eq $dee_parient && $dum_score == $dee_score ) {
+		if (   $dum_parient eq $dee_parient
+			&& $self->degree_separation( $dum_name, $dee_name ) == 0 )
+		{
 
-      # Test for same version number
-      if ($required_ref->{$sorted_modules[$n - 1]} eq
-        $required_ref->{$sorted_modules[$n]})
-      {
-        if (not $self->quiet) {
-          if ($self->verbose) {
-            print BRIGHT_BLACK;
+			# Test for same version number
+			if ( $required_ref->{ $sorted_modules[ $n - 1 ] } eq $required_ref->{ $sorted_modules[$n] } ) {
+				if ( not $self->quiet ) {
+					if ( $self->verbose ) {
+						print BRIGHT_BLACK;
 
-            # say 'i have found twins';
-            print $dum_name . ' => '
-              . $required_ref->{$sorted_modules[$n - 1]};
-            print BRIGHT_BLACK ' <-twins-> '
-              . $dee_name . ' => '
-              . $required_ref->{$sorted_modules[$n]};
-            print CLEAR "\n";
+						# say 'i have found twins';
+						print $dum_name . ' => ' . $required_ref->{ $sorted_modules[ $n - 1 ] };
+						print BRIGHT_BLACK ' <-twins-> ' . $dee_name . ' => ' . $required_ref->{ $sorted_modules[$n] };
+						print CLEAR "\n";
 
-          }
-        }
+					}
+				}
 
-        #Check for vailed parent
-        my $version;
+				#Check for vailed parent
+				my $version;
 
-        $version = $self->get_module_version($dum_parient);
+				$version = $self->get_module_version($dum_parient);
 
-        if (looks_like_number($version)) {
+				if ( looks_like_number($version) ) {
 
-          #Check parent version against a twins version
-          if ($version eq $required_ref->{$sorted_modules[$n]}) {
-            say $dum_parient . ' -> '
-              . $version
-              . ' is the parent of these twins'
-              if $self->verbose;
-            $required_ref->{$dum_parient} = $version;
-            $self->found_twins(1);
-          }
-        }
-      }
-    }
-    $n++ if ($n == $#sorted_modules);
-  }
-  return;
+					#Check parent version against a twins version
+					if ( $version eq $required_ref->{ $sorted_modules[$n] } ) {
+						say $dum_parient . ' -> ' . $version . ' is the parent of these twins'
+							if $self->verbose;
+						$required_ref->{$dum_parient} = $version;
+						$self->found_twins(1);
+					}
+				}
+			}
+		}
+		$n++ if ( $n == $#sorted_modules );
+	}
+	return;
 }
 
 #######
 # _check_mojo_core
 #######
 sub _check_mojo_core {
-  my $self         = shift;
-  my $mojo_module  = shift;
-  my $require_type = shift;
+	my $self         = shift;
+	my $mojo_module  = shift;
+	my $require_type = shift;
 
 
-  my $mojo_module_ver;
-  state $mojo_ver;
+	my $mojo_module_ver;
+	state $mojo_ver;
 
-  if (not defined $mojo_ver) {
-    $mojo_ver = $self->get_module_version('Mojolicious');
-    p $mojo_ver if $self->debug;
-  }
+	if ( not defined $mojo_ver ) {
+		$mojo_ver = $self->get_module_version('Mojolicious');
+		p $mojo_ver if $self->debug;
+	}
 
-  $mojo_module_ver = $self->get_module_version($mojo_module);
+	$mojo_module_ver = $self->get_module_version($mojo_module);
 
-  if ($self->verbose) {
-    print BRIGHT_BLACK;
+	if ( $self->verbose ) {
+		print BRIGHT_BLACK;
 
-    #		say 'looks like we found another mojo core module';
-    say $mojo_module . ' version ' . $mojo_module_ver;
-    print CLEAR;
-  }
+		#		say 'looks like we found another mojo core module';
+		say $mojo_module . ' version ' . $mojo_module_ver;
+		print CLEAR;
+	}
 
-  if ($mojo_ver == $mojo_module_ver) {
-    $self->{$require_type}{'Mojolicious'}
-      = colored($mojo_module_ver, 'bright_blue')
-      if !$self->{modules}{'Mojolicious'};
-    $self->{modules}{'Mojolicious'}{location} = $require_type;
-    return 1;
-  }
-  else {
-    return 0;
-  }
+	if ( $mojo_ver == $mojo_module_ver ) {
+		$self->{$require_type}{'Mojolicious'} = colored( $mojo_module_ver, 'bright_blue' )
+			if !$self->{modules}{'Mojolicious'};
+		$self->{modules}{'Mojolicious'}{location} = $require_type;
+		return 1;
+	} else {
+		return 0;
+	}
 }
 
 #######
 # get module version using metacpan_api
 #######
 sub get_module_version {
-  my $self         = shift;
-  my $module       = shift;
-  my $require_type = shift || undef;
-  my $cpan_version;
-  my $found = 0;
-  my $dist;
-  p $module if $self->debug;
+	my $self         = shift;
+	my $module       = shift;
+	my $require_type = shift || undef;
+	my $cpan_version;
+	my $found = 0;
+	my $dist;
+	p $module if $self->debug;
 
-  try {
-    $module =~ s/::/-/g;
+	try {
+		$module =~ s/::/-/g;
 
-# quick n dirty, get version number if module is classed as a distribution in metacpan
-    my $mod = $self->mcpan->release(distribution => $module);
+		# quick n dirty, get version number if module is classed as a distribution in metacpan
+		my $mod = $self->mcpan->release( distribution => $module );
 
-#		p $mod;
-    $cpan_version = $mod->{version_numified};
+		#		p $mod;
+		$cpan_version = $mod->{version_numified};
 
-    p $cpan_version if $self->debug;
+		p $cpan_version if $self->debug;
 
-    $found = 1;
-  }
-  catch {
-    try {
-      $module =~ s/-/::/g;
-      my $mcpan_module_info = $self->mcpan->module($module);
-      $dist = $mcpan_module_info->{distribution};
+		$found = 1;
+	}
+	catch {
+		try {
+			$module =~ s/-/::/g;
+			my $mcpan_module_info = $self->mcpan->module($module);
+			$dist = $mcpan_module_info->{distribution};
 
-      # mark all perl core modules with either 'core' or '0'
-      if ($dist eq 'perl') {
-        if ($self->zero) {
-          $cpan_version = 0;
-        }
-        else {
-          $cpan_version = 'core';
-        }
-        $found = 1;
-      }
-    };
-    if ($found == 0) {
-      try {
-        my $mod = $self->mcpan->release(distribution => $dist);
+			# mark all perl core modules with either 'core' or '0'
+			if ( $dist eq 'perl' ) {
+				if ( $self->zero ) {
+					$cpan_version = 0;
+				} else {
+					$cpan_version = 'core';
+				}
+				$found = 1;
+			}
+		};
+		if ( $found == 0 ) {
+			try {
+				my $mod = $self->mcpan->release( distribution => $dist );
 
-        # This is where we add a dist version to a knackered module
-        $cpan_version                           = $mod->{version_numified};
-        $found                                  = 1;
-        $self->{modules}{$module}{distribution} = $dist;
+				# This is where we add a dist version to a knackered module
+				$cpan_version                           = $mod->{version_numified};
+				$found                                  = 1;
+				$self->{modules}{$module}{distribution} = $dist;
 
-        #				if ( $self->experimental ) {
-        $self->mod_in_dist($dist, $module, $require_type,
-          $mod->{version_numified})
-          if $require_type;
+				#				if ( $self->experimental ) {
+				$self->mod_in_dist(
+					$dist, $module, $require_type,
+					$mod->{version_numified}
+				) if $require_type;
 
-        #				}
-      }
-    }
-  }
-  finally {
-    # not in metacpan so mark accordingly
-    $cpan_version = '!mcpan' if $found == 0;
-  };
+				#				}
+			}
+		}
+	}
+	finally {
+		# not in metacpan so mark accordingly
+		$cpan_version = '!mcpan' if $found == 0;
+	};
 
-  # scientific numbers in a version string, O what fun.
-  if ($cpan_version =~ m/\d+e/) {
+	# scientific numbers in a version string, O what fun.
+	if ( $cpan_version =~ m/\d+e/ ) {
 
-    # a bit of de crappy-flying
-    # catch Test::Kwalitee::Extra 6e-06
-    print BRIGHT_BLACK;
-    say $module . ' Unique Release Sequence Indicator ' . $cpan_version
-      if $self->verbose >= 1;
-    print CLEAR;
-    $cpan_version = version->parse($cpan_version)->numify;
-  }
+		# a bit of de crappy-flying
+		# catch Test::Kwalitee::Extra 6e-06
+		print BRIGHT_BLACK;
+		say $module . ' Unique Release Sequence Indicator ' . $cpan_version
+			if $self->verbose >= 1;
+		print CLEAR;
+		$cpan_version = version->parse($cpan_version)->numify;
+	}
 
-  return $cpan_version;
+	return $cpan_version;
 }
 
 #######
 # composed method
 #######
 sub mod_in_dist {
-  my $self         = shift;
-  my $dist         = shift;
-  my $module       = shift;
-  my $require_type = shift;
-  my $version      = shift;
+	my $self         = shift;
+	my $dist         = shift;
+	my $module       = shift;
+	my $require_type = shift;
+	my $version      = shift;
 
-  $dist =~ s/-/::/g;
-  if ($module =~ /$dist/) {
+	$dist =~ s/-/::/g;
+	if ( $module =~ /$dist/ ) {
 
-    print BRIGHT_BLACK;
-    say "module - $module  -> in dist - $dist" if $self->verbose >= 1;
-    print CLEAR;
+		print BRIGHT_BLACK;
+		say "module - $module  -> in dist - $dist" if $self->verbose >= 1;
+		print CLEAR;
 
-    # add dist to output hash so we can get rind of cruff later
-    if ($self->experimental) {
+		# add dist to output hash so we can get rind of cruff later
+		if ( $self->experimental ) {
 
-      $self->{$require_type}{$dist} = colored($version, 'bright_cyan')
-        if not defined $self->{modules}{$module}{location};
-    }
+			$self->{$require_type}{$dist} = colored( $version, 'bright_cyan' )
+				if not defined $self->{modules}{$module}{location};
+		}
 
-    $self->{$require_type}{$module} = colored($version, 'bright_cyan')
-      if not defined $self->{modules}{$module}{location};
-  }
+		$self->{$require_type}{$module} = colored( $version, 'bright_cyan' )
+			if not defined $self->{modules}{$module}{location};
+	}
 
-  return;
+	return;
 }
 
 #######
@@ -842,148 +802,153 @@ sub mod_in_dist {
 # parent A::B - child A::B::C
 #######
 sub degree_separation {
-  my $self   = shift;
-  my $parent = shift;
-  my $child  = shift;
+	my $self   = shift;
+	my $parent = shift;
+	my $child  = shift;
 
-  # Use of implicit split to @_ is deprecated
-  my $parent_score = @{[split /::/, $parent]};
-  my $child_score  = @{[split /::/, $child]};
-  say 'parent - ' . $parent . ' score - ' . $parent_score if $self->debug;
-  say 'child - ' . $child . ' score - ' . $child_score    if $self->debug;
+	# Use of implicit split to @_ is deprecated
+	my $parent_score = @{ [ split /::/, $parent ] };
+	my $child_score  = @{ [ split /::/, $child ] };
+	say 'parent - ' . $parent . ' score - ' . $parent_score if $self->debug;
+	say 'child - ' . $child . ' score - ' . $child_score    if $self->debug;
 
-  # switch around for a positive number
-  return $child_score - $parent_score;
+	# switch around for a positive number
+	return $child_score - $parent_score;
 }
 
 #######
 # find min perl version
 ######
 sub min_version {
-  my $self = shift;
+	my $self = shift;
 
-  # Create the version checking object
-  my $object = Perl::MinimumVersion->new($self->ppi_document);
+	# Create the version checking object
+	my $object = Perl::MinimumVersion->new( $self->ppi_document );
 
-  # Find the minimum version
-  my $minimum_version = $object->minimum_version;
-  $Min_Version
-    = version->parse($Min_Version) > version->parse($minimum_version)
-    ? version->parse($Min_Version)->numify
-    : version->parse($minimum_version)->numify;
+	# Find the minimum version
+	my $minimum_version = $object->minimum_version;
+	$Min_Version =
+		  version->parse($Min_Version) > version->parse($minimum_version)
+		? version->parse($Min_Version)->numify
+		: version->parse($minimum_version)->numify;
 
-  my $minimum_explicit_version = $object->minimum_explicit_version;
-  $Min_Version
-    = version->parse($Min_Version) > version->parse($minimum_explicit_version)
-    ? version->parse($Min_Version)->numify
-    : version->parse($minimum_explicit_version)->numify;
+	my $minimum_explicit_version = $object->minimum_explicit_version;
+	$Min_Version =
+		  version->parse($Min_Version) > version->parse($minimum_explicit_version)
+		? version->parse($Min_Version)->numify
+		: version->parse($minimum_explicit_version)->numify;
 
-  my $minimum_syntax_version = $object->minimum_syntax_version;
-  $Min_Version
-    = version->parse($Min_Version) > version->parse($minimum_syntax_version)
-    ? version->parse($Min_Version)->numify
-    : version->parse($minimum_syntax_version)->numify;
+	my $minimum_syntax_version = $object->minimum_syntax_version;
+	$Min_Version =
+		  version->parse($Min_Version) > version->parse($minimum_syntax_version)
+		? version->parse($Min_Version)->numify
+		: version->parse($minimum_syntax_version)->numify;
 
-  say 'min_version - ' . $Min_Version if $self->debug;
+	say 'min_version - ' . $Min_Version if $self->debug;
 
-  return;
+	return;
 }
 
 #######
 # _output_header
 #######
 sub _output_header {
-  my $self = shift;
+	my $self = shift;
 
-  given ($self->format) {
+	given ( $self->format ) {
 
-    when ('dsl') {
-      $self->output->header_dsl($self->distribution_name,
-        $self->get_module_version('inc::Module::Install::DSL'));
-    }
-    when ('mi') {
-      $self->output->header_mi($self->distribution_name,
-        $self->get_module_version('inc::Module::Install'));
-    }
-    when ('dist') {
-      $self->output->header_dist($self->distribution_name);
-    }
-    when ('cpanfile') {
-      $self->output->header_cpanfile($self->distribution_name,
-        $self->get_module_version('inc::Module::Install'))
-        if not $self->quiet;
+		when ('dsl') {
+			$self->output->header_dsl(
+				$self->distribution_name,
+				$self->get_module_version('inc::Module::Install::DSL')
+			);
+		}
+		when ('mi') {
+			$self->output->header_mi(
+				$self->distribution_name,
+				$self->get_module_version('inc::Module::Install')
+			);
+		}
+		when ('dist') {
+			$self->output->header_dist( $self->distribution_name );
+		}
+		when ('cpanfile') {
+			$self->output->header_cpanfile(
+				$self->distribution_name,
+				$self->get_module_version('inc::Module::Install')
+			) if not $self->quiet;
 
-    }
-    when ('dzil') {
-      $self->output->header_dzil($self->distribution_name);
-    }
-    when ('mb') {
-      $self->output->header_mb($self->distribution_name);
-    }
-  }
-  return;
+		}
+		when ('dzil') {
+			$self->output->header_dzil( $self->distribution_name );
+		}
+		when ('mb') {
+			$self->output->header_mb( $self->distribution_name );
+		}
+	}
+	return;
 }
 #######
 # _output_main_body
 #######
 sub _output_main_body {
-  my $self         = shift;
-  my $title        = shift || 'title missing';
-  my $required_ref = shift;                      # || return;
+	my $self         = shift;
+	my $title        = shift || 'title missing';
+	my $required_ref = shift;                   # || return;
 
-  given ($self->format) {
+	given ( $self->format ) {
 
-    when ('dsl') {
-      $self->output->body_dsl($title, $required_ref);
-    }
-    when ('mi') {
-      $self->output->body_mi($title, $required_ref);
-    }
-    when ('dist') {
-      $self->output->body_dist($title, $required_ref);
-    }
-    when ('cpanfile') {
-      $self->output->body_cpanfile($title, $required_ref);
-    }
-    when ('dzil') {
-      $self->output->body_dzil($title, $required_ref);
-    }
-    when ('mb') {
-      $self->output->body_mb($title, $required_ref);
-    }
-  }
+		when ('dsl') {
+			$self->output->body_dsl( $title, $required_ref );
+		}
+		when ('mi') {
+			$self->output->body_mi( $title, $required_ref );
+		}
+		when ('dist') {
+			$self->output->body_dist( $title, $required_ref );
+		}
+		when ('cpanfile') {
+			$self->output->body_cpanfile( $title, $required_ref );
+		}
+		when ('dzil') {
+			$self->output->body_dzil( $title, $required_ref );
+		}
+		when ('mb') {
+			$self->output->body_mb( $title, $required_ref );
+		}
+	}
 
-  return;
+	return;
 }
 #######
 # _output_footer
 #######
 sub _output_footer {
-  my $self = shift;
+	my $self = shift;
 
-  given ($self->format) {
+	given ( $self->format ) {
 
-    when ('dsl') {
-      $self->output->footer_dsl($self->distribution_name);
-    }
-    when ('mi') {
-      $self->output->footer_mi($self->distribution_name);
-    }
-    when ('dist') {
-      $self->output->footer_dist($self->distribution_name);
-    }
-    when ('cpanfile') {
-      $self->output->footer_cpanfile($self->distribution_name);
-    }
-    when ('dzil') {
-      $self->output->footer_dzil($self->distribution_name);
-    }
-    when ('mb') {
-      $self->output->footer_mb($self->distribution_name);
-    }
-  }
+		when ('dsl') {
+			$self->output->footer_dsl( $self->distribution_name );
+		}
+		when ('mi') {
+			$self->output->footer_mi( $self->distribution_name );
+		}
+		when ('dist') {
+			$self->output->footer_dist( $self->distribution_name );
+		}
+		when ('cpanfile') {
+			$self->output->footer_cpanfile( $self->distribution_name );
+		}
+		when ('dzil') {
+			$self->output->footer_dzil( $self->distribution_name );
+		}
+		when ('mb') {
+			$self->output->footer_mb( $self->distribution_name );
+		}
+	}
 
-  return;
+	return;
 }
 
 no Moo;
