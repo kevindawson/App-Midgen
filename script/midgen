@@ -11,7 +11,7 @@ BEGIN {
 }
 
 use version;
-our $VERSION = '0.21_08';
+our $VERSION = '0.22';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -145,7 +145,7 @@ midgen - Check B<requires> & B<test_requires> of your package for CPAN inclusion
 
 =head1 VERSION
 
-This document describes midgen version: 0.21_08
+This document describes midgen version: 0.22
 
 =head1 SYNOPSIS
 
@@ -214,10 +214,11 @@ Show file names that we are checking, as we go.
 
 =item B<--experimental or -x>
 
-This experimental feature turns on extra passing, that removes twins and noisy_children,
- replacing them with there parent(dist), giving a minimalist output,
- you might conceive this as controversial, if so don't enable it.
- If you find it to noisy you can add a '-q' for --quiet.
+This experimental feature turns on extra passing, that removes twins
+and noisy_children, replacing them with there parent(dist),
+giving a minimalist output, you might conceive this as controversial,
+if so don't enable it. It also scans xt/ directory if you have one.
+If you find it to noisy you can add a '-q' for --quiet.
 
  midgen -x
 

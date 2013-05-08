@@ -1,6 +1,6 @@
 Revision history for App-Midgen
 
-0.21_08 2013-04-22
+0.22 2013-05-08
  - Rename output format option from build to mb, azawawi++
  - switch --verbose option over to support -v and -vv
  - re-write using test-requires, we also find includes as well
