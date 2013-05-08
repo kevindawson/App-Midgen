@@ -414,7 +414,7 @@ sub footer_dist {
 	my @no_index = $self->no_index;
 	if (@no_index) {
 		say '[MetaNoIndex]';
-		for (@no_index) {
+		foreach (@no_index) {
 			say "directory = $_" if $_ ne 'inc';
 		}
 		print "\n";
@@ -596,7 +596,7 @@ sub no_index {
 	my @dirs_to_check = qw( corpus eg examples fbp inc maint misc privinc share t xt );
 	my @dirs_found;
 
-	for my $dir (@dirs_to_check) {
+	foreach my $dir (@dirs_to_check) {
 
 		#ignore syntax warning for global
 		push @dirs_found, $dir
