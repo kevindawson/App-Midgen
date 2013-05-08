@@ -3,7 +3,7 @@
 use v5.10;
 use strict;
 use warnings FATAL => 'all';
-use English qw( -no_match_vars ); 
+use English qw( -no_match_vars );
 local $OUTPUT_AUTOFLUSH = 1;
 
 use Test::More tests => 24;
