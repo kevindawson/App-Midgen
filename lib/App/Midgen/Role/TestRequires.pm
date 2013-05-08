@@ -13,7 +13,7 @@ use constant { BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3, };
 
 
 #######
-# composed method - _xtests_test_requires
+# composed method - xtests_test_requires
 #######
 sub xtests_test_requires {
 	my $self = shift;
@@ -154,9 +154,6 @@ sub xtests_test_requires {
 			if ( $self->xtest eq 'test_requires' ) {
 				$self->_process_found_modules( 'recommends', \@modules );
 			} 
-#			elsif ( $self->xtest eq 'test_requires' ) {
-#				$self->_process_found_modules( 'test_requires', \@modules );
-#			} 
 			elsif ( $self->develop && $self->xtest eq 'test_develop' ) {
 				$self->_process_found_modules( 'test_develop', \@modules );
 			}
@@ -188,7 +185,7 @@ version: 0.21_08
 
 =head1 METHODS
 
-=over 2
+=over 4
 
 =item * xtests_test_requires
 
@@ -206,10 +203,6 @@ Checking for the following, extracting module name only.
 Used to check files in t/ and xt/ directories.
 
 =back
-
-=head1 SEE ALSO
-
-L<App::Midgen>,
 
 =head1 AUTHOR
 
