@@ -14,8 +14,8 @@ requires Getopt::Long           2.39
 requires JSON::Tiny             0.25
 requires List::MoreUtils        0.33
 requires MetaCPAN::API          0.43
-requires Module::CoreList       2.87
-requires Moo                    1.001
+requires Module::CoreList       2.88
+requires Moo                    1.002
 requires MooX::Types::MooseLike 0.23
 requires PPI                    1.215
 requires Perl::MinimumVersion   1.32
@@ -31,7 +31,7 @@ requires version                0.9902
 test_requires Test::More     0.98
 test_requires Test::Requires 0.06
 
-recommends Test::Pod           1.46
+recommends Test::Pod           1.48
 recommends Test::Pod::Coverage 1.08
 
 install_script midgen
