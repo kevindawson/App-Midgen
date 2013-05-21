@@ -14,14 +14,14 @@ requires Getopt::Long           2.39
 requires JSON::Tiny             0.27
 requires List::MoreUtils        0.33
 requires MetaCPAN::API          0.43
-requires Module::CoreList       2.88
+requires Module::CoreList       2.91
 requires Moo                    1.002
 requires MooX::Types::MooseLike 0.23
 requires PPI                    1.215
 requires PPI::XS                0.902 if can_cc
 requires Perl::MinimumVersion   1.32
 requires Perl::PrereqScanner    1.015
-requires Pod::Usage             1.61
+requires Pod::Usage             1.62
 requires Scalar::Util           1.27
 requires Term::ANSIColor        4.02
 requires Time::Stamp            1.3
