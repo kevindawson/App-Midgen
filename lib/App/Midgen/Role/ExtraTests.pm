@@ -8,7 +8,7 @@ use Data::Printer { caller_info => 1, colored => 1, };
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.22';
+our $VERSION = '0.22_01';
 
 
 
@@ -166,7 +166,7 @@ App::Midgen::Roles::ExtraTests - used by L<App::Midgen>
 
 =head1 VERSION
 
-This document describes App::Midgen::Roles version: 0.22
+This document describes App::Midgen::Roles version: 0.22_01
 
 =head1 METHODS
 
