@@ -6,7 +6,7 @@ use warnings FATAL => 'all';
 use English qw( -no_match_vars );    # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Test::More tests => 25;
+use Test::More tests => 27;
 
 BEGIN {
   use_ok('App::Midgen');
@@ -19,11 +19,11 @@ BEGIN {
   use_ok('File::Slurp',                '9999.19');
   use_ok('File::Spec',                 '3.4');
   use_ok('Getopt::Long',               '2.39');
-  use_ok('JSON::Tiny',                 '0.25');
+  use_ok('JSON::Tiny',                 '0.27');
   use_ok('List::MoreUtils',            '0.33');
   use_ok('MetaCPAN::API',              '0.43');
-  use_ok('Module::CoreList',           '2.85');
-  use_ok('Moo',                        '1.001');
+  use_ok('Module::CoreList',           '2.91');
+  use_ok('Moo',                        '1.002');
   use_ok('PPI',                        '1.215');
   use_ok('Perl::MinimumVersion::Fast', '0.06');
   use_ok('Perl::PrereqScanner',        '1.015');

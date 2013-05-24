@@ -21,7 +21,7 @@ requires PPI                        1.215
 requires PPI::XS                    0.902 if can_cc
 requires Perl::MinimumVersion::Fast 0.06
 requires Perl::PrereqScanner        1.015
-requires Pod::Usage                 1.62
+requires Pod::Usage                 1.61
 requires Scalar::Util               1.27
 requires Term::ANSIColor            4.02
 requires Time::Stamp                1.3
