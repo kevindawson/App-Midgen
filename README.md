@@ -1,4 +1,4 @@
-App::Midgen
+App::Midgen   [![Build Status](https://travis-ci.org/kevindawson/App-Midgen.png?branch=master)](https://travis-ci.org/kevindawson/App-Midgen)
 ==========
 
 Generate or Check the 'requires' and 'test requires' for Makefile.PL
