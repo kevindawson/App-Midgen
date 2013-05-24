@@ -29,7 +29,8 @@ use List::MoreUtils qw(firstidx);
 use MetaCPAN::API;
 use Module::CoreList;
 use PPI;
-use Perl::MinimumVersion;
+#use Perl::MinimumVersion;
+use Perl::MinimumVersion::Fast;
 use Perl::PrereqScanner;
 use Scalar::Util qw(looks_like_number);
 use Term::ANSIColor qw( :constants colored colorstrip );
@@ -145,9 +146,10 @@ sub _find_package_names {
 	# Load a Document from a file
 	$self->ppi_document( PPI::Document->new($filename) );
 
-	try {
-		$self->min_version();
-	};
+#	try {
+#		## $self->min_version();
+#		$self->min_version( $filename );
+#	};
 
 	# Extract package names
 	push @{ $self->package_names }, $self->ppi_document->find_first('PPI::Statement::Package')->namespace;
@@ -236,7 +238,8 @@ sub _find_makefile_requires {
 		default { return if not $self->_is_perlfile($filename); $is_script = 1; }
 	}
 	try {
-		$self->min_version() if $is_script;
+#		$self->min_version() if $is_script;
+		$self->min_version( $filename );# if $is_script;		
 	};
 
 	my $prereqs = $self->scanner->scan_ppi_document( $self->ppi_document );
@@ -826,9 +829,11 @@ sub degree_separation {
 ######
 sub min_version {
 	my $self = shift;
+	my $filename = shift;
 
 	# Create the version checking object
-	my $object = Perl::MinimumVersion->new( $self->ppi_document );
+##	my $object = Perl::MinimumVersion->new( $self->ppi_document );
+	my $object = Perl::MinimumVersion::Fast->new($filename);
 
 	# Find the minimum version
 	my $minimum_version = $object->minimum_version;
