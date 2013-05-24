@@ -146,11 +146,6 @@ sub _find_package_names {
 	# Load a Document from a file
 	$self->ppi_document( PPI::Document->new($filename) );
 
-#	try {
-#		## $self->min_version();
-#		$self->min_version( $filename );
-#	};
-
 	# Extract package names
 	push @{ $self->package_names }, $self->ppi_document->find_first('PPI::Statement::Package')->namespace;
 	$files_checked++;
@@ -832,7 +827,6 @@ sub min_version {
 	my $filename = shift;
 
 	# Create the version checking object
-##	my $object = Perl::MinimumVersion->new( $self->ppi_document );
 	my $object = Perl::MinimumVersion::Fast->new($filename);
 
 	# Find the minimum version
