@@ -19,7 +19,7 @@ requires Moo                        1.002
 requires MooX::Types::MooseLike     0.23
 requires PPI                        1.215
 requires PPI::XS                    0.902 if can_cc
-requires Perl::MinimumVersion::Fast 0.06
+requires Perl::MinimumVersion::Fast 0.08
 requires Perl::PrereqScanner        1.015
 requires Pod::Usage                 1.61
 requires Scalar::Util               1.27
