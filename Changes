@@ -1,5 +1,9 @@
 Revision history for App-Midgen
 
+0.22_01 2013-05-28
+ - refactor to use Perl::MinimumVersion::Fast for speed and coverage
+ - turn of anit-noise for PPI::XS
+
 0.22 2013-05-08
  - Rename output format option from build to mb, azawawi++
  - switch --verbose option over to support -v and -vv
