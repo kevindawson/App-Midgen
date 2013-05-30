@@ -2,7 +2,7 @@ package App::Midgen::Role::UseOk;
 
 use v5.10;
 use Moo::Role;
-
+use PPI;
 use Data::Printer { caller_info => 1, colored => 1, };
 
 # Load time and dependencies negate execution time
@@ -149,7 +149,7 @@ version: 0.22_01
 
 =over 4
 
-=item * xtests_use_ok 
+=item * xtests_use_ok
 
 Checking for the following, extracting module name only.
 
