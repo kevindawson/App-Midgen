@@ -3,6 +3,7 @@ package App::Midgen::Role::TestRequires;
 use v5.10;
 use Moo::Role;
 
+use PPI;
 use Data::Printer { caller_info => 1, colored => 1, };
 
 # Load time and dependencies negate execution time
@@ -153,7 +154,7 @@ sub xtests_test_requires {
 
 			if ( $self->xtest eq 'test_requires' ) {
 				$self->_process_found_modules( 'recommends', \@modules );
-			} 
+			}
 			elsif ( $self->develop && $self->xtest eq 'test_develop' ) {
 				$self->_process_found_modules( 'test_develop', \@modules );
 			}
