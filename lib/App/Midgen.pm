@@ -7,6 +7,7 @@ with qw(
 	App::Midgen::Role::TestRequires
 	App::Midgen::Role::UseOk
 	App::Midgen::Role::ExtraTests
+	App::Midgen::Role::FindMinVersion
 );
 use App::Midgen::Output;
 
@@ -29,8 +30,6 @@ use List::MoreUtils qw(firstidx);
 use MetaCPAN::API;
 use Module::CoreList;
 use PPI;
-#use Perl::MinimumVersion;
-use Perl::MinimumVersion::Fast;
 use Perl::PrereqScanner;
 use Scalar::Util qw(looks_like_number);
 use Term::ANSIColor qw( :constants colored colorstrip );
@@ -146,6 +145,14 @@ sub _find_package_names {
 	# Load a Document from a file
 	$self->ppi_document( PPI::Document->new($filename) );
 
+	try {
+		if ( $self->min_ver_fast ) {
+			$self->min_version($filename);
+		} else {
+			$self->min_version() if not $self->min_ver_fast;
+		}
+	};
+
 	# Extract package names
 	push @{ $self->package_names }, $self->ppi_document->find_first('PPI::Statement::Package')->namespace;
 	$files_checked++;
@@ -233,8 +240,11 @@ sub _find_makefile_requires {
 		default { return if not $self->_is_perlfile($filename); $is_script = 1; }
 	}
 	try {
-#		$self->min_version() if $is_script;
-		$self->min_version( $filename );# if $is_script;		
+		if ( $self->min_ver_fast ) {
+			$self->min_version($filename);
+		} else {
+			$self->min_version() if $is_script;
+		}
 	};
 
 	my $prereqs = $self->scanner->scan_ppi_document( $self->ppi_document );
@@ -337,6 +347,7 @@ sub _find_makefile_test_requires {
 	if ( scalar @modules > 0 ) {
 
 		if ( $self->format eq 'cpanfile' ) {
+
 			# $self->xtest eq 'test_requires' -> t/
 			# $self->xtest eq 'test_develop' -> xt/
 			if ( $self->xtest eq 'test_requires' ) {
@@ -820,40 +831,6 @@ sub degree_separation {
 }
 
 #######
-# find min perl version
-######
-sub min_version {
-	my $self = shift;
-	my $filename = shift;
-
-	# Create the version checking object
-	my $object = Perl::MinimumVersion::Fast->new($filename);
-
-	# Find the minimum version
-	my $minimum_version = $object->minimum_version;
-	$Min_Version =
-		  version->parse($Min_Version) > version->parse($minimum_version)
-		? version->parse($Min_Version)->numify
-		: version->parse($minimum_version)->numify;
-
-	my $minimum_explicit_version = $object->minimum_explicit_version;
-	$Min_Version =
-		  version->parse($Min_Version) > version->parse($minimum_explicit_version)
-		? version->parse($Min_Version)->numify
-		: version->parse($minimum_explicit_version)->numify;
-
-	my $minimum_syntax_version = $object->minimum_syntax_version;
-	$Min_Version =
-		  version->parse($Min_Version) > version->parse($minimum_syntax_version)
-		? version->parse($Min_Version)->numify
-		: version->parse($minimum_syntax_version)->numify;
-
-	say 'min_version - ' . $Min_Version if $self->debug;
-
-	return;
-}
-
-#######
 # _output_header
 #######
 sub _output_header {
@@ -1046,11 +1023,6 @@ Assume first package found is your packages name
 
 side affect of re-factoring, helps with code readability
 
-=item * min_version
-
-Uses L<Perl::MinimumVersion> to find the minimum version of your package by taking a quick look,
- I<note this is not a full scan, suggest you use L<perlver> for a full scan>.
-
 =item * mod_in_dist
 
 Check if module is in a distribution and use that version number, rather than 'undef'
@@ -1092,7 +1064,7 @@ As our mantra is to show the current version of a module,
 =head1 BUGS AND LIMITATIONS
 
 There may be some modules on CPAN that when MetaCPAN-API asks for there
- version string, it is provided with the wrong infomation, as the contents
+ version string, it is provided with the wrong information, as the contents
  of there Meta files are out of sync with there current version string.
 
 Please report any bugs or feature requests to
