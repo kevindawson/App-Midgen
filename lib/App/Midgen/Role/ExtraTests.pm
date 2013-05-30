@@ -133,7 +133,7 @@ sub _xtests_includes {
 
 			if ( $self->xtest eq 'test_requires' ) {
 				$self->_process_found_modules( 'recommends', \@modules );
-			} 
+			}
 			elsif ( $self->develop && $self->xtest eq 'test_develop' ) {
 				$self->_process_found_modules( 'test_develop', \@modules );
 			}
