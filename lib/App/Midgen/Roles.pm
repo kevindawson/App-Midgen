@@ -161,7 +161,7 @@ has 'mcpan' => (
 
 sub _build_mcpan {
 	my $self = shift;
-	MetaCPAN::API->new();
+	return MetaCPAN::API->new();
 }
 
 has 'output' => (
@@ -175,7 +175,7 @@ has 'output' => (
 
 sub _build_output {
 	my $self = shift;
-	App::Midgen::Output->new();
+	return App::Midgen::Output->new();
 }
 
 has 'scanner' => (
@@ -188,7 +188,7 @@ has 'scanner' => (
 
 sub _build_scanner {
 	my $self = shift;
-	Perl::PrereqScanner->new();
+	return Perl::PrereqScanner->new();
 }
 
 has 'ppi_document' => (
