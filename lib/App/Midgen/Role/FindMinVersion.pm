@@ -4,7 +4,7 @@ use v5.10;
 use Moo::Role;
 use MooX::Types::MooseLike::Base qw(:all);
 
-our $VERSION = '0.22_01';
+our $VERSION = '0.22_02';
 use English qw( -no_match_vars );
 use version;
 use constant { TRUE => 1, FALSE => 0, };
@@ -85,7 +85,7 @@ App::Midgen::Roles::FindMinVersion - used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.22_01
+version: 0.22_02
 
 =head1 METHODS
 

@@ -17,7 +17,7 @@ no if $] > 5.017010, warnings => 'experimental::smartmatch';
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.22_01';
+our $VERSION = '0.22_02';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -948,7 +948,7 @@ App::Midgen - Check B<requires> & B<test_requires> of your package for CPAN incl
 
 =head1 VERSION
 
-This document describes App::Midgen version: 0.22_01
+This document describes App::Midgen version: 0.22_02
 
 =head1 SYNOPSIS
 
