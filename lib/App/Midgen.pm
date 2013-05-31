@@ -11,7 +11,7 @@ with qw(
 );
 use App::Midgen::Output;
 
-# turn of experimental warnings
+# turn off experimental warnings
 no if $] > 5.017010, warnings => 'experimental::smartmatch';
 
 # Load time and dependencies negate execution time
