@@ -2,7 +2,7 @@ package App::Midgen::Output;
 
 use v5.10;
 use Moo;
-# turn of experimental warnings
+# turn off experimental warnings
 no if $] > 5.017010, warnings => 'experimental::smartmatch';
 
 # Load time and dependencies negate execution time
@@ -552,34 +552,6 @@ sub footer_cpanfile {
 	my $self = shift;
 	my $package_name = shift // NONE;
 	$package_name =~ s{::}{-}g;
-
-	#	print BRIGHT_BLACK "\n";
-
-	#	say '# ToDo you should consider the following';
-	#	say "homepage    https://github.com/.../$package_name";
-	#	say "bugtracker  https://github.com/.../$package_name/issues";
-	#	say "repository  git://github.com/.../$package_name.git";
-
-	#	print CLEAR "\n";
-
-	#	if ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'share' ) ) {
-	#		say 'install_share';
-	#		print "\n";
-	#	}
-
-	#	if ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'script' ) ) {
-	#		say 'install_script ...';
-	#		print "\n";
-	#	} elsif ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'bin' ) ) {
-	#		say "install_script bin/...";
-	#		print "\n";
-	#	}
-
-	#	my @no_index = $self->no_index;
-	#	if (@no_index) {
-	#		say "no_index directory qw{ @no_index }";
-	#		print "\n";
-	#	}
 
 	print "\n";
 

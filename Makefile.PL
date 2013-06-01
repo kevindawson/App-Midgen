@@ -27,6 +27,7 @@ requires Scalar::Util               1.27
 requires Term::ANSIColor            4.02
 requires Time::Stamp                1.3
 requires Try::Tiny                  0.12
+requires Type::Tiny                 0.006
 requires constant                   1.27
 requires version                    0.9902
 

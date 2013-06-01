@@ -1,8 +1,8 @@
 package App::Midgen::Role::FindMinVersion;
 
 use v5.10;
+use Types::Standard qw( Bool );
 use Moo::Role;
-use MooX::Types::MooseLike::Base qw(:all);
 
 our $VERSION = '0.22_02';
 use English qw( -no_match_vars );

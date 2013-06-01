@@ -15,77 +15,77 @@ use Carp;
 # cmd line options
 #######
 
-has 'core' => (
-	is       => 'ro',
-	isa      => Bool,
-	default  => sub {0},
-	required => 1,
-);
+# has 'core' => (
+	# is       => 'ro',
+	# isa      => Bool,
+	# default  => sub {0},
+	# required => 1,
+# );
 
-has 'dual_life' => (
-	is       => 'ro',
-	isa      => Bool,
-	default  => sub {0},
-	required => 1,
-);
+# has 'dual_life' => (
+	# is       => 'ro',
+	# isa      => Bool,
+	# default  => sub {0},
+	# required => 1,
+# );
 
-has 'debug' => (
-	is       => 'ro',
-	isa      => Bool,
-	default  => sub {0},
-	required => 1,
-);
+# has 'debug' => (
+	# is       => 'ro',
+	# isa      => Bool,
+	# default  => sub {0},
+	# required => 1,
+# );
 
-has 'experimental' => (
-	is       => 'ro',
-	isa      => Bool,
-	default  => sub {0},
-	required => 1,
-);
+# has 'experimental' => (
+	# is       => 'ro',
+	# isa      => Bool,
+	# default  => sub {0},
+	# required => 1,
+# );
 
-has 'format' => (
-	is  => 'ro',
-	isa => sub {
-		my $format = { dsl => 1, mi => 1, mb => 1, dzil => 1, dist => 1, cpanfile => 1, };
-		croak 'not a supported output format' unless defined $format->{ $_[0] };
-		return;
-	},
-	default  => 'dsl',
-	required => 1,
-);
+# has 'format' => (
+	# is  => 'ro',
+	# isa => sub {
+		# my $format = { dsl => 1, mi => 1, mb => 1, dzil => 1, dist => 1, cpanfile => 1, };
+		# croak 'not a supported output format' unless defined $format->{ $_[0] };
+		# return;
+	# },
+	# default  => 'dsl',
+	# required => 1,
+# );
 
-has 'verbose' => (
-	is       => 'ro',
-	isa      => Int,
-	default  => sub {1},
-	required => 1,
-);
+# has 'verbose' => (
+	# is       => 'ro',
+	# isa      => Int,
+	# default  => sub {1},
+	# required => 1,
+# );
 
-has 'zero' => (
-	is       => 'ro',
-	isa      => Bool,
-	default  => sub {0},
-	required => 1,
-);
+# has 'zero' => (
+	# is       => 'ro',
+	# isa      => Bool,
+	# default  => sub {0},
+	# required => 1,
+# );
 
-has 'quiet' => (
-	is       => 'ro',
-	isa      => Bool,
-	default  => sub {0},
-	required => 1,
-);
+# has 'quiet' => (
+	# is       => 'ro',
+	# isa      => Bool,
+	# default  => sub {0},
+	# required => 1,
+# );
 
-around [qw( debug verbose )] => sub {
-	my $orig    = shift;
-	my $self    = shift;
-	my $content = $self->$orig(@_);
+# around [qw( debug verbose )] => sub {
+	# my $orig    = shift;
+	# my $self    = shift;
+	# my $content = $self->$orig(@_);
 
-	if ( $self->quiet == 1 && $self->experimental == 1 ) {
-		return 0;
-	} else {
-		return $content;
-	}
-};
+	# if ( $self->quiet == 1 && $self->experimental == 1 ) {
+		# return 0;
+	# } else {
+		# return $content;
+	# }
+# };
 
 #######
 # some encapsulated -> attributes
