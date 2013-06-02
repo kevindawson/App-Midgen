@@ -6,11 +6,17 @@ use warnings FATAL => 'all';
 use English qw( -no_match_vars );    # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Test::More tests => 27;
+use Test::More tests => 33;
 
 BEGIN {
   use_ok('App::Midgen');
-  use_ok('App::Midgen::Roles');
+  use_ok('App::Midgen::Role::Options');
+  use_ok('App::Midgen::Role::Attributes');
+  use_ok('App::Midgen::Role::AttributesX');
+  use_ok('App::Midgen::Role::TestRequires');
+  use_ok('App::Midgen::Role::UseOk');
+  use_ok('App::Midgen::Role::ExtraTests');
+  use_ok('App::Midgen::Role::FindMinVersion');
   use_ok('App::Midgen::Output');
 
   use_ok('Carp',                       '1.26');
