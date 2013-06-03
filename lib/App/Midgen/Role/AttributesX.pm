@@ -28,18 +28,6 @@ sub _build_mcpan {
 	return MetaCPAN::API->new();
 }
 
-#has 'output' => (
-#	is      => 'rw',
-#	isa     => InstanceOf [ 'App::Midgen::Output', ],
-#	lazy    => 1,
-#	builder => '_build_output',
-#);
-#
-#sub _build_output {
-#	my $self = shift;
-#	return App::Midgen::Output->new();
-#}
-
 has 'scanner' => (
 	is      => 'rw',
 	isa     => InstanceOf [ 'Perl::PrereqScanner', ],
@@ -82,10 +70,6 @@ none as such, but we do have
 =item * mcpan
 
 accessor to MetaCPAN::API object
-
-=item * output
-
-accessor to App::Midgen::Output object
 
 =item * scanner
 
