@@ -17,7 +17,7 @@ no if $] > 5.017010, warnings => 'experimental::smartmatch';
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.23_02';
+our $VERSION = '0.24';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -161,7 +161,7 @@ App::Midgen::Role::Output - A collection of output orientated methods used by L<
 
 =head1 VERSION
 
-version: 0.23_02
+version: 0.24
 
 =head1 DESCRIPTION
 
@@ -181,6 +181,7 @@ types, be that mcpan, dual-life or added distribution.
 =item * no_index
 
 Suggest some of your local directories you can 'no_index'
+
 =back
 
 =head1 DEPENDENCIES

@@ -8,7 +8,7 @@ use Data::Printer { caller_info => 1, colored => 1, };
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.23_02';
+our $VERSION = '0.24';
 use Carp;
 
 #######
@@ -57,7 +57,7 @@ App::Midgen::Role::AttributesX - Package Attributes used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.23_02
+version: 0.24
 
 =head1 METHODS
 
