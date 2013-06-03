@@ -1,5 +1,9 @@
 Revision history for App-Midgen
 
+0.24 2013-06-03
+ - fix duplicate package name issue
+ - refactor the output format into composed roles
+
 0.23 2013-06-03
  - refactor to use Perl::MinimumVersion::Fast for speed and coverage
  - turn of anit-noise for PPI::XS if present
