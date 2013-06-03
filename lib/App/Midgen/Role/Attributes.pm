@@ -9,7 +9,7 @@ use Data::Printer { caller_info => 1, colored => 1, };
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.22_02';
+our $VERSION = '0.23';
 use Carp;
 
 #######
@@ -93,44 +93,29 @@ App::Midgen::Role::Attributes - Package Attributes used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.22_02
+version: 0.23
 
 =head1 METHODS
 
 none as such, but we do have
 
-=head2 ACCESSORS
+=head2 ATTRIBUTES
 
 =over 4
 
 =item * develop
 
-accessor to 
-
 =item * distribution_name
-
-accessor to
 
 =item * found_twins
 
-Used as a flag to re-run noisy children after discovery of twins
-
 =item * numify
-
-accessor to
 
 =item * package_names
 
-Some package names we found along the way
-
 =item * ppi_document
 
-I encapsulated this and got a nifty speed increase
-
 =item * xtest
-
-accessor to 
-
 
 =back
 

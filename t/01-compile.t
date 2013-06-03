@@ -25,7 +25,7 @@ BEGIN {
   use_ok('File::Slurp',                '9999.19');
   use_ok('File::Spec',                 '3.4');
   use_ok('Getopt::Long',               '2.39');
-  use_ok('JSON::Tiny',                 '0.27');
+  use_ok('JSON::Tiny',                 '0.28');
   use_ok('List::MoreUtils',            '0.33');
   use_ok('MetaCPAN::API',              '0.43');
   use_ok('Module::CoreList',           '2.91');
@@ -33,7 +33,7 @@ BEGIN {
   use_ok('PPI',                        '1.215');
   use_ok('Perl::MinimumVersion::Fast', '0.06');
   use_ok('Perl::PrereqScanner',        '1.015');
-  use_ok('Pod::Usage',                 '1.61');
+  use_ok('Pod::Usage',                 '1.63');
   use_ok('Scalar::Util',               '1.27');
   use_ok('Term::ANSIColor',            '4.02');
   use_ok('Time::Stamp',                '1.3');

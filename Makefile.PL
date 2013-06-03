@@ -11,7 +11,7 @@ requires Data::Printer              0.35
 requires File::Slurp                9999.19
 requires File::Spec                 3.4
 requires Getopt::Long               2.39
-requires JSON::Tiny                 0.27
+requires JSON::Tiny                 0.28
 requires List::MoreUtils            0.33
 requires MetaCPAN::API              0.43
 requires Module::CoreList           2.91
@@ -22,7 +22,7 @@ requires PPI::XS                    0.902 if can_cc
 requires Perl::MinimumVersion       1.32
 requires Perl::MinimumVersion::Fast 0.1 if can_cc
 requires Perl::PrereqScanner        1.015
-requires Pod::Usage                 1.61
+requires Pod::Usage                 1.63
 requires Scalar::Util               1.27
 requires Term::ANSIColor            4.02
 requires Time::Stamp                1.3

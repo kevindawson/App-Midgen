@@ -4,7 +4,7 @@ use v5.10;
 use Types::Standard qw( Bool );
 use Moo::Role;
 
-our $VERSION = '0.22_02';
+our $VERSION = '0.23';
 use English qw( -no_match_vars );
 use version;
 use constant { TRUE => 1, FALSE => 0, };
@@ -85,7 +85,7 @@ App::Midgen::Roles::FindMinVersion - used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.22_02
+version: 0.23
 
 =head1 METHODS
 
@@ -94,7 +94,7 @@ version: 0.22_02
 =item * min_version
 
 Used to find the minimum version of your package by taking a quick look,
-in a module or script and updating $Min_Version accordingly.
+in a module or script and updating C<$App::Midgen::Min_Version> accordingly.
 
 =back
 

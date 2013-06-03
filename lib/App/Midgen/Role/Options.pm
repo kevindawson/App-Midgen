@@ -7,7 +7,7 @@ use Moo::Role;
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.22_02';
+our $VERSION = '0.23';
 use Carp;
 
 #######
@@ -102,7 +102,7 @@ App::Midgen::Role::Options - Package Options used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.22_02
+version: 0.23
 
 =head1 METHODS
 
@@ -127,8 +127,8 @@ none as such, but we do have
 =item * verbose
 
  0 -> off
- 1 -> default
- 2 -> show files
+ 1 -> default    # -v
+ 2 -> show files # -vv
 
 =item * zero
 
