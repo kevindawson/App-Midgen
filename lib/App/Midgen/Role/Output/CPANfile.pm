@@ -9,7 +9,7 @@ no if $] > 5.017010, warnings => 'experimental::smartmatch';
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.23_01';
+our $VERSION = '0.23_02';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -140,7 +140,7 @@ App::Midgen::Role::Output::CPANfile - A collection of output orientated methods 
 
 =head1 VERSION
 
-version: 0.23_01
+version: 0.23_02
 
 =head1 DESCRIPTION
 
