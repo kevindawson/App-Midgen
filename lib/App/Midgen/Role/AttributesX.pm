@@ -1,4 +1,4 @@
-package App::Midgen::Role::Attributes;
+package App::Midgen::Role::AttributesX;
 
 use v5.10;
 use Moo::Role;
@@ -28,17 +28,17 @@ sub _build_mcpan {
 	return MetaCPAN::API->new();
 }
 
-has 'output' => (
-	is      => 'rw',
-	isa     => InstanceOf [ 'App::Midgen::Output', ],
-	lazy    => 1,
-	builder => '_build_output',
-);
-
-sub _build_output {
-	my $self = shift;
-	return App::Midgen::Output->new();
-}
+#has 'output' => (
+#	is      => 'rw',
+#	isa     => InstanceOf [ 'App::Midgen::Output', ],
+#	lazy    => 1,
+#	builder => '_build_output',
+#);
+#
+#sub _build_output {
+#	my $self = shift;
+#	return App::Midgen::Output->new();
+#}
 
 has 'scanner' => (
 	is      => 'rw',
@@ -65,7 +65,7 @@ __END__
 
 =head1 NAME
 
-App::Midgen::Role::Attributes - Package Attributes used by L<App::Midgen>
+App::Midgen::Role::AttributesX - Package Attributes used by L<App::Midgen>
 
 =head1 VERSION
 

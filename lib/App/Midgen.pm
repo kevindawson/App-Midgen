@@ -10,8 +10,9 @@ with qw(
 	App::Midgen::Role::UseOk
 	App::Midgen::Role::ExtraTests
 	App::Midgen::Role::FindMinVersion
+	App::Midgen::Role::Output
 );
-use App::Midgen::Output;
+#use App::Midgen::Output;
 
 # turn off experimental warnings
 no if $] > 5.017010, warnings => 'experimental::smartmatch';
@@ -818,104 +819,104 @@ sub degree_separation {
 #######
 # _output_header
 #######
-sub _output_header {
-	my $self = shift;
-
-	given ( $self->format ) {
-
-		when ('dsl') {
-			$self->output->header_dsl(
-				$self->distribution_name,
-				$self->get_module_version('inc::Module::Install::DSL')
-			);
-		}
-		when ('mi') {
-			$self->output->header_mi(
-				$self->distribution_name,
-				$self->get_module_version('inc::Module::Install')
-			);
-		}
-		when ('dist') {
-			$self->output->header_dist( $self->distribution_name );
-		}
-		when ('cpanfile') {
-			$self->output->header_cpanfile(
-				$self->distribution_name,
-				$self->get_module_version('inc::Module::Install')
-			) if not $self->quiet;
-
-		}
-		when ('dzil') {
-			$self->output->header_dzil( $self->distribution_name );
-		}
-		when ('mb') {
-			$self->output->header_mb( $self->distribution_name );
-		}
-	}
-	return;
-}
+#sub _output_header {
+#	my $self = shift;
+#
+#	given ( $self->format ) {
+#
+#		when ('dsl') {
+#			$self->output->header_dsl(
+#				$self->distribution_name,
+#				$self->get_module_version('inc::Module::Install::DSL')
+#			);
+#		}
+#		when ('mi') {
+#			$self->output->header_mi(
+#				$self->distribution_name,
+#				$self->get_module_version('inc::Module::Install')
+#			);
+#		}
+#		when ('dist') {
+#			$self->output->header_dist( $self->distribution_name );
+#		}
+#		when ('cpanfile') {
+#			$self->output->header_cpanfile(
+#				$self->distribution_name,
+#				$self->get_module_version('inc::Module::Install')
+#			) if not $self->quiet;
+#
+#		}
+#		when ('dzil') {
+#			$self->output->header_dzil( $self->distribution_name );
+#		}
+#		when ('mb') {
+#			$self->output->header_mb( $self->distribution_name );
+#		}
+#	}
+#	return;
+#}
 #######
 # _output_main_body
 #######
-sub _output_main_body {
-	my $self         = shift;
-	my $title        = shift || 'title missing';
-	my $required_ref = shift;                   # || return;
-
-	given ( $self->format ) {
-
-		when ('dsl') {
-			$self->output->body_dsl( $title, $required_ref );
-		}
-		when ('mi') {
-			$self->output->body_mi( $title, $required_ref );
-		}
-		when ('dist') {
-			$self->output->body_dist( $title, $required_ref );
-		}
-		when ('cpanfile') {
-			$self->output->body_cpanfile( $title, $required_ref );
-		}
-		when ('dzil') {
-			$self->output->body_dzil( $title, $required_ref );
-		}
-		when ('mb') {
-			$self->output->body_mb( $title, $required_ref );
-		}
-	}
-
-	return;
-}
+#sub _output_main_body {
+#	my $self         = shift;
+#	my $title        = shift || 'title missing';
+#	my $required_ref = shift;                   # || return;
+#
+#	given ( $self->format ) {
+#
+#		when ('dsl') {
+#			$self->output->body_dsl( $title, $required_ref );
+#		}
+#		when ('mi') {
+#			$self->output->body_mi( $title, $required_ref );
+#		}
+#		when ('dist') {
+#			$self->output->body_dist( $title, $required_ref );
+#		}
+#		when ('cpanfile') {
+#			$self->output->body_cpanfile( $title, $required_ref );
+#		}
+#		when ('dzil') {
+#			$self->output->body_dzil( $title, $required_ref );
+#		}
+#		when ('mb') {
+#			$self->output->body_mb( $title, $required_ref );
+#		}
+#	}
+#
+#	return;
+#}
 #######
 # _output_footer
 #######
-sub _output_footer {
-	my $self = shift;
-
-	given ( $self->format ) {
-
-		when ('dsl') {
-			$self->output->footer_dsl( $self->distribution_name );
-		}
-		when ('mi') {
-			$self->output->footer_mi( $self->distribution_name );
-		}
-		when ('dist') {
-			$self->output->footer_dist( $self->distribution_name );
-		}
-		when ('cpanfile') {
-			$self->output->footer_cpanfile( $self->distribution_name );
-		}
-		when ('dzil') {
-			$self->output->footer_dzil( $self->distribution_name );
-		}
-		when ('mb') {
-			$self->output->footer_mb( $self->distribution_name );
-		}
-	}
-
-	return;
-}
+#sub _output_footer {
+#	my $self = shift;
+#
+#	given ( $self->format ) {
+#
+#		when ('dsl') {
+#			$self->output->footer_dsl( $self->distribution_name );
+#		}
+#		when ('mi') {
+#			$self->output->footer_mi( $self->distribution_name );
+#		}
+#		when ('dist') {
+#			$self->output->footer_dist( $self->distribution_name );
+#		}
+#		when ('cpanfile') {
+#			$self->output->footer_cpanfile( $self->distribution_name );
+#		}
+#		when ('dzil') {
+#			$self->output->footer_dzil( $self->distribution_name );
+#		}
+#		when ('mb') {
+#			$self->output->footer_mb( $self->distribution_name );
+#		}
+#	}
+#
+#	return;
+#}
 
 no Moo;
 
