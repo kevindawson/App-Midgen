@@ -22,9 +22,9 @@ use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 #######
-# _output_header
+# output_header
 #######
-sub _output_header {
+sub output_header {
 	my $self = shift;
 
 	given ( $self->format ) {
@@ -64,7 +64,7 @@ sub _output_header {
 #######
 # output_main_body
 #######
-sub _output_main_body {
+sub output_main_body {
 	my $self         = shift;
 	my $title        = shift || 'title missing';
 	my $required_ref = shift;
@@ -97,7 +97,7 @@ sub _output_main_body {
 #######
 # output_footer
 #######
-sub _output_footer {
+sub output_footer {
 	my $self = shift;
 
 	given ( $self->format ) {
@@ -150,4 +150,62 @@ no Moo;
 1;
 
 __END__
+
+=pod
+
+=encoding utf8
+
+=head1 NAME
+
+App::Midgen::Role::Output - A collection of output orientated methods used by L<App::Midgen>
+
+=head1 VERSION
+
+version: 0.23_01
+
+=head1 DESCRIPTION
+
+The output format uses colour to add visualization of module version number
+types, be that mcpan, dual-life or added distribution.
+
+=head1 METHODS
+
+=over 4
+
+=item * output_header 
+
+=item * output_main_body 
+
+=item * output_footer 
+
+=item * no_index
+
+Suggest some of your local directories you can 'no_index'
+=back
+
+=head1 DEPENDENCIES
+
+L<Term::ANSIColor>
+
+=head1 SEE ALSO
+
+L<App::Midgen>
+
+=head1 AUTHOR
+
+See L<App::Midgen>
+
+=head2 CONTRIBUTORS
+
+See L<App::Midgen>
+
+=head1 COPYRIGHT
+
+See L<App::Midgen>
+
+=head1 LICENSE
+
+See L<App::Midgen>
+
+=cut
 
