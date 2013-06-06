@@ -2,6 +2,7 @@ package App::Midgen::Role::TestRequires;
 
 use v5.10;
 use Moo::Role;
+requires qw( ppi_document develop debug format xtest _process_found_modules );
 
 use PPI;
 use Data::Printer { caller_info => 1, colored => 1, };

@@ -3,6 +3,7 @@ package App::Midgen::Role::FindMinVersion;
 use v5.10;
 use Types::Standard qw( Bool );
 use Moo::Role;
+requires qw( ppi_document debug );
 
 our $VERSION = '0.24';
 use English qw( -no_match_vars );

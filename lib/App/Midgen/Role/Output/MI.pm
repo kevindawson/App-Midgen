@@ -2,6 +2,7 @@ package App::Midgen::Role::Output::MI;
 
 use v5.10;
 use Moo::Role;
+requires qw( no_index );
 
 # turn off experimental warnings
 no if $] > 5.017010, warnings => 'experimental::smartmatch';

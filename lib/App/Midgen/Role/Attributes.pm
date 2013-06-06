@@ -3,8 +3,10 @@ package App::Midgen::Role::Attributes;
 use v5.10;
 use Types::Standard qw( ArrayRef Bool Int Object Str);
 use Moo::Role;
+requires qw( experimental format );
+
 # use MooX::Types::MooseLike::Base qw(:all);
-use Data::Printer { caller_info => 1, colored => 1, };
+# use Data::Printer { caller_info => 1, colored => 1, };
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';

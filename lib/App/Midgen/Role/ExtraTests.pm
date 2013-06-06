@@ -2,6 +2,8 @@ package App::Midgen::Role::ExtraTests;
 
 use v5.10;
 use Moo::Role;
+requires qw( ppi_document debug format xtest _process_found_modules develop );
+
 #use MooX::Types::MooseLike::Base qw(:all);
 use Data::Printer { caller_info => 1, colored => 1, };
 
