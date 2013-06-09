@@ -1,5 +1,8 @@
 Revision history for App-Midgen
 
+{{$NEXT}}
+ - Add EXE_FILES to dzil output format
+
 0.24 2013-06-03
  - fix duplicate package name issue
  - refactor the output format into composed roles

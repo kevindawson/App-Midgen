@@ -90,6 +90,18 @@ sub footer_dzil {
 	say '},';
 	print CLEAR "\n";
 
+	if ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'script' ) ) {
+		say '\'EXE_FILES\' => [qw(';
+		say "\tscript/...";
+		say ')],';
+		print "\n";
+	} elsif ( defined -d File::Spec->catdir( $App::Midgen::Working_Dir, 'bin' ) ) {
+		say '\'EXE_FILES\' => [qw(';
+		say "\tbin/...";
+		say ')],';
+		print "\n";
+	}
+
 	return;
 }
 
