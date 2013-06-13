@@ -7,6 +7,7 @@ perl_version 5.010001
 
 requires Carp                       1.26
 requires Cwd                        3.4
+requires Class::XSAccessor          1.16 if can_cc
 requires Data::Printer              0.35
 requires File::Slurp                9999.19
 requires File::Spec                 3.4
