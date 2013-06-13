@@ -30,6 +30,7 @@ use File::Spec;
 use List::MoreUtils qw(firstidx);
 use MetaCPAN::API;
 use Module::CoreList;
+#use PPI::XS::Tokenizer;
 use PPI;
 use Perl::PrereqScanner;
 use Scalar::Util qw(looks_like_number);
@@ -117,10 +118,10 @@ sub first_package_name {
 		my $mcpan_module_info = $self->mcpan->module( $self->package_names->[0] );
 		my $distribution_name = $mcpan_module_info->{distribution};
 		$distribution_name =~ s{-}{::}g;
-		$self->distribution_name($distribution_name);
+		$self->_set_distribution_name($distribution_name);
 	}
 	catch {
-		$self->distribution_name( $self->package_names->[0] );
+		$self->_set_distribution_name( $self->package_names->[0] );
 	};
 	say 'Package: ' . $self->distribution_name if $self->verbose;
 
@@ -141,7 +142,7 @@ sub _find_package_names {
 	return if $filename !~ /[.]pm$/sxm;
 
 	# Load a Document from a file
-	$self->ppi_document( PPI::Document->new($filename) );
+	$self->_set_ppi_document( PPI::Document->new($filename) );
 
 	try {
 		if ( $self->min_ver_fast ) {
@@ -222,7 +223,7 @@ sub find_required_test_modules {
 sub _find_makefile_requires {
 	my $self     = shift;
 	my $filename = $_;
-	$self->ppi_document( PPI::Document->new($filename) );
+	$self->_set_ppi_document( PPI::Document->new($filename) );
 	my $is_script = 0;
 
 	given ($filename) {
@@ -283,7 +284,7 @@ sub _is_perlfile {
 	my $self     = shift;
 	my $filename = shift;
 
-	$self->ppi_document( PPI::Document->new($filename) );
+	$self->_set_ppi_document( PPI::Document->new($filename) );
 	my $ppi_tc = $self->ppi_document->find('PPI::Token::Comment');
 
 	my $not_a_pl_file = 0;
@@ -319,7 +320,7 @@ sub _find_makefile_test_requires {
 	my $directorie = shift;
 	##p $directorie;
 	my $prerequisites = ( $directorie =~ m/xt$/ ) ? 'test_develop' : 'test_requires';
-	$self->xtest('test_develop') if $directorie =~ m/xt$/;
+	$self->_set_xtest('test_develop') if $directorie =~ m/xt$/;
 
 	my $filename = $_;
 	return if $filename !~ /[.]t|pm$/sxm;
@@ -327,7 +328,7 @@ sub _find_makefile_test_requires {
 	say 'looking for test_requires in: ' . $filename if $self->verbose >= TWO;
 
 	# Load a Document from a file and check use and require contents
-	$self->ppi_document( PPI::Document->new($filename) );
+	$self->_set_ppi_document( PPI::Document->new($filename) );
 
 	# do extra test early check for Test::Requires before hand
 	$self->xtests_test_requires();
@@ -638,7 +639,7 @@ sub remove_twins {
 						say $dum_parient . ' -> ' . $version . ' is the parent of these twins'
 							if $self->verbose;
 						$required_ref->{$dum_parient} = $version;
-						$self->found_twins(1);
+						$self->_set_found_twins(1);
 					}
 				}
 			}

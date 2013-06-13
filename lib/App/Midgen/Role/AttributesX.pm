@@ -1,10 +1,10 @@
 package App::Midgen::Role::AttributesX;
 
 use v5.10;
-# use Types::Standard qw( InstanceOf );
+use Types::Standard qw( InstanceOf );
 use Moo::Role;
 
-use MooX::Types::MooseLike::Base qw( InstanceOf );
+## use MooX::Types::MooseLike::Base qw( InstanceOf );
 # use Data::Printer { caller_info => 1, colored => 1, };
 
 # Load time and dependencies negate execution time
@@ -18,7 +18,7 @@ use Carp;
 #######
 
 has 'mcpan' => (
-	is      => 'rw',
+	is      => 'ro',
 	isa     => InstanceOf [ 'MetaCPAN::API', ],
 	lazy    => 1,
 	builder => '_build_mcpan',
@@ -31,7 +31,7 @@ sub _build_mcpan {
 }
 
 has 'scanner' => (
-	is      => 'rw',
+	is      => 'ro',
 	isa     => InstanceOf [ 'Perl::PrereqScanner', ],
 	lazy    => 1,
 	builder => '_build_scanner',

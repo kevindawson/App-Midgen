@@ -36,13 +36,13 @@ sub _develop {
 }
 
 has 'distribution_name' => (
-	is   => 'rw',
+	is   => 'rwp',
 	isa  => Str,
 	lazy => 1,
 );
 
 has 'found_twins' => (
-	is      => 'rw',
+	is      => 'rwp',
 	isa     => Bool,
 	lazy    => 1,
 	default => sub {
@@ -51,7 +51,7 @@ has 'found_twins' => (
 );
 
 has 'numify' => (
-	is      => 'rw',
+	is      => 'ro',
 	isa     => Bool,
 	default => sub {0},
 	lazy    => 1,
@@ -65,13 +65,13 @@ has 'package_names' => (
 );
 
 has 'ppi_document' => (
-	is   => 'rw',
+	is   => 'rwp',
 	isa  => Object,
 	lazy => 1,
 );
 
 has 'xtest' => (
-	is      => 'rw',
+	is      => 'rwp',
 	isa     => Str,
 	lazy    => 1,
 	default => sub {
