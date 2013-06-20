@@ -30,7 +30,6 @@ use File::Spec;
 use List::MoreUtils qw(firstidx);
 use MetaCPAN::API;
 use Module::CoreList;
-#use PPI::XS::Tokenizer;
 use PPI;
 use Perl::PrereqScanner;
 use Scalar::Util qw(looks_like_number);
@@ -231,6 +230,10 @@ sub _find_makefile_requires {
 			say 'looking for requires in (.pm)-> ' . $filename
 				if $self->verbose >= TWO;
 		}
+		when (m/[.]psgi$/) {
+			say 'looking for requires in (.psgi)-> ' . $filename
+				if $self->verbose >= TWO;
+		}
 		when (m/[.]\w{2,4}$/) {
 			say 'rejecting ' . $filename if $self->verbose >= TWO;
 			return;
@@ -287,15 +290,15 @@ sub _is_perlfile {
 	$self->_set_ppi_document( PPI::Document->new($filename) );
 	my $ppi_tc = $self->ppi_document->find('PPI::Token::Comment');
 
-	my $not_a_pl_file = 0;
+	my $a_pl_file = 0;
 
 	if ($ppi_tc) {
 
 		# check first token-comment for a she-bang
-		$not_a_pl_file = 1 if $ppi_tc->[0]->content =~ m/^#!.+perl.*$/;
+		$a_pl_file = 1 if $ppi_tc->[0]->content =~ m/^#!.+perl.*$/;
 	}
 
-	if ( $self->ppi_document->find('PPI::Statement::Package') || $not_a_pl_file ) {
+	if ( $self->ppi_document->find('PPI::Statement::Package') || $a_pl_file ) {
 		if ( $self->verbose >= TWO ) {
 
 			print "looking for requires in (package) -> "
