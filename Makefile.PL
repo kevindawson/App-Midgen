@@ -29,7 +29,7 @@ requires Time::Stamp                1.3
 requires Try::Tiny                  0.12
 requires Type::Tiny                 0.008
 requires constant                   1.27
-requires lib                        0.63
+# requires lib                        0.63
 requires version                    0.9902
 
 test_requires Test::CheckDeps 0.004

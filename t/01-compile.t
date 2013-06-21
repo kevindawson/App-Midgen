@@ -6,7 +6,7 @@ use warnings FATAL => 'all';
 use English qw( -no_match_vars );    # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Test::More tests => 41;
+use Test::More tests => 40;
 
 BEGIN {
   use_ok('App::Midgen');
@@ -46,7 +46,7 @@ BEGIN {
   use_ok('Try::Tiny',            '0.12');
   use_ok('Type::Tiny',           '0.008');
   use_ok('constant',             '1.27');
-  use_ok('lib',                  '0.63');
+#  use_ok('lib',                  '0.63');
   use_ok('version',              '0.9902');
 
   use_ok('Test::CheckDeps', '0.004');
