@@ -34,7 +34,6 @@ my @modules = qw(
   MetaCPAN::API
   Module::CoreList
   Moo
-  MooX::Types::MooseLike
   PPI
   Perl::MinimumVersion
   Perl::PrereqScanner
