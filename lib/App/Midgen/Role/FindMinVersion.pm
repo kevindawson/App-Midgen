@@ -65,7 +65,7 @@ sub min_version {
 		? version->parse($dist_min_ver)->numify
 		: version->parse($minimum_syntax_version)->numify;
 
-	say 'min_version - ' . $dist_min_ver if $self->debug;
+	warn 'min_version - ' . $dist_min_ver if $self->debug;
 	$App::Midgen::Min_Version = $dist_min_ver;
 	return;
 }

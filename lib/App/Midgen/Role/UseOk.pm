@@ -73,7 +73,7 @@ sub xtests_use_ok {
 												$module =~ s/^['|"]//;
 												$module =~ s/['|"]$//;
 												if ( $module =~ m/\A[A-Z]/ ) {
-													say 'found module - ' . $module if $self->debug;
+													warn 'found module - ' . $module if $self->debug;
 													push @modules, $module;
 												}
 
