@@ -17,7 +17,6 @@ requires List::MoreUtils            0.33
 requires MetaCPAN::API              0.43
 requires Module::CoreList           2.92
 requires Moo                        1.002
-requires MooX::Types::MooseLike     0.23
 requires PPI                        1.215
 requires PPI::XS                    0.902 if can_cc
 requires Perl::MinimumVersion       1.32
@@ -28,7 +27,7 @@ requires Scalar::Util               1.27
 requires Term::ANSIColor            4.02
 requires Time::Stamp                1.3
 requires Try::Tiny                  0.12
-requires Type::Tiny                 0.006
+requires Type::Tiny                 0.008
 requires constant                   1.27
 requires lib                        0.63
 requires version                    0.9902

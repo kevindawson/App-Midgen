@@ -1,11 +1,8 @@
 package App::Midgen::Role::AttributesX;
 
 use v5.10;
-# use Types::Standard qw( InstanceOf );
+use Types::Standard qw( InstanceOf );
 use Moo::Role;
-
-use MooX::Types::MooseLike::Base qw( InstanceOf );
-# use Data::Printer { caller_info => 1, colored => 1, };
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
