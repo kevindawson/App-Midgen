@@ -91,7 +91,7 @@ sub _initialise {
 	my $self = shift;
 
 	# let's give Output a copy, to stop it being Fup as well suspect Tiny::Path as-well
-	say 'working in dir: ' . $Working_Dir if $self->debug;
+	warn 'working in dir: ' . $Working_Dir if $self->debug;
 
 	return;
 }
@@ -812,8 +812,8 @@ sub degree_separation {
 	# Use of implicit split to @_ is deprecated
 	my $parent_score = @{ [ split /::/, $parent ] };
 	my $child_score  = @{ [ split /::/, $child ] };
-	say 'parent - ' . $parent . ' score - ' . $parent_score if $self->debug;
-	say 'child - ' . $child . ' score - ' . $child_score    if $self->debug;
+	warn 'parent - ' . $parent . ' score - ' . $parent_score if $self->debug;
+	warn 'child - ' . $child . ' score - ' . $child_score    if $self->debug;
 
 	# switch around for a positive number
 	return $child_score - $parent_score;
