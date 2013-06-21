@@ -71,7 +71,19 @@ sub run {
 		if $self->found_twins;
 
 	# Now we have switched to MetaCPAN-Api we can hunt for noisy children in test requires
-	$self->remove_noisy_children( $self->{test_requires} ) if $self->experimental;
+	if ( $self->experimental ) {
+		p $self->{test_requires} if $self->debug;
+		$self->remove_noisy_children( $self->{test_requires} );
+		foreach my $module ( keys %{ $self->{test_requires} } ) {
+			if ( $self->{package_requires}{$module} ) {
+				warn $module if $self->debug;
+				try {
+					delete $self->{test_requires}{$module};
+				};
+			}
+		}
+		p $self->{test_requires} if $self->debug;
+	}
 
 	$self->output_main_body( 'requires',      $self->{package_requires} );
 	$self->output_main_body( 'test_requires', $self->{test_requires} );
