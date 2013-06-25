@@ -12,7 +12,7 @@ requires Data::Printer              0.35
 requires File::Slurp                9999.19
 requires File::Spec                 3.4
 requires Getopt::Long               2.4
-requires JSON::Tiny                 0.31
+requires JSON::Tiny                 0.32
 requires List::MoreUtils            0.33
 requires MetaCPAN::API              0.43
 requires Module::CoreList           2.92
@@ -27,12 +27,12 @@ requires Scalar::Util               1.27
 requires Term::ANSIColor            4.02
 requires Time::Stamp                1.3
 requires Try::Tiny                  0.12
-requires Type::Tiny                 0.008
+requires Type::Tiny                 0.01
 requires constant                   1.27
 # requires lib                        0.63
 requires version                    0.9902
 
-test_requires Test::CheckDeps 0.004
+test_requires Test::CheckDeps 0.006
 test_requires Test::More      0.98
 test_requires Test::Requires  0.06
 
