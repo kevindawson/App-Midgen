@@ -2,6 +2,7 @@ package App::Midgen::Role::Output::CPANfile;
 
 use v5.10;
 use Moo::Role;
+requires qw( verbose );
 
 # turn off experimental warnings
 no if $] > 5.017010, warnings => 'experimental::smartmatch';
@@ -10,117 +11,123 @@ no if $] > 5.017010, warnings => 'experimental::smartmatch';
 # use namespace::clean -except => 'meta';
 
 our $VERSION = '0.24';
-use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
+use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 use Term::ANSIColor qw( :constants colored );
-use Data::Printer { caller_info => 1, colored => 1, };
-use constant { BLANK => q{ }, NONE => q{}, THREE => 3, };
+use Data::Printer {caller_info => 1, colored => 1,};
+use constant {BLANK => q{ }, NONE => q{}, THREE => 3,};
 use File::Spec;
 
 #######
 # header_cpanfile
 #######
 sub header_cpanfile {
-	my $self         = shift;
-	my $package_name = shift // NONE;
-	my $mi_ver       = shift // NONE;
+  my $self         = shift;
+  my $package_name = shift // NONE;
+  my $mi_ver       = shift // NONE;
 
-	#	$package_name =~ s{::}{-}g;
-	print BRIGHT_BLACK "\n";
-	say '# Makefile.PL';
-	say 'use inc::Module::Install ' . $mi_ver . q{;};
+  if ($self->verbose > 0) {
+    print BRIGHT_BLACK "\n";
+    say '# Makefile.PL';
+    say 'use inc::Module::Install ' . $mi_ver . q{;};
 
-	$package_name =~ s{::}{-}g;
-	say "name '$package_name';";
-	say 'license \'perl\';';
+    $package_name =~ s{::}{-}g;
+    say "name '$package_name';";
+    say 'license \'perl\';';
 
-	$package_name =~ tr{-}{/};
-	say "version_from 'lib/$package_name.pm';";
+    $package_name =~ tr{-}{/};
+    say "version_from 'lib/$package_name.pm';";
 
-	print "\n";
-	say 'cpanfile;';
-	say 'WriteAll;';
-	print CLEAR "\n";
+    print "\n";
+    say 'cpanfile;';
+    say 'WriteAll;';
+    print CLEAR "\n";
+  }
 
-	return;
+  return;
 }
 
 #######
 # body_cpanfile
 #######
 sub body_cpanfile {
-	my $self         = shift;
-	my $title        = shift;
-	my $required_ref = shift;
+  my $self         = shift;
+  my $title        = shift;
+  my $required_ref = shift;
 
-	if ( $title eq 'requires' ) {
-		print "\n";
+  if ($title eq 'requires') {
+    print "\n";
 
-		#		print BRIGHT_BLACK "\n";
-		#		say '# cpanfile';
-		#		print CLEAR;
-		say "requires 'perl', '$App::Midgen::Min_Version';";
-		print "\n";
-	}
+    #		print BRIGHT_BLACK "\n";
+    #		say '# cpanfile';
+    #		print CLEAR;
+    say "requires 'perl', '$App::Midgen::Min_Version';";
+    print "\n";
+  }
+
 #	print "\n";
 
-	my $pm_length = 0;
-	foreach my $module_name ( sort keys %{$required_ref} ) {
-		if ( length $module_name > $pm_length ) {
-			$pm_length = length $module_name;
-		}
-	}
-	given ($title) {
-		when ('requires') {
-			foreach my $module_name ( sort keys %{$required_ref} ) {
+  my $pm_length = 0;
+  foreach my $module_name (sort keys %{$required_ref}) {
+    if (length $module_name > $pm_length) {
+      $pm_length = length $module_name;
+    }
+  }
+  given ($title) {
+    when ('requires') {
+      foreach my $module_name (sort keys %{$required_ref}) {
 
-				my $mod_name = "'$module_name',";
-				printf "%s %-*s '%s';\n", $title, $pm_length + THREE, $mod_name, $required_ref->{$module_name};
-			}
-		}
-		when ('test_requires') {
-			print "\n";
-			say 'on test => sub {';
-			foreach my $module_name ( sort keys %{$required_ref} ) {
-				my $mod_name = "'$module_name',";
-				printf "\t%s %-*s '%s';\n", 'requires', $pm_length + THREE, $mod_name, $required_ref->{$module_name};
-			}
-			print "\n" if %{$required_ref};
-		}
-		when ('recommends') {
-			foreach my $module_name ( sort keys %{$required_ref} ) {
-				my $mod_name = "'$module_name',";
-				printf "\t%s %-*s '%s';\n", 'suggests', $pm_length + THREE, $mod_name, $required_ref->{$module_name};
-			}
-			say '};';
-		}
-		when ('test_develop') {
-			print "\n";
-			say 'on develop => sub {';
-			foreach my $module_name ( sort keys %{$required_ref} ) {
-				my $mod_name = "'$module_name',";
-				printf "\t%s %-*s '%s';\n", 'recommends', $pm_length + THREE, $mod_name, $required_ref->{$module_name};
-			}
-			say '};';
-		}
-	}
+        my $mod_name = "'$module_name',";
+        printf "%s %-*s '%s';\n", $title, $pm_length + THREE, $mod_name,
+          $required_ref->{$module_name};
+      }
+    }
+    when ('test_requires') {
+      print "\n";
+      say 'on test => sub {';
+      foreach my $module_name (sort keys %{$required_ref}) {
+        my $mod_name = "'$module_name',";
+        printf "\t%s %-*s '%s';\n", 'requires', $pm_length + THREE, $mod_name,
+          $required_ref->{$module_name};
+      }
+      print "\n" if %{$required_ref};
+    }
+    when ('recommends') {
+      foreach my $module_name (sort keys %{$required_ref}) {
+        my $mod_name = "'$module_name',";
+        printf "\t%s %-*s '%s';\n", 'suggests', $pm_length + THREE, $mod_name,
+          $required_ref->{$module_name};
+      }
+      say '};';
+    }
+    when ('test_develop') {
+      print "\n";
+      say 'on develop => sub {';
+      foreach my $module_name (sort keys %{$required_ref}) {
+        my $mod_name = "'$module_name',";
+        printf "\t%s %-*s '%s';\n", 'recommends', $pm_length + THREE,
+          $mod_name, $required_ref->{$module_name};
+      }
+      say '};';
+    }
+  }
 
 
-	return;
+  return;
 }
 
 #######
 # footer_cpanfile
 #######
 sub footer_cpanfile {
-	my $self = shift;
-	my $package_name = shift // NONE;
-	$package_name =~ s{::}{-}g;
+  my $self = shift;
+  my $package_name = shift // NONE;
+  $package_name =~ s{::}{-}g;
 
-	print "\n";
+  print "\n";
 
-	return;
+  return;
 }
 
 

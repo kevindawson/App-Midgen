@@ -10,7 +10,7 @@ with qw(
 	App::Midgen::Role::Output::Dist
 	App::Midgen::Role::Output::CPANfile
 );
-requires qw( format distribution_name get_module_version );
+requires qw( format distribution_name get_module_version verbose );
 
 # turn off experimental warnings
 no if $] > 5.017010, warnings => 'experimental::smartmatch';
