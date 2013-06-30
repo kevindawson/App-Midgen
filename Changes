@@ -4,6 +4,7 @@ Revision history for App-Midgen
  - Add EXE_FILES to dzil output format
  - use rwp as and where to increase readability
  - Add require Class::XSAccessor if can_cc for Moo
+ - Fix min-version status, opps it was back to front
 
 0.24 2013-06-03
  - fix duplicate package name issue
