@@ -159,7 +159,7 @@ sub _find_package_names {
 		if ( $self->min_ver_fast ) {
 			$self->min_version($filename);
 		} else {
-			$self->min_version();# if not $self->min_ver_fast;
+			$self->min_version();
 		}
 	};
 
