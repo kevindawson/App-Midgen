@@ -91,7 +91,7 @@ sub run {
 	$self->output_main_body( 'test_develop',  $self->{test_develop} )
 		if $self->develop;
 
-	$self->output_footer(); # if not $self->quiet;
+	$self->output_footer();
 
 	return;
 }
@@ -134,7 +134,7 @@ sub first_package_name {
 	catch {
 		$self->_set_distribution_name( $self->package_names->[0] );
 	};
-	say 'Package: ' . $self->distribution_name if $self->verbose;
+	say STDERR 'Package: ' . $self->distribution_name if $self->verbose;
 
 	return;
 }
@@ -157,9 +157,13 @@ sub _find_package_names {
 
 	try {
 		if ( $self->min_ver_fast ) {
+
+			# say 'running fast';
 			$self->min_version($filename);
 		} else {
-			$self->min_version();
+
+			# say 'running slow';
+			$self->min_version(); # if not $self->min_ver_fast;
 		}
 	};
 
@@ -357,7 +361,7 @@ sub _find_makefile_test_requires {
 	p @modules if $self->debug;
 
 	if ( scalar @modules > 0 ) {
-		if ( $self->format eq 'cpanfile' ) {
+		if ( $self->format =~ /cpanfile|metajson/ ) {
 			if ( $self->xtest eq 'test_requires' ) {
 				$self->_process_found_modules( 'test_requires', \@modules );
 			} elsif ( $self->develop && $self->xtest eq 'test_develop' ) {
@@ -461,19 +465,17 @@ sub _store_modules {
 			$self->{modules}{$module}{location} = $require_type;
 			$self->{modules}{$module}{version}  = '!mcpan';
 		}
-		when ( 0 || 'core' ) {
+		when ('core') {
 			$self->{$require_type}{$module} = $version if $self->core;
+			$self->{$require_type}{$module} = '0'      if $self->zero;
 			$self->{modules}{$module}{location} = $require_type;
 			$self->{modules}{$module}{version} = $version if $self->core;
 		}
 		default {
 			if ( $self->{modules}{$module}{corelist} ) {
-				$self->{$require_type}{$module} = colored( $version, 'bright_yellow' )
-					if ( $self->dual_life || $self->core );
-				$self->{modules}{$module}{location} = $require_type
-					if ( $self->dual_life || $self->core );
-				$self->{modules}{$module}{version} = $version
-					if ( $self->dual_life || $self->core );
+				$self->{$require_type}{$module} = colored( $version, 'bright_yellow' );
+				$self->{modules}{$module}{version}   = $version;
+				$self->{modules}{$module}{location}  = $require_type;
 				$self->{modules}{$module}{dual_life} = 1;
 			} else {
 				$self->{$require_type}{$module} = colored( $version, 'yellow' );
@@ -734,12 +736,8 @@ sub get_module_version {
 
 			# mark all perl core modules with either 'core' or '0'
 			if ( $dist eq 'perl' ) {
-				if ( $self->zero ) {
-					$cpan_version = 0;
-				} else {
-					$cpan_version = 'core';
-				}
-				$found = 1;
+				$cpan_version = 'core';
+				$found        = 1;
 			}
 		};
 		if ( $found == 0 ) {
@@ -772,7 +770,7 @@ sub get_module_version {
 		# a bit of de crappy-flying
 		# catch Test::Kwalitee::Extra 6e-06
 		print BRIGHT_BLACK;
-		say $module . ' Unique Release Sequence Indicator ' . $cpan_version
+		say $module . ' Unique Release Sequence Indicator NOT! -> ' . $cpan_version
 			if $self->verbose >= 1;
 		print CLEAR;
 		$cpan_version = version->parse($cpan_version)->numify;
@@ -795,7 +793,7 @@ sub mod_in_dist {
 	if ( $module =~ /$dist/ ) {
 
 		print BRIGHT_BLACK;
-		say "module - $module  -> in dist - $dist" if $self->verbose >= 1;
+		say STDERR "module - $module  -> in dist - $dist" if $self->verbose >= 1;
 		print CLEAR;
 
 		# add dist to output hash so we can get rind of cruff later

@@ -6,10 +6,10 @@ use warnings FATAL => 'all';
 
 use version;
 our $VERSION = '0.24';
-use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
+use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Data::Printer {caller_info => 1, colored => 1,};
+use Data::Printer { caller_info => 1, colored => 1, };
 
 # we are doing this so we can run from git during development
 # perl ~/GitHub/App-Midgen/script/midgen
@@ -30,11 +30,11 @@ my $json = JSON::Tiny->new;
 use File::Spec;
 use File::Slurp qw(read_file write_file);
 
-my $midgenrc = File::Spec->catfile($ENV{HOME}, '.midgenrc');
+my $midgenrc = File::Spec->catfile( $ENV{HOME}, '.midgenrc' );
 
 my $config;
-if (-e $midgenrc) {
-  $config = $json->decode(read_file($midgenrc));
+if ( -e $midgenrc ) {
+	$config = $json->decode( read_file($midgenrc) );
 }
 
 #######
@@ -54,20 +54,20 @@ my $zero         = $config->{zero} || 0;
 my $debug        = 0;
 my $write        = 0;
 GetOptions(
-  'verbose|v+'     => \$verbose,
-  'core|c!'        => \$core,
-  'dual_life|l!'   => \$dual_life,
-  'help|h|?'       => \$help,
-  'experimental|x' => \$experimental,
-  'format|f=s'     => \@format,
-  'quiet|q'        => \$quiet,
-  'zero|z!'        => \$zero,
-  'debug|d'        => sub {
-    $core    = 1;
-    $verbose = 3;
-    $debug   = 1;
-  },
-  'write|w' => \$write,
+	'verbose|v+'     => \$verbose,
+	'core|c!'        => \$core,
+	'dual_life|l!'   => \$dual_life,
+	'help|h|?'       => \$help,
+	'experimental|x' => \$experimental,
+	'format|f=s'     => \@format,
+	'quiet|q'        => \$quiet,
+	'zero|z!'        => \$zero,
+	'debug|d'        => sub {
+		$core    = 1;
+		$verbose = 3;
+		$debug   = 1;
+	},
+	'write|w' => \$write,
 ) or pod2usage(2);
 pod2usage(1) if $help;
 
@@ -82,14 +82,14 @@ if ($verbose > 0) {
 }
 
 my $midgen = App::Midgen->new(
-  core         => $core,
-  dual_life    => $dual_life,
-  verbose      => $verbose,
-  format       => $format[-1],
-  experimental => $experimental,
-  quiet        => $quiet,
-  zero         => $zero,
-  debug        => $debug,
+	core         => $core,
+	dual_life    => $dual_life,
+	verbose      => $verbose,
+	format       => $format[-1],
+	experimental => $experimental,
+	quiet        => $quiet,
+	zero         => $zero,
+	debug        => $debug,
 );
 
 p $midgen if $debug;
@@ -100,18 +100,17 @@ $midgen->run();
 # write config to ~/.midgenrc
 #######
 if ($write) {
-  my $midgenrc_data = $json->encode(
-    {
-      core      => $core,
-      dual_life => $dual_life,
-      format    => $format[-1],
-      quiet     => $quiet,
-      zero      => $zero,
-    }
-  );
+	my $midgenrc_data = $json->encode(
+		{   core      => $core,
+			dual_life => $dual_life,
+			format    => $format[-1],
+			quiet     => $quiet,
+			zero      => $zero,
+		}
+	);
 
-  p $midgenrc_data;
-  write_file($midgenrc, $midgenrc_data);
+	p $midgenrc_data;
+	write_file( $midgenrc, $midgenrc_data );
 }
 
 #######
@@ -182,6 +181,7 @@ By default we output to STDOUT in 'dsl' format, so you can check,
  midgen -f dzil		# Dist::Zilla
  midgen -f dist		# dist.ini
  midgen -f cpanfile	# cpanfile prereqs
+ midgen -f metajson # META.json
 
 =item B<--dual_life or -l>
 

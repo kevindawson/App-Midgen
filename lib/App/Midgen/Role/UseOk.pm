@@ -113,7 +113,7 @@ sub xtests_use_ok {
 	# if we found a module, process it with the correct catogery
 	if ( scalar @modules > 0 ) {
 
-		if ( $self->format eq 'cpanfile' ) {
+		if ( $self->format =~ /cpanfile|metajson/ ) {
 			# $self->xtest eq 'test_requires' -> t/
 			# $self->xtest eq 'test_develop' -> xt/
 			if ( $self->xtest eq 'test_requires' ) {
