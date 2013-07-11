@@ -22,13 +22,9 @@ sub _build_min_ver_fast {
 	eval("use Perl::MinimumVersion::Fast");
 	if ($EVAL_ERROR) {
 		use Perl::MinimumVersion;
-		# say 'false';
 		return FALSE;
 	} else {
-		# say 'true';
 		return TRUE;
-	} else {
-		return FALSE;
 	}
 }
 

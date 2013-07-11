@@ -75,10 +75,10 @@ pod2usage(1) if $help;
 # run App::Midgen
 #######
 
-if ($verbose > 0) {
-  say 'Running midgen v' . $VERSION;
-  say 'Stamped -> ' . gmstamp($BASETIME);
-  say 'Honouring $ENV{ANSI_COLORS_DISABLED}' if $ENV{ANSI_COLORS_DISABLED};
+if ( $verbose > 0 ) {
+	say 'Running midgen v' . $VERSION;
+	say 'Stamped -> ' . gmstamp($BASETIME);
+	say 'Honouring $ENV{ANSI_COLORS_DISABLED}' if $ENV{ANSI_COLORS_DISABLED};
 }
 
 my $midgen = App::Midgen->new(
@@ -116,10 +116,10 @@ if ($write) {
 #######
 # time and exit
 #######
-if ($verbose > 0) {
-  my $run_time = time - $BASETIME;
-  say 'I just spent ' . $run_time . 's doing all that, for you, enjoy';
-  say '__END__';
+if ( $verbose > 0 ) {
+	my $run_time = time - $BASETIME;
+	say 'I just spent ' . $run_time . 's doing all that, for you, enjoy';
+	say '__END__';
 }
 exit(0);
 
@@ -181,7 +181,7 @@ By default we output to STDOUT in 'dsl' format, so you can check,
  midgen -f dzil		# Dist::Zilla
  midgen -f dist		# dist.ini
  midgen -f cpanfile	# cpanfile prereqs
- midgen -f metajson # META.json
+ midgen -f metajson	# META.json
 
 =item B<--dual_life or -l>
 

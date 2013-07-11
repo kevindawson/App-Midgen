@@ -134,7 +134,7 @@ sub first_package_name {
 	catch {
 		$self->_set_distribution_name( $self->package_names->[0] );
 	};
-	say STDERR 'Package: ' . $self->distribution_name if $self->verbose;
+	say 'Package: ' . $self->distribution_name if $self->verbose;
 
 	return;
 }
@@ -640,7 +640,6 @@ sub remove_twins {
 						print $dum_name . ' => ' . $required_ref->{ $sorted_modules[ $n - 1 ] };
 						print BRIGHT_BLACK ' <-twins-> ' . $dee_name . ' => ' . $required_ref->{ $sorted_modules[$n] };
 						print CLEAR "\n";
-
 					}
 				}
 
@@ -748,14 +747,10 @@ sub get_module_version {
 				$cpan_version                           = $mod->{version_numified};
 				$found                                  = 1;
 				$self->{modules}{$module}{distribution} = $dist;
-
-				#				if ( $self->experimental ) {
 				$self->mod_in_dist(
 					$dist, $module, $require_type,
 					$mod->{version_numified}
 				) if $require_type;
-
-				#				}
 			}
 		}
 	}
@@ -793,7 +788,7 @@ sub mod_in_dist {
 	if ( $module =~ /$dist/ ) {
 
 		print BRIGHT_BLACK;
-		say STDERR "module - $module  -> in dist - $dist" if $self->verbose >= 1;
+		say "module - $module  -> in dist - $dist" if $self->verbose >= 1;
 		print CLEAR;
 
 		# add dist to output hash so we can get rind of cruff later
