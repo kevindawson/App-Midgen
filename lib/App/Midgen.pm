@@ -937,6 +937,7 @@ Twins E::F::G and E::F::H  have a parent E::F with same version number,
 =head1 CONFIGURATION AND ENVIRONMENT
 
 App::Midgen requires no configuration files or environment variables.
+We do honour $ENV{ANSI_COLORS_DISABLED}
 
 =head1 DEPENDENCIES
 
