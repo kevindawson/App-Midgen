@@ -169,7 +169,12 @@ sub footer_metajson {
     say NINE . '"url" : "https://github.com/.../' . $package_name . q{.git",};
     say NINE . '"web" : "https://github.com/.../' . $package_name . q{"};
     say SIX . '}';
-    say THREE . '}';
+    say THREE . '},';
+
+    say THREE . '"x_contributors" : [';
+    say SIX . '"brian d foy (ADOPTME) <brian.d.foy@gmail.com>",';
+    say SIX . '"Fred Bloggs <fred@bloggs.org>"';
+    say THREE . q{]};
   }
   else {
     say THREE . '}';
