@@ -30,8 +30,8 @@ BEGIN {
   use_ok('Data::Printer',        '0.35');
   use_ok('File::Slurp',          '9999.19');
   use_ok('File::Spec',           '3.4');
-  use_ok('Getopt::Long',         '2.4');
-  use_ok('JSON::Tiny',           '0.31');
+  use_ok('Getopt::Long',         '2.41');
+  use_ok('JSON::Tiny',           '0.32');
   use_ok('List::MoreUtils',      '0.33');
   use_ok('MetaCPAN::API',        '0.43');
   use_ok('Module::CoreList',     '2.92');
@@ -43,15 +43,15 @@ BEGIN {
   use_ok('Scalar::Util',         '1.27');
   use_ok('Term::ANSIColor',      '4.02');
   use_ok('Time::Stamp',          '1.3');
-  use_ok('Try::Tiny',            '0.12');
-  use_ok('Type::Tiny',           '0.008');
+  use_ok('Try::Tiny',            '0.16');
+  use_ok('Type::Tiny',           '0.014');
   use_ok('constant',             '1.27');
 #  use_ok('lib',                  '0.63');
   use_ok('version',              '0.9902');
 
-  use_ok('Test::CheckDeps', '0.004');
+  use_ok('Test::CheckDeps', '0.006');
   use_ok('Test::More',      '0.98');
-  use_ok('Test::Requires',  '0.06');
+  use_ok('Test::Requires',  '0.07');
 }
 
 diag("Testing App::Midgen v$App::Midgen::VERSION");
