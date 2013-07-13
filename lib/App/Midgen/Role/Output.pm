@@ -10,6 +10,7 @@ with qw(
 	App::Midgen::Role::Output::Dist
 	App::Midgen::Role::Output::CPANfile
 	App::Midgen::Role::Output::METAjson
+	App::Midgen::Role::Output::4ROR
 );
 requires qw( format distribution_name get_module_version verbose );
 
@@ -62,6 +63,9 @@ sub output_header {
 		when ('metajson') {
 			$self->header_metajson( $self->distribution_name );
 		}
+		when ('infile') {
+			$self->header_ror( $self->distribution_name );
+		}
 	}
 	return;
 }
@@ -97,6 +101,9 @@ sub output_main_body {
 		when ('metajson') {
 			$self->body_metajson( $title, $required_ref );
 		}
+		when ('infile') {
+			$self->body_ror( $title, $required_ref );
+		}
 	}
 
 	return;
@@ -130,6 +137,9 @@ sub output_footer {
 		}
 		when ('metajson') {
 			$self->footer_metajson( $self->distribution_name );
+		}
+		when ('infile') {
+			$self->footer_ror( $self->distribution_name );
 		}
 	}
 

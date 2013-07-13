@@ -78,6 +78,13 @@ has 'xtest' => (
 	},
 );
 
+has 'looking_infile' => (
+	is      => 'rwp',
+	isa     => Str,
+	lazy    => 1,
+	default => sub { },
+);
+
 no Moo::Role;
 
 1;

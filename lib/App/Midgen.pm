@@ -238,7 +238,8 @@ sub find_required_test_modules {
 sub _find_makefile_requires {
 	my $self     = shift;
 	my $filename = $_;
-	$self->_set_ppi_document( PPI::Document->new($filename) );
+#	$self->_set_looking_infile( $filename );
+#	$self->_set_ppi_document( PPI::Document->new($filename) );
 	my $is_script = 0;
 
 	given ($filename) {
@@ -263,7 +264,8 @@ sub _find_makefile_requires {
 			$self->min_version() if $is_script;
 		}
 	};
-
+	$self->_set_looking_infile( $filename );
+	$self->_set_ppi_document( PPI::Document->new($filename) );
 	my $prereqs = $self->scanner->scan_ppi_document( $self->ppi_document );
 	my @modules = $prereqs->required_modules;
 
@@ -345,7 +347,7 @@ sub _find_makefile_test_requires {
 	return if $filename !~ /[.]t|pm$/sxm;
 
 	say 'looking for test_requires in: ' . $filename if $self->verbose >= TWO;
-
+	$self->_set_looking_infile( $filename );
 	# Load a Document from a file and check use and require contents
 	$self->_set_ppi_document( PPI::Document->new($filename) );
 
@@ -433,6 +435,7 @@ sub _process_found_modules {
 
 		# lets keep track of how many times a module include is found
 		$self->{modules}{$module}{count} += 1;
+		push @{ $self->{modules}{$module}{infiles} }, $self->looking_infile();
 
 		# don't process already found modules
 		p $self->{modules}{$module}{location} if $self->debug;
