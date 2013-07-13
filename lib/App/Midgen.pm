@@ -134,7 +134,8 @@ sub first_package_name {
 	catch {
 		$self->_set_distribution_name( $self->package_names->[0] );
 	};
-	say 'Package: ' . $self->distribution_name if $self->verbose;
+	# I still want to see package name even though infile sets verbose = 0
+	say 'Package: ' . $self->distribution_name if $self->verbose or $self->format eq 'infile';
 
 	return;
 }
@@ -264,7 +265,11 @@ sub _find_makefile_requires {
 			$self->min_version() if $is_script;
 		}
 	};
-	$self->_set_looking_infile( $filename );
+
+	my $relative_dir = $File::Find::dir;
+	$relative_dir =~ s/$Working_Dir//;
+	$self->_set_looking_infile( File::Spec->catfile( $relative_dir, $filename ) );
+
 	$self->_set_ppi_document( PPI::Document->new($filename) );
 	my $prereqs = $self->scanner->scan_ppi_document( $self->ppi_document );
 	my @modules = $prereqs->required_modules;
@@ -347,7 +352,10 @@ sub _find_makefile_test_requires {
 	return if $filename !~ /[.]t|pm$/sxm;
 
 	say 'looking for test_requires in: ' . $filename if $self->verbose >= TWO;
-	$self->_set_looking_infile( $filename );
+
+	my $relative_dir = $File::Find::dir;
+	$relative_dir =~ s/$Working_Dir//;	
+	$self->_set_looking_infile( File::Spec->catfile( $relative_dir, $filename ) );
 	# Load a Document from a file and check use and require contents
 	$self->_set_ppi_document( PPI::Document->new($filename) );
 

@@ -45,7 +45,16 @@ has 'experimental' => (
 has 'format' => (
 	is  => 'ro',
 	isa => sub {
-		my $format = { dsl => 1, mi => 1, mb => 1, dzil => 1, dist => 1, cpanfile => 1, metajson => 1, infile => 1 };
+		my $format = {
+			dsl      => 1,
+			mi       => 1,
+			mb       => 1,
+			dzil     => 1,
+			dist     => 1,
+			cpanfile => 1,
+			metajson => 1,
+			infile   => 1
+		};
 		croak 'not a supported output format' unless defined $format->{ $_[0] };
 		return;
 	},
@@ -79,12 +88,15 @@ around [qw( debug verbose )] => sub {
 	my $self    = shift;
 	my $content = $self->$orig(@_);
 
-	if ( $self->quiet == 1 && $self->experimental == 1 ) {
+	if (   ( $self->quiet == 1 && $self->experimental == 1 )
+		|| ( $self->format eq 'infile' ) )
+	{
 		return 0;
 	} else {
 		return $content;
 	}
 };
+
 
 no Moo::Role;
 
