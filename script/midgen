@@ -182,6 +182,7 @@ By default we output to STDOUT in 'dsl' format, so you can check,
  midgen -f dist		# dist.ini
  midgen -f cpanfile	# cpanfile prereqs
  midgen -f metajson	# META.json
+ midgen -f infile	# show module in-files
 
 =item B<--dual_life or -l>
 
