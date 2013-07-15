@@ -88,7 +88,7 @@ around [qw( debug verbose )] => sub {
 	my $self    = shift;
 	my $content = $self->$orig(@_);
 
-	if (   ( $self->quiet == 1 && $self->experimental == 1 )
+	if (   ( $self->quiet == 1 && $self->experimental == 1 ) 
 		|| ( $self->format eq 'infile' ) )
 	{
 		return 0;
