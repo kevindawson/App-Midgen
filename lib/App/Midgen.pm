@@ -490,10 +490,20 @@ sub _store_modules {
 		}
 		default {
 			if ( $self->{modules}{$module}{corelist} ) {
-				$self->{$require_type}{$module} = colored( $version, 'bright_yellow' );
-				$self->{modules}{$module}{version}   = $version;
-				$self->{modules}{$module}{location}  = $require_type;
+
+				$self->{$require_type}{$module} = colored( $version, 'bright_yellow' )
+					if ( $self->dual_life || $self->core );
+				$self->{modules}{$module}{location} = $require_type
+					if ( $self->dual_life || $self->core );
+				$self->{modules}{$module}{version} = $version
+					if ( $self->dual_life || $self->core );
 				$self->{modules}{$module}{dual_life} = 1;
+
+
+#				$self->{$require_type}{$module} = colored( $version, 'bright_yellow' );
+#				$self->{modules}{$module}{version}   = $version;
+#				$self->{modules}{$module}{location}  = $require_type;
+#				$self->{modules}{$module}{dual_life} = 1;
 			} else {
 				$self->{$require_type}{$module} = colored( $version, 'yellow' );
 				$self->{$require_type}{$module} = colored( version->parse($version)->numify, 'yellow' )
