@@ -111,7 +111,7 @@ sub body_metajson {
           if $required_ref->{$module_name} !~ m/mcpan/;
 
       }
-      say NINE . '}';
+      say NINE . '},';
     }
     when ('test_develop') {
       say NINE . '"recommends" : {';
