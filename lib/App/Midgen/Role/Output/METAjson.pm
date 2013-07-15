@@ -77,7 +77,9 @@ sub body_metajson {
       $required_ref->{'perl'} = $App::Midgen::Min_Version;
 
       foreach my $module_name (sort keys %{$required_ref}) {
-        say TWELVE . "\"$module_name\" : \"$required_ref->{$module_name}\",";
+        say TWELVE . "\"$module_name\" : \"$required_ref->{$module_name}\","
+          if $required_ref->{$module_name} !~ m/mcpan/;
+
 
       }
       print NINE . '}';

@@ -239,8 +239,6 @@ sub find_required_test_modules {
 sub _find_makefile_requires {
 	my $self     = shift;
 	my $filename = $_;
-#	$self->_set_looking_infile( $filename );
-#	$self->_set_ppi_document( PPI::Document->new($filename) );
 	my $is_script = 0;
 
 	given ($filename) {
@@ -273,6 +271,10 @@ sub _find_makefile_requires {
 	$self->_set_ppi_document( PPI::Document->new($filename) );
 	my $prereqs = $self->scanner->scan_ppi_document( $self->ppi_document );
 	my @modules = $prereqs->required_modules;
+
+foreach my $mod_ver ( @modules ){
+	$self->{found_version}{$mod_ver} = $prereqs->requirements_for_module($mod_ver);
+}
 
 	$self->{skip_not_mcpan_stamp} = 0;
 
@@ -370,6 +372,10 @@ sub _find_makefile_test_requires {
 
 	p @modules if $self->debug;
 
+foreach my $mod_ver ( @modules ){
+	$self->{found_version}{$mod_ver} = $prereqs->requirements_for_module($mod_ver);
+}
+
 	if ( scalar @modules > 0 ) {
 		if ( $self->format =~ /cpanfile|metajson/ ) {
 			if ( $self->xtest eq 'test_requires' ) {
@@ -443,7 +449,7 @@ sub _process_found_modules {
 
 		# lets keep track of how many times a module include is found
 		$self->{modules}{$module}{count} += 1;
-		push @{ $self->{modules}{$module}{infiles} }, $self->looking_infile();
+		push @{ $self->{modules}{$module}{infiles} }, [ $self->looking_infile(), $self->{found_version}{$module} // 0 ];
 
 		# don't process already found modules
 		p $self->{modules}{$module}{location} if $self->debug;
@@ -484,10 +490,20 @@ sub _store_modules {
 		}
 		default {
 			if ( $self->{modules}{$module}{corelist} ) {
-				$self->{$require_type}{$module} = colored( $version, 'bright_yellow' );
-				$self->{modules}{$module}{version}   = $version;
-				$self->{modules}{$module}{location}  = $require_type;
+
+				$self->{$require_type}{$module} = colored( $version, 'bright_yellow' )
+					if ( $self->dual_life || $self->core );
+				$self->{modules}{$module}{location} = $require_type
+					if ( $self->dual_life || $self->core );
+				$self->{modules}{$module}{version} = $version
+					if ( $self->dual_life || $self->core );
 				$self->{modules}{$module}{dual_life} = 1;
+
+
+#				$self->{$require_type}{$module} = colored( $version, 'bright_yellow' );
+#				$self->{modules}{$module}{version}   = $version;
+#				$self->{modules}{$module}{location}  = $require_type;
+#				$self->{modules}{$module}{dual_life} = 1;
 			} else {
 				$self->{$require_type}{$module} = colored( $version, 'yellow' );
 				$self->{$require_type}{$module} = colored( version->parse($version)->numify, 'yellow' )
