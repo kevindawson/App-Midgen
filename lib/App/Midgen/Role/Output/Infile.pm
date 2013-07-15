@@ -11,12 +11,12 @@ no if $] > 5.017010, warnings => 'experimental::smartmatch';
 # use namespace::clean -except => 'meta';
 
 our $VERSION = '0.24';
-use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
+use English qw( -no_match_vars );
 local $OUTPUT_AUTOFLUSH = 1;
 
 use Term::ANSIColor qw( :constants colored );
 use Data::Printer {caller_info => 1, colored => 1,};
-use constant {BLANK => q{ }, NONE => q{}, THREE => 3, SEVEN => 7 };
+use constant {BLANK => q{ }, NONE => q{}, THREE => 3, EIGHT => 8};
 use File::Spec;
 
 #######
@@ -54,22 +54,24 @@ sub footer_infile {
       $pm_length = length $module_name;
     }
 
-    foreach my $foundin (sort @{$self->{modules}{$module_name}{infiles}}) {      if (length $foundin->[0] > $dir_length) {
+    foreach my $foundin (sort @{$self->{modules}{$module_name}{infiles}}) {
+      if (length $foundin->[0] > $dir_length) {
         $dir_length = length $foundin->[0];
       }
     }
 
   }
 
-  say "  -------" . "-" x $pm_length . "-" x $dir_length . "-" x SEVEN;
+  say "  " . "-" x EIGHT . "-" x $pm_length . "-" x $dir_length . "-" x EIGHT;
 
-  printf " | %-*s | %-*s | %-*s |\n", $pm_length, 'Module', $dir_length, 'Found-in', SEVEN, 'version';
-  say "  -------" . "-" x $pm_length . "-" x $dir_length . "-" x SEVEN;
+  printf " | %-*s | %-*s | %-*s |\n", $pm_length, 'Module', EIGHT, 'Version ',
+    $dir_length, 'Found in';
+  say "  " . "-" x EIGHT . "-" x $pm_length . "-" x $dir_length . "-" x EIGHT;
 
 
   foreach my $module_name (sort keys %{$self->{modules}}) {
 
-	# honnor options dual-life and core module display
+    # honnor options dual-life and core module display
     if ($self->core) {
 
       # do nothing
@@ -85,12 +87,12 @@ sub footer_infile {
 
 
     foreach my $foundin (sort @{$self->{modules}{$module_name}{infiles}}) {
-      printf " | %-*s | %-*s | %-*s |\n", $pm_length, $module_name, $dir_length,
-        $foundin->[0], SEVEN, $foundin->[1] ;
+      printf " | %-*s | %-*s | %-*s |\n", $pm_length, $module_name, EIGHT,
+        $foundin->[1], $dir_length, $foundin->[0],;
     }
   }
 
-  say "  -------" . "-" x $pm_length . "-" x $dir_length . "-" x SEVEN;
+  say "  " . "-" x EIGHT . "-" x $pm_length . "-" x $dir_length . "-" x EIGHT;
 
   print qq{\n};
 
