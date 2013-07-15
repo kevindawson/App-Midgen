@@ -16,7 +16,7 @@ local $OUTPUT_AUTOFLUSH = 1;
 
 use Term::ANSIColor qw( :constants colored );
 use Data::Printer {caller_info => 1, colored => 1,};
-use constant {BLANK => q{ }, NONE => q{}, THREE => 3,};
+use constant {BLANK => q{ }, NONE => q{}, THREE => 3, SEVEN => 7 };
 use File::Spec;
 
 #######
@@ -43,6 +43,8 @@ sub body_infile {
 sub footer_infile {
   my $self = shift;
 
+#p $self->{modules};
+
   # Let's work out our padding
   my $pm_length  = 0;
   my $dir_length = 0;
@@ -52,17 +54,17 @@ sub footer_infile {
       $pm_length = length $module_name;
     }
 
-    foreach my $foundin (sort @{$self->{modules}{$module_name}{infiles}}) {
-      if (length $foundin > $dir_length) {
-        $dir_length = length $foundin;
+    foreach my $foundin (sort @{$self->{modules}{$module_name}{infiles}}) {      if (length $foundin->[0] > $dir_length) {
+        $dir_length = length $foundin->[0];
       }
     }
 
   }
 
-  say "  -----" . "-" x $pm_length . "-" x $dir_length;
-  printf " | %-*s | %-*s |\n", $pm_length, 'Module', $dir_length, 'Found-in';
-  say "  -----" . "-" x $pm_length . "-" x $dir_length;
+  say "  -------" . "-" x $pm_length . "-" x $dir_length . "-" x SEVEN;
+
+  printf " | %-*s | %-*s | %-*s |\n", $pm_length, 'Module', $dir_length, 'Found-in', SEVEN, 'version';
+  say "  -------" . "-" x $pm_length . "-" x $dir_length . "-" x SEVEN;
 
 
   foreach my $module_name (sort keys %{$self->{modules}}) {
@@ -83,12 +85,13 @@ sub footer_infile {
 
 
     foreach my $foundin (sort @{$self->{modules}{$module_name}{infiles}}) {
-      printf " | %-*s | %-*s |\n", $pm_length, $module_name, $dir_length,
-        $foundin;
+      printf " | %-*s | %-*s | %-*s |\n", $pm_length, $module_name, $dir_length,
+        $foundin->[0], SEVEN, $foundin->[1] ;
     }
   }
 
-  say "  -----" . "-" x $pm_length . "-" x $dir_length;
+  say "  -------" . "-" x $pm_length . "-" x $dir_length . "-" x SEVEN;
+
   print qq{\n};
 
   return;
