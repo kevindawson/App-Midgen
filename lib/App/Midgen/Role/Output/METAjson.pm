@@ -200,7 +200,7 @@ __END__
 
 =head1 NAME
 
-App::Midgen::Role::Output::METAjson - Format the Output - META.json, used by L<App::Midgen>
+App::Midgen::Role::Output::METAjson - Output Format - META.json, used by L<App::Midgen>
 
 =head1 VERSION
 
