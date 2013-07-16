@@ -111,7 +111,7 @@ __END__
 
 =head1 NAME
 
-App::Midgen::Role::Output::Infile; - A collection of output orientated methods used by L<App::Midgen>
+App::Midgen::Role::Output::Infile; - Show Modules and files they were found in, used by L<App::Midgen>
 
 =head1 VERSION
 
