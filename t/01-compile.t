@@ -15,7 +15,7 @@ BEGIN {
   use_ok('App::Midgen::Role::AttributesX');
   use_ok('App::Midgen::Role::TestRequires');
   use_ok('App::Midgen::Role::UseOk');
-  use_ok('App::Midgen::Role::ExtraTests');
+  use_ok('App::Midgen::Role::Eval');
   use_ok('App::Midgen::Role::FindMinVersion');
   use_ok('App::Midgen::Role::Output');
   use_ok('App::Midgen::Role::Output::MIdsl');
