@@ -8,7 +8,6 @@ with qw(
 	App::Midgen::Role::AttributesX
 	App::Midgen::Role::TestRequires
 	App::Midgen::Role::UseOk
-	App::Midgen::Role::ExtraTests
 	App::Midgen::Role::Eval
 	App::Midgen::Role::FindMinVersion
 	App::Midgen::Role::Output
