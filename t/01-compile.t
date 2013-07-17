@@ -6,7 +6,7 @@ use warnings FATAL => 'all';
 use English qw( -no_match_vars );    # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Test::More tests => 40;
+use Test::More tests => 42;
 
 BEGIN {
   use_ok('App::Midgen');
@@ -24,6 +24,8 @@ BEGIN {
   use_ok('App::Midgen::Role::Output::Dzil');
   use_ok('App::Midgen::Role::Output::Dist');
   use_ok('App::Midgen::Role::Output::CPANfile');
+  use_ok('App::Midgen::Role::Output::METAjson');
+  use_ok('App::Midgen::Role::Output::Infile');
 
   use_ok('Carp',                 '1.26');
   use_ok('Cwd',                  '3.4');
