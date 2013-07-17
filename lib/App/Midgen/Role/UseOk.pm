@@ -10,7 +10,7 @@ use Data::Printer { caller_info => 1, colored => 1, };
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.25_05';
+our $VERSION = '0.25_06';
 use constant { BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3, };
 
 
@@ -114,8 +114,6 @@ sub xtests_use_ok {
 	if ( scalar @modules > 0 ) {
 
 		if ( $self->format =~ /cpanfile|metajson/ ) {
-			# $self->xtest eq 'test_requires' -> t/
-			# $self->xtest eq 'test_develop' -> xt/
 			if ( $self->xtest eq 'test_requires' ) {
 				$self->_process_found_modules( 'test_requires', \@modules );
 			} elsif ( $self->develop && $self->xtest eq 'test_develop' ) {
@@ -145,7 +143,7 @@ for methods in use_ok in BEGIN blocks, used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.25_05
+version: 0.25_06
 
 =head1 METHODS
 

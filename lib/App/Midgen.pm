@@ -9,6 +9,7 @@ with qw(
 	App::Midgen::Role::TestRequires
 	App::Midgen::Role::UseOk
 	App::Midgen::Role::ExtraTests
+	App::Midgen::Role::Eval
 	App::Midgen::Role::FindMinVersion
 	App::Midgen::Role::Output
 );
@@ -19,7 +20,7 @@ no if $] > 5.017010, warnings => 'experimental::smartmatch';
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.25_05';
+our $VERSION = '0.25_06';
 use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -354,7 +355,7 @@ sub _find_makefile_test_requires {
 	return if $filename !~ /[.]t|pm$/sxm;
 
 	say 'looking for test_requires in: ' . $filename if $self->verbose >= TWO;
-
+# p $filename;
 	my $relative_dir = $File::Find::dir;
 	$relative_dir =~ s/$Working_Dir//;	
 	$self->_set_looking_infile( File::Spec->catfile( $relative_dir, $filename ) );
@@ -366,6 +367,9 @@ sub _find_makefile_test_requires {
 
 	# do extra test early check for use_ok in BEGIN blocks before hand
 	$self->xtests_use_ok();
+
+	# do extra test early to identify eval befroe hand
+	$self->_xtests_eval();
 
 	my $prereqs = $self->scanner->scan_ppi_document( $self->ppi_document );
 	my @modules = $prereqs->required_modules;
@@ -388,8 +392,9 @@ foreach my $mod_ver ( @modules ){
 		}
 	}
 
-	$self->_xtests_in_single_quote() if $self->experimental;
-	$self->_xtests_in_double_quote() if $self->experimental;
+#	$self->_xtests_in_single_quote() if $self->experimental;
+#	$self->_xtests_in_double_quote() if $self->experimental;
+#	$self->_xtests_eval();# if $self->experimental;
 
 	return;
 }
@@ -868,7 +873,7 @@ App::Midgen - Check B<requires> & B<test_requires> of your package for CPAN incl
 
 =head1 VERSION
 
-This document describes App::Midgen version: 0.25_05
+This document describes App::Midgen version: 0.25_06
 
 =head1 SYNOPSIS
 

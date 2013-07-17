@@ -10,7 +10,7 @@ no if $] > 5.017010, warnings => 'experimental::smartmatch';
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.25_05';
+our $VERSION = '0.25_06';
 use English qw( -no_match_vars );
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -43,7 +43,7 @@ sub body_infile {
 sub footer_infile {
   my $self = shift;
 
-#p $self->{modules};
+p $self->{modules};
 
   # Let's work out our padding
   my $pm_length  = 0;
@@ -111,11 +111,12 @@ __END__
 
 =head1 NAME
 
-App::Midgen::Role::Output::Infile; - Show Modules and files they were found in, used by L<App::Midgen>
+App::Midgen::Role::Output::Infile - Modules and files they were found in,
+used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.25_05
+version: 0.25_06
 
 =head1 DESCRIPTION
 
