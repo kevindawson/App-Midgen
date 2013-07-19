@@ -1,13 +1,13 @@
 Revision history for App-Midgen
 
-0.25_07 2013-07-18
+0.25_08 2013-07-18
  - Add EXE_FILES to dzil output format
  - use rwp as and where to increase readability
  - Add require Class::XSAccessor if can_cc for Moo
  - Fix min-version status, opps it was back to front
  - Add output format METAjson
  - Add output format infile
- - Update Eval scanner
+ - Update Eval scanner to take four
 
 0.24 2013-06-03
  - fix duplicate package name issue
