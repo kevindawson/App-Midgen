@@ -29,65 +29,217 @@ sub _xtests_eval {
   #
   my @modules;
   my @version_strings;
-  my @chunks
-    = map { [$_->schildren] }
-    grep  { $_->child(0)->literal =~ m{\A(?:eval)\z} }
-    grep  { $_->child(0)->isa('PPI::Token::Word') }
-    @{$self->ppi_document->find('PPI::Statement') || []};
+  try {
+    my @chunks
+      = map { [$_->schildren] }
+      grep  { $_->child(0)->literal =~ m{\A(?:eval)\z} }
+      grep  { $_->child(0)->isa('PPI::Token::Word') }
+      @{$self->ppi_document->find('PPI::Statement') || []};
 
-  foreach my $hunk (@chunks) {
+    foreach my $hunk (@chunks) {
 
-    if (
-      grep {
-             $_->isa('PPI::Token::Quote::Double')
-          || $_->isa('PPI::Token::Quote::Single')
-      } @$hunk
-      )
-    {
+      if (
+        grep {
+               $_->isa('PPI::Token::Quote::Double')
+            || $_->isa('PPI::Token::Quote::Single')
+            || $_->isa('PPI::Structure::Block')
+        } @$hunk
+        )
+      {
 
-      # hack for List
-      my @hunkdata = @$hunk;
-      foreach my $element (@hunkdata) {
-        if ( $element->isa('PPI::Token::Quote::Double')
-          || $element->isa('PPI::Token::Quote::Single'))
-        {
+        # hack for List
+        my @hunkdata = @$hunk;
+        foreach my $element (@hunkdata) {
+          if ( $element->isa('PPI::Token::Quote::Double')
+            || $element->isa('PPI::Token::Quote::Single'))
+          {
 
-          my $eval_line = $element->content;
-          $eval_line =~ s/(?:'|"|{|})//g;
-          my @eval_includes = split /;/, $eval_line;
+            my $eval_line = $element->content;
+            $eval_line =~ s/(?:'|"|{|})//g;
+            my @eval_includes = split /;/, $eval_line;
 
-          foreach my $eval_include (@eval_includes) {
+            foreach my $eval_include (@eval_includes) {
 
-            if ( $eval_include =~ /::/
-              && $eval_include =~ /^\s*[use|require|no]/)
-            {
+              if ($eval_include =~ /^\s*[use|require|no]/) {
 
-              $eval_include =~ s/^\s*(?:use|require|no)\s*//;
+                $eval_include =~ s/^\s*(?:use|require|no)\s*//;
 
-              my $module_name = $eval_include;
-              $module_name =~ s/(?:\s[\s|\w|\n|.|;]+)$//;
-              $module_name =~ s/\s+(?:[\$|\w|\n]+)$//;
-              $module_name =~ s/\s+$//;
-              push @modules, $module_name;
+                my $module_name = $eval_include;
+                $module_name =~ s/(?:\s[\s|\w|\n|.|;]+)$//;
+                $module_name =~ s/\s+(?:[\$|\w|\n]+)$//;
+                $module_name =~ s/\s+$//;
+                push @modules, $module_name;
 
-              my $version_number = $eval_include;
-              $version_number =~ s/$module_name\s*//;
-              $version_number =~ s/\s*$//;
-              $version_number =~ s/[A-Z_a-z]|\s|\$|s|:|;//g;
+                my $version_number = $eval_include;
+                $version_number =~ s/$module_name\s*//;
+                $version_number =~ s/\s*$//;
+                $version_number =~ s/[A-Z_a-z]|\s|\$|s|:|;//g;
 
-              try {
-                push @version_strings, $version_number
-                  if version->parse($version_number)->is_lax;
+                try {
+                  push @version_strings, $version_number
+                    if version->parse($version_number)->is_lax;
+                }
+                catch {
+                  push @version_strings, 0 if $_;
+                };
               }
-              catch {
-                push @version_strings, 0 if $_;
-              };
             }
           }
         }
+
+        foreach my $element_block (@hunkdata) {
+          if ($element_block->isa('PPI::Structure::Block')) {
+
+            my @children = $element_block->children;
+
+            foreach my $child_element (@children) {
+              if ($child_element->isa('PPI::Statement::Include')) {
+
+                my $eval_line = $child_element->content;
+                my @eval_includes = split /;/, $eval_line;
+
+                foreach my $eval_include (@eval_includes) {
+
+                  if ($eval_include =~ /^\s*[use|require|no]/) {
+
+                    $eval_include =~ s/^\s*(?:use|require|no)\s*//;
+
+                    my $module_name = $eval_include;
+                    $module_name =~ s/(?:\s[\s|\w|\n|.|;]+)$//;
+                    $module_name =~ s/\s+(?:[\$|\w|\n]+)$//;
+                    $module_name =~ s/\s+$//;
+                    push @modules, $module_name;
+
+                    my $version_number = $eval_include;
+                    $version_number =~ s/$module_name\s*//;
+                    $version_number =~ s/\s*$//;
+                    $version_number =~ s/[A-Z_a-z]|\s|\$|s|:|;//g;
+
+                    try {
+                      push @version_strings, $version_number
+                        if version->parse($version_number)->is_lax;
+                    }
+                    catch {
+                      push @version_strings, 0 if $_;
+                    };
+                  }
+
+                }
+              }
+            }
+          }
+        }
+
       }
     }
-  }
+  };
+
+
+  try {
+    my @chunk2
+      = map { [$_->schildren] }
+      grep  { $_->child(6)->literal =~ m{\A(?:eval)\z} }
+      grep  { $_->child(6)->isa('PPI::Token::Word') }
+      @{$self->ppi_document->find('PPI::Statement::Variable') || []};
+
+    foreach my $hunk2 (@chunk2) {
+
+      if (
+        grep {
+               $_->isa('PPI::Token::Quote::Double')
+            || $_->isa('PPI::Token::Quote::Single')
+            || $_->isa('PPI::Structure::Block')
+        } @$hunk2
+        )
+      {
+
+        # hack for List
+        my @hunkdata = @$hunk2;
+        foreach my $element (@hunkdata) {
+          if ( $element->isa('PPI::Token::Quote::Double')
+            || $element->isa('PPI::Token::Quote::Single'))
+          {
+
+            my $eval_line = $element->content;
+            $eval_line =~ s/(?:'|"|{|})//g;
+            my @eval_includes = split /;/, $eval_line;
+
+            foreach my $eval_include (@eval_includes) {
+
+              if ($eval_include =~ /^\s*[use|require|no]/) {
+
+                $eval_include =~ s/^\s*(?:use|require|no)\s*//;
+
+                my $module_name = $eval_include;
+                $module_name =~ s/(?:\s[\s|\w|\n|.|;]+)$//;
+                $module_name =~ s/\s+(?:[\$|\w|\n]+)$//;
+                $module_name =~ s/\s+$//;
+                push @modules, $module_name;
+
+                my $version_number = $eval_include;
+                $version_number =~ s/$module_name\s*//;
+                $version_number =~ s/\s*$//;
+                $version_number =~ s/[A-Z_a-z]|\s|\$|s|:|;//g;
+
+                try {
+                  push @version_strings, $version_number
+                    if version->parse($version_number)->is_lax;
+                }
+                catch {
+                  push @version_strings, 0 if $_;
+                };
+              }
+            }
+          }
+        }
+
+        foreach my $element_block (@hunkdata) {
+          if ($element_block->isa('PPI::Structure::Block')) {
+
+            my @children = $element_block->children;
+
+            foreach my $child_element (@children) {
+              if ($child_element->isa('PPI::Statement::Include')) {
+
+                my $eval_line = $child_element->content;
+                my @eval_includes = split /;/, $eval_line;
+
+                foreach my $eval_include (@eval_includes) {
+
+                  if ($eval_include =~ /^\s*[use|require|no]/) {
+
+                    $eval_include =~ s/^\s*(?:use|require|no)\s*//;
+
+                    my $module_name = $eval_include;
+                    $module_name =~ s/(?:\s[\s|\w|\n|.|;]+)$//;
+                    $module_name =~ s/\s+(?:[\$|\w|\n]+)$//;
+                    $module_name =~ s/\s+$//;
+                    push @modules, $module_name;
+
+                    my $version_number = $eval_include;
+                    $version_number =~ s/$module_name\s*//;
+                    $version_number =~ s/\s*$//;
+                    $version_number =~ s/[A-Z_a-z]|\s|\$|s|:|;//g;
+
+                    try {
+                      push @version_strings, $version_number
+                        if version->parse($version_number)->is_lax;
+                    }
+                    catch {
+                      push @version_strings, 0 if $_;
+                    };
+                  }
+
+                }
+              }
+            }
+          }
+        }
+
+      }
+    }
+  };
+
 
   p @modules         if $self->debug;
   p @version_strings if $self->debug;

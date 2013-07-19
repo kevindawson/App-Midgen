@@ -47,7 +47,7 @@ sub xtests_test_requires {
 		grep { $_->child(0)->literal =~ m{\A(?:use)\z} }
 		grep { $_->child(0)->isa('PPI::Token::Word') } @{ $self->ppi_document->find('PPI::Statement::Include') || [] };
 
-	#  p @chunks;
+# p @chunks;
 
 	# 0    PPI::Token::Word  	'use'
 	# 1    PPI::Token::Word  	'Test::Requires'
