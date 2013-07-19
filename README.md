@@ -1,6 +1,8 @@
 App::Midgen   [![Build Status](https://travis-ci.org/kevindawson/App-Midgen.png?branch=master)](https://travis-ci.org/kevindawson/App-Midgen)
 ==========
 
+[Bloggs](http://kevindawson.github.io/bowtie)
+
 Generate or Check the 'requires' and 'test requires' for Makefile.PL
 
 This is an aid to show you a packages module requirements by scanning the package, 
@@ -13,7 +15,7 @@ This enables you to see which modules you have used,
 
 All output goes to STDOUT, so you can use it as you see fit.
 
-### Version 0.21
+### Version 0.26
 
 ## Synopsis
 
