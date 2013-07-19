@@ -10,7 +10,7 @@ requires qw( experimental format );
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.25_08';
+our $VERSION = '0.25_09';
 use Carp;
 
 #######
@@ -101,7 +101,7 @@ App::Midgen::Role::Attributes - Package Attributes used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.25_08
+version: 0.25_09
 
 =head1 METHODS
 

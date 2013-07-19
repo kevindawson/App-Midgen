@@ -8,6 +8,7 @@ Revision history for App-Midgen
  - Add output format METAjson
  - Add output format infile
  - Update Eval scanner to take four
+ - Update Test-Requires scanner to take two
 
 0.24 2013-06-03
  - fix duplicate package name issue
