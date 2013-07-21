@@ -9,6 +9,7 @@ Revision history for App-Midgen
  - Add output format infile
  - Update Eval scanner to take four
  - Update Test-Requires scanner to take two
+ - use can_xs instead of can_cc ribasushi++
 
 0.24 2013-06-03
  - fix duplicate package name issue

@@ -7,7 +7,7 @@ perl_version 5.010001
 
 requires Carp                       1.26
 requires Cwd                        3.4
-requires Class::XSAccessor          1.18 if can_cc
+requires Class::XSAccessor          1.18 if can_xs
 requires Data::Printer              0.35
 requires File::Slurp                9999.19
 requires File::Spec                 3.4
@@ -18,9 +18,9 @@ requires MetaCPAN::API              0.43
 requires Module::CoreList           2.92
 requires Moo                        1.003
 requires PPI                        1.215
-requires PPI::XS                    0.902 if can_cc
+requires PPI::XS                    0.902 if can_xs
 requires Perl::MinimumVersion       1.32
-requires Perl::MinimumVersion::Fast 0.1 if can_cc
+requires Perl::MinimumVersion::Fast 0.1 if can_xs
 requires Perl::PrereqScanner        1.016
 requires Pod::Usage                 1.63
 requires Scalar::Util               1.27
