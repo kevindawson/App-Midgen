@@ -193,11 +193,11 @@ types, be that mcpan, dual-life or added distribution.
 
 =over 4
 
-=item * output_header 
+=item * output_header
 
-=item * output_main_body 
+=item * output_main_body
 
-=item * output_footer 
+=item * output_footer
 
 =item * no_index
 

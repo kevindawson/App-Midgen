@@ -356,7 +356,7 @@ sub _find_makefile_test_requires {
 	say 'looking for test_requires in: ' . $filename if $self->verbose >= TWO;
 # p $filename;
 	my $relative_dir = $File::Find::dir;
-	$relative_dir =~ s/$Working_Dir//;	
+	$relative_dir =~ s/$Working_Dir//;
 	$self->_set_looking_infile( File::Spec->catfile( $relative_dir, $filename ) );
 	# Load a Document from a file and check use and require contents
 	$self->_set_ppi_document( PPI::Document->new($filename) );

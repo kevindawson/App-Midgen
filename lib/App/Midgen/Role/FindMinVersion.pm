@@ -18,15 +18,18 @@ sub _build_min_ver_fast {
   my $self = shift;
 
   try {
-    eval("use Perl::MinimumVersion::Fast");
+    eval "use Perl::MinimumVersion::Fast";
     if ($EVAL_ERROR) {
       use Perl::MinimumVersion;
+say 'False';
       return FALSE;
     }
     else {
+say 'True';
       return TRUE;
     }
   };
+  return;
 }
 
 #######
@@ -109,7 +112,7 @@ in a module or script and updating C<$App::Midgen::Min_Version> accordingly.
 
 Used as a flag to indicate which of the following is install
 
-  TRUE ->  L<Perl::MinimumVersion::Fast> 
+  TRUE ->  L<Perl::MinimumVersion::Fast>
   FALSE -> L<Perl::MinimumVersion>
 
 =back
