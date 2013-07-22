@@ -1,6 +1,6 @@
 Revision history for App-Midgen
 
-0.25_09 2013-07-18
+0.25_10 2013-07-18
  - Add EXE_FILES to dzil output format
  - use rwp as and where to increase readability
  - Add require Class::XSAccessor if can_cc for Moo
@@ -10,6 +10,7 @@ Revision history for App-Midgen
  - Update Eval scanner to take four
  - Update Test-Requires scanner to take two
  - use can_xs instead of can_cc ribasushi++
+ - start of expermintal only displaying a module once 
 
 0.24 2013-06-03
  - fix duplicate package name issue
