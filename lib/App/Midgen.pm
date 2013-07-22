@@ -57,9 +57,9 @@ sub run {
 	$self->output_header();
 
 	$self->find_required_modules();
-	$self->find_required_test_modules();
+#	$self->find_required_test_modules();
 
-	p $self->{modules} if ( $self->verbose == THREE );
+	p $self->{modules} if ( $self->verbose == TWO );
 
 	$self->remove_noisy_children( $self->{package_requires} )
 		if $self->experimental;
@@ -69,6 +69,8 @@ sub run {
 	# Run a second time if we found any twins, this will sort out twins and triplets etc
 	$self->remove_noisy_children( $self->{package_requires} )
 		if $self->found_twins;
+
+	$self->find_required_test_modules();
 
 	# Now we have switched to MetaCPAN-Api we can hunt for noisy children in test requires
 	if ( $self->experimental ) {
@@ -83,6 +85,21 @@ sub run {
 			}
 		}
 		p $self->{test_requires} if $self->debug;
+
+## ToDo look at resolving noisy children across types found
+#		p $self->{recommends} if $self->debug;
+#		$self->remove_noisy_children( $self->{recommends} );
+#		foreach my $module ( keys %{ $self->{recommends} } ) {
+#			if ( $self->{package_requires}{$module} ) {
+#				warn $module if $self->debug;
+#				try {
+#					delete $self->{recommends}{$module};
+#				};
+#			}
+#		}
+#		p $self->{recommends} if $self->debug;
+
+
 	}
 
 	$self->output_main_body( 'requires',      $self->{package_requires} );
@@ -92,6 +109,8 @@ sub run {
 		if $self->develop;
 
 	$self->output_footer();
+
+#	p $self->{modules};
 
 	return;
 }
@@ -582,7 +601,7 @@ sub remove_noisy_children {
 
 				# as we only do this against -x, why not be extra vigilant
 				$valied_seperation = THREE
-					if $parent_name =~ /^Dist::Zilla|Moose|Mouse/;
+					if $parent_name =~ /^Dist::Zilla|Moose|MooseX|Moo|Mouse/;
 
 				# Checking for one degree of separation
 				# ie A::B -> A::B::C is ok but A::B::C::D is not
@@ -602,6 +621,12 @@ sub remove_noisy_children {
 						try {
 							delete $required_ref->{$child_name};
 							splice @sorted_modules, $inner_index, 1;
+
+							unless ( $self->{modules}{$parent_name} ){
+							$self->{modules}{$parent_name}{location} = 'expermental';
+							$self->{modules}{$parent_name}{version}  = $required_ref->{$parent_name};
+							$self->{modules}{$parent_name}{count} += 1;
+							}
 						};
 						p @sorted_modules if $self->debug;
 
