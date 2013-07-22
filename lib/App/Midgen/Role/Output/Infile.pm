@@ -2,8 +2,8 @@ package App::Midgen::Role::Output::Infile;
 
 use v5.10;
 use Moo::Role;
-requires qw( core dual_life );
-
+requires qw( core dual_life debug );
+use Try::Tiny;
 # turn off experimental warnings
 no if $] > 5.017010, warnings => 'experimental::smartmatch';
 
@@ -43,7 +43,7 @@ sub body_infile {
 sub footer_infile {
   my $self = shift;
 
-#p $self->{modules};
+  p $self->{modules} if $self->debug;
 
   # Let's work out our padding
   my $pm_length  = 0;
@@ -53,12 +53,13 @@ sub footer_infile {
     if (length $module_name > $pm_length) {
       $pm_length = length $module_name;
     }
-
+	try {
     foreach my $foundin (sort @{$self->{modules}{$module_name}{infiles}}) {
       if (length $foundin->[0] > $dir_length) {
         $dir_length = length $foundin->[0];
       }
     }
+	};
 
   }
 
@@ -85,11 +86,12 @@ sub footer_infile {
       next if $self->{modules}{$module_name}{corelist};
     }
 
-
+	try {
     foreach my $foundin (sort @{$self->{modules}{$module_name}{infiles}}) {
       printf " | %-*s | %-*s | %-*s |\n", $pm_length, $module_name, EIGHT,
         $foundin->[1], $dir_length, $foundin->[0],;
     }
+	};
   }
 
   say "  " . "-" x EIGHT . "-" x $pm_length . "-" x $dir_length . "-" x EIGHT;
