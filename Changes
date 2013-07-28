@@ -1,6 +1,6 @@
 Revision history for App-Midgen
 
-0.25_10 2013-07-18
+0.26 2013-07-28
  - Add EXE_FILES to dzil output format
  - use rwp as and where to increase readability
  - Add require Class::XSAccessor if can_cc for Moo
