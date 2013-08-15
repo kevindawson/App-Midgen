@@ -17,6 +17,7 @@ All output goes to STDOUT, so you can use it as you see fit.
 
 ### Version 0.26
 
+
 ## Synopsis
 
 Change to the root of the package you want to scan and run
