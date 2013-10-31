@@ -251,7 +251,8 @@ See L<App::Midgen>
 
 =head1 LICENSE
 
-See L<App::Midgen>
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
 
 =cut
 

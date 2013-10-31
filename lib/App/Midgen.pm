@@ -1052,7 +1052,7 @@ Copyright E<copy> 2013 the App:Midgen L</AUTHOR> and L</CONTRIBUTORS>
 =head1 LICENSE
 
 This program is free software; you can redistribute it and/or modify
- it under the same terms as Perl 5 itself.
+it under the same terms as Perl 5 itself.
 
 =head1 SEE ALSO
 
