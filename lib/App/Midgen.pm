@@ -339,7 +339,7 @@ sub _is_perlfile {
 	if ($ppi_tc) {
 
 		# check first token-comment for a she-bang
-		$a_pl_file = 1 if $ppi_tc->[0]->content =~ m/^#!.+perl.*$/;
+		$a_pl_file = 1 if $ppi_tc->[0]->content =~ m/^#!.*perl.*$/;
 	}
 
 	if ( $self->ppi_document->find('PPI::Statement::Package') || $a_pl_file ) {
