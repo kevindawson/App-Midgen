@@ -1,6 +1,7 @@
 package App::Midgen::Role::Options;
 
 use v5.10;
+
 use Types::Standard qw( Bool Int );
 use Moo::Role;
 

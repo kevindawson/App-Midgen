@@ -32,7 +32,7 @@ sub _xtests_eval {
   try {
     my @chunks
       = map { [$_->schildren] }
-      grep  { $_->child(0)->literal =~ m{\A(?:eval)\z} }
+      grep  { $_->child(0)->literal =~ m{\A(?:eval|try)\z} }
       grep  { $_->child(0)->isa('PPI::Token::Word') }
       @{$self->ppi_document->find('PPI::Statement') || []};
 
@@ -138,7 +138,7 @@ sub _xtests_eval {
   try {
     my @chunk2
       = map { [$_->schildren] }
-      grep  { $_->child(6)->literal =~ m{\A(?:eval)\z} }
+      grep  { $_->child(6)->literal =~ m{\A(?:eval|try)\z} }
       grep  { $_->child(6)->isa('PPI::Token::Word') }
       @{$self->ppi_document->find('PPI::Statement::Variable') || []};
 
