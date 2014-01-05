@@ -5,7 +5,7 @@ use Moo::Role;
 requires qw( ppi_document debug format xtest _process_found_modules develop );
 
 use PPI;
-use Data::Printer; # caller_info => 1;
+use Data::Printer;    # caller_info => 1;
 use Try::Tiny;
 
 use constant {BLANK => q{ }, TRUE => 1, FALSE => 0, NONE => q{}, TWO => 2,
@@ -22,42 +22,10 @@ sub xtests_use_module {
 
 
 # bug out if there is no Include for Module::Runtime found
-return if $self->_is_module_runtime() eq FALSE;
+	return if $self->_is_module_runtime() eq FALSE;
 
-=begin  BlockComment  # BlockCommentNo_1
+	say 'Option 1: $q = use_module( M::N )...';
 
-#	p $ppi_doc;
-	my $module_runtime_include_found = FALSE;
-
-	#test for module_ryntime
-
-	my $includes = $self->ppi_document->find('PPI::Statement::Include');
-	if ($includes) {
-		foreach my $include (@{$includes}) {
-			next if $include->type eq 'no';
-			if (not $include->pragma) {
-				my $module = $include->module;
-#				p $module;
-				if ($module eq 'Module::Runtime') {
-					$module_runtime_include_found = TRUE;
-				}
-			}
-		}
-	}
-
-#	p $module_runtime_include_found;
-	return if $module_runtime_include_found eq FALSE;
-#	say 'checking for use_module';
-
-=end    BlockComment  # BlockCommentNo_1
-
-=cut
-
-
-
-
-say 'Option 1';
-try {
 #
 # $bi = use_module("Math::BigInt", 1.31)->new("1_234");
 #
@@ -82,32 +50,129 @@ try {
 #    PPI::Token::Structure  	';'
 #  PPI::Token::Whitespace  	'\n'
 
+	try {
+		my @chunks1 =
 
-	my @chunks1 =
+			map { [$_->schildren] }
 
-		map  { [$_->schildren] }
-#		grep { $_->{children}[4]->content eq 'use_module' }
-#		grep { $_->child(4)->literal =~ m{\A(?:use_module|use_package_optimistically)\z} }
-#		grep { $_->{children}[4]->content eq 'use_module' || 'use_package_optimistically' }
-		grep { $_->{children}[4]->content =~ m{\A(?:use_module|use_package_optimistically)\z} }
-		grep { $_->child(4)->isa('PPI::Token::Word') }
+			grep {
+			$_->{children}[4]->content
+				=~ m{\A(?:use_module|use_package_optimistically)\z}
+			} grep { $_->child(4)->isa('PPI::Token::Word') }
 
-	    grep { $_->child(2)->content eq '=' }
-	    grep { $_->child(2)->isa('PPI::Token::Operator') }
+			grep { $_->child(2)->content eq '=' }
+			grep { $_->child(2)->isa('PPI::Token::Operator') }
 
-		grep { $_->child(0)->isa('PPI::Token::Symbol') }
+			grep { $_->child(0)->isa('PPI::Token::Symbol') }
 
-		@{$self->ppi_document->find('PPI::Statement') || []}; # need for pps remove in midgen -> || {}
+			@{$self->ppi_document->find('PPI::Statement') || []}
+			;    # need for pps remove in midgen -> || {}
 
 #	p @chunks1;
-push @modules, $self->_module_names_psi(@chunks1);
+		push @modules, $self->_module_names_psi(@chunks1);
 
 
-};
+	};
 
-say 'Option 3';
-try{
-#	say 'lets check for require use_module';
+	say 'Option 2: my $q = use_module( M::N )...';
+
+
+#
+# my $bi = use_module("Math::BigInt", 1.31)->new("1_234");
+#
+#PPI::Document
+#  PPI::Statement::Variable
+#    PPI::Token::Word  	'my'
+#    PPI::Token::Whitespace  	' '
+#    PPI::Token::Symbol  	'$bi'
+#    PPI::Token::Whitespace  	' '
+#    PPI::Token::Operator  	'='
+#    PPI::Token::Whitespace  	' '
+#    PPI::Token::Word  	'use_module'
+#    PPI::Structure::List  	( ... )
+#      PPI::Statement::Expression
+#        PPI::Token::Quote::Double  	'"Math::BigInt"'
+#        PPI::Token::Operator  	','
+#        PPI::Token::Whitespace  	' '
+#        PPI::Token::Number::Float  	'1.31'
+#    PPI::Token::Operator  	'->'
+#    PPI::Token::Word  	'new'
+#    PPI::Structure::List  	( ... )
+#      PPI::Statement::Expression
+#        PPI::Token::Quote::Double  	'"1_234"'
+#    PPI::Token::Structure  	';'
+#  PPI::Token::Whitespace  	'\n'
+
+	try {
+		my @chunks2 =
+
+			map { [$_->schildren] }
+
+			grep {
+			$_->{children}[6]->content
+				=~ m{\A(?:use_module|use_package_optimistically)\z}
+			} grep { $_->child(6)->isa('PPI::Token::Word') }
+
+			grep { $_->child(4)->content eq '=' }
+			grep { $_->child(4)->isa('PPI::Token::Operator') }
+
+			grep { $_->child(2)->isa('PPI::Token::Symbol') }
+
+			grep { $_->{children}[0]->content eq 'my' }
+			grep { $_->child(0)->isa('PPI::Token::Word') }
+
+			@{$self->ppi_document->find('PPI::Statement::Variable') || []}
+			;    # need for pps remove in midgen -> || {}
+
+#	p @chunks1;
+		push @modules, $self->_module_names_psi(@chunks2);
+
+
+	};
+
+
+	say 'Option 3: use_module( M::N )...';
+
+#
+# use_module("Math::BigInt", 1.31)->new("1_234");
+#
+#PPI::Document
+#  PPI::Statement
+#	 PPI::Token::Whitespace  	' '
+#    PPI::Token::Word  	'use_module'
+#    PPI::Structure::List  	( ... )
+#      PPI::Statement::Expression
+#        PPI::Token::Quote::Double  	'"Math::BigInt"'
+#        PPI::Token::Operator  	','
+#        PPI::Token::Whitespace  	' '
+#        PPI::Token::Number::Float  	'1.31'
+#    PPI::Token::Operator  	'->'
+#    PPI::Token::Word  	'new'
+#    PPI::Structure::List  	( ... )
+#      PPI::Statement::Expression
+#        PPI::Token::Quote::Double  	'"1_234"'
+#    PPI::Token::Structure  	';'
+#  PPI::Token::Whitespace  	'\n'
+
+	try {
+		my @chunks3 =
+
+			map { [$_->schildren] } grep {
+			$_->{children}[1]->content
+				=~ m{\A(?:use_module|use_package_optimistically|require_module)\z}
+			} grep { $_->child(1)->isa('PPI::Token::Word') }
+
+			@{$self->ppi_document->find('PPI::Statement') || []};
+
+#	p @chunks1;
+		push @modules, $self->_module_names_psi(@chunks3);
+
+
+	};
+
+
+	say 'Option 4: return use_module( M::N )...';
+
 #
 # return use_module(\'App::SCS::PageSet\')->new(
 # base_dir => $self->share_dir->catdir(\'pages\'),
@@ -155,34 +220,39 @@ try{
 #      PPI::Token::Whitespace  	'  '
 #    PPI::Token::Structure  	';'
 
+	try {
+		my @chunks4 =
 
+			map { [$_->schildren] }
 
-	my @chunks3 =
-
-		map  { [$_->schildren] }
 #		grep { $_->{children}[2]->content eq 'use_module' || 'use_package_optimistically' }
 #		grep { $_->child(2)->literal =~ m{\A(?:use_module|use_package_optimistically)\z} }
-		grep { $_->{children}[2]->content =~ m{\A(?:use_module|use_package_optimistically)\z} }
+			grep {
+			$_->{children}[2]->content
+				=~ m{\A(?:use_module|use_package_optimistically)\z}
+			}
 
-		grep { $_->child(2)->isa('PPI::Token::Word') }
+			grep { $_->child(2)->isa('PPI::Token::Word') }
 
 #	    grep { $_->child(0)->content =~ m{\A(?:return)\z} }
-	    grep { $_->child(0)->content =~ m{(?:return)} }
-		grep { $_->child(0)->isa('PPI::Token::Word') }
+			grep { $_->child(0)->content =~ m{(?:return)} }
+			grep { $_->child(0)->isa('PPI::Token::Word') }
 
-		@{$self->ppi_document->find('PPI::Statement::Break') || []};
+			@{$self->ppi_document->find('PPI::Statement::Break') || []};
 
 #	p @chunks3;
-push @modules, $self->_module_names_psi(@chunks3);
+		push @modules, $self->_module_names_psi(@chunks4);
 
 
-};
+	};
+
+
 
 	p @modules         if $self->debug;
 	p @version_strings if $self->debug;
 
 	# if we found a module, process it with the correct catogery
-	if ( scalar @modules > 0 ) {
+	if (scalar @modules > 0) {
 
 #		if ( $self->format =~ /cpanfile|metajson/ ) {
 #			if ( $self->xtest eq 'test_requires' ) {
@@ -191,10 +261,10 @@ push @modules, $self->_module_names_psi(@chunks3);
 #				$self->_process_found_modules( 'test_develop', \@modules );
 #			}
 #		} else {
-			$self->_process_found_modules( 'requires_suggests', \@modules );
+		$self->_process_found_modules('requires_suggests', \@modules);
+
 #		}
 	}
-
 
 
 #	foreach (0 .. $#modules) {
@@ -209,7 +279,7 @@ push @modules, $self->_module_names_psi(@chunks3);
 # composed method test for include Module::Runtime
 #######
 sub _is_module_runtime {
-	my $self = shift;
+	my $self                         = shift;
 	my $module_runtime_include_found = FALSE;
 
 #PPI::Document
@@ -225,16 +295,17 @@ sub _is_module_runtime {
 				next if $include->type eq 'no';
 				if (not $include->pragma) {
 					my $module = $include->module;
+
 #					p $module;
 					if ($module eq 'Module::Runtime') {
 						$module_runtime_include_found = TRUE;
-						p $module;# if $self->debug;
+						p $module;    # if $self->debug;
 					}
 				}
 			}
 		}
 	};
-	p $module_runtime_include_found; # if $self->debug;
+	p $module_runtime_include_found if $self->debug;
 	return $module_runtime_include_found;
 
 }
@@ -243,55 +314,69 @@ sub _is_module_runtime {
 # composed method extract module name from PPI::Structure::List
 #######
 sub _module_names_psi {
-my $self = shift;
-my @chunks = @_;
-my @modules_psl;
+	my $self   = shift;
+	my @chunks = @_;
+	my @modules_psl;
 
-try{
-	foreach my $hunk (@chunks) {
+#    PPI::Structure::List  	( ... )
+#      PPI::Statement::Expression
+#        PPI::Token::Quote::Double  	'"Math::BigInt"'
+#        PPI::Token::Operator  	','
+#        PPI::Token::Whitespace  	' '
+#        PPI::Token::Number::Float  	'1.31'
+#    PPI::Token::Operator  	'->'
+#    PPI::Token::Word  	'new'
+#    PPI::Structure::List  	( ... )
+#      PPI::Statement::Expression
+#        PPI::Token::Quote::Double  	'"1_234"'
+#    PPI::Token::Structure  	';'
+#  PPI::Token::Whitespace  	'\n'
+
+
+	try {
+		foreach my $hunk (@chunks) {
 
 #		p $hunk;
 
-		# looking for use Module::Runtime ...;
-		if (grep { $_->isa('PPI::Structure::List') } @$hunk) {
+			# looking for use Module::Runtime ...;
+			if (grep { $_->isa('PPI::Structure::List') } @$hunk) {
 
 #			say 'found Module::Runtime';
 
-			# hack for List
-			my @hunkdata = @$hunk;
+				# hack for List
+				my @hunkdata = @$hunk;
 
-			foreach my $ppi_sl (@hunkdata) {
-				if ($ppi_sl->isa('PPI::Structure::List')) {
+				foreach my $ppi_sl (@hunkdata) {
+					if ($ppi_sl->isa('PPI::Structure::List')) {
+
 #					p $ppi_sl;
-					foreach my $ppi_se (@{$ppi_sl->{children}}) {
-						if ($ppi_se->isa('PPI::Statement::Expression')) {
-							foreach my $element (@{$ppi_se->{children}}) {
-								if ( $element->isa('PPI::Token::Quote::Single')
-									|| $element->isa('PPI::Token::Quote::Double'))
-								{
-									my $module = $element;
-									$module =~ s/^['|"]//;
-									$module =~ s/['|"]$//;
-									if ($module =~ m/\A[A-Z]/) {
-										push @modules_psl, $module;
-										p @modules_psl;#         if $self->debug;
+						foreach my $ppi_se (@{$ppi_sl->{children}}) {
+							if ($ppi_se->isa('PPI::Statement::Expression')) {
+								foreach my $element (@{$ppi_se->{children}}) {
+									if ( $element->isa('PPI::Token::Quote::Single')
+										|| $element->isa('PPI::Token::Quote::Double'))
+									{
+										my $module = $element;
+										$module =~ s/^['|"]//;
+										$module =~ s/['|"]$//;
+										if ($module =~ m/\A[A-Z]/) {
+											push @modules_psl, $module;
+											p @modules_psl;    #         if $self->debug;
+										}
 									}
-								}
 
+								}
 							}
 						}
 					}
 				}
 			}
 		}
-	}
-};
+	};
 
-return @modules_psl;
+	return @modules_psl;
 
 }
-
-
 
 
 no Moo::Role;
