@@ -102,53 +102,10 @@ try {
 #	p @chunks1;
 push @modules, $self->_module_names_psi(@chunks1);
 
-=begin  BlockComment  # BlockCommentNo_2
-
-	foreach my $hunk (@chunks1) {
-
-#		p $hunk;
-
-		# looking for use Module::Runtime ...;
-		if (grep { $_->isa('PPI::Structure::List') } @$hunk) {
-
-#			say 'found Module::Runtime';
-
-			# hack for List
-			my @hunkdata = @$hunk;
-
-			foreach my $ppi_sl (@hunkdata) {
-				if ($ppi_sl->isa('PPI::Structure::List')) {
-#					p $ppi_sl;
-					foreach my $ppi_se (@{$ppi_sl->{children}}) {
-						if ($ppi_se->isa('PPI::Statement::Expression')) {
-							foreach my $element (@{$ppi_se->{children}}) {
-								if ( $element->isa('PPI::Token::Quote::Single')
-									|| $element->isa('PPI::Token::Quote::Double'))
-								{
-									my $module = $element;
-									$module =~ s/^['|"]//;
-									$module =~ s/['|"]$//;
-									if ($module =~ m/\A[A-Z]/) {
-										push @modules, $module;
-										p @modules;#         if $self->debug;
-									}
-								}
-
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-=end    BlockComment  # BlockCommentNo_2
-
-=cut
 
 };
 
-say 'Option 2';
+say 'Option 3';
 try{
 #	say 'lets check for require use_module';
 #
@@ -200,7 +157,7 @@ try{
 
 
 
-	my @chunks2 =
+	my @chunks3 =
 
 		map  { [$_->schildren] }
 #		grep { $_->{children}[2]->content eq 'use_module' || 'use_package_optimistically' }
@@ -215,45 +172,10 @@ try{
 
 		@{$self->ppi_document->find('PPI::Statement::Break') || []};
 
-#	p @chunks2;
+#	p @chunks3;
+push @modules, $self->_module_names_psi(@chunks3);
 
-	foreach my $hunk (@chunks2) {
 
-#		p $hunk;
-
-		# looking for use Module::Runtime ...;
-		if (grep { $_->isa('PPI::Structure::List') } @$hunk) {
-
-#			say 'found Module::Runtime';
-
-			# hack for List
-			my @hunkdata = @$hunk;
-
-			foreach my $ppi_sl (@hunkdata) {
-				if ($ppi_sl->isa('PPI::Structure::List')) {
-#					p $ppi_sl;
-					foreach my $ppi_se (@{$ppi_sl->{children}}) {
-						if ($ppi_se->isa('PPI::Statement::Expression')) {
-							foreach my $element (@{$ppi_se->{children}}) {
-								if ( $element->isa('PPI::Token::Quote::Single')
-									|| $element->isa('PPI::Token::Quote::Double'))
-								{
-									my $module = $element;
-									$module =~ s/^['|"]//;
-									$module =~ s/['|"]$//;
-									if ($module =~ m/\A[A-Z]/) {
-										push @modules, $module;
-										p @modules;#         if $self->debug;
-									}
-								}
-
-							}
-						}
-					}
-				}
-			}
-		}
-	}
 };
 
 	p @modules         if $self->debug;
