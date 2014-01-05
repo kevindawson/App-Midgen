@@ -1,40 +1,22 @@
-use strict;
-use warnings;
+package App::Midgen::Role::UseModule;
 
-package Perl::PrereqScanner::Scanner::UseModule;
+use v5.10;
+use Moo::Role;
+requires qw( ppi_document debug format xtest _process_found_modules develop );
 
-# ABSTRACT: scan for modules included by Module::Runtime
-# These will be shown in preregs -> runtime -> suggests
-
-use Moo;
-with 'Perl::PrereqScanner::Scanner';
-
-#use Data::Printer; # caller_info => 1;
+use PPI;
+use Data::Printer; # caller_info => 1;
 use Try::Tiny;
-
-=head1 DESCRIPTION
-
-This scanner will look for the following formats or variations there in,
-inside BEGIN blocks in test files:
-
-=begin :list
-
-* use_module( 'Fred::BloggsOne', '1.01' );
-
-* use_module( "Fred::BloggsTwo", "2.02" );
-
-* use_module( 'Fred::BloggsThree', 3.03 );
-
-=end :list
-
-=cut
 
 use constant {BLANK => q{ }, TRUE => 1, FALSE => 0, NONE => q{}, TWO => 2,
 	THREE => 3,};
 
 
-sub scan_for_prereqs {
-	my ($self, $ppi_doc, $req) = @_;
+#######
+# composed method - _xtests_in_single_quote
+#######
+sub xtests_use_module {
+	my $self = shift;
 	my @modules;
 	my @version_strings;
 
@@ -43,7 +25,7 @@ sub scan_for_prereqs {
 
 	#test for module_ryntime
 
-	my $includes = $ppi_doc->find('PPI::Statement::Include');
+	my $includes = $self->ppi_document->find('PPI::Statement::Include');
 	if ($includes) {
 		foreach my $include (@{$includes}) {
 			next if $include->type eq 'no';
@@ -105,7 +87,7 @@ try {
 
 		grep { $_->child(0)->isa('PPI::Token::Symbol') }
 
-		@{$ppi_doc->find('PPI::Statement') || []}; # need for pps remove in midgen -> || {}
+		@{$self->ppi_document->find('PPI::Statement') || []}; # need for pps remove in midgen -> || {}
 
 #	p @chunks;
 
@@ -211,7 +193,7 @@ try{
 	    grep { $_->child(0)->content =~ m{\A(?:return)\z} }
 		grep { $_->child(0)->isa('PPI::Token::Word') }
 
-		@{$ppi_doc->find('PPI::Statement::Break') || []};
+		@{$self->ppi_document->find('PPI::Statement::Break') || []};
 
 #	p @chunks;
 
@@ -253,11 +235,28 @@ try{
 	}
 };
 
+	p @modules;#         if $self->debug;
+	p @version_strings if $self->debug;
 
+	# if we found a module, process it with the correct catogery
+	if ( scalar @modules > 0 ) {
 
-	foreach (0 .. $#modules) {
-		$req->add_minimum($modules[$_] => 0);
+#		if ( $self->format =~ /cpanfile|metajson/ ) {
+#			if ( $self->xtest eq 'test_requires' ) {
+#				$self->_process_found_modules( 'test_requires', \@modules );
+#			} elsif ( $self->develop && $self->xtest eq 'test_develop' ) {
+#				$self->_process_found_modules( 'test_develop', \@modules );
+#			}
+#		} else {
+			$self->_process_found_modules( 'requires', \@modules );
+#		}
 	}
+
+
+
+#	foreach (0 .. $#modules) {
+#		$req->add_minimum($modules[$_] => 0);
+#	}
 #	p @modules;
 	return;
 }
@@ -297,15 +296,75 @@ sub _is_module_runtime {
 
 }
 
+no Moo::Role;
 
 1;
 
 __END__
 
-181:	final indentation level: 1
+=pod
 
-Final nesting depth of '{'s is 1
-The most recent un-matched '{' is on line 37
-37: sub scan_for_prereqs {
-                         ^
-181:	To save a full .LOG file rerun with -g
+=encoding UTF-8
+
+=head1 NAME
+
+App::Midgen::Roles::UseModule - extra checks for test files, looking
+for methods in use_ok in BEGIN blocks, used by L<App::Midgen>
+
+=head1 VERSION
+
+version: 0.26
+
+=head1 DESCRIPTION
+
+This scanner will look for the following formats or variations there in,
+inside BEGIN blocks in test files:
+
+=begin :list
+
+* use_module( 'Fred::BloggsOne', '1.01' );
+
+* use_module( "Fred::BloggsTwo", "2.02" );
+
+* use_module( 'Fred::BloggsThree', 3.03 );
+
+=end :list
+
+=head1 METHODS
+
+=over 4
+
+=item * xtests_use_ok
+
+Checking for the following, extracting module name only.
+
+ BEGIN {
+   use_ok( 'Term::ReadKey', '2.30' );
+   use_ok( 'Term::ReadLine', '1.10' );
+   use_ok( 'Fred::BloggsOne', '1.01' );
+   use_ok( "Fred::BloggsTwo", "2.02" );
+   use_ok( 'Fred::BloggsThree', 3.03 );
+ }
+
+Used to check files in t/ and xt/ directories.
+
+=back
+
+=head1 AUTHOR
+
+See L<App::Midgen>
+
+=head2 CONTRIBUTORS
+
+See L<App::Midgen>
+
+=head1 COPYRIGHT
+
+See L<App::Midgen>
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
