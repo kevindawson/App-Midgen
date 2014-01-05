@@ -287,10 +287,10 @@ sub _find_makefile_requires {
 	my $relative_dir = $File::Find::dir;
 	$relative_dir =~ s/$Working_Dir//;
 	$self->_set_looking_infile( File::Spec->catfile( $relative_dir, $filename ) );
-
 	$self->_set_ppi_document( PPI::Document->new($filename) );
 
 	# do extra test early check for use_module before hand
+	p $filename;
 	$self->xtests_use_module();
 
 
