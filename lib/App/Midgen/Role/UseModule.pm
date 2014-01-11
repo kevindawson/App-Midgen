@@ -24,17 +24,14 @@ sub xtests_use_module {
 # bug out if there is no Include for Module::Runtime found
 	return if $self->_is_module_runtime() eq FALSE;
 
-	say 'Option 1: $q = use_module( M::N )...';
+	say 'Option 1: use_module( M::N )...';
 
 #
-# $bi = use_module("Math::BigInt", 1.31)->new("1_234");
+# use_module("Math::BigInt", 1.31)->new("1_234");
 #
 #PPI::Document
 #  PPI::Statement
-#    PPI::Token::Symbol  	'$bi'
-#    PPI::Token::Whitespace  	' '
-#    PPI::Token::Operator  	'='
-#    PPI::Token::Whitespace  	' '
+#	 PPI::Token::Whitespace  	' '
 #    PPI::Token::Word  	'use_module'
 #    PPI::Structure::List  	( ... )
 #      PPI::Statement::Expression
@@ -53,26 +50,19 @@ sub xtests_use_module {
 	try {
 		my @chunks1 =
 
-			map { [$_->schildren] }
+			map { [$_->schildren] } grep {
+			$_->{children}[0]->content
+				=~ m{\A(?:use_module|use_package_optimistically|require_module)\z}
+			} grep { $_->child(0)->isa('PPI::Token::Word') }
 
-			grep {
-			$_->{children}[4]->content
-				=~ m{\A(?:use_module|use_package_optimistically)\z}
-			} grep { $_->child(4)->isa('PPI::Token::Word') }
-
-			grep { $_->child(2)->content eq '=' }
-			grep { $_->child(2)->isa('PPI::Token::Operator') }
-
-			grep { $_->child(0)->isa('PPI::Token::Symbol') }
-
-			@{$self->ppi_document->find('PPI::Statement') || []}
-			;    # need for pps remove in midgen -> || {}
+			@{$self->ppi_document->find('PPI::Statement') || []};
 
 #	p @chunks1;
 		push @modules, $self->_module_names_psi(@chunks1);
 
 
 	};
+
 
 	say 'Option 2: my $q = use_module( M::N )...';
 
@@ -110,7 +100,7 @@ sub xtests_use_module {
 
 			grep {
 			$_->{children}[6]->content
-				=~ m{\A(?:use_module|use_package_optimistically)\z}
+				=~ m{\A(?:use_module|require_module|use_package_optimistically)\z}
 			} grep { $_->child(6)->isa('PPI::Token::Word') }
 
 			grep { $_->child(4)->content eq '=' }
@@ -130,15 +120,17 @@ sub xtests_use_module {
 
 	};
 
-
-	say 'Option 3: use_module( M::N )...';
+	say 'Option 3: $q = use_module( M::N )...';
 
 #
-# use_module("Math::BigInt", 1.31)->new("1_234");
+# $bi = use_module("Math::BigInt", 1.31)->new("1_234");
 #
 #PPI::Document
 #  PPI::Statement
-#	 PPI::Token::Whitespace  	' '
+#    PPI::Token::Symbol  	'$bi'
+#    PPI::Token::Whitespace  	' '
+#    PPI::Token::Operator  	'='
+#    PPI::Token::Whitespace  	' '
 #    PPI::Token::Word  	'use_module'
 #    PPI::Structure::List  	( ... )
 #      PPI::Statement::Expression
@@ -157,18 +149,28 @@ sub xtests_use_module {
 	try {
 		my @chunks3 =
 
-			map { [$_->schildren] } grep {
-			$_->{children}[1]->content
-				=~ m{\A(?:use_module|use_package_optimistically|require_module)\z}
-			} grep { $_->child(1)->isa('PPI::Token::Word') }
+			map { [$_->schildren] }
 
-			@{$self->ppi_document->find('PPI::Statement') || []};
+			grep {
+			$_->{children}[4]->content
+				=~ m{\A(?:use_module|require_module|use_package_optimistically)\z}
+			} grep { $_->child(4)->isa('PPI::Token::Word') }
 
-#	p @chunks1;
+			grep { $_->child(2)->content eq '=' }
+			grep { $_->child(2)->isa('PPI::Token::Operator') }
+
+			grep { $_->child(0)->isa('PPI::Token::Symbol') }
+
+			@{$self->ppi_document->find('PPI::Statement') || []}
+			;    # need for pps remove in midgen -> || {}
+
+#	p @chunks3;
 		push @modules, $self->_module_names_psi(@chunks3);
 
 
 	};
+
+
 
 
 	say 'Option 4: return use_module( M::N )...';
@@ -261,7 +263,7 @@ sub xtests_use_module {
 #				$self->_process_found_modules( 'test_develop', \@modules );
 #			}
 #		} else {
-		$self->_process_found_modules('requires_suggests', \@modules);
+		$self->_process_found_modules('requires', \@modules);
 
 #		}
 	}
