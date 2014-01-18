@@ -396,7 +396,7 @@ sub _find_makefile_test_requires {
 	$self->_xtests_eval();
 
 	# do extra test early check for use_module before hand
-	p $filename;
+#	p $filename;
 	$self->xtests_use_module();
 
 	my $prereqs = $self->scanner->scan_ppi_document( $self->ppi_document );

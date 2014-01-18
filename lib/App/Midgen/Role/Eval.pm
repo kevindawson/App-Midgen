@@ -68,6 +68,10 @@ sub _xtests_eval {
                 $module_name =~ s/(?:\s[\s|\w|\n|.|;]+)$//;
                 $module_name =~ s/\s+(?:[\$|\w|\n]+)$//;
                 $module_name =~ s/\s+$//;
+
+				# check for first char upper
+				next if not $module_name =~ m/\A(?:[A-Z])/;
+
                 push @modules, $module_name;
 
                 my $version_number = $eval_include;
@@ -108,6 +112,10 @@ sub _xtests_eval {
                     $module_name =~ s/(?:\s[\s|\w|\n|.|;]+)$//;
                     $module_name =~ s/\s+(?:[\$|\w|\n]+)$//;
                     $module_name =~ s/\s+$//;
+
+					# check for first char upper
+					next if not $module_name =~ m/\A(?:[A-Z])/;
+
                     push @modules, $module_name;
 
                     my $version_number = $eval_include;
@@ -174,6 +182,10 @@ sub _xtests_eval {
                 $module_name =~ s/(?:\s[\s|\w|\n|.|;]+)$//;
                 $module_name =~ s/\s+(?:[\$|\w|\n]+)$//;
                 $module_name =~ s/\s+$//;
+
+				# check for first char upper
+				next if not $module_name =~ m/\A(?:[A-Z])/;
+
                 push @modules, $module_name;
 
                 my $version_number = $eval_include;
@@ -214,6 +226,10 @@ sub _xtests_eval {
                     $module_name =~ s/(?:\s[\s|\w|\n|.|;]+)$//;
                     $module_name =~ s/\s+(?:[\$|\w|\n]+)$//;
                     $module_name =~ s/\s+$//;
+
+					# check for first char upper
+					next if not $module_name =~ m/\A(?:[A-Z])/;
+
                     push @modules, $module_name;
 
                     my $version_number = $eval_include;
