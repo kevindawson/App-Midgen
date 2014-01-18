@@ -290,7 +290,7 @@ sub _find_makefile_requires {
 	$self->_set_ppi_document( PPI::Document->new($filename) );
 
 	# do extra test early check for use_module before hand
-	p $filename;
+#	p $filename;
 	$self->xtests_use_module();
 
 
@@ -394,6 +394,10 @@ sub _find_makefile_test_requires {
 
 	# do extra test early to identify eval befroe hand
 	$self->_xtests_eval();
+
+	# do extra test early check for use_module before hand
+	p $filename;
+	$self->xtests_use_module();
 
 	my $prereqs = $self->scanner->scan_ppi_document( $self->ppi_document );
 	my @modules = $prereqs->required_modules;
