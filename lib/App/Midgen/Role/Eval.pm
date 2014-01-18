@@ -60,29 +60,34 @@ sub _xtests_eval {
 
             foreach my $eval_include (@eval_includes) {
 
-              if ($eval_include =~ /^\s*[use|require|no]/) {
-
-                $eval_include =~ s/^\s*(?:use|require|no)\s*//;
-
-                my $module_name = $eval_include;
-                $module_name =~ s/(?:\s[\s|\w|\n|.|;]+)$//;
-                $module_name =~ s/\s+(?:[\$|\w|\n]+)$//;
-                $module_name =~ s/\s+$//;
-                push @modules, $module_name;
-
-                my $version_number = $eval_include;
-                $version_number =~ s/$module_name\s*//;
-                $version_number =~ s/\s*$//;
-                $version_number =~ s/[A-Z_a-z]|\s|\$|s|:|;//g;
-
-                try {
-                  push @version_strings, $version_number
-                    if version->parse($version_number)->is_lax;
-                }
-                catch {
-                  push @version_strings, 0 if $_;
-                };
-              }
+            $self->mod_ver(\@modules, $eval_include);
+#p @modules;
+#              if ($eval_include =~ /^\s*[use|require|no]/) {
+#
+#                $eval_include =~ s/^\s*(?:use|require|no)\s*//;
+#
+#                my $module_name = $eval_include;
+#                $module_name =~ s/(?:\s[\s|\w|\n|.|;]+)$//;
+#                $module_name =~ s/\s+(?:[\$|\w|\n]+)$//;
+#                $module_name =~ s/\s+$//;
+#p $module_name;
+#				# check for first char upper
+##				next if not $module_name =~ m/\A(?:[A-Z])/;
+#                push @modules, $module_name;
+#
+#                my $version_number = $eval_include;
+#                $version_number =~ s/$module_name\s*//;
+#                $version_number =~ s/\s*$//;
+#                $version_number =~ s/[A-Z_a-z]|\s|\$|s|:|;//g;
+#
+#                try {
+#                  push @version_strings, $version_number
+#                    if version->parse($version_number)->is_lax;
+#                }
+#                catch {
+#                  push @version_strings, 0 if $_;
+#                };
+#              }
             }
           }
         }
@@ -100,29 +105,31 @@ sub _xtests_eval {
 
                 foreach my $eval_include (@eval_includes) {
 
-                  if ($eval_include =~ /^\s*[use|require|no]/) {
-
-                    $eval_include =~ s/^\s*(?:use|require|no)\s*//;
-
-                    my $module_name = $eval_include;
-                    $module_name =~ s/(?:\s[\s|\w|\n|.|;]+)$//;
-                    $module_name =~ s/\s+(?:[\$|\w|\n]+)$//;
-                    $module_name =~ s/\s+$//;
-                    push @modules, $module_name;
-
-                    my $version_number = $eval_include;
-                    $version_number =~ s/$module_name\s*//;
-                    $version_number =~ s/\s*$//;
-                    $version_number =~ s/[A-Z_a-z]|\s|\$|s|:|;//g;
-
-                    try {
-                      push @version_strings, $version_number
-                        if version->parse($version_number)->is_lax;
-                    }
-                    catch {
-                      push @version_strings, 0 if $_;
-                    };
-                  }
+$self->mod_ver(\@modules, $eval_include);
+#p @modules;
+#                  if ($eval_include =~ /^\s*[use|require|no]/) {
+#
+#                    $eval_include =~ s/^\s*(?:use|require|no)\s*//;
+#
+#                    my $module_name = $eval_include;
+#                    $module_name =~ s/(?:\s[\s|\w|\n|.|;]+)$//;
+#                    $module_name =~ s/\s+(?:[\$|\w|\n]+)$//;
+#                    $module_name =~ s/\s+$//;
+#                    push @modules, $module_name;
+#
+#                    my $version_number = $eval_include;
+#                    $version_number =~ s/$module_name\s*//;
+#                    $version_number =~ s/\s*$//;
+#                    $version_number =~ s/[A-Z_a-z]|\s|\$|s|:|;//g;
+#
+#                    try {
+#                      push @version_strings, $version_number
+#                        if version->parse($version_number)->is_lax;
+#                    }
+#                    catch {
+#                      push @version_strings, 0 if $_;
+#                    };
+#                  }
 
                 }
               }
@@ -166,29 +173,32 @@ sub _xtests_eval {
 
             foreach my $eval_include (@eval_includes) {
 
-              if ($eval_include =~ /^\s*[use|require|no]/) {
+$self->mod_ver(\@modules, $eval_include);
+#p @modules;
 
-                $eval_include =~ s/^\s*(?:use|require|no)\s*//;
-
-                my $module_name = $eval_include;
-                $module_name =~ s/(?:\s[\s|\w|\n|.|;]+)$//;
-                $module_name =~ s/\s+(?:[\$|\w|\n]+)$//;
-                $module_name =~ s/\s+$//;
-                push @modules, $module_name;
-
-                my $version_number = $eval_include;
-                $version_number =~ s/$module_name\s*//;
-                $version_number =~ s/\s*$//;
-                $version_number =~ s/[A-Z_a-z]|\s|\$|s|:|;//g;
-
-                try {
-                  push @version_strings, $version_number
-                    if version->parse($version_number)->is_lax;
-                }
-                catch {
-                  push @version_strings, 0 if $_;
-                };
-              }
+#              if ($eval_include =~ /^\s*[use|require|no]/) {
+#
+#                $eval_include =~ s/^\s*(?:use|require|no)\s*//;
+#
+#                my $module_name = $eval_include;
+#                $module_name =~ s/(?:\s[\s|\w|\n|.|;]+)$//;
+#                $module_name =~ s/\s+(?:[\$|\w|\n]+)$//;
+#                $module_name =~ s/\s+$//;
+#                push @modules, $module_name;
+#
+#                my $version_number = $eval_include;
+#                $version_number =~ s/$module_name\s*//;
+#                $version_number =~ s/\s*$//;
+#                $version_number =~ s/[A-Z_a-z]|\s|\$|s|:|;//g;
+#
+#                try {
+#                  push @version_strings, $version_number
+#                    if version->parse($version_number)->is_lax;
+#                }
+#                catch {
+#                  push @version_strings, 0 if $_;
+#                };
+#              }
             }
           }
         }
@@ -206,29 +216,31 @@ sub _xtests_eval {
 
                 foreach my $eval_include (@eval_includes) {
 
-                  if ($eval_include =~ /^\s*[use|require|no]/) {
-
-                    $eval_include =~ s/^\s*(?:use|require|no)\s*//;
-
-                    my $module_name = $eval_include;
-                    $module_name =~ s/(?:\s[\s|\w|\n|.|;]+)$//;
-                    $module_name =~ s/\s+(?:[\$|\w|\n]+)$//;
-                    $module_name =~ s/\s+$//;
-                    push @modules, $module_name;
-
-                    my $version_number = $eval_include;
-                    $version_number =~ s/$module_name\s*//;
-                    $version_number =~ s/\s*$//;
-                    $version_number =~ s/[A-Z_a-z]|\s|\$|s|:|;//g;
-
-                    try {
-                      push @version_strings, $version_number
-                        if version->parse($version_number)->is_lax;
-                    }
-                    catch {
-                      push @version_strings, 0 if $_;
-                    };
-                  }
+$self->mod_ver(\@modules, $eval_include);
+#p @modules;
+#                  if ($eval_include =~ /^\s*[use|require|no]/) {
+#
+#                    $eval_include =~ s/^\s*(?:use|require|no)\s*//;
+#
+#                    my $module_name = $eval_include;
+#                    $module_name =~ s/(?:\s[\s|\w|\n|.|;]+)$//;
+#                    $module_name =~ s/\s+(?:[\$|\w|\n]+)$//;
+#                    $module_name =~ s/\s+$//;
+#                    push @modules, $module_name;
+#
+#                    my $version_number = $eval_include;
+#                    $version_number =~ s/$module_name\s*//;
+#                    $version_number =~ s/\s*$//;
+#                    $version_number =~ s/[A-Z_a-z]|\s|\$|s|:|;//g;
+#
+#                    try {
+#                      push @version_strings, $version_number
+#                        if version->parse($version_number)->is_lax;
+#                    }
+#                    catch {
+#                      push @version_strings, 0 if $_;
+#                    };
+#                  }
 
                 }
               }
@@ -247,7 +259,7 @@ sub _xtests_eval {
   # if we found a module, process it with the correct catogery
   if (scalar @modules > 0) {
 
-    if ($self->format =~ /cpanfile|metajson/) {
+	if ($self->format =~ /cpanfile|metajson/) {
 
       if ($self->xtest eq 'test_requires') {
         $self->_process_found_modules('recommends', \@modules);
@@ -264,6 +276,44 @@ sub _xtests_eval {
   return;
 }
 
+
+#######
+# composed Method
+#######
+sub mod_ver {
+  my ($self, $modules, $eval_include) = @_;
+
+  if ($eval_include =~ /^\s*[use|require|no]/) {
+
+    $eval_include =~ s/^\s*(?:use|require|no)\s*//;
+
+    my $module_name = $eval_include;
+
+    $module_name =~ s/(?:\s[\s|\w|\n|.|;]+)$//;
+    $module_name =~ s/\s+(?:[\$|\w|\n]+)$//;
+    $module_name =~ s/\s+$//;
+#p $module_name;
+	# check for first char upper
+#	next if not $module_name =~ m/\A(?:[A-Z])/;
+#	push @{$modules}, $module_name;
+	push @{$modules}, $module_name if $module_name =~ m/\A(?:[A-Z])/;
+
+    my $version_number = $eval_include;
+    $version_number =~ s/$module_name\s*//;
+    $version_number =~ s/\s*$//;
+    $version_number =~ s/[A-Z_a-z]|\s|\$|s|:|;//g;
+
+    try {
+      version->parse($version_number)->is_lax;
+    }
+    catch {
+      $version_number = 0 if $_;
+    };
+
+  }
+
+  return;
+}
 
 no Moo::Role;
 

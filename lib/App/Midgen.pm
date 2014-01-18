@@ -291,6 +291,10 @@ sub _find_makefile_requires {
 	my $prereqs = $self->scanner->scan_ppi_document( $self->ppi_document );
 	my @modules = $prereqs->required_modules;
 
+# todo add eval/try here
+#	$self->_xtests_eval();
+
+
 foreach my $mod_ver ( @modules ){
 	$self->{found_version}{$mod_ver} = $prereqs->requirements_for_module($mod_ver);
 }
