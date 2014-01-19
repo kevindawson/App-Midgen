@@ -5,13 +5,15 @@ use Moo::Role;
 requires qw( ppi_document debug format xtest _process_found_modules develop );
 
 use PPI;
-use Data::Printer { caller_info => 1, colored => 1, };
+use version 0.9902;
+use Try::Tiny 0.12;
+use Data::Printer {caller_info => 1, colored => 1,};
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
 our $VERSION = '0.26';
-use constant { BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3, };
+use constant {BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3,};
 
 
 #######
@@ -41,61 +43,77 @@ sub xtests_use_ok {
 	my @version_strings;
 	my @chunks =
 
-		map { [ $_->schildren ] }
+		map  { [$_->schildren] }
 		grep { $_->child(0)->literal =~ m{\A(?:BEGIN)\z} }
 		grep { $_->child(0)->isa('PPI::Token::Word') }
-		@{ $self->ppi_document->find('PPI::Statement::Scheduled') || [] };
+		@{$self->ppi_document->find('PPI::Statement::Scheduled') || []};
 
 	foreach my $hunk (@chunks) {
 
 		# looking for use_ok { 'Term::ReadKey' => '2.30' };
-		if ( grep { $_->isa('PPI::Structure::Block') } @$hunk ) {
+		if (grep { $_->isa('PPI::Structure::Block') } @$hunk) {
 
 			# hack for List
 			my @hunkdata = @$hunk;
 
 			foreach my $ppi_sb (@hunkdata) {
-				if ( $ppi_sb->isa('PPI::Structure::Block') ) {
-					foreach my $ppi_s ( @{ $ppi_sb->{children} } ) {
-						if ( $ppi_s->isa('PPI::Statement') ) {
+				if ($ppi_sb->isa('PPI::Structure::Block')) {
+					foreach my $ppi_s (@{$ppi_sb->{children}}) {
+						if ($ppi_s->isa('PPI::Statement')) {
 							p $ppi_s if $self->debug;
-							if ( $ppi_s->{children}[0]->content eq 'use_ok' ) {
+							if ($ppi_s->{children}[0]->content eq 'use_ok') {
 								my $ppi_sl = $ppi_s->{children}[1];
-								foreach my $ppi_se ( @{ $ppi_sl->{children} } ) {
-									if ( $ppi_se->isa('PPI::Statement::Expression') ) {
-										foreach my $element ( @{ $ppi_se->{children} } ) {
-											if (   $element->isa('PPI::Token::Quote::Single')
-												|| $element->isa('PPI::Token::Quote::Double') )
+								foreach my $ppi_se (@{$ppi_sl->{children}}) {
+									if ($ppi_se->isa('PPI::Statement::Expression')) {
+										foreach my $element (@{$ppi_se->{children}}) {
+
+											# some fudge to remember the module name if falied
+											state $previous_module = undef;
+											if ( $element->isa('PPI::Token::Quote::Single')
+												|| $element->isa('PPI::Token::Quote::Double'))
 											{
 
-												my $module = $element;
-#												p $module;
+												my $module = $element->content;
 												$module =~ s/^['|"]//;
 												$module =~ s/['|"]$//;
-												if ( $module =~ m/\A[A-Z]/ ) {
+												if ($module =~ m/\A[A-Z]/) {
+
 													warn 'found module - ' . $module if $self->debug;
 													push @modules, $module;
+													$previous_module = $module;
 												}
-
 											}
 
 
-#											if (   $element->isa('PPI::Token::Number::Float')
-#												|| $element->isa('PPI::Token::Quote::Single')
-#												|| $element->isa('PPI::Token::Quote::Double') )
-#											{
-#												my $version_string = $element;
-#
-#												$version_string =~ s/^['|"]//;
-#												$version_string =~ s/['|"]$//;
-#												next if $version_string !~ m/\A[\d|v]/;
-#												if ( $version_string =~ m/\A[\d|v]/ ) {
-#
-#													push @version_strings, $version_string;
-#													say 'found version_string - ' . $version_string
-#														if $self->debug;
-#												}
-#											}
+											if ( $element->isa('PPI::Token::Number::Float')
+												|| $element->isa('PPI::Token::Quote::Single')
+												|| $element->isa('PPI::Token::Quote::Double'))
+											{
+
+												my $version_string = $element->content;
+
+												$version_string =~ s/^['|"]//;
+												$version_string =~ s/['|"]$//;
+												next if $version_string !~ m/\A[\d|v]/;
+
+												try {
+													version->parse($version_string)->is_lax;
+												}
+												catch {
+													$version_string = 0 if $_;
+												};
+
+												warn 'found version_string - ' . $version_string
+													if $self->debug;
+												try {
+													$self->{found_version}{$previous_module}
+														= $version_string
+														if $previous_module;
+
+													$previous_module = undef;
+												};
+
+											}
 										}
 									}
 								}
@@ -107,20 +125,20 @@ sub xtests_use_ok {
 		}
 	}
 
-	p @modules         if $self->debug;
-	p @version_strings if $self->debug;
 
 	# if we found a module, process it with the correct catogery
-	if ( scalar @modules > 0 ) {
+	if (scalar @modules > 0) {
 
-		if ( $self->format =~ /cpanfile|metajson/ ) {
-			if ( $self->xtest eq 'test_requires' ) {
-				$self->_process_found_modules( 'test_requires', \@modules );
-			} elsif ( $self->develop && $self->xtest eq 'test_develop' ) {
-				$self->_process_found_modules( 'test_develop', \@modules );
+		if ($self->format =~ /cpanfile|metajson/) {
+			if ($self->xtest eq 'test_requires') {
+				$self->_process_found_modules('test_requires', \@modules);
 			}
-		} else {
-			$self->_process_found_modules( 'test_requires', \@modules );
+			elsif ($self->develop && $self->xtest eq 'test_develop') {
+				$self->_process_found_modules('test_develop', \@modules);
+			}
+		}
+		else {
+			$self->_process_found_modules('test_requires', \@modules);
 		}
 	}
 	return;
