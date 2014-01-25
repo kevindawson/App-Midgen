@@ -69,7 +69,7 @@ sub xtests_test_requires {
 					)
 				{
 
-					foreach (keys @{$hunk->{children}}) {
+					foreach ( 0 .. $#{$hunk->{children}}) {
 
 						# looking for use Test::Requires { 'Test::Pod' => '1.46' };
 						if ($hunk->{children}[$_]->isa('PPI::Structure::Constructor')) {
@@ -77,7 +77,7 @@ sub xtests_test_requires {
 							my $ppi_sc = $hunk->{children}[$_]
 								if $hunk->{children}[$_]->isa('PPI::Structure::Constructor');
 
-							foreach (keys @{$ppi_sc->{children}}) {
+							foreach ( 0 .. $#{$ppi_sc->{children}}) {
 
 								if ($ppi_sc->{children}[$_]->isa('PPI::Statement')) {
 
