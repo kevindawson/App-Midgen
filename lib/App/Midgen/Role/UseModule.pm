@@ -51,29 +51,42 @@ sub xtests_use_module {
 		my @chunks1 = @{$self->ppi_document->find('PPI::Statement')};
 
 		foreach my $chunk (@chunks1) {
-#			p $chunk;
 
-			# test for use_module|use_package_optimistically|require_module
-			if (
-				$chunk->find(
-					sub {
-#						p $_[1];
-						$_[1]->isa('PPI::Token::Word')
-							and $_[1]->content
-							=~ m{\A(?:use_module|use_package_optimistically|require_modul)\z};
-					}
-				)
-				)
-			{
-				foreach (keys $chunk->{children}) {
+			if (not $chunk->find(sub { $_[1]->isa('PPI::Token::Symbol') })) {
 
-					# find all ppi_sl
-					if ($chunk->{children}[$_]->isa('PPI::Structure::List')) {
+				# test for module-runtime key-words
+				if (
+					$chunk->find(
+						sub {
+							$_[1]->isa('PPI::Token::Word')
+								and $_[1]->content
+								=~ m{\A(?:use_module|use_package_optimistically|require_modul)\z};
+						}
+					)
+					)
+				{
+					if (
+						not $chunk->find(
+							sub {
+								$_[1]->isa('PPI::Token::Word')
+									and $_[1]->content =~ m{\A(?:return)\z};
+							}
+						)
+						)
+					{
 
-						my $ppi_sl = $chunk->{children}[$_]
-							if $chunk->{children}[$_]->isa('PPI::Structure::List');
-						say 'Option 1: use_module( M::N )...';
-						$self->_module_names_ppi_sl(\@modules, $ppi_sl);
+						foreach (keys $chunk->{children}) {
+
+							# find all ppi_sl
+							if ($chunk->{children}[$_]->isa('PPI::Structure::List')) {
+
+								my $ppi_sl = $chunk->{children}[$_]
+									if $chunk->{children}[$_]->isa('PPI::Structure::List');
+
+								say 'Option 1: use_module( M::N )...' if $self->debug;
+								$self->_module_names_ppi_sl(\@modules, $ppi_sl);
+							}
+						}
 					}
 				}
 			}
@@ -114,26 +127,22 @@ sub xtests_use_module {
 	try {
 		# let's extract all ppi_sv
 		my @chunks2 = @{$self->ppi_document->find('PPI::Statement::Variable')};
-#		p @chunks2;
 		foreach my $chunk (@chunks2) {
-#			p $chunk;
 
 			# test for my
 			if (
 				$chunk->find(
 					sub {
-#						p $_[1];
 						$_[1]->isa('PPI::Token::Word')
 							and $_[1]->content =~ m{\A(?:my)\z};
 					}
 				)
 				)
 			{
-				# test for module-runtime key-word
+				# test for module-runtime key-words
 				if (
 					$chunk->find(
 						sub {
-#							p $_[1];
 							$_[1]->isa('PPI::Token::Word')
 								and $_[1]->content
 								=~ m{\A(?:use_module|use_package_optimistically)\z};
@@ -141,7 +150,6 @@ sub xtests_use_module {
 					)
 					)
 				{
-#					p $chunk;
 					foreach (keys $chunk->{children}) {
 
 						# find all ppi_sl
@@ -150,8 +158,8 @@ sub xtests_use_module {
 							my $ppi_sl = $chunk->{children}[$_]
 								if $chunk->{children}[$_]->isa('PPI::Structure::List');
 
-							say 'Option 2: my $q = use_module( M::N )...';
-
+							say
+								'Option 2: my $q = use_module( M::N )...' if $self->debug;
 							$self->_module_names_ppi_sl(\@modules, $ppi_sl);
 
 						}
@@ -189,31 +197,62 @@ sub xtests_use_module {
 #  PPI::Token::Whitespace  	'\n'
 
 	try {
-		my @chunks3 =
+		my @chunks1 = @{$self->ppi_document->find('PPI::Statement')};
 
-			map { [$_->schildren] }
+		foreach my $chunk (@chunks1) {
 
-			grep {
-			$_->{children}[4]->content
-				=~ m{\A(?:use_module|use_package_optimistically)\z}
-			} grep { $_->child(4)->isa('PPI::Token::Word') }
+			# test for not my
+			if (
+				not $chunk->find(
+					sub {
+						$_[1]->isa('PPI::Token::Word')
+							and $_[1]->content =~ m{\A(?:my)\z};
+					}
+				)
+				)
+			{
 
-			grep { $_->child(2)->content eq '=' }
-			grep { $_->child(2)->isa('PPI::Token::Operator') }
 
-			grep { $_->child(0)->isa('PPI::Token::Symbol') }
+				if ($chunk->find(sub { $_[1]->isa('PPI::Token::Symbol') })) {
 
-			@{$self->ppi_document->find('PPI::Statement') || []}
-			;    # need for pps remove in midgen -> || {}
+					if (
+						$chunk->find(
+							sub {
+								$_[1]->isa('PPI::Token::Operator') and $_[1]->content eq '=';
+							}
+						)
+						)
+					{
 
-		if (@chunks3) {
-			say 'Option 3: $q = use_module( M::N )...';
+						# test for module-runtime key-words
+						if (
+							$chunk->find(
+								sub {
+									$_[1]->isa('PPI::Token::Word')
+										and $_[1]->content
+										=~ m{\A(?:use_module|use_package_optimistically)\z};
+								}
+							)
+							)
+						{
+							foreach (keys $chunk->{children}) {
 
-#	p @chunks3;
-			$self->_module_names_psi(\@modules, @chunks3);
+								# find all ppi_sl
+								if ($chunk->{children}[$_]->isa('PPI::Structure::List')) {
+
+									my $ppi_sl = $chunk->{children}[$_]
+										if $chunk->{children}[$_]->isa('PPI::Structure::List');
+
+									say
+										'Option 3: $q = use_module( M::N )...' if $self->debug;
+									$self->_module_names_ppi_sl(\@modules, $ppi_sl);
+								}
+							}
+						}
+					}
+				}
+			}
 		}
-
-
 	};
 
 
@@ -291,20 +330,13 @@ sub xtests_use_module {
 					)
 					)
 				{
-#					say 'Option 4: return use_module( M::N )...';
 					foreach (keys $chunk->{children}) {
 
 						# find all ppi_sl
 						if ($chunk->{children}[$_]->isa('PPI::Structure::List')) {
-
 							my $ppi_sl = $chunk->{children}[$_]
 								if $chunk->{children}[$_]->isa('PPI::Structure::List');
-
-#					p $ppi_sl;
-#
-
-							say 'Option 4: return use_module( M::N )...';
-
+							say 'Option 4: return use_module( M::N )...' if $self->debug;
 							$self->_module_names_ppi_sl(\@modules, $ppi_sl);
 
 						}
@@ -314,7 +346,7 @@ sub xtests_use_module {
 		}
 	};
 
-	p @modules         if $self->debug;
+	p @modules;    #         if $self->debug;
 	p @version_strings if $self->debug;
 
 	# if we found a module, process it with the correct catogery
@@ -367,19 +399,22 @@ sub _module_names_ppi_sl {
 
 
 	if ($ppi_sl->isa('PPI::Structure::List')) {
-		p $ppi_sl;
+
+#		p $ppi_sl;
 		state $previous_module = undef;
 		foreach my $ppi_se (@{$ppi_sl->{children}}) {
 			foreach (keys $ppi_se->{children}) {
+
+#p $ppi_se->{children}[$_];
 				if ( $ppi_se->{children}[$_]->isa('PPI::Token::Quote::Single')
 					|| $ppi_se->{children}[$_]->isa('PPI::Token::Quote::Double'))
 				{
 					my $module = $ppi_se->{children}[$_]->content;
 					$module =~ s/(?:['|"])//g;
 					if ($module =~ m/\A[A-Z]/) {
-						warn 'found module - ' . $module;# if $self->debug;
-						say 'Option 4: return use_module( M::N )...';
+						warn 'found module - ' . $module if $self->debug;
 						push @$modules, $module;
+#						p $module;
 						p @$modules if $self->debug;
 						$previous_module = $module;
 					}
@@ -401,11 +436,11 @@ sub _module_names_ppi_sl {
 						$version_string = 0 if $_;
 					};
 
-					warn 'found version_string - ' . $version_string;# if $self->debug;
+					warn 'found version_string - ' . $version_string if $self->debug;
 					try {
-						$self->{found_version}{$previous_module} = $version_string
-							if $previous_module;
-
+						$self->{found_version}{$previous_module}
+							= $version_string if $previous_module;
+#						p $version_string;
 						$previous_module = undef;
 					};
 				}
@@ -416,6 +451,8 @@ sub _module_names_ppi_sl {
 
 }
 
+
+=begin  BlockComment  # BlockCommentNo_1
 
 #######
 # composed method extract module name from PPI::Structure::List
@@ -511,6 +548,10 @@ sub _module_names_psi {
 	return;
 
 }
+
+=end    BlockComment  # BlockCommentNo_1
+
+=cut
 
 
 no Moo::Role;
