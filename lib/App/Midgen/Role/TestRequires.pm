@@ -69,7 +69,7 @@ sub xtests_test_requires {
 					)
 				{
 
-					foreach (keys %{$hunk->{children}}) {
+					foreach (keys @{$hunk->{children}}) {
 
 						# looking for use Test::Requires { 'Test::Pod' => '1.46' };
 						if ($hunk->{children}[$_]->isa('PPI::Structure::Constructor')) {
@@ -93,7 +93,7 @@ sub xtests_test_requires {
 										{
 											my $module_name = $element->content;
 											$module_name =~ s/(?:'|")//g;
-											if ($module_name =~ m/\A[A-Z]/) {
+											if ($module_name =~ m/\A(?:[A-Z])/) {
 												warn 'found module - ' . $module_name if $self->debug;
 												push @modules, $module_name;
 											}
