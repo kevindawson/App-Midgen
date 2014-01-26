@@ -60,7 +60,7 @@ sub xtests_use_module {
 						sub {
 							$_[1]->isa('PPI::Token::Word')
 								and $_[1]->content
-								=~ m{\A(?:use_module|use_package_optimistically|require_modul)\z};
+								=~ m{\A(?:use_module|use_package_optimistically|require_module)\z};
 						}
 					)
 					)
@@ -75,7 +75,7 @@ sub xtests_use_module {
 						)
 					{
 
-						foreach (keys $chunk->{children}) {
+						for ( 0..$#{$chunk->{children}}) {
 
 							# find all ppi_sl
 							if ($chunk->{children}[$_]->isa('PPI::Structure::List')) {
@@ -150,7 +150,7 @@ sub xtests_use_module {
 					)
 					)
 				{
-					foreach (keys $chunk->{children}) {
+					for ( 0..$#{$chunk->{children}}) {
 
 						# find all ppi_sl
 						if ($chunk->{children}[$_]->isa('PPI::Structure::List')) {
@@ -212,7 +212,6 @@ sub xtests_use_module {
 				)
 			{
 
-
 				if ($chunk->find(sub { $_[1]->isa('PPI::Token::Symbol') })) {
 
 					if (
@@ -235,7 +234,7 @@ sub xtests_use_module {
 							)
 							)
 						{
-							foreach (keys $chunk->{children}) {
+							for ( 0..$#{$chunk->{children}}) {
 
 								# find all ppi_sl
 								if ($chunk->{children}[$_]->isa('PPI::Structure::List')) {
@@ -330,7 +329,7 @@ sub xtests_use_module {
 					)
 					)
 				{
-					foreach (keys $chunk->{children}) {
+					for ( 0..$#{$chunk->{children}}) {
 
 						# find all ppi_sl
 						if ($chunk->{children}[$_]->isa('PPI::Structure::List')) {
@@ -403,7 +402,7 @@ sub _module_names_ppi_sl {
 #		p $ppi_sl;
 		state $previous_module = undef;
 		foreach my $ppi_se (@{$ppi_sl->{children}}) {
-			foreach (keys $ppi_se->{children}) {
+			for ( 0..$#{$ppi_se->{children}}) {
 
 #p $ppi_se->{children}[$_];
 				if ( $ppi_se->{children}[$_]->isa('PPI::Token::Quote::Single')
