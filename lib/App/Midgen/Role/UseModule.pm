@@ -345,7 +345,7 @@ sub xtests_use_module {
 		}
 	};
 
-	p @modules;    #         if $self->debug;
+	p @modules if $self->debug;
 	p @version_strings if $self->debug;
 
 	# if we found a module, process it with the correct catogery
@@ -377,10 +377,9 @@ sub _is_module_runtime {
 				if (not $include->pragma) {
 					my $module = $include->module;
 
-#					p $module;
 					if ($module eq 'Module::Runtime') {
 						$module_runtime_include_found = TRUE;
-						p $module;    # if $self->debug;
+						p $module if $self->debug;
 					}
 				}
 			}
@@ -390,6 +389,8 @@ sub _is_module_runtime {
 	return $module_runtime_include_found;
 
 }
+
+
 #######
 # composed method extract module name from PPI::Structure::List
 #######
@@ -449,108 +450,6 @@ sub _module_names_ppi_sl {
 
 
 }
-
-
-=begin  BlockComment  # BlockCommentNo_1
-
-#######
-# composed method extract module name from PPI::Structure::List
-#######
-sub _module_names_psi {
-	my ($self, $modules, @chunks) = @_;
-
-#	p @chunks;
-
-#    PPI::Structure::List  	( ... )
-#      PPI::Statement::Expression
-#        PPI::Token::Quote::Double  	'"Math::BigInt"'
-#        PPI::Token::Operator  	','
-#        PPI::Token::Whitespace  	' '
-#        PPI::Token::Number::Float  	'1.31'
-#    PPI::Token::Operator  	'->'
-#    PPI::Token::Word  	'new'
-#    PPI::Structure::List  	( ... )
-#      PPI::Statement::Expression
-#        PPI::Token::Quote::Double  	'"1_234"'
-#    PPI::Token::Structure  	';'
-#  PPI::Token::Whitespace  	'\n'
-
-
-	try {
-		foreach my $hunk (@chunks) {
-
-#			p $hunk;
-
-			# looking for use Module::Runtime ...;
-			if (grep { $_->isa('PPI::Structure::List') } @$hunk) {
-
-#			say 'found Module::Runtime';
-
-				# hack for List
-				my @hunkdata = @$hunk;
-
-				foreach my $ppi_sl (@hunkdata) {
-					if ($ppi_sl->isa('PPI::Structure::List')) {
-
-#					p $ppi_sl;
-						foreach my $ppi_se (@{$ppi_sl->{children}}) {
-
-							if ($ppi_se->isa('PPI::Statement::Expression')) {
-								foreach my $element (@{$ppi_se->{children}}) {
-									if ( $element->isa('PPI::Token::Quote::Single')
-										|| $element->isa('PPI::Token::Quote::Double'))
-									{
-										my $module = $element->content;
-										$module =~ s/(?:['|"])//g;
-										if ($module =~ m/\A[A-Z]/) {
-											push @{$modules}, $module;
-											p @{$modules} if $self->debug;
-										}
-									}
-
-									if ( $element->isa('PPI::Token::Number::Float')
-										|| $element->isa('PPI::Token::Number::Version')
-										|| $element->isa('PPI::Token::Quote::Single')
-										|| $element->isa('PPI::Token::Quote::Double'))
-									{
-										p $element->content;
-										my $version_number = $element->content;
-										$version_number =~ s/(?:['|"])//g;
-										if ($version_number =~ m/\A(?:[\d|v])/) {
-
-											p $version_number;
-											try {
-												version->parse($version_number)->is_lax;
-											}
-											catch {
-												$version_number = 0 if $_;
-											};
-											say 'found version string - ' . $version_number;
-
-											#if $self->debug;
-#											p @{$modules};
-#											p $#$modules;
-											$self->{found_version}{@$modules[$#$modules]}
-												= $version_number;
-										}
-									}
-								}
-							}
-						}
-
-					}
-				}
-			}
-		}
-	};
-
-	return;
-
-}
-
-=end    BlockComment  # BlockCommentNo_1
-
-=cut
 
 
 no Moo::Role;
