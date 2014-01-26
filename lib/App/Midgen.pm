@@ -11,6 +11,7 @@ with qw(
 	App::Midgen::Role::Eval
 	App::Midgen::Role::FindMinVersion
 	App::Midgen::Role::Output
+	App::Midgen::Role::UseModule
 );
 
 # turn off experimental warnings
@@ -286,8 +287,13 @@ sub _find_makefile_requires {
 	my $relative_dir = $File::Find::dir;
 	$relative_dir =~ s/$Working_Dir//;
 	$self->_set_looking_infile( File::Spec->catfile( $relative_dir, $filename ) );
-
 	$self->_set_ppi_document( PPI::Document->new($filename) );
+
+	# do extra test early check for use_module before hand
+#	p $filename;
+	$self->xtests_use_module();
+
+
 	my $prereqs = $self->scanner->scan_ppi_document( $self->ppi_document );
 	my @modules = $prereqs->required_modules;
 
@@ -393,6 +399,10 @@ sub _find_makefile_test_requires {
 	# do extra test early to identify eval befroe hand
 	$self->_xtests_eval();
 
+	# do extra test early check for use_module before hand
+#	p $filename;
+	$self->xtests_use_module();
+
 	my $prereqs = $self->scanner->scan_ppi_document( $self->ppi_document );
 	my @modules = $prereqs->required_modules;
 
@@ -437,6 +447,10 @@ sub _process_found_modules {
 
 		#deal with ''
 		next if $module eq NONE;
+
+		# let's show every thing we can find infile
+		if ($self->format ne 'infile'){
+
 		my $distribution_name = $self->distribution_name // 'm/t';
 		given ($module) {
 			when (/perl/sxm) {
@@ -448,6 +462,7 @@ sub _process_found_modules {
 
 				# don't include our own packages here
 				next;
+#				next if $self->format ne 'infile';
 			}
 			when (/^t::/sxm) {
 
@@ -472,6 +487,7 @@ sub _process_found_modules {
 				# mark all Padre core as just Padre, for plugins
 				$module = 'Padre';
 			}
+		}
 		}
 
 		# lets keep track of how many times a module include is found
