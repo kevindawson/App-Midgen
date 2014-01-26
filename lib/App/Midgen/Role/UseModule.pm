@@ -5,9 +5,12 @@ use Moo::Role;
 requires qw( ppi_document debug format xtest _process_found_modules develop );
 
 use PPI;
+
+use version 0.9902;
 use Data::Printer;    # caller_info => 1;
 use Try::Tiny;
 
+our $VERSION = '0.27_05';
 use constant {BLANK => q{ }, TRUE => 1, FALSE => 0, NONE => q{}, TWO => 2,
 	THREE => 3,};
 
@@ -469,7 +472,7 @@ for methods in use_ok in BEGIN blocks, used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.26
+version: 0.27_05
 
 =head1 DESCRIPTION
 
@@ -490,7 +493,7 @@ inside BEGIN blocks in test files:
 
 =over 4
 
-=item * xtests_use_ok
+=item * xtests_use_module 
 
 Checking for the following, extracting module name only.
 
