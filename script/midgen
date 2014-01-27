@@ -179,7 +179,6 @@ By default we output to STDOUT in 'dsl' format, so you can check,
  midgen -f dsl		# Module::Include::DSL
  midgen -f mi		# Module::Include
  midgen -f mb		# Module::Build
- midgen -f dzil		# Dist::Zilla
  midgen -f eumm		# ExtUtils::MakeMaker
  midgen -f dist		# dist.ini
  midgen -f cpanfile	# cpanfile prereqs

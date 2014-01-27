@@ -55,9 +55,6 @@ sub output_header {
 			) if not $self->quiet;
 
 		}
-		when ('dzil') {
-			$self->header_dzil( $self->distribution_name );
-		}
 		when ('eumm') {
 			$self->header_eumm( $self->distribution_name );
 		}
@@ -96,9 +93,6 @@ sub output_main_body {
 		when ('cpanfile') {
 			$self->body_cpanfile( $title, $required_ref );
 		}
-		when ('dzil') {
-			$self->body_dzil( $title, $required_ref );
-		}
 		when ('eumm') {
 			$self->body_eumm( $title, $required_ref );
 		}
@@ -135,9 +129,6 @@ sub output_footer {
 		}
 		when ('cpanfile') {
 			$self->footer_cpanfile( $self->distribution_name );
-		}
-		when ('dzil') {
-			$self->footer_dzil( $self->distribution_name );
 		}
 		when ('eumm') {
 			$self->footer_eumm( $self->distribution_name );
