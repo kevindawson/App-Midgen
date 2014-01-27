@@ -44,7 +44,7 @@ say "\t'CONFIGURE_REQUIRES' => {";
 say "\t\t'ExtUtils::MakeMaker' => '6.64'";
 say "\t},";
 print CLEAR "\n";
-    print "\n";
+#    print "\n";
   }
 
   return;
@@ -64,6 +64,9 @@ sub body_eumm {
       $pm_length = length $module_name;
     }
   }
+
+  say "\t'MIN_PERL_VERSION' => '$App::Midgen::Min_Version',\n" if $title eq 'requires';
+#  print "\n";
 
   given ($title) {
     when ('requires')      { say "\t'PREREQ_PM' => {"; }
@@ -93,6 +96,7 @@ sub footer_eumm {
     print BRIGHT_BLACK "\n";
     say '# ToDo you should consider the following';
     say "\tMETA_MERGE => {";
+	say "\t\t'meta-spec' => { version => 2 },";
     say "\t\t'resources' => {";
     say "\t\t\t'homepage' => 'https://github.com/.../$package_name',";
     say "\t\t\t'repository' => 'git://github.com/.../$package_name.git',";
@@ -107,15 +111,15 @@ sub footer_eumm {
   }
 
   if (defined -d File::Spec->catdir($App::Midgen::Working_Dir, 'script')) {
-    say '\'EXE_FILES\' => [qw(';
-    say "\tscript/...";
-    say ')],';
+    say "\t'EXE_FILES' => [qw(";
+    say "\t\tscript/...";
+    say "\t)],";
     print "\n";
   }
   elsif (defined -d File::Spec->catdir($App::Midgen::Working_Dir, 'bin')) {
-    say '\'EXE_FILES\' => [qw(';
-    say "\tbin/...";
-    say ')],';
+    say "\t'EXE_FILES' => [qw(";
+    say "\t\ttbin/...";
+    say "\t)],";
     print "\n";
   }
 
