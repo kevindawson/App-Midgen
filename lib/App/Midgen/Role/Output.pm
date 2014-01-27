@@ -3,14 +3,15 @@ package App::Midgen::Role::Output;
 use v5.10;
 use Moo::Role;
 with qw(
-	App::Midgen::Role::Output::MIdsl
-	App::Midgen::Role::Output::MI
-	App::Midgen::Role::Output::MB
-	App::Midgen::Role::Output::Dzil
-	App::Midgen::Role::Output::Dist
 	App::Midgen::Role::Output::CPANfile
-	App::Midgen::Role::Output::METAjson
+	App::Midgen::Role::Output::Dist
+	App::Midgen::Role::Output::Dzil
+	App::Midgen::Role::Output::EUMM
 	App::Midgen::Role::Output::Infile
+	App::Midgen::Role::Output::MB
+	App::Midgen::Role::Output::METAjson
+	App::Midgen::Role::Output::MI
+	App::Midgen::Role::Output::MIdsl
 );
 requires qw( format distribution_name get_module_version verbose );
 
@@ -57,6 +58,9 @@ sub output_header {
 		when ('dzil') {
 			$self->header_dzil( $self->distribution_name );
 		}
+		when ('eumm') {
+			$self->header_eumm( $self->distribution_name );
+		}
 		when ('mb') {
 			$self->header_mb( $self->distribution_name );
 		}
@@ -95,6 +99,9 @@ sub output_main_body {
 		when ('dzil') {
 			$self->body_dzil( $title, $required_ref );
 		}
+		when ('eumm') {
+			$self->body_eumm( $title, $required_ref );
+		}
 		when ('mb') {
 			$self->body_mb( $title, $required_ref );
 		}
@@ -131,6 +138,9 @@ sub output_footer {
 		}
 		when ('dzil') {
 			$self->footer_dzil( $self->distribution_name );
+		}
+		when ('eumm') {
+			$self->footer_eumm( $self->distribution_name );
 		}
 		when ('mb') {
 			$self->footer_mb( $self->distribution_name );

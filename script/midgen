@@ -6,10 +6,10 @@ use warnings FATAL => 'all';
 
 use version;
 our $VERSION = '0.27_05';
-use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
+use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Data::Printer { caller_info => 1, colored => 1, };
+use Data::Printer {caller_info => 1, colored => 1,};
 
 # we are doing this so we can run from git during development
 # perl ~/GitHub/App-Midgen/script/midgen
@@ -30,11 +30,11 @@ my $json = JSON::Tiny->new;
 use File::Spec;
 use File::Slurp qw(read_file write_file);
 
-my $midgenrc = File::Spec->catfile( $ENV{HOME}, '.midgenrc' );
+my $midgenrc = File::Spec->catfile($ENV{HOME}, '.midgenrc');
 
 my $config;
-if ( -e $midgenrc ) {
-	$config = $json->decode( read_file($midgenrc) );
+if (-e $midgenrc) {
+	$config = $json->decode(read_file($midgenrc));
 }
 
 #######
@@ -75,7 +75,7 @@ pod2usage(1) if $help;
 # run App::Midgen
 #######
 
-if ( $verbose > 0 ) {
+if ($verbose > 0) {
 	say 'Running midgen v' . $VERSION;
 	say 'Stamped -> ' . gmstamp($BASETIME);
 	say 'Honouring $ENV{ANSI_COLORS_DISABLED}' if $ENV{ANSI_COLORS_DISABLED};
@@ -101,7 +101,8 @@ $midgen->run();
 #######
 if ($write) {
 	my $midgenrc_data = $json->encode(
-		{   core      => $core,
+		{
+			core      => $core,
 			dual_life => $dual_life,
 			format    => $format[-1],
 			quiet     => $quiet,
@@ -110,13 +111,13 @@ if ($write) {
 	);
 
 	p $midgenrc_data;
-	write_file( $midgenrc, $midgenrc_data );
+	write_file($midgenrc, $midgenrc_data);
 }
 
 #######
 # time and exit
 #######
-if ( $verbose > 0 ) {
+if ($verbose > 0) {
 	my $run_time = time - $BASETIME;
 	say 'I just spent ' . $run_time . 's doing all that, for you, enjoy';
 	say '__END__';
@@ -179,6 +180,7 @@ By default we output to STDOUT in 'dsl' format, so you can check,
  midgen -f mi		# Module::Include
  midgen -f mb		# Module::Build
  midgen -f dzil		# Dist::Zilla
+ midgen -f eumm		# ExtUtils::MakeMaker
  midgen -f dist		# dist.ini
  midgen -f cpanfile	# cpanfile prereqs
  midgen -f metajson	# META.json

@@ -1,12 +1,12 @@
 Revision history for App-Midgen
 
 0.27_05 2014-01-26
- - Update additional scanners to extract version strings where posiable
-   if present, used by infile format
+ - Update additional scanners to extract version strings where posiable if
+   present, used by infile format
  - Add UseModule scanner for Module::Runtime Includes
  - Eval.pm hack for finding try blocks as well
- - Fix bug found by oliver++ where we were not checking module names
-   first char was upper
+ - Fix bug found by oliver++ where we were not checking module names first
+   char was upper
  - add a valid licence to all files
  - regex tweak for perl script to support #!perl
 

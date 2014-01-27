@@ -52,6 +52,7 @@ has 'format' => (
 			mb       => 1,
 			dzil     => 1,
 			dist     => 1,
+			eumm     => 1,
 			cpanfile => 1,
 			metajson => 1,
 			infile   => 1

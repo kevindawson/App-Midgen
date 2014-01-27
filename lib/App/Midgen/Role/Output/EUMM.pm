@@ -1,4 +1,4 @@
-package App::Midgen::Role::Output::Dzil;
+package App::Midgen::Role::Output::EUMM;
 
 use v5.10;
 use Moo::Role;
@@ -20,9 +20,9 @@ use constant {BLANK => q{ }, NONE => q{}, THREE => 3,};
 use File::Spec;
 
 #######
-# header_dzil
+# header_eumm
 #######
-sub header_dzil {
+sub header_eumm {
   my $self = shift;
   my $package_name = shift // NONE;
 
@@ -50,9 +50,9 @@ print CLEAR "\n";
   return;
 }
 #######
-# body_dzil
+# body_eumm
 #######
-sub body_dzil {
+sub body_eumm {
   my $self         = shift;
   my $title        = shift;
   my $required_ref = shift || return;
@@ -82,9 +82,9 @@ sub body_dzil {
   return;
 }
 #######
-# footer_dzil
+# footer_eumm
 #######
-sub footer_dzil {
+sub footer_eumm {
   my $self = shift;
   my $package_name = shift // NONE;
   $package_name =~ s{::}{-}g;
@@ -137,7 +137,7 @@ __END__
 
 =head1 NAME
 
-App::Midgen::Role::Output::Dzil - Output Format - Dist::Zilla,
+App::Midgen::Role::Output::EUMM - Output Format - ExtUtils::MakeMaker,
 used by L<App::Midgen>
 
 =head1 VERSION
