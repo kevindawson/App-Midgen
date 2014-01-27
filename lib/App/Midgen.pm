@@ -43,7 +43,7 @@ use version;
 # stop rlib from Fing all over cwd
 our $Working_Dir = cwd();
 our $Min_Version = 0;
-
+p $Min_Version;
 
 #######
 # run
@@ -177,13 +177,14 @@ sub _find_package_names {
 	$self->_set_ppi_document( PPI::Document->new($filename) );
 
 	try {
-		if ( $self->min_ver_fast ) {
+#say '$self->min_ver_fast - ' . $self->min_ver_fast;
+		if ( $self->{min_ver_fast} ) {
 
-			# say 'running fast';
+			say 'running fast';
 			$self->min_version($filename);
 		} else {
 
-			# say 'running slow';
+			say 'running slow';
 			$self->min_version(); # if not $self->min_ver_fast;
 		}
 	};
@@ -290,7 +291,7 @@ sub _find_makefile_requires {
 	$self->_set_ppi_document( PPI::Document->new($filename) );
 
 	# do extra test early check for use_module before hand
-#	p $filename;
+	p $filename;
 	$self->xtests_use_module();
 
 
