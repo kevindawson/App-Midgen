@@ -55,7 +55,7 @@ sub run {
 	try {
 		$self->first_package_name();
 	};
-	$self->output_header();
+#	$self->output_header();
 
 	$self->find_required_modules();
 #	$self->find_required_test_modules();
@@ -102,6 +102,9 @@ sub run {
 
 
 	}
+
+	# display chosen output format 
+	$self->output_header();
 
 	$self->output_main_body( 'requires',      $self->{package_requires} );
 	$self->output_main_body( 'test_requires', $self->{test_requires} );
@@ -167,7 +170,7 @@ sub _find_package_names {
 	my $filename = $_;
 	state $files_checked;
 	if ( defined $files_checked ) {
-		return if $files_checked >= THREE;
+		return if $files_checked >= THREE and not $self->min_ver_fast;
 	}
 
 	# Only check in pm files

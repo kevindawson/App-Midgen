@@ -12,7 +12,7 @@ use constant {TRUE => 1, FALSE => 0,};
 use Try::Tiny;
 
 has 'min_ver_fast' =>
-  (is => 'rw', isa => Bool, builder => '_build_min_ver_fast',);
+  (is => 'lazy', isa => Bool);#builder => '_build_min_ver_fast',);
 
 sub _build_min_ver_fast {
   my $self = shift;
@@ -27,7 +27,7 @@ sub _build_min_ver_fast {
       return TRUE;
     }
   };
-  return;
+#  return;
 }
 
 #######
