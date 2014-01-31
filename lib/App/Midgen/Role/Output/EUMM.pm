@@ -16,117 +16,171 @@ local $OUTPUT_AUTOFLUSH = 1;
 
 use Term::ANSIColor qw( :constants colored );
 use Data::Printer {caller_info => 1, colored => 1,};
-use constant {BLANK => q{ }, NONE => q{}, THREE => 3,};
+use constant {
+	BLANK  => q{ },
+	NONE   => q{},
+	THREE  => q{   },
+	SIX    => q{      },
+	NINE   => q{         },
+	TWELVE => q{            },
+};
 use File::Spec;
 
 #######
 # header_eumm
 #######
 sub header_eumm {
-  my $self = shift;
-  my $package_name = shift // NONE;
+	my $self = shift;
+	my $package_name = shift // NONE;
 
-  if ($package_name ne NONE) {
-    print "\n";
-#    say "'NAME' => '$package_name'";
-#    $package_name =~ s{::}{/}g;
-#    say "'VERSION_FROM' => 'lib/$package_name.pm'";
+	if ($package_name ne NONE) {
+		print "\n";
 
-say 'use ExtUtils::MakeMaker;';
-print "\n"; 
-say 'WriteMakefile(';
-    
-    say "\t'NAME' => '$package_name',";
-    $package_name =~ s{::}{/}g;
-    say "\t'VERSION_FROM' => 'lib/$package_name.pm',";
-print BRIGHT_BLACK "\n";
-say "\t'CONFIGURE_REQUIRES' => {";
-say "\t\t'ExtUtils::MakeMaker' => '6.64'";
-say "\t},";
-print CLEAR "\n";
-#    print "\n";
-  }
+		say 'use strict;';
+		say 'use warnings;';
+		say 'use ExtUtils::MakeMaker 0.68;';
+		print "\n";
+		say 'WriteMakefile(';
 
-  return;
+		say THREE. "'NAME' => '$package_name',";
+		$package_name =~ s{::}{/}g;
+		say THREE. "'VERSION_FROM' => 'lib/$package_name.pm',";
+		say THREE. "'ABSTRACT_FROM' => 'lib/$package_name.pm',";
+
+		print BRIGHT_BLACK;
+		say THREE. "'AUTHOR' => '...',";
+		say THREE. "'LICENSE' => 'perl_5',";
+		print CLEAR;
+## 6.64 f***** RT#85406
+		say THREE. "'BUILD_REQUIRES' => {";
+		say SIX. "'ExtUtils::MakeMaker' => '6.68'";
+		say THREE. "},";
+		say THREE. "'CONFIGURE_REQUIRES' => {";
+		say SIX. "'ExtUtils::MakeMaker' => '6.68'";
+		say THREE. "},";
+	}
+
+	return;
 }
 #######
 # body_eumm
 #######
 sub body_eumm {
-  my $self         = shift;
-  my $title        = shift;
-  my $required_ref = shift || return;
-  print "\n";
+	my $self         = shift;
+	my $title        = shift;
+	my $required_ref = shift;
 
-  my $pm_length = 0;
-  foreach my $module_name (sort keys %{$required_ref}) {
-    if (length $module_name > $pm_length) {
-      $pm_length = length $module_name;
-    }
-  }
+	my $pm_length = 0;
+	foreach my $module_name (sort keys %{$required_ref}) {
+		if (length $module_name > $pm_length) {
+			$pm_length = length $module_name;
+		}
+	}
 
-  say "\t'MIN_PERL_VERSION' => '$App::Midgen::Min_Version',\n" if $title eq 'requires';
-#  print "\n";
+	say THREE. "'MIN_PERL_VERSION' => '$App::Midgen::Min_Version',"
+		if $title eq 'requires';
 
-  given ($title) {
-    when ('requires')      { say "\t'PREREQ_PM' => {"; }
-    when ('test_requires') { say "\t'TEST_REQUIRES' => {"; }
-    when ('recommends')    { return; }
-  }
+	return if not %{$required_ref} and $title =~ m{(?:requires)\z};
 
-  foreach my $module_name (sort keys %{$required_ref}) {
+	given ($title) {
+		when ('requires')      { say THREE. "'PREREQ_PM' => {"; }
+		when ('test_requires') { say THREE. "'TEST_REQUIRES' => {"; }
+		when ('recommends')    { $self->_recommends($required_ref); return; }
+	}
 
-    my $sq_key = q{'} . $module_name . q{'};
-    printf "\t\t %-*s => '%s',\n", $pm_length + 2, $sq_key,
-      $required_ref->{$module_name};
-  }
-  say "\t},";
+	foreach my $module_name (sort keys %{$required_ref}) {
 
-  return;
+		my $sq_key = q{'} . $module_name . q{'};
+		printf SIX. " %-*s => '%s',\n", $pm_length + 2, $sq_key,
+			$required_ref->{$module_name};
+	}
+	say THREE. "},";
+
+	return;
 }
+
+sub _recommends {
+	my $self         = shift;
+	my $required_ref = shift;
+
+	my $pm_length = 0;
+	foreach my $module_name (sort keys %{$required_ref}) {
+		if (length $module_name > $pm_length) {
+			$pm_length = length $module_name;
+		}
+	}
+	say THREE. "'META_MERGE' => {";
+	say SIX. "'meta-spec' => { 'version' => '2' },";
+	return if not %{$required_ref};
+	say SIX. "'prereqs' => {";
+	say NINE. "'test' => {";
+	say TWELVE. "'suggests' => {";
+	foreach my $module_name (sort keys %{$required_ref}) {
+
+		my $sq_key = q{'} . $module_name . q{'};
+		printf "%-15s %-*s => '%s',\n", BLANK, $pm_length + 2, $sq_key,
+			$required_ref->{$module_name};
+	}
+	say TWELVE. "}";
+	say NINE. "}";
+	say SIX. "},";
+
+}
+
+
 #######
 # footer_eumm
 #######
 sub footer_eumm {
-  my $self = shift;
-  my $package_name = shift // NONE;
-  $package_name =~ s{::}{-}g;
+	my $self = shift;
+	my $package_name = shift // NONE;
+	$package_name =~ s{::}{-}g;
 
-  if ($self->verbose > 0) {
-    print BRIGHT_BLACK "\n";
-    say '# ToDo you should consider the following';
-    say "\tMETA_MERGE => {";
-	say "\t\t'meta-spec' => { version => 2 },";
-    say "\t\t'resources' => {";
-    say "\t\t\t'homepage' => 'https://github.com/.../$package_name',";
-    say "\t\t\t'repository' => 'git://github.com/.../$package_name.git',";
-    say "\t\t\t'bugtracker' => 'https://github.com/.../$package_name/issues',";
-    say "\t\t},";
-    say "\t\t'x_contributors' => [";
-    say "\t\t\t'brian d foy (ADOPTME) <brian.d.foy\@gmail.com>',";
-    say "\t\t\t'Fred Bloggs <fred\@bloggs.org>',";
-    say "\t\t],";
-    say "\t},";
-    print CLEAR "\n";
-  }
+	if ($self->verbose > 0) {
+		print BRIGHT_BLACK;
 
-  if (defined -d File::Spec->catdir($App::Midgen::Working_Dir, 'script')) {
-    say "\t'EXE_FILES' => [qw(";
-    say "\t\tscript/...";
-    say "\t)],";
-    print "\n";
-  }
-  elsif (defined -d File::Spec->catdir($App::Midgen::Working_Dir, 'bin')) {
-    say "\t'EXE_FILES' => [qw(";
-    say "\t\ttbin/...";
-    say "\t)],";
-    print "\n";
-  }
+		say SIX. "'resources' => {";
 
-  say '},';
-  print "\n";
+		say NINE. "'bugtracker' => {";
+		say TWELVE. "'web' => 'https://github.com/.../$package_name/issues',";
+		say NINE. "},";
 
-  return;
+		say NINE. "'homepage' => 'https://github.com/.../$package_name',";
+
+		say NINE. "'repository' => {";
+		say TWELVE. "'type' => 'git',";
+		say TWELVE. "'url' => 'git://github.com/.../$package_name.git',";
+		say TWELVE. "'web' => 'https://github.com/.../$package_name',";
+		say NINE. "},";
+		say SIX. "},";
+
+		say SIX. "'x_contributors' => [";
+		say NINE. "'brian d foy (ADOPTME) <brian.d.foy\@gmail.com>',";
+		say NINE. "'Fred Bloggs <fred\@bloggs.org>',";
+		say SIX. "],";
+
+		print CLEAR;
+		say THREE. '},';
+
+	}
+
+## todo sort out below
+#	if (defined -d File::Spec->catdir($App::Midgen::Working_Dir, 'script')) {
+#		say THREE."'EXE_FILES' => [qw(";
+#		say SIX. "script/...";
+#		say THREE.')],';
+##		print "\n";
+#	}
+#	elsif (defined -d File::Spec->catdir($App::Midgen::Working_Dir, 'bin')) {
+#		say THREE."'EXE_FILES' => [qw(";
+#		say SIX. "tbin/...";
+#		say THREE.')],';
+##		print "\n";
+#	}
+
+	say ')'."\n";
+
+	return;
 }
 
 no Moo;
@@ -157,11 +211,11 @@ types, be that mcpan, dual-life or added distribution.
 
 =over 4
 
-=item * header_dzil
+=item * header_eumm
 
-=item * body_dzil
+=item * body_eumm
 
-=item * footer_dzil
+=item * footer_eumm
 
 =back
 
