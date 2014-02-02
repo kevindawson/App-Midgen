@@ -103,7 +103,7 @@ sub run {
 
 	}
 
-	# display chosen output format 
+	# display chosen output format
 	$self->output_header();
 
 	$self->output_main_body( 'requires',      $self->{package_requires} );

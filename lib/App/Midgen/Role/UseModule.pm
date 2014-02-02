@@ -493,7 +493,7 @@ inside BEGIN blocks in test files:
 
 =over 4
 
-=item * xtests_use_module 
+=item * xtests_use_module
 
 Checking for the following, extracting module name only.
 
