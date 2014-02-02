@@ -5,13 +5,12 @@ use Moo::Role;
 with qw(
 	App::Midgen::Role::Output::CPANfile
 	App::Midgen::Role::Output::Dist
-	App::Midgen::Role::Output::Dzil
 	App::Midgen::Role::Output::EUMM
 	App::Midgen::Role::Output::Infile
 	App::Midgen::Role::Output::MB
 	App::Midgen::Role::Output::METAjson
-	App::Midgen::Role::Output::MI
 	App::Midgen::Role::Output::MIdsl
+	App::Midgen::Role::Output::MI
 );
 requires qw( format distribution_name get_module_version verbose );
 
