@@ -164,19 +164,19 @@ sub footer_eumm {
 
 	}
 
-## todo sort out below
-#	if (defined -d File::Spec->catdir($App::Midgen::Working_Dir, 'script')) {
-#		say THREE."'EXE_FILES' => [qw(";
-#		say SIX. "script/...";
-#		say THREE.')],';
-##		print "\n";
-#	}
-#	elsif (defined -d File::Spec->catdir($App::Midgen::Working_Dir, 'bin')) {
-#		say THREE."'EXE_FILES' => [qw(";
-#		say SIX. "tbin/...";
-#		say THREE.')],';
-##		print "\n";
-#	}
+# todo sort out below
+	if (defined -d File::Spec->catdir($App::Midgen::Working_Dir, 'script')) {
+		say THREE."'EXE_FILES' => [ (";
+		say SIX. "'script/...'";
+		say THREE.') ],';
+#		print "\n";
+	}
+	elsif (defined -d File::Spec->catdir($App::Midgen::Working_Dir, 'bin')) {
+		say THREE."'EXE_FILES' => [qw(";
+		say SIX. "bin/...";
+		say THREE.')],';
+#		print "\n";
+	}
 
 	say ')'."\n";
 
