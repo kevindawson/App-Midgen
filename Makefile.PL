@@ -7,39 +7,39 @@ perl_version 5.010001
 
 requires Carp                       1.32
 requires Cwd                        3.4
-requires Class::XSAccessor          1.18 if can_xs
+requires Class::XSAccessor          1.19 if can_xs
 requires Data::Printer              0.35
 requires File::Slurp                9999.19
 requires File::Spec                 3.4
 requires Getopt::Long               2.42
-requires JSON::Tiny                 0.35
+requires JSON::Tiny                 0.4
 requires List::MoreUtils            0.33
 requires MetaCPAN::API              0.43
-requires Module::CoreList           3.0
-requires Moo                        1.003001
+requires Module::CoreList           3.04
+requires Moo                        1.004002
 requires PPI                        1.215
 requires PPI::XS                    0.902 if can_xs
 requires Perl::MinimumVersion       1.32
 requires Perl::MinimumVersion::Fast 0.11 if can_xs
-requires Perl::PrereqScanner        1.017
+requires Perl::PrereqScanner        1.019
 requires Pod::Usage                 1.63
-requires Scalar::Util               1.32
+requires Scalar::Util               1.38
 requires Term::ANSIColor            4.02
 requires Time::Stamp                1.3
-requires Try::Tiny                  0.18
-requires Type::Tiny                 0.026
-requires Types::Standard            0.03
+requires Try::Tiny                  0.19
+requires Type::Tiny                 0.038
+requires Types::Standard            0.038
 requires constant                   1.27
 # requires lib                        0.63
-requires version                    0.9904
+requires version                    0.9907
 
 test_requires Test::CheckDeps 0.01
-test_requires Test::More      0.99
+test_requires Test::More      1.001002
 test_requires Test::Requires  0.07
 
-recommends ExtUtils::MakeMaker        6.8
+recommends ExtUtils::MakeMaker        6.88
 recommends File::Spec::Functions      3.4
-recommends List::Util                 1.35
+recommends List::Util                 1.38
 recommends Test::Pod                  1.48
 recommends Test::Pod::Coverage        1.08
 recommends Test::Script               1.07
