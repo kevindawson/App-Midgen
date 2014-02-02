@@ -15,7 +15,7 @@ This enables you to see which modules you have used,
 
 All output goes to STDOUT, so you can use it as you see fit.
 
-### Version 0.26
+### Version 0.27_09
 
 ## Synopsis
 
@@ -64,8 +64,8 @@ By default we output to STDOUT in 'dsl' format, so you can check, copy n paste o
 
     midgen -f dsl          # Module::Include::DSL
     midgen -f mi           # Module::Include
-    midgen -f build        # Build
-    midgen -f dzil         # Dist::Zilla
+    midgen -f mb           # Module::Build
+    midgen -f eumm         # ExtUtils::MakeMaker
     midgen -f dist         # dist.ini
     midgen -f cpanfile     # cpanfile prereqs
     midgen -f metajson     # META.json
@@ -90,7 +90,7 @@ Show file names that we are checking, as we go
 ####--experimental or -x
 This experimental feature turns on extra passing, that removes twins and noisy_children, 
 replacing them with there parent(dist), giving a minimalist output, you might conceive this as controversial, 
-if so don't enable it.
+if so don't enable it.It also scans xt/ directory if you have one. If you find it to noisy you can add a '-q' for --quiet.
 
     midgen -x
 
