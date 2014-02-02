@@ -1,5 +1,8 @@
 Revision history for App-Midgen
 
+0.27_09 2014-02-02
+ - fix failing test
+
 0.27_07 2014-02-02
  - fix find-min-version I did knot know it was f***** Ouch :)
  - Add outpot Format EUMM -> ExtUtils::MakeMaker

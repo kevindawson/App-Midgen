@@ -5,7 +5,7 @@ use strict;
 use warnings FATAL => 'all';
 
 use version;
-our $VERSION = '0.27_07';
+our $VERSION = '0.27_09';
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -136,7 +136,7 @@ midgen - Check B<requires> & B<test_requires> of your package for CPAN inclusion
 
 =head1 VERSION
 
-This document describes midgen version: 0.27_07
+This document describes midgen version: 0.27_09
 
 =head1 SYNOPSIS
 

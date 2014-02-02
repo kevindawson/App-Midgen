@@ -11,7 +11,7 @@ use Data::Printer {caller_info => 1, colored => 1,};
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.27_07';
+our $VERSION = '0.27_09';
 
 
 #######
@@ -233,7 +233,7 @@ App::Midgen::Roles::Eval - used by L<App::Midgen>
 
 =head1 VERSION
 
-This document describes App::Midgen::Roles version: 0.27_07
+This document describes App::Midgen::Roles version: 0.27_09
 
 =head1 METHODS
 
