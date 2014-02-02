@@ -18,14 +18,14 @@ BEGIN {
   use_ok('App::Midgen::Role::Eval');
   use_ok('App::Midgen::Role::FindMinVersion');
   use_ok('App::Midgen::Role::Output');
+  use_ok('App::Midgen::Role::Output::CPANfile');
+  use_ok('App::Midgen::Role::Output::Dist');
+  use_ok('App::Midgen::Role::Output::EUMM');
+  use_ok('App::Midgen::Role::Output::Infile');
+  use_ok('App::Midgen::Role::Output::MB');
+  use_ok('App::Midgen::Role::Output::METAjson');
   use_ok('App::Midgen::Role::Output::MIdsl');
   use_ok('App::Midgen::Role::Output::MI');
-  use_ok('App::Midgen::Role::Output::MB');
-  use_ok('App::Midgen::Role::Output::EUMM');
-  use_ok('App::Midgen::Role::Output::Dist');
-  use_ok('App::Midgen::Role::Output::CPANfile');
-  use_ok('App::Midgen::Role::Output::METAjson');
-  use_ok('App::Midgen::Role::Output::Infile');
 
   use_ok('Carp',                 '1.26');
   use_ok('Cwd',                  '3.4');
