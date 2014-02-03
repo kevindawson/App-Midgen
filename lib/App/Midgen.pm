@@ -747,7 +747,6 @@ sub remove_twins {
 					if ($self->verbose) {
 						print BRIGHT_BLACK;
 
-719:	operator in print statement not recommended
 						# say 'i have found twins';
 						print $dum_name . ' => '
 							. $required_ref->{$sorted_modules[$n - 1]};
@@ -766,7 +765,6 @@ sub remove_twins {
 				if (looks_like_number($version)) {
 
 					#Check parent version against a twins version
-734:	operator in print statement not recommended
 					if ($version eq $required_ref->{$sorted_modules[$n]}) {
 						say $dum_parient . ' -> '
 							. $version
@@ -805,7 +803,6 @@ sub _check_mojo_core {
 	if ($self->verbose) {
 		print BRIGHT_BLACK;
 
-770:	operator in print statement not recommended
 		#say 'looks like we found another mojo core module';
 		say $mojo_module . ' version ' . $mojo_module_ver;
 		print CLEAR;
@@ -885,7 +882,6 @@ sub get_module_version {
 		# a bit of de crappy-flying
 		# catch Test::Kwalitee::Extra 6e-06
 		print BRIGHT_BLACK;
-847:	operator in print statement not recommended
 		say $module
 			. ' Unique Release Sequence Indicator NOT! -> '
 			. $cpan_version
