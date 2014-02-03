@@ -506,17 +506,20 @@ This scanner will look for the following formats or variations there in.
 
 =item * xtests_use_module
 
-Checking for the following, extracting module name only.
+Checking for the following, extracting module name and version strings.
 
- BEGIN {
-   use_ok( 'Term::ReadKey', '2.30' );
-   use_ok( 'Term::ReadLine', '1.10' );
-   use_ok( 'Fred::BloggsOne', '1.01' );
-   use_ok( "Fred::BloggsTwo", "2.02" );
-   use_ok( 'Fred::BloggsThree', 3.03 );
- }
+  use_module("Module::Name", x.xx)->new( ... );
+  require_module( 'Module::Name');
+  use_package_optimistically("Module::Name", x.xx)->new( ... );
 
-Used to check files in t/ and xt/ directories.
+  my $abc = use_module("Module::Name", x.xx)->new( ... );
+  my $abc = use_package_optimistically("Module::Name", x.xx)->new( ... );
+
+  $abc = use_module("Module::Name", x.xx)->new( ... );
+  $abc = use_package_optimistically("Module::Name", x.xx)->new( ... );
+
+  return use_module( 'Module::Name', x,xx )->new( ... );
+  return use_package_optimisticall( 'Module::Name', x.xx )->new( ... );
 
 =back
 

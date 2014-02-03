@@ -199,7 +199,7 @@ version: 0.27_09
 
 =item * xtests_test_requires
 
-Checking for the following, extracting module name only.
+Checking for the following, extracting module name and version string.
 
  use Test::Requires { 'Test::Pod' => 1.46 };
  use Test::Requires { 'Test::Extra' => 1.46 };

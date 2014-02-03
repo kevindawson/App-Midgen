@@ -17,7 +17,7 @@ our $VERSION = '0.27_09';
 #######
 # composed method - _xtests_eval
 #######
-sub _xtests_eval {
+sub xtests_eval {
 	my $self = shift;
 
 	#PPI::Document
@@ -237,14 +237,21 @@ This document describes App::Midgen::Roles version: 0.27_09
 
 =head1 METHODS
 
-none as such, but we do have
-
-=head2 OPTIONS
-
 =over 4
 
-=item * ToDo
+=item * xtests_eval
 
+Checking for the following, extracting module name and version string.
+
+  eval "use Test::Kwalitee::Extra 0.000007";
+  eval "use Moo 1.002; 1;";
+  eval { no Moose; 1; };
+  eval { require Moose };
+  my $HAVE_MOOSE = eval { require Moose; 1; };
+
+  try { no Moose; 1; };
+  try { require Moose };
+  my $HAVE_MOOSE = try { require Moose; 1; };
 
 =back
 

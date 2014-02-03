@@ -169,7 +169,7 @@ version: 0.27_09
 
 =item * xtests_use_ok
 
-Checking for the following, extracting module name only.
+Checking for the following, extracting module name and version string.
 
  BEGIN {
    use_ok( 'Term::ReadKey', '2.30' );
