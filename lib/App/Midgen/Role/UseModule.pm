@@ -467,8 +467,8 @@ __END__
 
 =head1 NAME
 
-App::Midgen::Roles::UseModule - extra checks for test files, looking
-for methods in use_ok in BEGIN blocks, used by L<App::Midgen>
+App::Midgen::Roles::UseModule - looking for methods with Module::Runtime
+includes, used by L<App::Midgen>
 
 =head1 VERSION
 
@@ -476,16 +476,27 @@ version: 0.27_09
 
 =head1 DESCRIPTION
 
-This scanner will look for the following formats or variations there in,
-inside BEGIN blocks in test files:
+This scanner will look for the following formats or variations there in.
 
 =begin :list
 
-* use_module( 'Fred::BloggsOne', '1.01' );
+* use_module("Module::Name", x.xx)->new( ... );
 
-* use_module( "Fred::BloggsTwo", "2.02" );
+* require_module( 'Module::Name');
 
-* use_module( 'Fred::BloggsThree', 3.03 );
+* use_package_optimistically("Module::Name", x.xx)->new( ... );
+
+* my $abc = use_module("Module::Name", x.xx)->new( ... );
+
+* my $abc = use_package_optimistically("Module::Name", x.xx)->new( ... );
+
+* $abc = use_module("Module::Name", x.xx)->new( ... );
+
+* $abc = use_package_optimistically("Module::Name", x.xx)->new( ... );
+
+* return use_module( 'Module::Name', x,xx )->new( ... );
+
+* return use_package_optimisticall( 'Module::Name', x.xx )->new( ... );
 
 =end :list
 

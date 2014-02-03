@@ -114,7 +114,7 @@ sub run {
 
 	$self->output_footer();
 
-#	p $self->{modules};
+#	p $self->{modules} if $self->debug;
 
 	return;
 }
@@ -912,7 +912,7 @@ __END__
 
 =pod
 
-=encoding utf8
+=encoding UTF-8
 
 =head1 NAME
 
@@ -1069,7 +1069,7 @@ Oliver Gorwits E<lt>oliver@cpan.orgE<gt>
 
 =head1 COPYRIGHT
 
-Copyright E<copy> 2013 the App:Midgen L</AUTHOR> and L</CONTRIBUTORS>
+Copyright E<copy> 2013-2014 the App:Midgen L</AUTHOR> and L</CONTRIBUTORS>
  as listed above.
 
 
