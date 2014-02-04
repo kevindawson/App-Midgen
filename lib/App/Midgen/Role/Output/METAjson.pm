@@ -11,11 +11,11 @@ no if $] > 5.017010, warnings => 'experimental::smartmatch';
 # use namespace::clean -except => 'meta';
 
 our $VERSION = '0.27_09';
-use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
+use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 use Term::ANSIColor qw( :constants colored );
-use Data::Printer { caller_info => 1, colored => 1, };
+use Data::Printer {caller_info => 1, colored => 1,};
 use constant {
 	BLANK  => q{ },
 	NONE   => q{},
@@ -35,8 +35,9 @@ sub header_metajson {
 	$package_name =~ s{::}{-}g;
 
 	say '{';
-	if ( $self->verbose > 0 ) {
-		say BRIGHT_BLACK THREE . '"abstract" : "This is a short description of the purpose of the distribution.",';
+	if ($self->verbose > 0) {
+		say BRIGHT_BLACK THREE
+			. '"abstract" : "This is a short description of the purpose of the distribution.",';
 		say THREE . '"author" : "...",';
 		say THREE . '"dynamic_config" : "0|1",';
 		say THREE . '"generated_by" : "...",';
@@ -50,7 +51,7 @@ sub header_metajson {
 	}
 	say CLEAR THREE . '"name" : "' . $package_name . q{",};
 
-	if ( $self->verbose > 0 ) {
+	if ($self->verbose > 0) {
 		say BRIGHT_BLACK THREE . '"release_status" : "stable|testing|unstable",';
 		say THREE . '"version" : "...",';
 	}
@@ -75,23 +76,33 @@ sub body_metajson {
 
 			$required_ref->{'perl'} = $App::Midgen::Min_Version;
 
-			foreach my $module_name ( sort keys %{$required_ref} ) {
+			foreach my $module_name (sort keys %{$required_ref}) {
 				say TWELVE . "\"$module_name\" : \"$required_ref->{$module_name}\","
 					if $required_ref->{$module_name} !~ m/mcpan/;
 			}
 			print NINE . '}';
 
-			if ( $self->verbose > 0 ) {
+			if ($self->verbose > 0) {
 				say BRIGHT_BLACK ",\n" . NINE . '"suggests" : {...},';
-				print NINE . '"recommends" : {...},';
 			}
-			say CLEAR "\n" . SIX . '},';
+			print CLEAR;
+
+		}
+		when ('runtime_recommends') {
+			say NINE . '"recommends" : {';
+			foreach my $module_name (sort keys %{$required_ref}) {
+				say TWELVE . "\"$module_name\" : \"$required_ref->{$module_name}\","
+					if $required_ref->{$module_name} !~ m/mcpan/;
+			}
+			say NINE . '}';
 		}
 		when ('test_requires') {
 			say SIX . '"test" : {';
 			say NINE . '"requires" : {';
-			foreach my $module_name ( sort keys %{$required_ref} ) {
-				say TWELVE . "\"$module_name\" : \"" . $required_ref->{$module_name} . '",'
+			foreach my $module_name (sort keys %{$required_ref}) {
+				say TWELVE
+					. "\"$module_name\" : \""
+					. $required_ref->{$module_name} . '",'
 					if $required_ref->{$module_name} !~ m/mcpan/;
 			}
 			print NINE . '}';
@@ -100,16 +111,17 @@ sub body_metajson {
 			if ($required_ref) {
 				say ',';
 				say NINE . '"suggests" : {';
-				foreach my $module_name ( sort keys %{$required_ref} ) {
-					say TWELVE . "\"$module_name\" : \"" . $required_ref->{$module_name} . '",'
+				foreach my $module_name (sort keys %{$required_ref}) {
+					say TWELVE
+						. "\"$module_name\" : \""
+						. $required_ref->{$module_name} . '",'
 						if $required_ref->{$module_name} !~ m/mcpan/;
 
 				}
 				say NINE . '}';
-
 				print SIX . '}';
-
-			} else {
+			}
+			else {
 				print "\n";
 				print SIX . '}';
 
@@ -121,8 +133,10 @@ sub body_metajson {
 				say ',';
 				say SIX . '"develop" : {';
 				say NINE . '"requires" : {';
-				foreach my $module_name ( sort keys %{$required_ref} ) {
-					say TWELVE . "\"$module_name\" : \"" . $required_ref->{$module_name} . '",'
+				foreach my $module_name (sort keys %{$required_ref}) {
+					say TWELVE
+						. "\"$module_name\" : \""
+						. $required_ref->{$module_name} . '",'
 						if $required_ref->{$module_name} !~ m/mcpan/;
 
 				}
@@ -145,16 +159,6 @@ sub footer_metajson {
 
 	print "\n";
 
-	#  if ($self->verbose > 0) {
-	#    say SIX . '},';
-	#    say BRIGHT_BLACK SIX . '"build" : {';
-	#    say NINE . '"requires" : {...}';
-	#    say SIX . '}';
-	#  }
-	#  else {
-	#    say SIX . '}';
-	#  }
-
 	say THREE . '}';
 	my @no_index = $self->no_index;
 	if (@no_index) {
@@ -166,11 +170,14 @@ sub footer_metajson {
 		say SIX . ']';
 	}
 
-	if ( $self->verbose > 0 ) {
+	if ($self->verbose > 0) {
 		say THREE . '},';
 		say BRIGHT_BLACK THREE . '"resources" : {';
 		say SIX . '"bugtracker" : {';
-		say NINE . '"web" : "https://github.com/.../' . $package_name . '/issues"';
+		say NINE
+			. '"web" : "https://github.com/.../'
+			. $package_name
+			. '/issues"';
 		say SIX . '},';
 		say SIX . '"homepage" : "https://github.com/.../' . $package_name . q{",};
 		say SIX . '"repository" : {';
@@ -183,7 +190,8 @@ sub footer_metajson {
 		say SIX . '"brian d foy (ADOPTME) <brian.d.foy@gmail.com>",';
 		say SIX . '"Fred Bloggs <fred@bloggs.org>"';
 		say THREE . q{]};
-	} else {
+	}
+	else {
 		say THREE . '}';
 	}
 

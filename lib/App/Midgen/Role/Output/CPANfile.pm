@@ -11,12 +11,12 @@ no if $] > 5.017010, warnings => 'experimental::smartmatch';
 # use namespace::clean -except => 'meta';
 
 our $VERSION = '0.27_09';
-use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
+use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 use Term::ANSIColor qw( :constants colored );
-use Data::Printer { caller_info => 1, colored => 1, };
-use constant { BLANK => q{ }, NONE => q{}, THREE => 3, };
+use Data::Printer {caller_info => 1, colored => 1,};
+use constant {BLANK => q{ }, NONE => q{}, THREE => 3,};
 use File::Spec;
 
 #######
@@ -56,53 +56,60 @@ sub body_cpanfile {
 	my $title        = shift;
 	my $required_ref = shift;
 
-	if ( $title eq 'requires' ) {
-		print "\n";
-
-		print BRIGHT_BLACK "\n";
-		say '# cpanfile';
-		print CLEAR "\n";
-
-		say "requires 'perl', '$App::Midgen::Min_Version';";
-		print "\n";
-	}
-
 	my $pm_length = 0;
-	foreach my $module_name ( sort keys %{$required_ref} ) {
-		if ( length $module_name > $pm_length ) {
+	foreach my $module_name (sort keys %{$required_ref}) {
+		if (length $module_name > $pm_length) {
 			$pm_length = length $module_name;
 		}
 	}
 	given ($title) {
 		when ('requires') {
-			foreach my $module_name ( sort keys %{$required_ref} ) {
+			print "\n";
+
+			$required_ref->{'perl'} = $App::Midgen::Min_Version;
+			foreach my $module_name (sort keys %{$required_ref}) {
 
 				my $mod_name = "'$module_name',";
-				printf "%s %-*s '%s';\n", $title, $pm_length + THREE, $mod_name, $required_ref->{$module_name};
+				printf "%s %-*s '%s';\n", $title, $pm_length + THREE, $mod_name,
+					$required_ref->{$module_name}
+					if $required_ref->{$module_name} !~ m/mcpan/;
+			}
+		}
+		when ('runtime_recommends') {
+			print "\n";
+			foreach my $module_name (sort keys %{$required_ref}) {
+
+				my $mod_name = "'$module_name',";
+				printf "%s %-*s '%s';\n", 'recommends', $pm_length + THREE,
+					$mod_name, $required_ref->{$module_name}
+					if $required_ref->{$module_name} !~ m/mcpan/;
 			}
 		}
 		when ('test_requires') {
 			print "\n";
 			say 'on test => sub {';
-			foreach my $module_name ( sort keys %{$required_ref} ) {
+			foreach my $module_name (sort keys %{$required_ref}) {
 				my $mod_name = "'$module_name',";
-				printf "\t%s %-*s '%s';\n", 'requires', $pm_length + THREE, $mod_name, $required_ref->{$module_name};
+				printf "\t%s %-*s '%s';\n", 'requires', $pm_length + THREE,
+					$mod_name, $required_ref->{$module_name};
 			}
 			print "\n" if %{$required_ref};
 		}
 		when ('recommends') {
-			foreach my $module_name ( sort keys %{$required_ref} ) {
+			foreach my $module_name (sort keys %{$required_ref}) {
 				my $mod_name = "'$module_name',";
-				printf "\t%s %-*s '%s';\n", 'suggests', $pm_length + THREE, $mod_name, $required_ref->{$module_name};
+				printf "\t%s %-*s '%s';\n", 'suggests', $pm_length + THREE,
+					$mod_name, $required_ref->{$module_name};
 			}
 			say '};';
 		}
 		when ('test_develop') {
 			print "\n";
 			say 'on develop => sub {';
-			foreach my $module_name ( sort keys %{$required_ref} ) {
+			foreach my $module_name (sort keys %{$required_ref}) {
 				my $mod_name = "'$module_name',";
-				printf "\t%s %-*s '%s';\n", 'recommends', $pm_length + THREE, $mod_name, $required_ref->{$module_name};
+				printf "\t%s %-*s '%s';\n", 'recommends', $pm_length + THREE,
+					$mod_name, $required_ref->{$module_name};
 			}
 			say '};';
 		}

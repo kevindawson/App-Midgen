@@ -75,7 +75,7 @@ sub run {
 
 	$self->find_required_test_modules();
 
-# Now we have switched to MetaCPAN-Api we can hunt for noisy children in test requires
+	# Now we have switched to MetaCPAN-Api we can hunt for noisy children in test requires
 	if ($self->experimental) {
 		p $self->{test_requires} if $self->debug;
 		$self->remove_noisy_children($self->{test_requires});
@@ -89,26 +89,16 @@ sub run {
 		}
 		p $self->{test_requires} if $self->debug;
 
-## ToDo look at resolving noisy children across types found
-#		p $self->{recommends} if $self->debug;
-#		$self->remove_noisy_children( $self->{recommends} );
-#		foreach my $module ( keys %{ $self->{recommends} } ) {
-#			if ( $self->{package_requires}{$module} ) {
-#				warn $module if $self->debug;
-#				try {
-#					delete $self->{recommends}{$module};
-#				};
-#			}
-#		}
-#		p $self->{recommends} if $self->debug;
-
-
 	}
 
 	# display chosen output format
 	$self->output_header();
 
 	$self->output_main_body('requires',      $self->{package_requires});
+			if ($self->format =~ /cpanfile|metajson/) {
+				$self->output_main_body('runtime_recommends', $self->{runtime_recommends});
+			}
+
 	$self->output_main_body('test_requires', $self->{test_requires});
 	$self->output_main_body('recommends',    $self->{recommends});
 	$self->output_main_body('test_develop',  $self->{test_develop})
@@ -116,7 +106,7 @@ sub run {
 
 	$self->output_footer();
 
-#	p $self->{modules} if $self->debug;
+	p $self->{modules} if $self->debug;
 
 	return;
 }
@@ -127,7 +117,7 @@ sub run {
 sub _initialise {
 	my $self = shift;
 
-# let's give Output a copy, to stop it being Fup as well suspect Tiny::Path as-well
+# let's give Output a copy, to stop it being F'up as well, suspect Tiny::Path as-well rlib
 	warn 'working in dir: ' . $Working_Dir if $self->debug;
 
 	return;
@@ -303,16 +293,13 @@ sub _find_makefile_requires {
 	$self->_set_ppi_document(PPI::Document->new($filename));
 
 	# do extra test early check for use_module before hand
-#	p $filename;
-	$self->xtests_use_module();
+	$self->xtests_use_module('runtime_recommends');
 
+	# ToDo add eval/try here -> prereqs { runtime { suggests or recommends {...}}}
+	$self->xtests_eval('runtime_recommends');
 
 	my $prereqs = $self->scanner->scan_ppi_document($self->ppi_document);
 	my @modules = $prereqs->required_modules;
-
-# todo add eval/try here
-#	$self->xtests_eval();
-
 
 	foreach my $mod_ver (@modules) {
 		$self->{found_version}{$mod_ver}
@@ -564,12 +551,6 @@ sub _store_modules {
 				$self->{modules}{$module}{version} = $version
 					if ($self->dual_life || $self->core);
 				$self->{modules}{$module}{dual_life} = 1;
-
-
-#				$self->{$require_type}{$module} = colored( $version, 'bright_yellow' );
-#				$self->{modules}{$module}{version}   = $version;
-#				$self->{modules}{$module}{location}  = $require_type;
-#				$self->{modules}{$module}{dual_life} = 1;
 			}
 			else {
 				$self->{$require_type}{$module} = colored($version, 'yellow');
