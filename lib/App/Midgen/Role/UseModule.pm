@@ -10,7 +10,7 @@ use version 0.9902;
 use Data::Printer;    # caller_info => 1;
 use Try::Tiny;
 
-our $VERSION = '0.27_09';
+our $VERSION = '0.27_11';
 use constant {BLANK => q{ }, TRUE => 1, FALSE => 0, NONE => q{}, TWO => 2,
 	THREE => 3,};
 
@@ -485,7 +485,7 @@ includes, used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.27_09
+version: 0.27_11
 
 =head1 DESCRIPTION
 
