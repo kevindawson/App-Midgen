@@ -20,6 +20,8 @@ use constant {BLANK => q{ }, TRUE => 1, FALSE => 0, NONE => q{}, TWO => 2,
 #######
 sub xtests_use_module {
 	my $self = shift;
+	my $storage_location = shift;
+
 	my @modules;
 	my @version_strings;
 
@@ -63,7 +65,7 @@ sub xtests_use_module {
 						sub {
 							$_[1]->isa('PPI::Token::Word')
 								and $_[1]->content
-								=~ m{\A(?:use_module|use_package_optimistically|require_module)\z};
+								=~ m{\A[Module::Runtime::]*(?:use_module|use_package_optimistically|require_module)\z};
 						}
 					)
 					)
@@ -148,7 +150,7 @@ sub xtests_use_module {
 						sub {
 							$_[1]->isa('PPI::Token::Word')
 								and $_[1]->content
-								=~ m{\A(?:use_module|use_package_optimistically)\z};
+								=~ m{\A[Module::Runtime::]*(?:use_module|use_package_optimistically)\z};
 						}
 					)
 					)
@@ -232,7 +234,7 @@ sub xtests_use_module {
 								sub {
 									$_[1]->isa('PPI::Token::Word')
 										and $_[1]->content
-										=~ m{\A(?:use_module|use_package_optimistically)\z};
+										=~ m{\A[Module::Runtime::]*(?:use_module|use_package_optimistically)\z};
 								}
 							)
 							)
@@ -327,7 +329,7 @@ sub xtests_use_module {
 						sub {
 							$_[1]->isa('PPI::Token::Word')
 								and $_[1]->content
-								=~ m{\A(?:use_module|use_package_optimistically)\z};
+								=~ m{\A[Module::Runtime::]*(?:use_module|use_package_optimistically)\z};
 						}
 					)
 					)
@@ -353,7 +355,18 @@ sub xtests_use_module {
 
 	# if we found a module, process it with the correct catogery
 	if (scalar @modules > 0) {
-		$self->_process_found_modules('package_requires', \@modules);
+		if ($storage_location eq 'runtime_recommends') {
+			if ($self->format =~ /cpanfile|metajson/) {
+				$self->_process_found_modules('runtime_recommends', \@modules);
+
+			}
+			else {
+				$self->_process_found_modules('package_requires', \@modules);
+			}
+
+		}
+
+#		$self->_process_found_modules('package_requires', \@modules);
 	}
 	return;
 }
