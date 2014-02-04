@@ -15,7 +15,7 @@ This enables you to see which modules you have used,
 
 All output goes to STDOUT, so you can use it as you see fit.
 
-### Version 0.27_09
+### Version 0.27_11
 
 ## Synopsis
 
