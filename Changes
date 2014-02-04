@@ -1,5 +1,13 @@
 Revision history for App-Midgen
 
+0.27_11 2014-02-04
+ - update licence year uft8 -> UTF-8 in pod
+ - tidy and a skip for infile - so that we don't bother with metacpan-api
+ - rewrite scanner Eval more accurate less code
+ - add optional prefix [Module::Runtime::]* to regex
+ - use the new scanners Eval & UseModule show output in infile
+ - update cpanfile & metajson outputs to display runtime_recommends
+
 0.27_09 2014-02-02
  - fix failing test
 
