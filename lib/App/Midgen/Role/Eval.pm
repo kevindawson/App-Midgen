@@ -12,13 +12,16 @@ use Data::Printer {caller_info => 1, colored => 1,};
 # use namespace::clean -except => 'meta';
 
 our $VERSION = '0.27_09';
+use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
+local $OUTPUT_AUTOFLUSH = 1;
 
 
 #######
-# composed method - _xtests_eval
+# composed method - xtests_eval
 #######
 sub xtests_eval {
-	my $self = shift;
+	my $self             = shift;
+	my $storage_location = shift;
 
 	#PPI::Document
 	#  PPI::Statement
@@ -29,99 +32,26 @@ sub xtests_eval {
 	#
 	my @modules;
 	my @version_strings;
+
 	try {
-		my @chunks
-			= map { [$_->schildren] }
-			grep  { $_->child(0)->literal =~ m{\A(?:eval|try)\z} }
-			grep  { $_->child(0)->isa('PPI::Token::Word') }
-			@{$self->ppi_document->find('PPI::Statement') || []};
-
-		foreach my $hunk (@chunks) {
-
+		my @chunks1 = @{$self->ppi_document->find('PPI::Statement')};
+		foreach my $chunk (@chunks1) {
 			if (
-				grep {
-					     $_->isa('PPI::Token::Quote::Double')
-						|| $_->isa('PPI::Token::Quote::Single')
-						|| $_->isa('PPI::Structure::Block')
-				} @$hunk
+				$chunk->find(
+					sub {
+						$_[1]->isa('PPI::Token::Word')
+							and $_[1]->content =~ m{\A(?:eval|try)\z};
+					}
+				)
 				)
 			{
+				for (0 .. $#{$chunk->{children}}) {
 
-				# hack for List
-				my @hunkdata = @$hunk;
-				foreach my $element (@hunkdata) {
-					if ( $element->isa('PPI::Token::Quote::Double')
-						|| $element->isa('PPI::Token::Quote::Single'))
+					if ( $chunk->{children}[$_]->isa('PPI::Token::Quote::Double')
+						|| $chunk->{children}[$_]->isa('PPI::Token::Quote::Single'))
 					{
+						my $eval_line = $chunk->{children}[$_]->content;
 
-						my $eval_line = $element->content;
-						$eval_line =~ s/(?:'|"|{|})//g;
-						my @eval_includes = split /;/, $eval_line;
-
-						foreach my $eval_include (@eval_includes) {
-
-							$self->_mod_ver(\@modules, \@version_strings, $eval_include);
-
-						}
-					}
-				}
-
-				foreach my $element_block (@hunkdata) {
-					if ($element_block->isa('PPI::Structure::Block')) {
-
-						my @children = $element_block->children;
-
-						foreach my $child_element (@children) {
-							if ($child_element->isa('PPI::Statement::Include')) {
-
-								my $eval_line = $child_element->content;
-								my @eval_includes = split /;/, $eval_line;
-
-								foreach my $eval_include (@eval_includes) {
-
-									$self->_mod_ver(\@modules, \@version_strings, $eval_include);
-
-								}
-							}
-						}
-					}
-				}
-
-			}
-		}
-	};
-
-
-#######
-# my $HAVE_MOOSE = eval { require Moose };
-# # my $HAVE_MOOSE = eval '|" require Moose '|";
-#######
-	try {
-		my @chunk2
-			= map { [$_->schildren] }
-			grep  { $_->child(6)->literal =~ m{\A(?:eval|try)\z} }
-			grep  { $_->child(6)->isa('PPI::Token::Word') }
-			@{$self->ppi_document->find('PPI::Statement::Variable') || []};
-
-		foreach my $hunk2 (@chunk2) {
-
-			if (
-				grep {
-					     $_->isa('PPI::Token::Quote::Double')
-						|| $_->isa('PPI::Token::Quote::Single')
-						|| $_->isa('PPI::Structure::Block')
-				} @$hunk2
-				)
-			{
-
-				# hack for List
-				my @hunkdata = @$hunk2;
-				foreach my $element (@hunkdata) {
-					if ( $element->isa('PPI::Token::Quote::Double')
-						|| $element->isa('PPI::Token::Quote::Single'))
-					{
-
-						my $eval_line = $element->content;
 						$eval_line =~ s/(?:'|"|{|})//g;
 						my @eval_includes = split /;/, $eval_line;
 
@@ -130,12 +60,9 @@ sub xtests_eval {
 							$self->_mod_ver(\@modules, \@version_strings, $eval_include);
 						}
 					}
-				}
 
-				foreach my $element_block (@hunkdata) {
-					if ($element_block->isa('PPI::Structure::Block')) {
-
-						my @children = $element_block->children;
+					if ($chunk->{children}[$_]->isa('PPI::Structure::Block')) {
+						my @children = $chunk->{children}[$_]->children;
 
 						foreach my $child_element (@children) {
 							if ($child_element->isa('PPI::Statement::Include')) {
@@ -144,14 +71,14 @@ sub xtests_eval {
 								my @eval_includes = split /;/, $eval_line;
 
 								foreach my $eval_include (@eval_includes) {
+									$self->_mod_ver(\@modules, \@version_strings,
+										$eval_include);
 
-									$self->_mod_ver(\@modules, \@version_strings, $eval_include);
 								}
 							}
 						}
 					}
 				}
-
 			}
 		}
 	};
@@ -163,20 +90,32 @@ sub xtests_eval {
 	# if we found a module, process it with the correct catogery
 	if (scalar @modules > 0) {
 
-		if ($self->format =~ /cpanfile|metajson/) {
+		if ($storage_location eq 'runtime_recommends') {
+			if ($self->format =~ /cpanfile|metajson/) {
+				$self->_process_found_modules('runtime_recommends', \@modules);
 
-			if ($self->xtest eq 'test_requires') {
-				$self->_process_found_modules('recommends', \@modules);
 			}
-			elsif ($self->develop && $self->xtest eq 'test_develop') {
-				$self->_process_found_modules('test_develop', \@modules);
+			else {
+				$self->_process_found_modules('package_requires', \@modules);
 			}
+
 		}
 		else {
-			$self->_process_found_modules('recommends', \@modules);
+
+			if ($self->format =~ /cpanfile|metajson/) {
+
+				if ($self->xtest eq 'test_requires') {
+					$self->_process_found_modules('recommends', \@modules);
+				}
+				elsif ($self->develop && $self->xtest eq 'test_develop') {
+					$self->_process_found_modules('test_develop', \@modules);
+				}
+			}
+			else {
+				$self->_process_found_modules('recommends', \@modules);
+			}
 		}
 	}
-
 	return;
 }
 
@@ -243,8 +182,8 @@ This document describes App::Midgen::Roles version: 0.27_09
 
 Checking for the following, extracting module name and version string.
 
-  eval "use Test::Kwalitee::Extra 0.000007";
-  eval "use Moo 1.002; 1;";
+  eval {use Test::Kwalitee::Extra 0.000007};
+  eval {use Moo 1.002; 1;};
   eval { no Moose; 1; };
   eval { require Moose };
   my $HAVE_MOOSE = eval { require Moose; 1; };
