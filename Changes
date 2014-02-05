@@ -1,6 +1,9 @@
 Revision history for App-Midgen
 
 0.27_11 2014-02-04
+ - re-enable xtest for t and xt
+
+0.27_11 2014-02-04
  - update licence year uft8 -> UTF-8 in pod
  - tidy and a skip for infile - so that we don't bother with metacpan-api
  - rewrite scanner Eval more accurate less code

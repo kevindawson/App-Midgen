@@ -10,7 +10,7 @@ no if $] > 5.017010, warnings => 'experimental::smartmatch';
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.27_11';
+our $VERSION = '0.27_13';
 use English qw( -no_match_vars );
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -118,7 +118,7 @@ used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.27_11
+version: 0.27_13
 
 =head1 DESCRIPTION
 
