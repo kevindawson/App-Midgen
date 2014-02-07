@@ -10,7 +10,7 @@ no if $] > 5.017010, warnings => 'experimental::smartmatch';
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.27_13';
+our $VERSION = '0.28';
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -91,7 +91,8 @@ sub body_cpanfile {
 			foreach my $module_name (sort keys %{$required_ref}) {
 				my $mod_name = "'$module_name',";
 				printf "\t%s %-*s '%s';\n", 'requires', $pm_length + THREE,
-					$mod_name, $required_ref->{$module_name};
+					$mod_name, $required_ref->{$module_name} if $required_ref->{$module_name} !~ m/mcpan/;
+
 			}
 			print "\n" if %{$required_ref};
 		}
@@ -99,7 +100,8 @@ sub body_cpanfile {
 			foreach my $module_name (sort keys %{$required_ref}) {
 				my $mod_name = "'$module_name',";
 				printf "\t%s %-*s '%s';\n", 'suggests', $pm_length + THREE,
-					$mod_name, $required_ref->{$module_name};
+					$mod_name, $required_ref->{$module_name} if $required_ref->{$module_name} !~ m/mcpan/;
+
 			}
 			say '};';
 		}
@@ -109,7 +111,8 @@ sub body_cpanfile {
 			foreach my $module_name (sort keys %{$required_ref}) {
 				my $mod_name = "'$module_name',";
 				printf "\t%s %-*s '%s';\n", 'recommends', $pm_length + THREE,
-					$mod_name, $required_ref->{$module_name};
+					$mod_name, $required_ref->{$module_name} if $required_ref->{$module_name} !~ m/mcpan/;
+
 			}
 			say '};';
 		}
@@ -150,7 +153,7 @@ used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.27_13
+version: 0.28
 
 =head1 DESCRIPTION
 

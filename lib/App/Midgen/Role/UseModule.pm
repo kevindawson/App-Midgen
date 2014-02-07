@@ -10,7 +10,7 @@ use version 0.9902;
 use Data::Printer;    # caller_info => 1;
 use Try::Tiny;
 
-our $VERSION = '0.27_13';
+our $VERSION = '0.28';
 use constant {BLANK => q{ }, TRUE => 1, FALSE => 0, NONE => q{}, TWO => 2,
 	THREE => 3,};
 
@@ -24,7 +24,6 @@ sub xtests_use_module {
 
 	my @modules;
 	my @version_strings;
-
 
 # bug out if there is no Include for Module::Runtime found
 	return if $self->_is_module_runtime() eq FALSE;
@@ -416,12 +415,10 @@ sub _module_names_ppi_sl {
 
 	if ($ppi_sl->isa('PPI::Structure::List')) {
 
-#		p $ppi_sl;
 		state $previous_module = undef;
 		foreach my $ppi_se (@{$ppi_sl->{children}}) {
 			for ( 0..$#{$ppi_se->{children}}) {
 
-#p $ppi_se->{children}[$_];
 				if ( $ppi_se->{children}[$_]->isa('PPI::Token::Quote::Single')
 					|| $ppi_se->{children}[$_]->isa('PPI::Token::Quote::Double'))
 				{
@@ -430,7 +427,6 @@ sub _module_names_ppi_sl {
 					if ($module =~ m/\A[A-Z]/) {
 						warn 'found module - ' . $module if $self->debug;
 						push @$modules, $module;
-#						p $module;
 						p @$modules if $self->debug;
 						$previous_module = $module;
 					}
@@ -456,7 +452,7 @@ sub _module_names_ppi_sl {
 					try {
 						$self->{found_version}{$previous_module}
 							= $version_string if $previous_module;
-#						p $version_string;
+						p $version_string if $self->debug;
 						$previous_module = undef;
 					};
 				}
@@ -485,33 +481,8 @@ includes, used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.27_13
+version: 0.28
 
-=head1 DESCRIPTION
-
-This scanner will look for the following formats or variations there in.
-
-=begin :list
-
-* use_module("Module::Name", x.xx)->new( ... );
-
-* require_module( 'Module::Name');
-
-* use_package_optimistically("Module::Name", x.xx)->new( ... );
-
-* my $abc = use_module("Module::Name", x.xx)->new( ... );
-
-* my $abc = use_package_optimistically("Module::Name", x.xx)->new( ... );
-
-* $abc = use_module("Module::Name", x.xx)->new( ... );
-
-* $abc = use_package_optimistically("Module::Name", x.xx)->new( ... );
-
-* return use_module( 'Module::Name', x,xx )->new( ... );
-
-* return use_package_optimisticall( 'Module::Name', x.xx )->new( ... );
-
-=end :list
 
 =head1 METHODS
 
@@ -533,6 +504,8 @@ Checking for the following, extracting module name and version strings.
 
   return use_module( 'Module::Name', x,xx )->new( ... );
   return use_package_optimisticall( 'Module::Name', x.xx )->new( ... );
+
+We also support the prefix C<Module::Runtime::...> in the above.
 
 =back
 

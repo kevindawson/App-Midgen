@@ -20,7 +20,7 @@ no if $] > 5.017010, warnings => 'experimental::smartmatch';
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.27_13';
+our $VERSION = '0.28';
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -56,11 +56,7 @@ sub run {
 		$self->first_package_name();
 	};
 
-#	$self->output_header();
-
 	$self->find_required_modules();
-
-#	$self->find_required_test_modules();
 
 	p $self->{modules} if ($self->verbose == TWO);
 
@@ -387,7 +383,6 @@ sub _find_makefile_test_requires {
 
 	say 'looking for test_requires in: ' . $filename if $self->verbose >= TWO;
 
-# p $filename;
 	my $relative_dir = $File::Find::dir;
 	$relative_dir =~ s/$Working_Dir//;
 	$self->_set_looking_infile(File::Spec->catfile($relative_dir, $filename));
@@ -401,11 +396,10 @@ sub _find_makefile_test_requires {
 	# do extra test early check for use_ok in BEGIN blocks before hand
 	$self->xtests_use_ok();
 
-	# do extra test early to identify eval befroe hand
+	# do extra test early to identify eval before hand
 	$self->xtests_eval('test_requires');
 
 	# do extra test early check for use_module before hand
-#	p $filename;
 	$self->xtests_use_module('test_requires');
 
 	my $prereqs = $self->scanner->scan_ppi_document($self->ppi_document);
@@ -431,10 +425,6 @@ sub _find_makefile_test_requires {
 			$self->_process_found_modules('test_requires', \@modules);
 		}
 	}
-
-#	$self->_xtests_in_single_quote() if $self->experimental;
-#	$self->_xtests_in_double_quote() if $self->experimental;
-#	$self->_xtests_eval();# if $self->experimental;
 
 	return;
 }
@@ -941,7 +931,7 @@ App::Midgen - Check B<requires> & B<test_requires> of your package for CPAN incl
 
 =head1 VERSION
 
-This document describes App::Midgen version: 0.27_13
+This document describes App::Midgen version: 0.28
 
 =head1 SYNOPSIS
 

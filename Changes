@@ -1,5 +1,8 @@
 Revision history for App-Midgen
 
+0.28 2014-02-08
+ - Tweak Eval to catch postif cruff
+
 0.27_13 2014-02-05
  - re-enable xtest for t and xt
 
@@ -16,11 +19,11 @@ Revision history for App-Midgen
 
 0.27_07 2014-02-02
  - fix find-min-version I did knot know it was f***** Ouch :)
- - Add outpot Format EUMM -> ExtUtils::MakeMaker
+ - Add output Format EUMM -> ExtUtils::MakeMaker
  - remove the dzil format option
 
 0.27_05 2014-01-26
- - Update additional scanners to extract version strings where posiable if
+ - Update additional scanners to extract version strings where possible if
    present, used by infile format
  - Add UseModule scanner for Module::Runtime Includes
  - Eval.pm hack for finding try blocks as well
@@ -39,7 +42,7 @@ Revision history for App-Midgen
  - Update Eval scanner to take four
  - Update Test-Requires scanner to take two
  - use can_xs instead of can_cc ribasushi++
- - start of expermintal only displaying a module once 
+ - start of experimental only displaying a module once 
 
 0.24 2013-06-03
  - fix duplicate package name issue
@@ -76,7 +79,7 @@ Revision history for App-Midgen
    for modules without a version number mst++
  - Add cmd option to show dual-line module versions
  - All extra passing is now done in via experimental option
- - Add ablity to read options from ~/.midgenrc and write as well.
+ - Add ability to read options from ~/.midgenrc and write as well.
  - Add color to experimental output only via Term-ANSIColor
 
 0.16 2013-03-17
@@ -89,7 +92,7 @@ Revision history for App-Midgen
 0.14 2013-03-17
  - Now using Perl-PrereqScanner to do most of the grunt work as pointed out
    by Mithaldu++ daxim++ thanks guys.
- - Switche to using MetaCPAN-API due to a write issue with CPAN, neilb++
+ - Switch to using MetaCPAN-API due to a write issue with CPAN, neilb++
  - As a side affect of MetaCPAN-API we no longer have an 'undef' version
    type, we also run noisy children against test requires
  - All version numbers are now numified
@@ -99,7 +102,7 @@ Revision history for App-Midgen
  - Rewrite of all POD
  - Add perl-minversion test
  - Add method _is_perl to better test for vaild perl files
- - A magor refactoing to speed up operation
+ - A major refactoring to speed up operation
  - base/parent know handles parent -norequire
  - Do a version check for mojo catch
  - Add no_index to Output
@@ -149,7 +152,7 @@ Revision history for App-Midgen
  - first pass of midgen against it's self,  [6a37b2e]
  - first attempt at a Role with the GetOpps Long cmd variables [61c8e11]
  - Add noise control for PPI::XS test, we can't use it			   
-      as it has deperated calls [8f6d32e]
+      as it has deprecated calls [8f6d32e]
  - encapsulated attributes [5efce18]
  - cooking on gas, as it was, so we are working [722185f]
  - add some encapsulated attributes to store our module and version info in
