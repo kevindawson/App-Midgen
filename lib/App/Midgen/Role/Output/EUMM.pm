@@ -10,7 +10,7 @@ no if $] > 5.017010, warnings => 'experimental::smartmatch';
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.28';
+our $VERSION = '0.29_01';
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -38,7 +38,7 @@ sub header_eumm {
 
 		say 'use strict;';
 		say 'use warnings;';
-		say 'use ExtUtils::MakeMaker 0.68;';
+		say 'use ExtUtils::MakeMaker 6.68;';
 		print "\n";
 		say 'WriteMakefile(';
 
@@ -49,7 +49,7 @@ sub header_eumm {
 
 		print BRIGHT_BLACK;
 		say THREE. "'AUTHOR' => '...',";
-		say THREE. "'LICENSE' => 'perl_5',";
+		say THREE. "'LICENSE' => 'perl',";
 		print CLEAR;
 ## 6.64 f***** RT#85406
 		say THREE. "'BUILD_REQUIRES' => {";
@@ -200,7 +200,7 @@ used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.28
+version: 0.29_01
 
 =head1 DESCRIPTION
 
