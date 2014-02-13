@@ -9,7 +9,7 @@ requires Carp                       1.32
 requires Cwd                        3.4
 requires Class::XSAccessor          1.19 if can_xs
 requires Data::Printer              0.35
-requires File::Slurp                9999.19
+requires File::Slurp::Tiny          0.003
 requires File::Spec                 3.4
 requires Getopt::Long               2.42
 requires JSON::Tiny                 0.4

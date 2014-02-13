@@ -28,7 +28,7 @@ use JSON::Tiny;
 my $json = JSON::Tiny->new;
 
 use File::Spec;
-use File::Slurp qw(read_file write_file);
+use File::Slurp::Tiny qw(read_file write_file);
 
 my $midgenrc = File::Spec->catfile($ENV{HOME}, '.midgenrc');
 

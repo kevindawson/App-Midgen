@@ -30,7 +30,7 @@ BEGIN {
   use_ok('Carp',                 '1.32');
   use_ok('Cwd',                  '3.4');
   use_ok('Data::Printer',        '0.35');
-  use_ok('File::Slurp',          '9999.19');
+  use_ok('File::Slurp::Tiny',    '0.003');
   use_ok('File::Spec',           '3.4');
   use_ok('Getopt::Long',         '2.42');
   use_ok('JSON::Tiny',           '0.4');
