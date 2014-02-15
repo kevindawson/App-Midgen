@@ -1,6 +1,6 @@
 Revision history for App-Midgen
 
-029_05 2014-02-15
+0.29_05 2014-02-15
  - Fix test for is_core in infiles
 
 0.29_03 2014-02-15
