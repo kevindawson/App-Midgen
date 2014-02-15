@@ -1,5 +1,8 @@
 Revision history for App-Midgen
 
+029_05 2014-02-15
+ - Fix test for is_core in infiles
+
 0.29_03 2014-02-15
  - Add Installed attribute to infile
  - Switch to File::Slurp::Tiny nudge from ETHER++

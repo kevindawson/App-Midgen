@@ -12,7 +12,7 @@ use Data::Printer {caller_info => 1, colored => 1,};
 # use namespace::clean -except => 'meta';
 
 use version;
-our $VERSION = '0.29_03';
+our $VERSION = '0.29_05';
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -174,7 +174,7 @@ App::Midgen::Roles::Eval - used by L<App::Midgen>
 
 =head1 VERSION
 
-This document describes App::Midgen::Roles version: 0.29_03
+This document describes App::Midgen::Roles version: 0.29_05
 
 =head1 METHODS
 

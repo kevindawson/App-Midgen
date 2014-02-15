@@ -20,7 +20,7 @@ no if $] > 5.017010, warnings => 'experimental::smartmatch';
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.29_03';
+our $VERSION = '0.29_05';
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -190,7 +190,7 @@ sub in_local_lib {
 			catch {
 				# Inconnu
 				# if a core module show version-string
-				return $self->_in_corelist($found_module)
+				return Module::CoreList::is_core($found_module)
 					? $Module::CoreList::version{$]}{$found_module}
 					: 'undef';
 
@@ -220,7 +220,7 @@ App::Midgen::Role::Output - A collection of output orientated methods used by L<
 
 =head1 VERSION
 
-version: 0.29_03
+version: 0.29_05
 
 =head1 DESCRIPTION
 

@@ -13,7 +13,7 @@ use Data::Printer {caller_info => 1, colored => 1,};
 # use namespace::clean -except => 'meta';
 
 use version;
-our $VERSION = '0.29_03';
+our $VERSION = '0.29_05';
 use constant {BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3,};
 
 
@@ -188,7 +188,7 @@ for methods in use L<Test::Requires> blocks, used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.29_03
+version: 0.29_05
 
 =head1 METHODS
 
