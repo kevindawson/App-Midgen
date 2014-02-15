@@ -6,14 +6,14 @@ requires qw( ppi_document develop debug format xtest _process_found_modules );
 
 use PPI;
 
-use version 0.9902;
 use Try::Tiny 0.12;
 use Data::Printer {caller_info => 1, colored => 1,};
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.29_01';
+use version;
+our $VERSION = '0.29_03';
 use constant {BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3,};
 
 
@@ -104,20 +104,20 @@ sub xtests_test_requires {
 											|| $element->isa('PPI::Token::Quote::Double')
 											|| $element->isa('PPI::Token::Quote::Single'))
 										{
-											my $version_number = $element->content;
-											$version_number =~ s/(?:'|")//g;
-											if ($version_number =~ m/\A(?:[0-9])/) {
+											my $version_string = $element->content;
+											$version_string =~ s/(?:'|")//g;
+											if ($version_string =~ m/\A(?:[0-9])/) {
 
 												try {
-													version->parse($version_number)->is_lax;
+													version->parse($version_string)->is_lax;
 												}
 												catch {
-													$version_number = 0 if $_;
+													$version_string = 0 if $_;
 												};
-												warn 'found version string - ' . $version_number
+												warn 'found version string - ' . $version_string
 													if $self->debug;
 												$self->{found_version}{$modules[$#modules]}
-													= $version_number;
+													= $version_string;
 											}
 										}
 									}
@@ -188,7 +188,7 @@ for methods in use L<Test::Requires> blocks, used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.29_01
+version: 0.29_03
 
 =head1 METHODS
 

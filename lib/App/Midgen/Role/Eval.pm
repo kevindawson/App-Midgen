@@ -4,14 +4,15 @@ use v5.10;
 use Moo::Role;
 requires qw( ppi_document debug format xtest _process_found_modules develop );
 
-use version 0.9902;
+# use version 0.9902;
 use Try::Tiny 0.12;
 use Data::Printer {caller_info => 1, colored => 1,};
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.29_01';
+use version;
+our $VERSION = '0.29_03';
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -140,18 +141,18 @@ sub _mod_ver {
 		# check for first char upper in module name
 		push @{$modules}, $module_name if $module_name =~ m/\A(?:[A-Z])/;
 
-		my $version_number = $eval_include;
-		$version_number =~ s/$module_name\s*//;
-		$version_number =~ s/\s*$//;
-		$version_number =~ s/[A-Z_a-z]|\s|\$|s|:|;//g;
+		my $version_string = $eval_include;
+		$version_string =~ s/$module_name\s*//;
+		$version_string =~ s/\s*$//;
+		$version_string =~ s/[A-Z_a-z]|\s|\$|s|:|;//g;
 
 		try {
-			version->parse($version_number)->is_lax;
+			version->parse($version_string)->is_lax;
 		}
 		catch {
-			$version_number = 0 if $_;
+			$version_string = 0 if $_;
 		};
-		$self->{found_version}{$module_name} = $version_number;
+		$self->{found_version}{$module_name} = $version_string;
 	}
 
 	return;
@@ -173,7 +174,7 @@ App::Midgen::Roles::Eval - used by L<App::Midgen>
 
 =head1 VERSION
 
-This document describes App::Midgen::Roles version: 0.29_01
+This document describes App::Midgen::Roles version: 0.29_03
 
 =head1 METHODS
 
