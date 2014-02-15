@@ -1,5 +1,8 @@
 Revision history for App-Midgen
 
+${NEXT}
+ - hack the version check from Module::Version
+
 0.29_07 2014-02-15
  - switch to Module::Vesrion over ExtUtils::Installed->version
 

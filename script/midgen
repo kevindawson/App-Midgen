@@ -4,7 +4,6 @@ use 5.010001;
 use strict;
 use warnings FATAL => 'all';
 
-use version;
 our $VERSION = '0.29_07';
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;

@@ -24,10 +24,9 @@ our $VERSION = '0.29_07';
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-#use Data::Printer {caller_info => 1, colored => 1,};
 use Try::Tiny;
-use Module::Runtime qw( use_module check_module_name);
-use Module::Version 'get_version';
+
+
 #######
 # output_header
 #######
@@ -171,37 +170,35 @@ sub no_index {
 sub in_local_lib {
 	my $self         = shift;
 	my $found_module = shift;
+#	use Module::Runtime qw( use_module check_module_name);
 
 	# exemption for perl :)
 	return $PERL_VERSION if $found_module eq 'perl';
 
-#	my $eu_inst = use_module('ExtUtils::Installed')->new();
-
 	try {
-		if (check_module_name($found_module)) {
+#		if (check_module_name($found_module)) {
 
 			# check the module is loadable
-			use_module($found_module);
-
-			try {
-				# show installed version-string
-#				return $eu_inst->version($found_module);
-				# switch to Module::Vesrion				
-				return get_version($found_module);
-			}
-			catch {
-				# Inconnu
-				# if a core module show version-string
-				return Module::CoreList::is_core($found_module)
-					? $Module::CoreList::version{$]}{$found_module}
-					: 'undef';
-
-			};
-		}
+#			use_module($found_module);
+#
+#			try {
+				# Show installed version-string
+				# hack from Module::Vesrion
+				require ExtUtils::MakeMaker;
+				return MM->parse_version(MM->_installed_file_for_module($found_module));
+#			}
+#			catch {
+#				# Inconnu :(
+#				# if a core module show version-string
+#				return Module::CoreList::is_core($found_module)
+#					? $Module::CoreList::version{$]}{$found_module}
+#					: 'undef';
+#			};
+#		}
 	}
 	catch {
 		# module not installed in local-lib
-		return 'Missing';
+		return colored('Missing ', 'red');
 	};
 }
 

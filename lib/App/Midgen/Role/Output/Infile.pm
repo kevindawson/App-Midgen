@@ -97,7 +97,6 @@ sub footer_infile {
 	};
   }
 
-#  say "  " . "-" x EIGHT . "-" x $pm_length . "-" x $dir_length . "-" x EIGHT;
 say "  " . "-" x $pm_length . "-" x EIGHT . "-" x NINE . "-" x $dir_length . "-" x TEN;
 
   print qq{\n};
