@@ -16,6 +16,7 @@ requires JSON::Tiny                 0.4
 requires List::MoreUtils            0.33
 requires MetaCPAN::API              0.43
 requires Module::CoreList           3.04
+requires Module::Runtime            0.014
 requires Moo                        1.004002
 requires PPI                        1.215
 requires PPI::XS                    0.902 if can_xs
@@ -31,7 +32,7 @@ requires Type::Tiny                 0.038
 requires Types::Standard            0.038
 requires constant                   1.27
 # requires lib                        0.63
-requires version                    0.9907
+requires version                    0.9908
 
 test_requires Test::CheckDeps 0.01
 test_requires Test::More      1.001002
