@@ -34,6 +34,7 @@ my @modules = qw(
 	MetaCPAN::API
 	Module::CoreList
 	Module::Runtime
+	Module::Version
 	Moo
 	PPI
 	Perl::MinimumVersion

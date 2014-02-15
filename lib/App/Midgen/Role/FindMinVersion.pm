@@ -5,7 +5,7 @@ use Types::Standard qw( Bool );
 use Moo::Role;
 requires qw( ppi_document debug );
 
-our $VERSION = '0.29_05';
+our $VERSION = '0.29_07';
 use English qw( -no_match_vars );
 use version;
 use constant {TRUE => 1, FALSE => 0,};
@@ -89,7 +89,7 @@ App::Midgen::Roles::FindMinVersion - used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.29_05
+version: 0.29_07
 
 =head1 METHODS
 

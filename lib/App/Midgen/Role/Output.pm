@@ -20,14 +20,14 @@ no if $] > 5.017010, warnings => 'experimental::smartmatch';
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.29_05';
+our $VERSION = '0.29_07';
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 #use Data::Printer {caller_info => 1, colored => 1,};
 use Try::Tiny;
 use Module::Runtime qw( use_module check_module_name);
-
+use Module::Version 'get_version';
 #######
 # output_header
 #######
@@ -175,7 +175,7 @@ sub in_local_lib {
 	# exemption for perl :)
 	return $PERL_VERSION if $found_module eq 'perl';
 
-	my $eu_inst = use_module('ExtUtils::Installed')->new();
+#	my $eu_inst = use_module('ExtUtils::Installed')->new();
 
 	try {
 		if (check_module_name($found_module)) {
@@ -185,7 +185,9 @@ sub in_local_lib {
 
 			try {
 				# show installed version-string
-				return $eu_inst->version($found_module);
+#				return $eu_inst->version($found_module);
+				# switch to Module::Vesrion				
+				return get_version($found_module);
 			}
 			catch {
 				# Inconnu
@@ -220,7 +222,7 @@ App::Midgen::Role::Output - A collection of output orientated methods used by L<
 
 =head1 VERSION
 
-version: 0.29_05
+version: 0.29_07
 
 =head1 DESCRIPTION
 

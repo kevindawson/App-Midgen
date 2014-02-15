@@ -1,5 +1,8 @@
 Revision history for App-Midgen
 
+0.29_07 2014-02-15
+ - switch to Module::Vesrion over ExtUtils::Installed->version
+
 0.29_05 2014-02-15
  - Fix test for is_core in infiles
 
