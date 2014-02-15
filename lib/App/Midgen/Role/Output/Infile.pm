@@ -16,7 +16,7 @@ local $OUTPUT_AUTOFLUSH = 1;
 
 use Term::ANSIColor qw( :constants colored );
 use Data::Printer {caller_info => 1, colored => 1,};
-use constant {BLANK => q{ }, NONE => q{}, THREE => 3, EIGHT => 8};
+use constant {BLANK => q{ }, NONE => q{}, THREE => 3, EIGHT => 8, NINE => 9, TEN => 10};
 use File::Spec;
 
 #######
@@ -63,11 +63,12 @@ sub footer_infile {
 
   }
 
-  say "  " . "-" x EIGHT . "-" x $pm_length . "-" x $dir_length . "-" x EIGHT;
+  say "  " . "-" x $pm_length . "-" x EIGHT . "-" x NINE . "-" x $dir_length . "-" x TEN;
 
-  printf " | %-*s | %-*s | %-*s |\n", $pm_length, 'Module', EIGHT, 'Version ',
-    $dir_length, 'Found in';
-  say "  " . "-" x EIGHT . "-" x $pm_length . "-" x $dir_length . "-" x EIGHT;
+
+  printf " | %-*s | %-*s | %-*s | %-*s |\n", $pm_length, 'Module', EIGHT, 'Version ',
+    EIGHT, 'Istalled',$dir_length, 'Found in';
+  say "  " . "-" x $pm_length . "-" x EIGHT . "-" x NINE . "-" x $dir_length . "-" x TEN;
 
 
   foreach my $module_name (sort keys %{$self->{modules}}) {
@@ -88,13 +89,16 @@ sub footer_infile {
 
 	try {
     foreach my $foundin (sort @{$self->{modules}{$module_name}{infiles}}) {
-      printf " | %-*s | %-*s | %-*s |\n", $pm_length, $module_name, EIGHT,
-        $foundin->[1], $dir_length, $foundin->[0],;
+	my $dir_relative = $foundin->[0];
+	$dir_relative =~ s{^/}{};
+      printf " | %-*s | %-*s | %-*s | %-*s |\n", $pm_length, $module_name, EIGHT,
+        $foundin->[1], EIGHT, $self->in_local_lib($module_name),$dir_length, $dir_relative,;
     }
 	};
   }
 
-  say "  " . "-" x EIGHT . "-" x $pm_length . "-" x $dir_length . "-" x EIGHT;
+#  say "  " . "-" x EIGHT . "-" x $pm_length . "-" x $dir_length . "-" x EIGHT;
+say "  " . "-" x $pm_length . "-" x EIGHT . "-" x NINE . "-" x $dir_length . "-" x TEN;
 
   print qq{\n};
 
