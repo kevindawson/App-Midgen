@@ -21,8 +21,12 @@ no if $] > 5.017010, warnings => 'experimental::smartmatch';
 # use namespace::clean -except => 'meta';
 
 our $VERSION = '0.29_01';
-use English qw( -no_match_vars ); # Avoids reg-ex performance penalty
+use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
+
+#use Data::Printer {caller_info => 1, colored => 1,};
+use Try::Tiny;
+use Module::Runtime qw( use_module check_module_name);
 
 #######
 # output_header
@@ -30,41 +34,36 @@ local $OUTPUT_AUTOFLUSH = 1;
 sub output_header {
 	my $self = shift;
 
-	given ( $self->format ) {
+	given ($self->format) {
 
 		when ('dsl') {
-			$self->header_dsl(
-				$self->distribution_name,
-				$self->get_module_version('inc::Module::Install::DSL')
-			);
+			$self->header_dsl($self->distribution_name,
+				$self->get_module_version('inc::Module::Install::DSL'));
 		}
 		when ('mi') {
-			$self->header_mi(
-				$self->distribution_name,
-				$self->get_module_version('inc::Module::Install')
-			);
+			$self->header_mi($self->distribution_name,
+				$self->get_module_version('inc::Module::Install'));
 		}
 		when ('dist') {
-			$self->header_dist( $self->distribution_name );
+			$self->header_dist($self->distribution_name);
 		}
 		when ('cpanfile') {
-			$self->header_cpanfile(
-				$self->distribution_name,
-				$self->get_module_version('inc::Module::Install')
-			) if not $self->quiet;
+			$self->header_cpanfile($self->distribution_name,
+				$self->get_module_version('inc::Module::Install'))
+				if not $self->quiet;
 
 		}
 		when ('eumm') {
-			$self->header_eumm( $self->distribution_name );
+			$self->header_eumm($self->distribution_name);
 		}
 		when ('mb') {
-			$self->header_mb( $self->distribution_name );
+			$self->header_mb($self->distribution_name);
 		}
 		when ('metajson') {
-			$self->header_metajson( $self->distribution_name );
+			$self->header_metajson($self->distribution_name);
 		}
 		when ('infile') {
-			$self->header_infile( $self->distribution_name );
+			$self->header_infile($self->distribution_name);
 		}
 	}
 	return;
@@ -78,31 +77,31 @@ sub output_main_body {
 	my $title        = shift || 'title missing';
 	my $required_ref = shift;
 
-	given ( $self->format ) {
+	given ($self->format) {
 
 		when ('dsl') {
-			$self->body_dsl( $title, $required_ref );
+			$self->body_dsl($title, $required_ref);
 		}
 		when ('mi') {
-			$self->body_mi( $title, $required_ref );
+			$self->body_mi($title, $required_ref);
 		}
 		when ('dist') {
-			$self->body_dist( $title, $required_ref );
+			$self->body_dist($title, $required_ref);
 		}
 		when ('cpanfile') {
-			$self->body_cpanfile( $title, $required_ref );
+			$self->body_cpanfile($title, $required_ref);
 		}
 		when ('eumm') {
-			$self->body_eumm( $title, $required_ref );
+			$self->body_eumm($title, $required_ref);
 		}
 		when ('mb') {
-			$self->body_mb( $title, $required_ref );
+			$self->body_mb($title, $required_ref);
 		}
 		when ('metajson') {
-			$self->body_metajson( $title, $required_ref );
+			$self->body_metajson($title, $required_ref);
 		}
 		when ('infile') {
-			$self->body_infile( $title, $required_ref );
+			$self->body_infile($title, $required_ref);
 		}
 	}
 
@@ -115,31 +114,31 @@ sub output_main_body {
 sub output_footer {
 	my $self = shift;
 
-	given ( $self->format ) {
+	given ($self->format) {
 
 		when ('dsl') {
-			$self->footer_dsl( $self->distribution_name );
+			$self->footer_dsl($self->distribution_name);
 		}
 		when ('mi') {
-			$self->footer_mi( $self->distribution_name );
+			$self->footer_mi($self->distribution_name);
 		}
 		when ('dist') {
-			$self->footer_dist( $self->distribution_name );
+			$self->footer_dist($self->distribution_name);
 		}
 		when ('cpanfile') {
-			$self->footer_cpanfile( $self->distribution_name );
+			$self->footer_cpanfile($self->distribution_name);
 		}
 		when ('eumm') {
-			$self->footer_eumm( $self->distribution_name );
+			$self->footer_eumm($self->distribution_name);
 		}
 		when ('mb') {
-			$self->footer_mb( $self->distribution_name );
+			$self->footer_mb($self->distribution_name);
 		}
 		when ('metajson') {
-			$self->footer_metajson( $self->distribution_name );
+			$self->footer_metajson($self->distribution_name);
 		}
 		when ('infile') {
-			$self->footer_infile( $self->distribution_name );
+			$self->footer_infile($self->distribution_name);
 		}
 	}
 
@@ -153,16 +152,55 @@ sub no_index {
 	my $self = shift;
 
 	#ToDo add more options as and when
-	my @dirs_to_check = qw( corpus eg examples fbp inc maint misc privinc share t xt );
+	my @dirs_to_check
+		= qw( corpus eg examples fbp inc maint misc privinc share t xt );
 	my @dirs_found;
 
 	foreach my $dir (@dirs_to_check) {
 
 		#ignore syntax warning for global
 		push @dirs_found, $dir
-			if -d File::Spec->catdir( $App::Midgen::Working_Dir, $dir );
+			if -d File::Spec->catdir($App::Midgen::Working_Dir, $dir);
 	}
 	return @dirs_found;
+}
+
+#######
+# in_local_lib
+#######
+sub in_local_lib {
+	my $self         = shift;
+	my $found_module = shift;
+
+	# exemption for perl :)
+	return $PERL_VERSION if $found_module eq 'perl';
+
+	my $eu_inst = use_module('ExtUtils::Installed')->new();
+
+	try {
+		if (check_module_name($found_module)) {
+
+			# check the module is loadable
+			use_module($found_module);
+
+			try {
+				# show installed version-string
+				return $eu_inst->version($found_module);
+			}
+			catch {
+				# Inconnu
+				# if a core module show version-string
+				return $self->_in_corelist($found_module)
+					? $Module::CoreList::version{$]}{$found_module}
+					: 'undef';
+
+			};
+		}
+	}
+	catch {
+		# module not installed in local-lib
+		return 'Missing';
+	};
 }
 
 
@@ -202,6 +240,10 @@ types, be that mcpan, dual-life or added distribution.
 =item * no_index
 
 Suggest some of your local directories you can 'no_index'
+
+=item * in_local_lib
+
+version string from local-lib or corelist
 
 =back
 
