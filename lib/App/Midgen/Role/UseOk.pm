@@ -10,7 +10,7 @@ use Data::Printer {caller_info => 1, colored => 1,};
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
-#use version;
+
 our $VERSION = '0.29_07';
 use constant {BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3,};
 
@@ -96,13 +96,6 @@ sub xtests_use_ok {
 												next if $version_string !~ m/\A[\d|v]/;
 
 												$version_string = version::is_lax($version_string) ? $version_string : 0;
-
-#												try {
-#													version->parse($version_string)->is_lax;
-#												}
-#												catch {
-#													$version_string = 0 if $_;
-#												};
 
 												warn 'found version_string - ' . $version_string
 													if $self->debug;
