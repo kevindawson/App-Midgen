@@ -4,8 +4,7 @@ use v5.10;
 use Moo::Role;
 requires qw( ppi_document debug format xtest _process_found_modules develop );
 
-# use version 0.9902;
-use Try::Tiny 0.12;
+use Try::Tiny;
 use Data::Printer {caller_info => 1, colored => 1,};
 
 # Load time and dependencies negate execution time

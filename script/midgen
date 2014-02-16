@@ -15,7 +15,7 @@ use Data::Printer {caller_info => 1, colored => 1,};
 use FindBin qw($Bin);
 use lib map {"$Bin/$_"} qw( lib ../lib );
 
-use App::Midgen;
+use App::Midgen 0.28;
 use Time::Stamp 'gmstamp';
 
 #######

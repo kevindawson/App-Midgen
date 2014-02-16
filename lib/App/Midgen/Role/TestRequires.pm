@@ -6,7 +6,7 @@ requires qw( ppi_document develop debug format xtest _process_found_modules );
 
 use PPI;
 
-use Try::Tiny 0.12;
+use Try::Tiny;
 use Data::Printer {caller_info => 1, colored => 1,};
 
 # Load time and dependencies negate execution time
