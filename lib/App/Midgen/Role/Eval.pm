@@ -11,7 +11,7 @@ use Data::Printer {caller_info => 1, colored => 1,};
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-use version;
+#use version;
 our $VERSION = '0.29_07';
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
@@ -146,12 +146,14 @@ sub _mod_ver {
 		$version_string =~ s/\s*$//;
 		$version_string =~ s/[A-Z_a-z]|\s|\$|s|:|;//g;
 
-		try {
-			version->parse($version_string)->is_lax;
-		}
-		catch {
-			$version_string = 0 if $_;
-		};
+		$version_string = version::is_lax($version_string) ? $version_string : 0;
+
+#		try {
+#			version->parse($version_string)->is_lax;
+#		}
+#		catch {
+#			$version_string = 0 if $_;
+#		};
 		$self->{found_version}{$module_name} = $version_string;
 	}
 
