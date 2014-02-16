@@ -170,31 +170,15 @@ sub no_index {
 sub in_local_lib {
 	my $self         = shift;
 	my $found_module = shift;
-#	use Module::Runtime qw( use_module check_module_name);
 
 	# exemption for perl :)
 	return $PERL_VERSION if $found_module eq 'perl';
 
 	try {
-#		if (check_module_name($found_module)) {
-
-			# check the module is loadable
-#			use_module($found_module);
-#
-#			try {
-				# Show installed version-string
-				# hack from Module::Vesrion
-				require ExtUtils::MakeMaker;
-				return MM->parse_version(MM->_installed_file_for_module($found_module));
-#			}
-#			catch {
-#				# Inconnu :(
-#				# if a core module show version-string
-#				return Module::CoreList::is_core($found_module)
-#					? $Module::CoreList::version{$]}{$found_module}
-#					: 'undef';
-#			};
-#		}
+		# Show installed version-string
+		# hack from Module::Vesrion
+		require ExtUtils::MakeMaker;
+		return MM->parse_version(MM->_installed_file_for_module($found_module));
 	}
 	catch {
 		# module not installed in local-lib
