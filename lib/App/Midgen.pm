@@ -19,7 +19,7 @@ no if $] > 5.017010, warnings => 'experimental::smartmatch';
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
-
+use version;
 our $VERSION = '0.29_07';
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
@@ -33,7 +33,7 @@ use MetaCPAN::API;
 use Module::CoreList;
 use PPI;
 use Perl::PrereqScanner;
-use Scalar::Util qw(looks_like_number);
+#use Scalar::Util qw(looks_like_number);
 use Term::ANSIColor qw( :constants colored colorstrip );
 use Try::Tiny;
 
@@ -58,34 +58,36 @@ sub run {
 
 	$self->find_required_modules();
 
-	p $self->{modules} if ($self->verbose == TWO);
-
-	$self->remove_noisy_children($self->{package_requires})
-		if $self->experimental;
-	$self->remove_twins($self->{package_requires}) if $self->experimental;
-
-
-# Run a second time if we found any twins, this will sort out twins and triplets etc
-	$self->remove_noisy_children($self->{package_requires})
-		if $self->found_twins;
+#	p $self->{modules} if ($self->verbose == TWO);
 
 	$self->find_required_test_modules();
 
-	# Now we have switched to MetaCPAN-Api we can hunt for noisy children in test requires
-	if ($self->experimental) {
-		p $self->{test_requires} if $self->debug;
-		$self->remove_noisy_children($self->{test_requires});
-		foreach my $module (keys %{$self->{test_requires}}) {
-			if ($self->{package_requires}{$module}) {
-				warn $module if $self->debug;
-				try {
-					delete $self->{test_requires}{$module};
-				};
-			}
-		}
-		p $self->{test_requires} if $self->debug;
 
+	# Now we have switched to MetaCPAN-Api we can hunt for noisy children in tests
+	if ($self->experimental) {
+
+		$self->remove_noisy_children($self->{package_requires});
+		$self->remove_twins($self->{package_requires});
+
+		# Run a second time if we found any twins, this will sort out twins and triplets etc
+		$self->remove_noisy_children($self->{package_requires}) if $self->found_twins;
+
+		foreach (qw( test_requires recommends test_develop )) {
+
+			p $self->{$_} if $self->debug;
+			$self->remove_noisy_children($self->{$_});
+			foreach my $module (keys %{$self->{$_}}) {
+				if ($self->{package_requires}{$module}) {
+					warn $module if $self->debug;
+					try {
+						delete $self->{$_}{$module};
+					};
+				}
+			}
+			p $self->{$_} if $self->debug;
+		}
 	}
+
 
 	# display chosen output format
 	$self->output_header();
@@ -128,7 +130,7 @@ sub first_package_name {
 	try {
 		find(
 			sub { _find_package_names($self); },
-			File::Spec->catfile($Working_Dir, 'lib')
+			File::Spec->catfile($Working_Dir, 'lib' )
 		);
 	};
 
@@ -161,7 +163,7 @@ sub _find_package_names {
 	my $filename = $_;
 	state $files_checked;
 	if (defined $files_checked) {
-		return if $files_checked >= THREE and not $self->min_ver_fast;
+		return if $files_checked >= THREE;
 	}
 
 	# Only check in pm files
@@ -169,19 +171,6 @@ sub _find_package_names {
 
 	# Load a Document from a file
 	$self->_set_ppi_document(PPI::Document->new($filename));
-
-	try {
-		if ($self->min_ver_fast) {
-
-			# say 'running fast';
-			$self->min_version($filename);
-		}
-		else {
-
-			# say 'running slow';
-			$self->min_version();    # if not $self->min_ver_fast;
-		}
-	};
 
 	# Extract package names
 	push @{$self->package_names},
@@ -199,7 +188,7 @@ sub find_required_modules {
 	my $self = shift;
 
 	my @posiable_directories_to_search
-		= map { File::Spec->catfile($Working_Dir, $_) } qw( script bin lib );
+		= map { File::Spec->catfile($Working_Dir, $_) } qw( bin share script lib );
 
 	my @directories_to_search = ();
 	foreach my $directory (@posiable_directories_to_search) {
@@ -264,6 +253,10 @@ sub _find_makefile_requires {
 			say 'looking for requires in (.pm)-> ' . $filename
 				if $self->verbose >= TWO;
 		}
+		when (m/[.]t$/) {
+			say 'looking for requires in (.t)-> ' . $filename
+				if $self->verbose >= TWO;
+		}
 		when (m/[.]psgi$/) {
 			say 'looking for requires in (.psgi)-> ' . $filename
 				if $self->verbose >= TWO;
@@ -274,19 +267,17 @@ sub _find_makefile_requires {
 		}
 		default { return if not $self->_is_perlfile($filename); $is_script = 1; }
 	}
-	try {
-		if ($self->min_ver_fast) {
-			$self->min_version($filename);
-		}
-		else {
-			$self->min_version() if $is_script;
-		}
-	};
 
 	my $relative_dir = $File::Find::dir;
 	$relative_dir =~ s/$Working_Dir//;
 	$self->_set_looking_infile(File::Spec->catfile($relative_dir, $filename));
 	$self->_set_ppi_document(PPI::Document->new($filename));
+
+#	try {
+		#say 'find min version - look in lib/ script/ share/ bin/ if exists';
+		$self->min_version();
+#	};
+
 
 	# do extra test early check for use_module before hand
 	$self->xtests_use_module('runtime_recommends');
@@ -311,7 +302,6 @@ sub _find_makefile_requires {
 		my $ppi_tqs = $self->ppi_document->find('PPI::Token::Quote::Single');
 		if ($ppi_tqs) {
 
-			# my @modules;
 			foreach my $include (@{$ppi_tqs}) {
 
 				my $module = $include->content;
@@ -319,7 +309,8 @@ sub _find_makefile_requires {
 				$module =~ s/[']$//;
 
 				next if $module =~ m/^Dist::Zilla::Role::PluginBundle/;
-				next if $module =~ m{[.|$|\\|/|-|%|@|]};
+				next if $module =~ m{\A[-|:|\d|a-z]};
+				next if $module =~ m{[.|$|\\|/|\-|\[|%|@|]};
 				next if $module eq NONE;
 
 				push @modules, 'Dist::Zilla::Plugin::' . $module;
@@ -386,6 +377,12 @@ sub _find_makefile_test_requires {
 	my $relative_dir = $File::Find::dir;
 	$relative_dir =~ s/$Working_Dir//;
 	$self->_set_looking_infile(File::Spec->catfile($relative_dir, $filename));
+
+#	try {
+		#say 'find min version in test t/ only';
+		$self->min_version() if not $self->experimental;
+#	};
+
 
 	# Load a Document from a file and check use and require contents
 	$self->_set_ppi_document(PPI::Document->new($filename));
@@ -733,8 +730,7 @@ sub remove_twins {
 
 				$version = $self->get_module_version($dum_parient);
 
-				if (looks_like_number($version)) {
-
+				if ( version::is_lax($version) ) {
 					#Check parent version against a twins version
 					if ($version eq $required_ref->{$sorted_modules[$n]}) {
 						say $dum_parient . ' -> '
