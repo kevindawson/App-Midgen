@@ -20,7 +20,6 @@ requires Moo                        1.004002
 requires PPI                        1.215
 requires PPI::XS                    0.902 if can_xs
 requires Perl::MinimumVersion       1.32
-requires Perl::MinimumVersion::Fast 0.11 if can_xs
 requires Perl::PrereqScanner        1.019
 requires Pod::Usage                 1.63
 requires Scalar::Util               1.38
