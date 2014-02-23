@@ -86,19 +86,6 @@ in a module or script and updating C<$App::Midgen::Min_Version> accordingly.
 
 =back
 
-=head2 ACCESSORS
-
-=over 4
-
-=item * min_ver_fast
-
-Used as a flag to indicate which of the following is install
-
-  TRUE ->  L<Perl::MinimumVersion::Fast>
-  FALSE -> L<Perl::MinimumVersion>
-
-=back
-
 =head1 AUTHOR
 
 See L<App::Midgen>
