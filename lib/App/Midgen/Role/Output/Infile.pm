@@ -1,5 +1,6 @@
 package App::Midgen::Role::Output::Infile;
 
+use v5.10;
 use Moo::Role;
 requires qw( core dual_life debug );
 use Try::Tiny;
