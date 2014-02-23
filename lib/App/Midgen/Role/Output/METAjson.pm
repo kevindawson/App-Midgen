@@ -161,7 +161,7 @@ sub footer_metajson {
 
 	print "\n";
 
-	say THREE . '}';
+	say THREE . '},';
 	my @no_index = $self->no_index;
 	if (@no_index) {
 		say THREE . '"no_index" : {';
