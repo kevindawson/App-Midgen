@@ -70,10 +70,10 @@ sub _confirm_perlfile {
 				if $ppi_tc->[0]->content =~ /perl/;
 			say $filename ;
 		}
-		return 1;
+		return TRUE;
 	}
 	else {
-		return 0;
+		return FALSE;
 	}
 
 }
