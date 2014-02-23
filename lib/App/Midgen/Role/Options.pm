@@ -1,7 +1,5 @@
 package App::Midgen::Role::Options;
 
-use v5.10;
-
 use Types::Standard qw( Bool Int );
 use Moo::Role;
 
@@ -9,6 +7,8 @@ use Moo::Role;
 # use namespace::clean -except => 'meta';
 
 our $VERSION = '0.29_07';
+$VERSION = eval $VERSION;
+
 use Carp;
 
 #######

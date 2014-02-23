@@ -5,6 +5,8 @@ use strict;
 use warnings FATAL => 'all';
 
 our $VERSION = '0.29_07';
+$VERSION = eval $VERSION;
+
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 

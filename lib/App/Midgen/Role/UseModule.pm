@@ -9,6 +9,8 @@ use Data::Printer;    # caller_info => 1;
 use Try::Tiny;
 
 our $VERSION = '0.29_07';
+$VERSION = eval $VERSION;
+
 use constant {BLANK => q{ }, TRUE => 1, FALSE => 0, NONE => q{}, TWO => 2,
 	THREE => 3,};
 

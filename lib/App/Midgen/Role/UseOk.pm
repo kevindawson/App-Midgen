@@ -12,6 +12,8 @@ use Data::Printer {caller_info => 1, colored => 1,};
 # use namespace::clean -except => 'meta';
 
 our $VERSION = '0.29_07';
+$VERSION = eval $VERSION;
+
 use constant {BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3,};
 
 

@@ -1,6 +1,5 @@
 package App::Midgen::Role::Attributes;
 
-use v5.10;
 use Types::Standard qw( ArrayRef Bool Int Object Str);
 use Moo::Role;
 requires qw( experimental format );
@@ -11,6 +10,8 @@ requires qw( experimental format );
 # use namespace::clean -except => 'meta';
 
 our $VERSION = '0.29_07';
+$VERSION = eval $VERSION;
+
 use Carp;
 
 #######
