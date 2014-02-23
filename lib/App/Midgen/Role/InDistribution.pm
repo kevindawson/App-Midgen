@@ -35,9 +35,10 @@ sub is_perlfile {
 		}
 		when (m/[.]\w{2,4}$/) {
 			say 'rejecting ' . $filename if $self->verbose >= TWO;
+			return FALSE;
 		}
 		default {
-			return FALSE if not $self->_confirm_perlfile($filename);
+			return $self->_confirm_perlfile($filename);
 		}
 	}
 	return TRUE;
