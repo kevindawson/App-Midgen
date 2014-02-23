@@ -21,6 +21,8 @@ no if $] > 5.017010, warnings => 'experimental::smartmatch';
 # use namespace::clean -except => 'meta';
 use version;
 our $VERSION = '0.29_07';
+$VERSION = eval $VERSION;
+
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
@@ -37,7 +39,7 @@ use Perl::PrereqScanner;
 use Term::ANSIColor qw( :constants colored colorstrip );
 use Try::Tiny;
 
-use constant {BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3,};
+use constant {BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3, TRUE => 1, FALSE => 0,};
 use version;
 
 # stop rlib from Fing all over cwd
@@ -246,27 +248,32 @@ sub find_required_test_modules {
 sub _find_makefile_requires {
 	my $self      = shift;
 	my $filename  = $_;
-	my $is_script = 0;
+#	my $is_script = 0;
+#
+#	given ($filename) {
+#		when (m/[.]pm$/) {
+#			say 'looking for requires in (.pm)-> ' . $filename
+#				if $self->verbose >= TWO;
+#		}
+#		when (m/[.]t$/) {
+#			say 'looking for requires in (.t)-> ' . $filename
+#				if $self->verbose >= TWO;
+#		}
+#		when (m/[.]psgi$/) {
+#			say 'looking for requires in (.psgi)-> ' . $filename
+#				if $self->verbose >= TWO;
+#		}
+#		when (m/[.]\w{2,4}$/) {
+#			say 'rejecting ' . $filename if $self->verbose >= TWO;
+#			return;
+#		}
+#		default { return if not $self->_confirm_perlfile($filename); $is_script = 1; }
+#	}
 
-	given ($filename) {
-		when (m/[.]pm$/) {
-			say 'looking for requires in (.pm)-> ' . $filename
-				if $self->verbose >= TWO;
-		}
-		when (m/[.]t$/) {
-			say 'looking for requires in (.t)-> ' . $filename
-				if $self->verbose >= TWO;
-		}
-		when (m/[.]psgi$/) {
-			say 'looking for requires in (.psgi)-> ' . $filename
-				if $self->verbose >= TWO;
-		}
-		when (m/[.]\w{2,4}$/) {
-			say 'rejecting ' . $filename if $self->verbose >= TWO;
-			return;
-		}
-		default { return if not $self->_is_perlfile($filename); $is_script = 1; }
-	}
+#p $filename;
+#p $self->_is_perlfile($filename);
+
+return if $self->_is_perlfile($filename) eq FALSE;
 
 	my $relative_dir = $File::Find::dir;
 	$relative_dir =~ s/$Working_Dir//;
@@ -322,10 +329,41 @@ sub _find_makefile_requires {
 	return;
 }
 
+
 ########
 # is this a perl file
-#######
+########
 sub _is_perlfile {
+	my $self      = shift;
+	my $filename  = $_;
+
+	given ($filename) {
+		when (m/[.]pm$/) {
+			say 'looking for requires in (.pm)-> ' . $filename
+				if $self->verbose >= TWO;
+		}
+		when (m/[.]t$/) {
+			say 'looking for requires in (.t)-> ' . $filename
+				if $self->verbose >= TWO;
+		}
+		when (m/[.]psgi$/) {
+			say 'looking for requires in (.psgi)-> ' . $filename
+				if $self->verbose >= TWO;
+		}
+		when (m/[.]\w{2,4}$/) {
+			say 'rejecting ' . $filename if $self->verbose >= TWO;
+		}
+		default {
+			return FALSE if not $self->_confirm_perlfile($filename);
+		}
+	}
+	return TRUE;
+}
+
+########
+# confirm if this a perl file
+#######
+sub _confirm_perlfile {
 	my $self     = shift;
 	my $filename = shift;
 
@@ -363,16 +401,43 @@ sub _is_perlfile {
 #######
 sub _find_makefile_test_requires {
 	my $self       = shift;
+	my $filename = $_;
+#	my $is_script = 0;
+
 	my $directorie = shift;
 	##p $directorie;
 	my $prerequisites
 		= ($directorie =~ m/xt$/) ? 'test_develop' : 'test_requires';
 	$self->_set_xtest('test_develop') if $directorie =~ m/xt$/;
 
-	my $filename = $_;
-	return if $filename !~ /[.]t|pm$/sxm;
 
-	say 'looking for test_requires in: ' . $filename if $self->verbose >= TWO;
+#	given ($filename) {
+#		when (m/[.]pm$/) {
+#			say 'looking for tests in (.pm)-> ' . $filename
+#				if $self->verbose >= TWO;
+#		}
+#		when (m/[.]t$/) {
+#			say 'looking for tests in (.t)-> ' . $filename
+#				if $self->verbose >= TWO;
+#		}
+#		when (m/[.]psgi$/) {
+#			say 'looking for tests in (.psgi)-> ' . $filename
+#				if $self->verbose >= TWO;
+#		}
+#		when (m/[.]\w{2,4}$/) {
+#			say 'rejecting ' . $filename if $self->verbose >= TWO;
+#			return;
+#		}
+#		default { return if not $self->_confirm_perlfile($filename); $is_script = 1; }
+#	}
+
+return if $self->_is_perlfile($filename) eq FALSE;
+
+
+#	return if $filename !~ m/[.]t|pm$/sxm;
+#	return if $filename =~ m/[.]txt$/;
+
+#	say 'looking for test_requires in: ' . $filename if $self->verbose >= TWO;
 
 	my $relative_dir = $File::Find::dir;
 	$relative_dir =~ s/$Working_Dir//;
