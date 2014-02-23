@@ -1,67 +1,59 @@
 package App::Midgen::Role::FindMinVersion;
 
-use v5.10;
 use Types::Standard qw( Bool );
 use Moo::Role;
 requires qw( ppi_document debug );
 
 our $VERSION = '0.29_07';
-#use English qw( -no_match_vars );
-use Data::Printer {caller_info => 1, colored => 1,};
+$VERSION = eval $VERSION;
+
 use Perl::MinimumVersion;
 use Try::Tiny;
 
+use constant {TWO => 2,};
 use version;
 
 #######
 # find min perl version
 ######
 sub min_version {
-	my $self         = shift;
+	my $self = shift;
 
 	my $dist_min_ver = $App::Midgen::Min_Version;
 	my $object;
 
 	try {
 		$object = Perl::MinimumVersion->new($self->ppi_document);
-#		p $object->minimum_syntax_reason;
 	};
 
 	# Find the minimum version
 	try {
-		my $minimum_version = $object->minimum_version;
 		$dist_min_ver
-			= version->parse($dist_min_ver) > version->parse($minimum_version)
-			? version->parse($dist_min_ver)->numify
-			: version->parse($minimum_version)->numify;
-
-#		p $minimum_version if $self->debug;
+			= version->parse($dist_min_ver)
+			> version->parse($object->minimum_version)
+			? version->parse($dist_min_ver)
+			: version->parse($object->minimum_version);
 	};
 
 	try {
-		my $minimum_explicit_version = $object->minimum_explicit_version;
 		$dist_min_ver
 			= version->parse($dist_min_ver)
-			> version->parse($minimum_explicit_version)
-			? version->parse($dist_min_ver)->numify
-			: version->parse($minimum_explicit_version)->numify;
-
-#		p $minimum_explicit_version if $self->debug;
+			> version->parse($object->minimum_explicit_version)
+			? version->parse($dist_min_ver)
+			: version->parse($object->minimum_explicit_version);
 	};
 
 	try {
-		my $minimum_syntax_version = $object->minimum_syntax_version;
 		$dist_min_ver
 			= version->parse($dist_min_ver)
-			> version->parse($minimum_syntax_version)
-			? version->parse($dist_min_ver)->numify
-			: version->parse($minimum_syntax_version)->numify;
-
-#		p $minimum_syntax_version if $self->debug;
+			> version->parse($object->minimum_syntax_version)
+			? version->parse($dist_min_ver)
+			: version->parse($object->minimum_syntax_version);
 	};
 
-	warn 'min_version - ' . $dist_min_ver if $self->debug;
-	$App::Midgen::Min_Version = $dist_min_ver;
+	print "min_version - $dist_min_ver\n" if ($self->verbose == TWO);
+
+	$App::Midgen::Min_Version = version->parse($dist_min_ver)->numify;
 	return;
 }
 
