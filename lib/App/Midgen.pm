@@ -6,6 +6,7 @@ with qw(
 	App::Midgen::Role::Options
 	App::Midgen::Role::Attributes
 	App::Midgen::Role::AttributesX
+	App::Midgen::Role::InDistribution
 	App::Midgen::Role::TestRequires
 	App::Midgen::Role::UseOk
 	App::Midgen::Role::Eval
@@ -248,43 +249,15 @@ sub find_required_test_modules {
 sub _find_makefile_requires {
 	my $self      = shift;
 	my $filename  = $_;
-#	my $is_script = 0;
-#
-#	given ($filename) {
-#		when (m/[.]pm$/) {
-#			say 'looking for requires in (.pm)-> ' . $filename
-#				if $self->verbose >= TWO;
-#		}
-#		when (m/[.]t$/) {
-#			say 'looking for requires in (.t)-> ' . $filename
-#				if $self->verbose >= TWO;
-#		}
-#		when (m/[.]psgi$/) {
-#			say 'looking for requires in (.psgi)-> ' . $filename
-#				if $self->verbose >= TWO;
-#		}
-#		when (m/[.]\w{2,4}$/) {
-#			say 'rejecting ' . $filename if $self->verbose >= TWO;
-#			return;
-#		}
-#		default { return if not $self->_confirm_perlfile($filename); $is_script = 1; }
-#	}
 
-#p $filename;
-#p $self->_is_perlfile($filename);
-
-return if $self->_is_perlfile($filename) eq FALSE;
+	return if $self->is_perlfile($filename) eq FALSE;
 
 	my $relative_dir = $File::Find::dir;
 	$relative_dir =~ s/$Working_Dir//;
 	$self->_set_looking_infile(File::Spec->catfile($relative_dir, $filename));
 	$self->_set_ppi_document(PPI::Document->new($filename));
 
-#	try {
-		#say 'find min version - look in lib/ script/ share/ bin/ if exists';
-		$self->min_version();
-#	};
-
+	$self->min_version();
 
 	# do extra test early check for use_module before hand
 	$self->xtests_use_module('runtime_recommends');
@@ -330,124 +303,26 @@ return if $self->_is_perlfile($filename) eq FALSE;
 }
 
 
-########
-# is this a perl file
-########
-sub _is_perlfile {
-	my $self      = shift;
-	my $filename  = $_;
-
-	given ($filename) {
-		when (m/[.]pm$/) {
-			say 'looking for requires in (.pm)-> ' . $filename
-				if $self->verbose >= TWO;
-		}
-		when (m/[.]t$/) {
-			say 'looking for requires in (.t)-> ' . $filename
-				if $self->verbose >= TWO;
-		}
-		when (m/[.]psgi$/) {
-			say 'looking for requires in (.psgi)-> ' . $filename
-				if $self->verbose >= TWO;
-		}
-		when (m/[.]\w{2,4}$/) {
-			say 'rejecting ' . $filename if $self->verbose >= TWO;
-		}
-		default {
-			return FALSE if not $self->_confirm_perlfile($filename);
-		}
-	}
-	return TRUE;
-}
-
-########
-# confirm if this a perl file
-#######
-sub _confirm_perlfile {
-	my $self     = shift;
-	my $filename = shift;
-
-	$self->_set_ppi_document(PPI::Document->new($filename));
-	my $ppi_tc = $self->ppi_document->find('PPI::Token::Comment');
-
-	my $a_pl_file = 0;
-
-	if ($ppi_tc) {
-
-		# check first token-comment for a she-bang
-		$a_pl_file = 1 if $ppi_tc->[0]->content =~ m/^#!.*perl.*$/;
-	}
-
-	if ($self->ppi_document->find('PPI::Statement::Package') || $a_pl_file) {
-		if ($self->verbose >= TWO) {
-
-			print "looking for requires in (package) -> "
-				if $self->ppi_document->find('PPI::Statement::Package');
-			print "looking for requires in (shebang) -> "
-				if $ppi_tc->[0]->content =~ /perl/;
-			say $filename ;
-		}
-		return 1;
-	}
-	else {
-		return 0;
-	}
-
-}
-
-
 #######
 # _find_makefile_test_requires
 #######
 sub _find_makefile_test_requires {
 	my $self       = shift;
-	my $filename = $_;
-#	my $is_script = 0;
-
 	my $directorie = shift;
+	my $filename = $_;
+
 	##p $directorie;
 	my $prerequisites
 		= ($directorie =~ m/xt$/) ? 'test_develop' : 'test_requires';
 	$self->_set_xtest('test_develop') if $directorie =~ m/xt$/;
 
-
-#	given ($filename) {
-#		when (m/[.]pm$/) {
-#			say 'looking for tests in (.pm)-> ' . $filename
-#				if $self->verbose >= TWO;
-#		}
-#		when (m/[.]t$/) {
-#			say 'looking for tests in (.t)-> ' . $filename
-#				if $self->verbose >= TWO;
-#		}
-#		when (m/[.]psgi$/) {
-#			say 'looking for tests in (.psgi)-> ' . $filename
-#				if $self->verbose >= TWO;
-#		}
-#		when (m/[.]\w{2,4}$/) {
-#			say 'rejecting ' . $filename if $self->verbose >= TWO;
-#			return;
-#		}
-#		default { return if not $self->_confirm_perlfile($filename); $is_script = 1; }
-#	}
-
-return if $self->_is_perlfile($filename) eq FALSE;
-
-
-#	return if $filename !~ m/[.]t|pm$/sxm;
-#	return if $filename =~ m/[.]txt$/;
-
-#	say 'looking for test_requires in: ' . $filename if $self->verbose >= TWO;
+	return if $self->is_perlfile($filename) eq FALSE;
 
 	my $relative_dir = $File::Find::dir;
 	$relative_dir =~ s/$Working_Dir//;
 	$self->_set_looking_infile(File::Spec->catfile($relative_dir, $filename));
 
-#	try {
-		#say 'find min version in test t/ only';
-		$self->min_version() if not $self->experimental;
-#	};
-
+	$self->min_version() if not $self->experimental;
 
 	# Load a Document from a file and check use and require contents
 	$self->_set_ppi_document(PPI::Document->new($filename));
