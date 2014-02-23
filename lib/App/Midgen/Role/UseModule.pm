@@ -8,8 +8,8 @@ use PPI;
 use Data::Printer;    # caller_info => 1;
 use Try::Tiny;
 
-our $VERSION = '0.29_07';
-$VERSION = eval $VERSION;
+our $VERSION = '0.29_09';
+$VERSION = eval $VERSION; ## no critic
 
 use constant {BLANK => q{ }, TRUE => 1, FALSE => 0, NONE => q{}, TWO => 2,
 	THREE => 3,};
@@ -475,7 +475,7 @@ includes, used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.29_07
+version: 0.29_09
 
 
 =head1 METHODS

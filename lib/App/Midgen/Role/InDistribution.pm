@@ -5,8 +5,8 @@ use Types::Standard qw( Bool );
 use Moo::Role;
 requires qw( ppi_document debug );
 
-our $VERSION = '0.29_07';
-$VERSION = eval $VERSION;
+our $VERSION = '0.29_09';
+$VERSION = eval $VERSION; ## no critic
 
 # turn off experimental warnings
 no if $] > 5.017010, warnings => 'experimental::smartmatch';
@@ -94,7 +94,7 @@ App::Midgen::Roles::InDistribution - used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.29_07
+version: 0.29_09
 
 =head1 METHODS
 

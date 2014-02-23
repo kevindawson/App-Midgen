@@ -6,13 +6,14 @@ use warnings FATAL => 'all';
 use English qw( -no_match_vars );    # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Test::More tests => 42;
+use Test::More tests => 43;
 
 BEGIN {
 	use_ok('App::Midgen');
 	use_ok('App::Midgen::Role::Options');
 	use_ok('App::Midgen::Role::Attributes');
 	use_ok('App::Midgen::Role::AttributesX');
+	use_ok('App::Midgen::Role::InDistribution');
 	use_ok('App::Midgen::Role::TestRequires');
 	use_ok('App::Midgen::Role::UseOk');
 	use_ok('App::Midgen::Role::Eval');

@@ -4,8 +4,8 @@ use Types::Standard qw( Bool );
 use Moo::Role;
 requires qw( ppi_document debug );
 
-our $VERSION = '0.29_07';
-$VERSION = eval $VERSION;
+our $VERSION = '0.29_09';
+$VERSION = eval $VERSION; ## no critic
 
 use Perl::MinimumVersion;
 use Try::Tiny;
@@ -73,7 +73,7 @@ App::Midgen::Roles::FindMinVersion - used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.29_07
+version: 0.29_09
 
 =head1 METHODS
 

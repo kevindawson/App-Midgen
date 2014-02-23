@@ -1,7 +1,14 @@
 Revision history for App-Midgen
 
-${NEXT}
+0.29_09 2014-03-23
  - hack the version check from Module::Version
+ - simplify the installed version check
+ - use version::is_lax as and where
+ - re-write to only use p-mv
+ - check all perl files in found (lib/ script/ share/ bin t/)
+ - check for min-ver in above also if exists
+ - remove v5.10 where it is not needed and add eval VERSION
+ - move composed methods in to a role - InDistribution
 
 0.29_07 2014-02-15
  - switch to Module::Vesrion over ExtUtils::Installed->version

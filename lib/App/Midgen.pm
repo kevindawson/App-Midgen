@@ -21,8 +21,8 @@ no if $] > 5.017010, warnings => 'experimental::smartmatch';
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 use version;
-our $VERSION = '0.29_07';
-$VERSION = eval $VERSION;
+our $VERSION = '0.29_09';
+$VERSION = eval $VERSION; ## no critic
 
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
@@ -867,7 +867,7 @@ App::Midgen - Check B<requires> & B<test_requires> of your package for CPAN incl
 
 =head1 VERSION
 
-This document describes App::Midgen version: 0.29_07
+This document describes App::Midgen version: 0.29_09
 
 =head1 SYNOPSIS
 
@@ -908,12 +908,12 @@ B<MetaCPAN Version Number Displayed>
 =back
 
 I<Food for thought, if we update our Modules,
- don't we want our users to use the current version,
- so should we not by default do the same with others Modules.
- Thus we always show the current version number, regardless.>
+don't we want our users to use the current version,
+so should we not by default do the same with others Modules.
+Thus we always show the current version number, regardless.>
 
 We also display some other complementary information relevant to this package
- and your chosen output format.
+and your chosen output format.
 
 For more info and sample output see L<wiki|https://github.com/kevindawson/App-Midgen/wiki>
 
@@ -932,7 +932,7 @@ Search for Includes B<use> and B<require> in package modules
 =item * find_required_test_modules
 
 Search for Includes B<use> and B<require> in test scripts,
- also B<use_ok>, I<plus some other patterns along the way.>
+also B<use_ok>, I<plus some other patterns along the way.>
 
 =item * first_package_name
 

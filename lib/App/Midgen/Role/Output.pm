@@ -20,8 +20,8 @@ no if $] > 5.017010, warnings => 'experimental::smartmatch';
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.29_07';
-$VERSION = eval $VERSION;
+our $VERSION = '0.29_09';
+$VERSION = eval $VERSION; ## no critic
 
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
@@ -205,7 +205,7 @@ App::Midgen::Role::Output - A collection of output orientated methods used by L<
 
 =head1 VERSION
 
-version: 0.29_07
+version: 0.29_09
 
 =head1 DESCRIPTION
 
