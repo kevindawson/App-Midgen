@@ -1,47 +1,36 @@
 package App::Midgen::Role::InDistribution;
 
-use v5.10;
 use Types::Standard qw( Bool );
 use Moo::Role;
 requires qw( ppi_document debug );
 
 our $VERSION = '0.29_09';
-$VERSION = eval $VERSION; ## no critic
+$VERSION = eval $VERSION;    ## no critic
 
-# turn off experimental warnings
-no if $] > 5.017010, warnings => 'experimental::smartmatch';
-
-use constant { TWO => 2, TRUE => 1, FALSE => 0,};
+use constant {TWO => 2, TRUE => 1, FALSE => 0,};
 
 ########
 # is this a perl file
+# more files found than File-Find-Rule-Perl (!psgi)
 ########
 sub is_perlfile {
-	my $self      = shift;
-	my $filename  = $_;
+	my $self     = shift;
+	my $filename = $_;
 
-	given ($filename) {
-		when (m/[.]pm$/) {
-			say 'looking for requires in (.pm)-> ' . $filename
+	foreach (qw(pm t psgi pl)) {
+		if ($filename =~ m/[.]$_$/) {
+			print "looking for requires in ($_)-> $filename\n"
 				if $self->verbose >= TWO;
-		}
-		when (m/[.]t$/) {
-			say 'looking for requires in (.t)-> ' . $filename
-				if $self->verbose >= TWO;
-		}
-		when (m/[.]psgi$/) {
-			say 'looking for requires in (.psgi)-> ' . $filename
-				if $self->verbose >= TWO;
-		}
-		when (m/[.]\w{2,4}$/) {
-			say 'rejecting ' . $filename if $self->verbose >= TWO;
-			return FALSE;
-		}
-		default {
-			return $self->_confirm_perlfile($filename);
+			return TRUE;
 		}
 	}
-	return TRUE;
+	if ($filename =~ m/[.]\w{2,4}$/) {
+		print "rejecting  $filename\n" if $self->verbose >= TWO;
+		return FALSE;
+	}
+	else {
+		return $self->_confirm_perlfile($filename);
+	}
 }
 
 ########
@@ -69,7 +58,7 @@ sub _confirm_perlfile {
 				if $self->ppi_document->find('PPI::Statement::Package');
 			print "looking for requires in (shebang) -> "
 				if $ppi_tc->[0]->content =~ /perl/;
-			say $filename ;
+			print "$filename\n";
 		}
 		return TRUE;
 	}
