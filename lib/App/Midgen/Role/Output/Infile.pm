@@ -65,12 +65,12 @@ sub footer_infile {
 
   }
 
-  say "  " . "-" x $pm_length . "-" x EIGHT . "-" x NINE . "-" x $dir_length . "-" x TEN;
+  say "  " . "-" x $pm_length . "-" x EIGHT . "-" x TEN . "-" x $dir_length . "-" x TEN;
 
 
   printf " | %-*s | %-*s | %-*s | %-*s |\n", $pm_length, 'Module', EIGHT, 'Version ',
-    EIGHT, 'Istalled',$dir_length, 'Found in';
-  say "  " . "-" x $pm_length . "-" x EIGHT . "-" x NINE . "-" x $dir_length . "-" x TEN;
+    EIGHT, 'Installed',$dir_length, 'Found in';
+  say "  " . "-" x $pm_length . "-" x EIGHT . "-" x TEN . "-" x $dir_length . "-" x TEN;
 
 
   foreach my $module_name (sort keys %{$self->{modules}}) {
@@ -94,12 +94,12 @@ sub footer_infile {
 	my $dir_relative = $foundin->[0];
 	$dir_relative =~ s{^/}{};
       printf " | %-*s | %-*s | %-*s | %-*s |\n", $pm_length, $module_name, EIGHT,
-        $foundin->[1], EIGHT, $self->in_local_lib($module_name),$dir_length, $dir_relative,;
+        $foundin->[1], NINE, $self->in_local_lib($module_name),$dir_length, $dir_relative,;
     }
 	};
   }
 
-say "  " . "-" x $pm_length . "-" x EIGHT . "-" x NINE . "-" x $dir_length . "-" x TEN;
+say "  " . "-" x $pm_length . "-" x EIGHT . "-" x TEN . "-" x $dir_length . "-" x TEN;
 
   print qq{\n};
 

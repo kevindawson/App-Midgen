@@ -184,7 +184,7 @@ sub in_local_lib {
 	}
 	catch {
 		# module not installed in local-lib
-		return colored('Missing ', 'red');
+		return colored('Missing  ', 'red');
 	};
 }
 
