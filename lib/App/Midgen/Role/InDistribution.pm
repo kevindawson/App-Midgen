@@ -17,9 +17,9 @@ sub is_perlfile {
 	my $self     = shift;
 	my $filename = $_;
 
-	foreach (qw(pm t psgi pl)) {
+	for (qw(pm t psgi pl)) {
 		if ($filename =~ m/[.]$_$/) {
-			print "looking for requires in ($_)-> $filename\n"
+			print "looking for requires in (.$_)-> $filename\n"
 				if $self->verbose >= TWO;
 			return TRUE;
 		}
