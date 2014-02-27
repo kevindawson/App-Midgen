@@ -1,11 +1,8 @@
 package App::Midgen::Role::Output::Infile;
 
-use v5.10;
 use Moo::Role;
 requires qw( core dual_life debug );
 use Try::Tiny;
-# turn off experimental warnings
-no if $] > 5.017010, warnings => 'experimental::smartmatch';
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
@@ -65,12 +62,12 @@ sub footer_infile {
 
   }
 
-  say "  " . "-" x $pm_length . "-" x EIGHT . "-" x TEN . "-" x $dir_length . "-" x TEN;
+  print "  " . "-" x $pm_length . "-" x EIGHT . "-" x TEN . "-" x $dir_length . "-" x TEN . "\n";
 
 
   printf " | %-*s | %-*s | %-*s | %-*s |\n", $pm_length, 'Module', EIGHT, 'Version ',
     EIGHT, 'Installed',$dir_length, 'Found in';
-  say "  " . "-" x $pm_length . "-" x EIGHT . "-" x TEN . "-" x $dir_length . "-" x TEN;
+  print "  " . "-" x $pm_length . "-" x EIGHT . "-" x TEN . "-" x $dir_length . "-" x TEN . "\n";
 
 
   foreach my $module_name (sort keys %{$self->{modules}}) {
@@ -99,7 +96,7 @@ sub footer_infile {
 	};
   }
 
-say "  " . "-" x $pm_length . "-" x EIGHT . "-" x TEN . "-" x $dir_length . "-" x TEN;
+  print "  " . "-" x $pm_length . "-" x EIGHT . "-" x TEN . "-" x $dir_length . "-" x TEN . "\n";
 
   print qq{\n};
 
