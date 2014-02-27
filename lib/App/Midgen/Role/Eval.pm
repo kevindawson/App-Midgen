@@ -49,7 +49,7 @@ sub xtests_eval {
 				for (0 .. $#{$chunk->{children}}) {
 
 					# ignore sub blocks - false positive
-					last if $chunk->{children}[$_]->content =~ m/(?:[sub|do])/;
+					last if $chunk->{children}[$_]->content eq 'sub';
 
 					if ( $chunk->{children}[$_]->isa('PPI::Token::Quote::Double')
 						|| $chunk->{children}[$_]->isa('PPI::Token::Quote::Single'))
