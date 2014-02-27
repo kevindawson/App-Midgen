@@ -1,6 +1,6 @@
 package App::Midgen::Role::Eval;
 
-use v5.10;
+#use v5.10;
 use Moo::Role;
 requires qw( ppi_document debug format xtest _process_found_modules develop );
 
@@ -241,8 +241,10 @@ sub _mod_ver {
 		$module_name =~ s/(?:\s[\s|\w|\n|.|;]+)$//;
 		$module_name =~ s/\s+(?:[\$|\w|\n]+)$//;
 		$module_name =~ s/\s+$//;
-		$module_name =~ m/\A(?<m_n>[\w|:]+)\b/;
-		$module_name = $+{m_n};
+#		$module_name =~ m/\A(?<m_n>[\w|:]+)\b/;
+#		$module_name = $+{m_n};
+		$module_name =~ m/\A([\w|:]+)\b/;
+		$module_name = $1;
 
 		# check for first char upper in module name
 		push @{$modules}, $module_name if $module_name =~ m/\A(?:[A-Z])/;
