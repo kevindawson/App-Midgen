@@ -87,7 +87,7 @@ sub xtests_use_module {
 								my $ppi_sl = $chunk->{children}[$_]
 									if $chunk->{children}[$_]->isa('PPI::Structure::List');
 
-								say 'Option 1: use_module( M::N )...' if $self->debug;
+								print "Option 1: use_module( M::N )...\n" if $self->debug;
 								$self->_module_names_ppi_sl(\@modules, $ppi_sl);
 							}
 						}
@@ -162,8 +162,7 @@ sub xtests_use_module {
 							my $ppi_sl = $chunk->{children}[$_]
 								if $chunk->{children}[$_]->isa('PPI::Structure::List');
 
-							say
-								'Option 2: my $q = use_module( M::N )...' if $self->debug;
+							print "Option 2: my \$q = use_module( M::N )...\n" if $self->debug;
 							$self->_module_names_ppi_sl(\@modules, $ppi_sl);
 
 						}
@@ -246,8 +245,7 @@ sub xtests_use_module {
 									my $ppi_sl = $chunk->{children}[$_]
 										if $chunk->{children}[$_]->isa('PPI::Structure::List');
 
-									say
-										'Option 3: $q = use_module( M::N )...' if $self->debug;
+									print "Option 3: \$q = use_module( M::N )...\n" if $self->debug;
 									$self->_module_names_ppi_sl(\@modules, $ppi_sl);
 								}
 							}
@@ -339,7 +337,7 @@ sub xtests_use_module {
 						if ($chunk->{children}[$_]->isa('PPI::Structure::List')) {
 							my $ppi_sl = $chunk->{children}[$_]
 								if $chunk->{children}[$_]->isa('PPI::Structure::List');
-							say 'Option 4: return use_module( M::N )...' if $self->debug;
+							print "Option 4: return use_module( M::N )...\n" if $self->debug;
 							$self->_module_names_ppi_sl(\@modules, $ppi_sl);
 
 						}
