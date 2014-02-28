@@ -1,6 +1,5 @@
 package App::Midgen::Role::Output;
 
-use v5.10;
 use Moo::Role;
 with qw(
 	App::Midgen::Role::Output::CPANfile
@@ -14,14 +13,11 @@ with qw(
 );
 requires qw( format distribution_name get_module_version verbose );
 
-# turn off experimental warnings
-no if $] > 5.017010, warnings => 'experimental::smartmatch';
-
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
 our $VERSION = '0.29_09';
-$VERSION = eval $VERSION; ## no critic
+$VERSION = eval $VERSION;    ## no critic
 
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
@@ -35,38 +31,35 @@ use Try::Tiny;
 sub output_header {
 	my $self = shift;
 
-	given ($self->format) {
-
-		when ('dsl') {
-			$self->header_dsl($self->distribution_name,
-				$self->get_module_version('inc::Module::Install::DSL'));
-		}
-		when ('mi') {
-			$self->header_mi($self->distribution_name,
-				$self->get_module_version('inc::Module::Install'));
-		}
-		when ('dist') {
-			$self->header_dist($self->distribution_name);
-		}
-		when ('cpanfile') {
-			$self->header_cpanfile($self->distribution_name,
-				$self->get_module_version('inc::Module::Install'))
-				if not $self->quiet;
-
-		}
-		when ('eumm') {
-			$self->header_eumm($self->distribution_name);
-		}
-		when ('mb') {
-			$self->header_mb($self->distribution_name);
-		}
-		when ('metajson') {
-			$self->header_metajson($self->distribution_name);
-		}
-		when ('infile') {
-			$self->header_infile($self->distribution_name);
-		}
+	if ($self->format eq 'dsl') {
+		$self->header_dsl($self->distribution_name,
+			$self->get_module_version('inc::Module::Install::DSL'));
 	}
+	elsif ($self->format eq 'mi') {
+		$self->header_mi($self->distribution_name,
+			$self->get_module_version('inc::Module::Install'));
+	}
+	elsif ($self->format eq 'dist') {
+		$self->header_dist($self->distribution_name);
+	}
+	elsif ($self->format eq 'cpanfile') {
+		$self->header_cpanfile($self->distribution_name,
+			$self->get_module_version('inc::Module::Install'))
+			if not $self->quiet;
+	}
+	elsif ($self->format eq 'eumm') {
+		$self->header_eumm($self->distribution_name);
+	}
+	elsif ($self->format eq 'mb') {
+		$self->header_mb($self->distribution_name);
+	}
+	elsif ($self->format eq 'metajson') {
+		$self->header_metajson($self->distribution_name);
+	}
+	elsif ($self->format eq 'infile') {
+		$self->header_infile($self->distribution_name);
+	}
+
 	return;
 }
 
@@ -78,32 +71,29 @@ sub output_main_body {
 	my $title        = shift || 'title missing';
 	my $required_ref = shift;
 
-	given ($self->format) {
-
-		when ('dsl') {
-			$self->body_dsl($title, $required_ref);
-		}
-		when ('mi') {
-			$self->body_mi($title, $required_ref);
-		}
-		when ('dist') {
-			$self->body_dist($title, $required_ref);
-		}
-		when ('cpanfile') {
-			$self->body_cpanfile($title, $required_ref);
-		}
-		when ('eumm') {
-			$self->body_eumm($title, $required_ref);
-		}
-		when ('mb') {
-			$self->body_mb($title, $required_ref);
-		}
-		when ('metajson') {
-			$self->body_metajson($title, $required_ref);
-		}
-		when ('infile') {
-			$self->body_infile($title, $required_ref);
-		}
+	if ($self->format eq 'dsl') {
+		$self->body_dsl($title, $required_ref);
+	}
+	elsif ($self->format eq 'mi') {
+		$self->body_mi($title, $required_ref);
+	}
+	elsif ($self->format eq 'dist') {
+		$self->body_dist($title, $required_ref);
+	}
+	elsif ($self->format eq 'cpanfile') {
+		$self->body_cpanfile($title, $required_ref);
+	}
+	elsif ($self->format eq 'eumm') {
+		$self->body_eumm($title, $required_ref);
+	}
+	elsif ($self->format eq 'mb') {
+		$self->body_mb($title, $required_ref);
+	}
+	elsif ($self->format eq 'metajson') {
+		$self->body_metajson($title, $required_ref);
+	}
+	elsif ($self->format eq 'infile') {
+		$self->body_infile($title, $required_ref);
 	}
 
 	return;
@@ -115,32 +105,29 @@ sub output_main_body {
 sub output_footer {
 	my $self = shift;
 
-	given ($self->format) {
-
-		when ('dsl') {
-			$self->footer_dsl($self->distribution_name);
-		}
-		when ('mi') {
-			$self->footer_mi($self->distribution_name);
-		}
-		when ('dist') {
-			$self->footer_dist($self->distribution_name);
-		}
-		when ('cpanfile') {
-			$self->footer_cpanfile($self->distribution_name);
-		}
-		when ('eumm') {
-			$self->footer_eumm($self->distribution_name);
-		}
-		when ('mb') {
-			$self->footer_mb($self->distribution_name);
-		}
-		when ('metajson') {
-			$self->footer_metajson($self->distribution_name);
-		}
-		when ('infile') {
-			$self->footer_infile($self->distribution_name);
-		}
+	if ($self->format eq 'dsl') {
+		$self->footer_dsl($self->distribution_name);
+	}
+	elsif ($self->format eq 'mi') {
+		$self->footer_mi($self->distribution_name);
+	}
+	elsif ($self->format eq 'dist') {
+		$self->footer_dist($self->distribution_name);
+	}
+	elsif ($self->format eq 'cpanfile') {
+		$self->footer_cpanfile($self->distribution_name);
+	}
+	elsif ($self->format eq 'eumm') {
+		$self->footer_eumm($self->distribution_name);
+	}
+	elsif ($self->format eq 'mb') {
+		$self->footer_mb($self->distribution_name);
+	}
+	elsif ($self->format eq 'metajson') {
+		$self->footer_metajson($self->distribution_name);
+	}
+	elsif ($self->format eq 'infile') {
+		$self->footer_infile($self->distribution_name);
 	}
 
 	return;
