@@ -1,6 +1,6 @@
 package App::Midgen;
 
-use 5.010;
+use 5.008;
 use Moo;
 with qw(
 	App::Midgen::Role::Options
@@ -14,9 +14,6 @@ with qw(
 	App::Midgen::Role::Output
 	App::Midgen::Role::UseModule
 );
-
-# turn off experimental warnings
-no if $] > 5.017010, warnings => 'experimental::smartmatch';
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
@@ -36,10 +33,9 @@ use MetaCPAN::API;
 use Module::CoreList;
 use PPI;
 use Perl::PrereqScanner;
-#use Scalar::Util qw(looks_like_number);
 use Term::ANSIColor qw( :constants colored colorstrip );
 use Try::Tiny;
-
+use Tie::Static qw(static);
 use constant {BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3, TRUE => 1, FALSE => 0,};
 use version;
 
@@ -164,7 +160,7 @@ sub first_package_name {
 sub _find_package_names {
 	my $self     = shift;
 	my $filename = $_;
-	state $files_checked;
+	static \ my $files_checked;
 	if (defined $files_checked) {
 		return if $files_checked >= THREE;
 	}
@@ -275,7 +271,7 @@ sub _find_makefile_requires {
 
 	$self->{skip_not_mcpan_stamp} = 0;
 
-	if (/^Dist::Zilla::Role::PluginBundle/ ~~ @modules) {
+	if ( grep { $_ =~ m/^Dist::Zilla::Role::PluginBundle/ } @modules ) {
 
 		$self->{skip_not_mcpan_stamp} = 1;
 
@@ -386,25 +382,25 @@ sub _process_found_modules {
 		# let's show every thing we can find infile
 		if ($self->format ne 'infile') {
 
-			my $distribution_name = $self->distribution_name // 'm/t';
-			given ($module) {
-				when (/perl/sxm) {
+			my $distribution_name = $self->distribution_name || 'm/t';
+
+				if ( $module =~ /perl/sxm) {
 
 					# ignore perl we will get it from minperl required
 					next;
 				}
-				when (/\A\Q$distribution_name\E/sxm) {
+				elsif ( $module =~ /\A\Q$distribution_name\E/sxm) {
 
 					# don't include our own packages here
 					next;
 				}
-				when (/^t::/sxm) {
+				elsif ( $module =~ /^t::/sxm) {
 
 					# don't include our own test packages here
 					next;
 				}
 
-				when (/Mojo/sxm) {
+				elsif ( $module =~ /Mojo/sxm) {
 					if ($self->experimental) {
 						if ($self->_check_mojo_core($module, $require_type)) {
 							if (not $self->quiet) {
@@ -416,18 +412,17 @@ sub _process_found_modules {
 						}
 					}
 				}
-				when (/^Padre/sxm) {
+				elsif ( $module =~ /^Padre/sxm) {
 
 					# mark all Padre core as just Padre only, for plugins
 					$module = 'Padre';
 				}
-			}
 		}
 
 		# lets keep track of how many times a module include is found
 		$self->{modules}{$module}{count} += 1;
 		push @{$self->{modules}{$module}{infiles}},
-			[$self->looking_infile(), $self->{found_version}{$module} // 0];
+			[$self->looking_infile(), $self->{found_version}{$module} || 0];
 
 		# don't process already found modules
 		p $self->{modules}{$module}{location} if $self->debug;
@@ -454,21 +449,20 @@ sub _store_modules {
 	$self->_in_corelist($module)
 		if not defined $self->{modules}{$module}{corelist};
 	my $version = $self->get_module_version($module, $require_type);
-	given ($version) {
 
-		when ('!mcpan') {
+		if ( $version =~ '!mcpan') {
 			$self->{$require_type}{$module} = colored('!mcpan', 'magenta')
 				if not $self->{skip_not_mcpan_stamp};
 			$self->{modules}{$module}{location} = $require_type;
 			$self->{modules}{$module}{version}  = '!mcpan';
 		}
-		when ('core') {
+		elsif ( $version =~ 'core') {
 			$self->{$require_type}{$module} = $version if $self->core;
 			$self->{$require_type}{$module} = '0'      if $self->zero;
 			$self->{modules}{$module}{location} = $require_type;
 			$self->{modules}{$module}{version} = $version if $self->core;
 		}
-		default {
+		else {
 			if ($self->{modules}{$module}{corelist}) {
 
 				$self->{$require_type}{$module} = colored($version, 'bright_yellow')
@@ -492,7 +486,6 @@ sub _store_modules {
 					if $self->{modules}{$module}{'distribution'};
 			}
 		}
-	}
 	p $self->{modules}{$module} if $self->debug;
 
 	return;
@@ -698,7 +691,7 @@ sub _check_mojo_core {
 
 
 	my $mojo_module_ver;
-	state $mojo_ver;
+	static \ my $mojo_ver;
 
 	if (not defined $mojo_ver) {
 		$mojo_ver = $self->get_module_version('Mojolicious');
