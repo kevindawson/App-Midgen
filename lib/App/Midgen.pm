@@ -1,6 +1,6 @@
 package App::Midgen;
 
-use v5.10;
+use 5.010;
 use Moo;
 with qw(
 	App::Midgen::Role::Options
@@ -152,7 +152,7 @@ sub first_package_name {
 	};
 
 	# I still want to see package name even though infile sets verbose = 0
-	say 'Package: ' . $self->distribution_name
+	print 'Package: '. $self->distribution_name ."\n"
 		if $self->verbose
 		or $self->format eq 'infile';
 
@@ -409,7 +409,7 @@ sub _process_found_modules {
 						if ($self->_check_mojo_core($module, $require_type)) {
 							if (not $self->quiet) {
 								print BRIGHT_BLACK;
-								say 'swapping out ' . $module . ' for Mojolicious';
+								print "swapping out $module for Mojolicious\n";
 								print CLEAR;
 							}
 							next;
@@ -418,7 +418,7 @@ sub _process_found_modules {
 				}
 				when (/^Padre/sxm) {
 
-					# mark all Padre core as just Padre, for plugins
+					# mark all Padre core as just Padre only, for plugins
 					$module = 'Padre';
 				}
 			}
@@ -570,10 +570,10 @@ sub remove_noisy_children {
 						if (not $self->quiet) {
 							if ($self->verbose) {
 								print BRIGHT_BLACK;
-								say 'delete miscreant noisy child '
+								print 'delete miscreant noisy child '
 									. $child_name . ' => '
 									. $required_ref->{$child_name};
-								print CLEAR;
+								print CLEAR. "\n";
 							}
 						}
 						try {
@@ -655,7 +655,7 @@ sub remove_twins {
 					if ($self->verbose) {
 						print BRIGHT_BLACK;
 
-						# say 'i have found twins';
+						# stdout - 'i have found twins';
 						print $dum_name . ' => '
 							. $required_ref->{$sorted_modules[$n - 1]};
 						print BRIGHT_BLACK ' <-twins-> '
@@ -673,9 +673,9 @@ sub remove_twins {
 				if ( version::is_lax($version) ) {
 					#Check parent version against a twins version
 					if ($version eq $required_ref->{$sorted_modules[$n]}) {
-						say $dum_parient . ' -> '
+						print $dum_parient . ' -> '
 							. $version
-							. ' is the parent of these twins'
+							. " is the parent of these twins\n"
 							if $self->verbose;
 						$required_ref->{$dum_parient} = $version;
 						$self->_set_found_twins(1);
@@ -710,8 +710,8 @@ sub _check_mojo_core {
 	if ($self->verbose) {
 		print BRIGHT_BLACK;
 
-		#say 'looks like we found another mojo core module';
-		say $mojo_module . ' version ' . $mojo_module_ver;
+		#stdout - 'looks like we found another mojo core module';
+		print "$mojo_module version $mojo_module_ver\n";
 		print CLEAR;
 	}
 
@@ -789,9 +789,10 @@ sub get_module_version {
 		# a bit of de crappy-flying
 		# catch Test::Kwalitee::Extra 6e-06
 		print BRIGHT_BLACK;
-		say $module
+		print $module
 			. ' Unique Release Sequence Indicator NOT! -> '
 			. $cpan_version
+			. "\n"
 			if $self->verbose >= 1;
 		print CLEAR;
 		$cpan_version = version->parse($cpan_version)->numify;
@@ -814,7 +815,7 @@ sub mod_in_dist {
 	if ($module =~ /$dist/) {
 
 		print BRIGHT_BLACK;
-		say "module - $module  -> in dist - $dist" if $self->verbose >= 1;
+		print "module - $module  -> in dist - $dist\n" if $self->verbose >= 1;
 		print CLEAR;
 
 		# add dist to output hash so we can get rind of cruff later
