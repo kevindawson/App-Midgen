@@ -40,6 +40,10 @@ sub body_dist {
 	my $self         = shift;
 	my $title        = shift;
 	my $required_ref = shift || return;
+
+	# check if empty
+	return if not %{$required_ref};
+
 	print "\n";
 
 	my $pm_length = 0;
