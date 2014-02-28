@@ -197,7 +197,7 @@ sub xtests_eval {
 	if (scalar @modules > 0) {
 
 		if ($storage_location eq 'runtime_recommends') {
-			if ($self->format =~ /cpanfile|metajson/) {
+			if ($self->format =~ /cpanfile|metajson|dist/) {
 				$self->_process_found_modules('runtime_recommends', \@modules);
 
 			}
@@ -208,7 +208,7 @@ sub xtests_eval {
 		}
 		else {
 
-			if ($self->format =~ /cpanfile|metajson/) {
+			if ($self->format =~ /cpanfile|metajson|dist/) {
 
 				if ($self->xtest eq 'test_requires') {
 					$self->_process_found_modules('recommends', \@modules);

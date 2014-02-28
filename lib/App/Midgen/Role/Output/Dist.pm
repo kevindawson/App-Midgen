@@ -1,133 +1,129 @@
 package App::Midgen::Role::Output::Dist;
 
-use v5.10;
 use Moo::Role;
 requires qw( no_index verbose );
-
-# turn off experimental warnings
-no if $] > 5.017010, warnings => 'experimental::smartmatch';
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
 our $VERSION = '0.29_09';
-$VERSION = eval $VERSION; ## no critic
+$VERSION = eval $VERSION;    ## no critic
 
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 use Term::ANSIColor qw( :constants colored );
-use Data::Printer {caller_info => 1, colored => 1,};
-use constant {BLANK => q{ }, NONE => q{}, THREE => 3,};
+use constant {NONE => q{},};
 use File::Spec;
 
 #######
 # header_dist
 #######
 sub header_dist {
-  my $self = shift;
-  my $package_name = shift // NONE;
+	my $self = shift;
+	my $package_name = shift || NONE;
 
-  if ($package_name ne NONE) {
-    print "\n";
-    $package_name =~ s{::}{-}g;
-    say 'name        = ' . $package_name;
-    $package_name =~ tr{-}{/};
-    say "main_module = lib/$package_name.pm";
-    print "\n";
-  }
+	if ($package_name ne NONE) {
+		$package_name =~ s{::}{-}g;
+		print "\nname        = $package_name\n";
+		$package_name =~ tr{-}{/};
+		print "main_module = lib/$package_name.pm\n";
+	}
 
-  return;
+	return;
 }
 
 #######
 # body_dist
 #######
 sub body_dist {
-  my $self         = shift;
-  my $title        = shift;
-  my $required_ref = shift || return;
-  print "\n";
+	my $self         = shift;
+	my $title        = shift;
+	my $required_ref = shift || return;
+	print "\n";
 
-  my $pm_length = 0;
-  foreach my $module_name (sort keys %{$required_ref}) {
-    if (length $module_name > $pm_length) {
-      $pm_length = length $module_name;
-    }
-  }
-  given ($title) {
-    when ('requires') {
-      say '[Prereqs]';
-      printf "%-*s = %s\n", $pm_length, 'perl', $App::Midgen::Min_Version;
-    }
-    when ('test_requires') { say '[Prereqs / TestRequires]'; }
-    when ('recommends')    { say '[Prereqs / RuntimeRecommends]'; }
-  }
+	my $pm_length = 0;
+	foreach my $module_name (sort keys %{$required_ref}) {
+		if (length $module_name > $pm_length) {
+			$pm_length = length $module_name;
+		}
+	}
 
-  foreach my $module_name (sort keys %{$required_ref}) {
+	if ($title eq 'requires') {
+		print "[Prereqs]\n";
+		printf "%-*s = %s\n", $pm_length, 'perl', $App::Midgen::Min_Version;
+	}
+	elsif ($title eq 'runtime_recommends') {
+		print "[Prereqs / RuntimeRecommends]\n";
+	}
+	elsif ($title eq 'test_requires') {
+		print "[Prereqs / TestRequires]\n";
+	}
+	elsif ($title eq 'recommends') {
+		print "[Prereqs / TestSuggests]\n";
+	}
+	elsif ($title eq 'test_develop') {
+		print "[Prereqs / DevelopRequires]\n";
+	}
 
-    # my $sq_key = '"' . $module_name . '"';
-    printf "%-*s = %s\n", $pm_length, $module_name,
-      $required_ref->{$module_name};
+	foreach my $module_name (sort keys %{$required_ref}) {
+		printf "%-*s = %s\n", $pm_length, $module_name,
+			$required_ref->{$module_name};
+	}
 
-  }
-
-  return;
+	return;
 }
 
 #######
 # footer_dist
 #######
 sub footer_dist {
-  my $self = shift;
-  my $package_name = shift // NONE;
-  $package_name =~ s{::}{-}g;
+	my $self = shift;
+	my $package_name = shift || NONE;
+	$package_name =~ s{::}{-}g;
 
-  print "\n";
-  my @no_index = $self->no_index;
-  if (@no_index) {
-    say '[MetaNoIndex]';
-    foreach (@no_index) {
-      say "directory = $_" if $_ ne 'inc';
-    }
-    print "\n";
-  }
+	print "\n";
+	my @no_index = $self->no_index;
+	if (@no_index) {
+		print "[MetaNoIndex]\n";
+		foreach (@no_index) {
+			print "directory = $_\n" if $_ ne 'inc';
+		}
+		print "\n";
+	}
 
-  if (defined -d File::Spec->catdir($App::Midgen::Working_Dir, 'share')) {
-    say '[ShareDir]';
-    say 'dir = share';
-    print "\n";
-  }
+	if (defined -d File::Spec->catdir($App::Midgen::Working_Dir, 'share')) {
+		print "[ShareDir]\n";
+		print "dir = share\n\n";
+	}
 
-  if (defined -d File::Spec->catdir($App::Midgen::Working_Dir, 'script')) {
-    say '[ExecDir]';
-    say 'dir = script';
-    print "\n";
-  }
-  elsif (defined -d File::Spec->catdir($App::Midgen::Working_Dir, 'bin')) {
-    say '[ExecDir]';
-    say 'dir = bin';
-    print "\n";
-  }
+	if (defined -d File::Spec->catdir($App::Midgen::Working_Dir, 'script')) {
+		print "[ExecDir]\n";
+		print "dir = script\n\n";
+	}
+	elsif (defined -d File::Spec->catdir($App::Midgen::Working_Dir, 'bin')) {
+		print "[ExecDir]\n";
+		print "dir = bin\n\n";
+	}
 
-  if ($self->verbose > 0) {
-    say BRIGHT_BLACK '# ToDo you should consider the following';
-    say '[MetaResources]';
-    say "homepage          = https://github.com/.../$package_name";
-    say "bugtracker.web    = https://github.com/.../$package_name/issues";
-    say 'bugtracker.mailto = ...';
-    say "repository.url    = git://github.com/.../$package_name.git";
-    say 'repository.type   = git';
-    say "repository.web    = https://github.com/.../$package_name";
-    print "\n";
+	if ($self->verbose > 0) {
+		print BRIGHT_BLACK;
+		print "[MetaResources]\n";
+		print "homepage          = https://github.com/.../$package_name\n";
+		print "bugtracker.web    = https://github.com/.../$package_name/issues\n";
+		print "bugtracker.mailto = ...\n";
+		print "repository.url    = git://github.com/.../$package_name.git\n";
+		print "repository.type   = git\n";
+		print "repository.web    = https://github.com/.../$package_name";
+		print "\n";
 
-    say '[Meta::Contributors]';
-    say 'contributor = brian d foy (ADOPTME) <brian.d.foy@gmail.com>';
-    say 'contributor = Fred Bloggs <fred@bloggs.org>';
-    print CLEAR "\n";
-  }
+		print "[Meta::Contributors]\n";
+		print "contributor = brian d foy (ADOPTME) <brian.d.foy\@gmail.com>\n";
+		print "contributor = Fred Bloggs <fred\@bloggs.org>\n";
+		print CLEAR "\n";
+	}
 
-  return;
+	return;
 }
 
 

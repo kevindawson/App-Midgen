@@ -96,7 +96,7 @@ sub run {
 	$self->output_header();
 
 	$self->output_main_body('requires',      $self->{package_requires});
-			if ($self->format =~ /cpanfile|metajson/) {
+			if ($self->format =~ /cpanfile|metajson|dist/) {
 				$self->output_main_body('runtime_recommends', $self->{runtime_recommends});
 			}
 
@@ -350,7 +350,7 @@ sub _find_makefile_test_requires {
 	}
 
 	if (scalar @modules > 0) {
-		if ($self->format =~ /cpanfile|metajson/) {
+		if ($self->format =~ /cpanfile|metajson|dist/) {
 			if ($self->xtest eq 'test_requires') {
 				$self->_process_found_modules('test_requires', \@modules);
 			}

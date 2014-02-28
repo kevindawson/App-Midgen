@@ -152,7 +152,7 @@ sub xtests_test_requires {
 	# if we found a module, process it with the correct catogery
 	if (scalar @modules > 0) {
 
-		if ($self->format =~ /cpanfile|metajson/) {
+		if ($self->format =~ /cpanfile|metajson|dist/) {
 			if ($self->xtest eq 'test_requires') {
 				$self->_process_found_modules('recommends', \@modules);
 			}

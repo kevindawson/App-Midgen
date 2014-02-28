@@ -28,7 +28,7 @@ has 'develop' => (
 sub _develop {
 	my $self = shift;
 
-	if ( $self->experimental && ( $self->format =~ m/cpanfile|metajson/) ) {
+	if ( $self->experimental && ( $self->format =~ m/cpanfile|metajson|dist/) ) {
 		return 1;
 	} else {
 		return 0;

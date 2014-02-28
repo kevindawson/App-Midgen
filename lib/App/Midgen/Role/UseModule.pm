@@ -353,7 +353,7 @@ sub xtests_use_module {
 	# if we found a module, process it with the correct catogery
 	if (scalar @modules > 0) {
 		if ($storage_location eq 'runtime_recommends') {
-			if ($self->format =~ /cpanfile|metajson/) {
+			if ($self->format =~ /cpanfile|metajson|dist/) {
 				$self->_process_found_modules('runtime_recommends', \@modules);
 
 			}
