@@ -1,23 +1,18 @@
 package App::Midgen::Role::Output::EUMM;
 
-use v5.10;
 use Moo::Role;
 requires qw( verbose );
-
-# turn off experimental warnings
-no if $] > 5.017010, warnings => 'experimental::smartmatch';
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
 our $VERSION = '0.29_09';
-$VERSION = eval $VERSION; ## no critic
+$VERSION = eval $VERSION;    ## no critic
 
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 use Term::ANSIColor qw( :constants colored );
-use Data::Printer {caller_info => 1, colored => 1,};
 use constant {
 	BLANK  => q{ },
 	NONE   => q{},
@@ -33,33 +28,31 @@ use File::Spec;
 #######
 sub header_eumm {
 	my $self = shift;
-	my $package_name = shift // NONE;
+	my $package_name = shift || NONE;
 
 	if ($package_name ne NONE) {
-		print "\n";
 
-		say 'use strict;';
-		say 'use warnings;';
-		say 'use ExtUtils::MakeMaker 6.68;';
-		print "\n";
-		say 'WriteMakefile(';
+		print "\nuse strict;\n";
+		print "use warnings;\n";
+		print "use ExtUtils::MakeMaker 6.68;\n\n";
 
-		say THREE. "'NAME' => '$package_name',";
+		print "WriteMakefile(\n";
+		print THREE. "'NAME' => '$package_name',\n";
 		$package_name =~ s{::}{/}g;
-		say THREE. "'VERSION_FROM' => 'lib/$package_name.pm',";
-		say THREE. "'ABSTRACT_FROM' => 'lib/$package_name.pm',";
+		print THREE. "'VERSION_FROM' => 'lib/$package_name.pm',\n";
+		print THREE. "'ABSTRACT_FROM' => 'lib/$package_name.pm',\n";
 
 		print BRIGHT_BLACK;
-		say THREE. "'AUTHOR' => '...',";
-		say THREE. "'LICENSE' => 'perl',";
+		print THREE. "'AUTHOR' => '...',\n";
+		print THREE. "'LICENSE' => 'perl',\n";
 		print CLEAR;
 ## 6.64 f***** RT#85406
-		say THREE. "'BUILD_REQUIRES' => {";
-		say SIX. "'ExtUtils::MakeMaker' => '6.68'";
-		say THREE. "},";
-		say THREE. "'CONFIGURE_REQUIRES' => {";
-		say SIX. "'ExtUtils::MakeMaker' => '6.68'";
-		say THREE. "},";
+		print THREE. "'BUILD_REQUIRES' => {\n";
+		print SIX. "'ExtUtils::MakeMaker' => '6.68',\n";
+		print THREE. "},\n";
+		print THREE. "'CONFIGURE_REQUIRES' => {\n";
+		print SIX. "'ExtUtils::MakeMaker' => '6.68',\n";
+		print THREE. "},\n";
 	}
 
 	return;
@@ -79,15 +72,20 @@ sub body_eumm {
 		}
 	}
 
-	say THREE. "'MIN_PERL_VERSION' => '$App::Midgen::Min_Version',"
+	print THREE. "'MIN_PERL_VERSION' => '$App::Midgen::Min_Version',\n"
 		if $title eq 'requires';
 
 	return if not %{$required_ref} and $title =~ m{(?:requires)\z};
 
-	given ($title) {
-		when ('requires')      { say THREE. "'PREREQ_PM' => {"; }
-		when ('test_requires') { say THREE. "'TEST_REQUIRES' => {"; }
-		when ('recommends')    { $self->_recommends($required_ref); return; }
+	if ($title eq 'requires') {
+		print THREE. "'PREREQ_PM' => {\n";
+	}
+	elsif ($title eq 'test_requires') {
+		print THREE. "'TEST_REQUIRES' => {\n";
+	}
+	elsif ($title eq 'recommends') {
+		$self->_recommends($required_ref);
+		return;
 	}
 
 	foreach my $module_name (sort keys %{$required_ref}) {
@@ -96,7 +94,7 @@ sub body_eumm {
 		printf SIX. " %-*s => '%s',\n", $pm_length + 2, $sq_key,
 			$required_ref->{$module_name};
 	}
-	say THREE. "},";
+	print THREE. "},\n";
 
 	return;
 }
@@ -111,21 +109,21 @@ sub _recommends {
 			$pm_length = length $module_name;
 		}
 	}
-	say THREE. "'META_MERGE' => {";
-	say SIX. "'meta-spec' => { 'version' => '2' },";
+	print THREE. "'META_MERGE' => {\n";
+	print SIX. "'meta-spec' => { 'version' => '2' },\n";
 	return if not %{$required_ref};
-	say SIX. "'prereqs' => {";
-	say NINE. "'test' => {";
-	say TWELVE. "'suggests' => {";
+	print SIX. "'prereqs' => {\n";
+	print NINE. "'test' => {\n";
+	print TWELVE. "'suggests' => {\n";
 	foreach my $module_name (sort keys %{$required_ref}) {
 
 		my $sq_key = q{'} . $module_name . q{'};
 		printf "%-15s %-*s => '%s',\n", BLANK, $pm_length + 2, $sq_key,
 			$required_ref->{$module_name};
 	}
-	say TWELVE. "}";
-	say NINE. "}";
-	say SIX. "},";
+	print TWELVE. "}\n";
+	print NINE. "}\n";
+	print SIX. "},\n";
 
 }
 
@@ -135,52 +133,49 @@ sub _recommends {
 #######
 sub footer_eumm {
 	my $self = shift;
-	my $package_name = shift // NONE;
+	my $package_name = shift || NONE;
 	$package_name =~ s{::}{-}g;
 
 	if ($self->verbose > 0) {
 		print BRIGHT_BLACK;
 
-		say SIX. "'resources' => {";
+		print SIX. "'resources' => {\n";
 
-		say NINE. "'bugtracker' => {";
-		say TWELVE. "'web' => 'https://github.com/.../$package_name/issues',";
-		say NINE. "},";
+		print NINE. "'bugtracker' => {\n";
+		print TWELVE. "'web' => 'https://github.com/.../$package_name/issues',\n";
+		print NINE. "},\n";
 
-		say NINE. "'homepage' => 'https://github.com/.../$package_name',";
+		print NINE. "'homepage' => 'https://github.com/.../$package_name',\n";
 
-		say NINE. "'repository' => {";
-		say TWELVE. "'type' => 'git',";
-		say TWELVE. "'url' => 'git://github.com/.../$package_name.git',";
-		say TWELVE. "'web' => 'https://github.com/.../$package_name',";
-		say NINE. "},";
-		say SIX. "},";
+		print NINE. "'repository' => {\n";
+		print TWELVE. "'type' => 'git',\n";
+		print TWELVE. "'url' => 'git://github.com/.../$package_name.git',\n";
+		print TWELVE. "'web' => 'https://github.com/.../$package_name',\n";
+		print NINE. "},\n";
+		print SIX. "},\n";
 
-		say SIX. "'x_contributors' => [";
-		say NINE. "'brian d foy (ADOPTME) <brian.d.foy\@gmail.com>',";
-		say NINE. "'Fred Bloggs <fred\@bloggs.org>',";
-		say SIX. "],";
+		print SIX. "'x_contributors' => [\n";
+		print NINE. "'brian d foy (ADOPTME) <brian.d.foy\@gmail.com>',\n";
+		print NINE. "'Fred Bloggs <fred\@bloggs.org>',\n";
+		print SIX. "],\n";
 
 		print CLEAR;
-		say THREE. '},';
+		print THREE. "},\n";
 
 	}
 
-# todo sort out below
 	if (defined -d File::Spec->catdir($App::Midgen::Working_Dir, 'script')) {
-		say THREE."'EXE_FILES' => [ (";
-		say SIX. "'script/...'";
-		say THREE.') ],';
-#		print "\n";
+		print THREE. "'EXE_FILES' => [ (\n";
+		print SIX. "'script/...'\n";
+		print THREE. ") ],\n";
 	}
 	elsif (defined -d File::Spec->catdir($App::Midgen::Working_Dir, 'bin')) {
-		say THREE."'EXE_FILES' => [qw(";
-		say SIX. "bin/...";
-		say THREE.')],';
-#		print "\n";
+		print THREE. "'EXE_FILES' => [qw(\n";
+		print SIX. "bin/...\n";
+		print THREE. ")],\n";
 	}
 
-	say ')'."\n";
+	print ")\n\n";
 
 	return;
 }
