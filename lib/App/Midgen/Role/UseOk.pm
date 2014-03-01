@@ -1,6 +1,7 @@
 package App::Midgen::Role::UseOk;
 
-#use v5.10;
+use constant {BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3,};
+
 use Moo::Role;
 requires qw( ppi_document debug format xtest _process_found_modules develop );
 
@@ -14,7 +15,6 @@ use PPI;
 use Try::Tiny;
 use Data::Printer {caller_info => 1, colored => 1,};
 use Tie::Static qw(static);
-use constant {BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3,};
 
 
 #######

@@ -1,6 +1,5 @@
 package App::Midgen::Role::Eval;
 
-#use v5.10;
 use Moo::Role;
 requires qw( ppi_document debug format xtest _process_found_modules develop );
 
@@ -12,10 +11,6 @@ use Data::Printer {caller_info => 1, colored => 1,};
 
 our $VERSION = '0.29_11';
 $VERSION = eval $VERSION;    ## no critic
-
-#use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
-#local $OUTPUT_AUTOFLUSH = 1;
-
 
 #######
 # composed method - xtests_eval

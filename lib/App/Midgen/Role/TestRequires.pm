@@ -1,10 +1,11 @@
 package App::Midgen::Role::TestRequires;
 
+use constant {BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3,};
+
 use Moo::Role;
 requires qw( ppi_document develop debug format xtest _process_found_modules );
 
 use PPI;
-
 use Try::Tiny;
 use Data::Printer {caller_info => 1, colored => 1,};
 
@@ -13,8 +14,6 @@ use Data::Printer {caller_info => 1, colored => 1,};
 
 our $VERSION = '0.29_11';
 $VERSION = eval $VERSION; ## no critic
-
-use constant {BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3,};
 
 
 #######

@@ -1,5 +1,7 @@
 package App::Midgen::Role::InDistribution;
 
+use constant {TWO => 2, TRUE => 1, FALSE => 0,};
+
 use Types::Standard qw( Bool );
 use Moo::Role;
 requires qw( ppi_document debug );
@@ -7,7 +9,6 @@ requires qw( ppi_document debug );
 our $VERSION = '0.29_11';
 $VERSION = eval $VERSION;    ## no critic
 
-use constant {TWO => 2, TRUE => 1, FALSE => 0,};
 
 ########
 # is this a perl file

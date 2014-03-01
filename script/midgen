@@ -1,6 +1,6 @@
 #!perl
 
-use 5.008000;
+use 5.008001;
 use strict;
 use warnings FATAL => 'all';
 
@@ -16,7 +16,7 @@ use Data::Printer {caller_info => 1, colored => 1,};
 use FindBin qw($Bin);
 use lib map {"$Bin/$_"} qw( lib ../lib );
 
-use App::Midgen 0.29;
+use App::Midgen;
 use Time::Stamp 'gmstamp';
 
 #######

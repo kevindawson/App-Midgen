@@ -1,6 +1,6 @@
 package App::Midgen;
 
-use 5.008;
+use 5.008001;
 use Moo;
 with qw(
 	App::Midgen::Role::Options

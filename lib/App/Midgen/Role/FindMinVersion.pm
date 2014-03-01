@@ -1,5 +1,7 @@
 package App::Midgen::Role::FindMinVersion;
 
+use constant {TWO => 2,};
+
 use Types::Standard qw( Bool );
 use Moo::Role;
 requires qw( ppi_document debug );
@@ -9,8 +11,6 @@ $VERSION = eval $VERSION; ## no critic
 
 use Perl::MinimumVersion;
 use Try::Tiny;
-
-use constant {TWO => 2,};
 use version;
 
 #######

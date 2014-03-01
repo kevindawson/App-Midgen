@@ -3,23 +3,13 @@
 use strict;
 use warnings;
 
-#BEGIN {
-#    unless ( $ENV{RELEASE_TESTING} ) {
-#        require Test::More;
-#        Test::More::plan(
-#            skip_all => 'these tests are for release candidate testing' );
-#    }
-#}
-
-our $VERSION = '0.04';
 use English qw( -no_match_vars );    # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
-use Data::Printer {caller_info => 1, colored => 1,};
 
 use Test::More;
-use Test::Requires {'ExtUtils::MakeMaker'   => 6.66};
+use Test::Requires {'ExtUtils::MakeMaker'   => 6.68};
 use Test::Requires {'File::Spec::Functions' => 3.40};
-use Test::Requires {'List::Util'            => 1.27};
+use Test::Requires {'List::Util'            => 1.38};
 
 use List::Util qw/max/;
 
