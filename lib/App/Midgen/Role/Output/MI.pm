@@ -15,7 +15,6 @@ use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 use Term::ANSIColor qw( :constants colored );
-#use constant {NONE => q{},};
 use File::Spec;
 
 

@@ -5,9 +5,6 @@ use constant {NONE => q{}, THREE => 3,};
 use Moo::Role;
 requires qw( verbose );
 
-# turn off experimental warnings
-#no if $] > 5.017010, warnings => 'experimental::smartmatch';
-
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
@@ -19,8 +16,6 @@ local $OUTPUT_AUTOFLUSH = 1;
 
 use Term::ANSIColor qw( :constants colored );
 use Data::Printer {caller_info => 1, colored => 1,};
-
-#use constant      {NONE        => q{}, THREE   => 3,};
 use File::Spec;
 
 #######
