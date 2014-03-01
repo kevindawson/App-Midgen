@@ -3,7 +3,7 @@ use inc::Module::Install::DSL 1.06;
 all_from lib/App/Midgen.pm
 requires_from lib/App/Midgen.pm
 
-perl_version 5.008000
+perl_version 5.008001
 
 requires Carp                       1.32
 requires Cwd                        3.4
