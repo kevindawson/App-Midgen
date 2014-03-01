@@ -22,7 +22,6 @@ requires PPI::XS                    0.902 if can_xs
 requires Perl::MinimumVersion       1.32
 requires Perl::PrereqScanner        1.019
 requires Pod::Usage                 1.63
-#requires Scalar::Util               1.38
 requires Term::ANSIColor            4.02
 requires Tie::Static                0.04
 requires Time::Stamp                1.3
