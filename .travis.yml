@@ -22,10 +22,8 @@ before_install:
   - cd $BUILD_DIR
 install:
   - cpan-install --deps
-  - cpan-install --coverage
-before_script:
-  - coverage-setup
 script:
+  - perl Makefile.PL
+  - make
   - prove -l $(test-dirs)
-after_success:
-  - coverage-report
+
