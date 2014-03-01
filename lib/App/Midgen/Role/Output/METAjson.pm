@@ -1,11 +1,7 @@
 package App::Midgen::Role::Output::METAjson;
 
-use v5.10;
 use Moo::Role;
 requires qw( no_index verbose );
-
-# turn off experimental warnings
-no if $] > 5.017010, warnings => 'experimental::smartmatch';
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
@@ -33,29 +29,30 @@ use File::Spec;
 #######
 sub header_metajson {
 	my $self = shift;
-	my $package_name = shift // NONE;
+	my $package_name = shift || NONE;
 	$package_name =~ s{::}{-}g;
 
-	say '{';
+	print "{\n";
 	if ($self->verbose > 0) {
-		say BRIGHT_BLACK THREE
-			. '"abstract" : "This is a short description of the purpose of the distribution.",';
-		say THREE . '"author" : "...",';
-		say THREE . '"dynamic_config" : "0|1",';
-		say THREE . '"generated_by" : "...",';
-		say THREE . '"license" : [';
-		say SIX . '"perl_5"';
-		say THREE . '],';
-		say THREE . '"meta-spec" : {';
-		say SIX . '"url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",';
-		say SIX . '"version" : "2"';
-		say THREE . '},';
+		print BRIGHT_BLACK THREE
+			. '"abstract" : "This is a short description of the purpose of the distribution.",' . "\n";
+		print THREE . '"author" : "...",' . "\n";
+		print THREE . '"dynamic_config" : "0|1",' . "\n";
+		print THREE . '"generated_by" : "...",' . "\n";
+		print THREE . '"license" : [' . "\n";
+		print SIX . '"perl_5"' . "\n";
+		print THREE . "],\n";
+		print THREE . '"meta-spec" : {' . "\n";
+		print SIX . '"url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",' . "\n";
+		print SIX . '"version" : "2"' . "\n";
+		print THREE . '},';
 	}
-	say CLEAR THREE . '"name" : "' . $package_name . q{",};
+	print CLEAR THREE . '"name" : "' . $package_name . q{",} . "\n";
+
 
 	if ($self->verbose > 0) {
-		say BRIGHT_BLACK THREE . '"release_status" : "stable|testing|unstable",';
-		say THREE . '"version" : "...",';
+		print BRIGHT_BLACK THREE . '"release_status" : "stable|testing|unstable",' . "\n";
+		print THREE . '"version" : "...",' . "\n";
 	}
 
 	return;
@@ -69,58 +66,56 @@ sub body_metajson {
 	my $title        = shift;
 	my $required_ref = shift;
 
-	given ($title) {
-
-		when ('requires') {
-			say CLEAR THREE . '"prereqs" : {';
-			say SIX . '"runtime" : {';
-			say NINE . '"requires" : {';
+		if ( $title eq 'requires') {
+			print CLEAR THREE . '"prereqs" : {' . "\n";
+			print SIX . '"runtime" : {' . "\n";
+			print NINE . '"requires" : {' . "\n";
 
 			$required_ref->{'perl'} = $App::Midgen::Min_Version;
 
 			foreach my $module_name (sort keys %{$required_ref}) {
-				say TWELVE . "\"$module_name\" : \"$required_ref->{$module_name}\","
+				print TWELVE . "\"$module_name\" : \"$required_ref->{$module_name}\",\n"
 					if $required_ref->{$module_name} !~ m/mcpan/;
 			}
 			print NINE . '}';
 
 			if ($self->verbose > 0) {
-				say BRIGHT_BLACK ",\n" . NINE . '"suggests" : {...},';
+				print BRIGHT_BLACK ",\n" . NINE . '"suggests" : {...},' . "\n";
 			}
 			print CLEAR;
 
 		}
-		when ('runtime_recommends') {
-			say NINE . '"recommends" : {';
+		elsif ( $title eq 'runtime_recommends') {
+			print NINE . '"recommends" : {' . "\n";
 			foreach my $module_name (sort keys %{$required_ref}) {
-				say TWELVE . "\"$module_name\" : \"$required_ref->{$module_name}\","
+				print TWELVE . "\"$module_name\" : \"$required_ref->{$module_name}\",\n"
 					if $required_ref->{$module_name} !~ m/mcpan/;
 			}
-			say NINE . '}';
+			print NINE . "}\n";
 		}
-		when ('test_requires') {
-			say SIX . '"test" : {';
-			say NINE . '"requires" : {';
+		elsif ( $title eq 'test_requires') {
+			print SIX . '"test" : {' . "\n";
+			print NINE . '"requires" : {' . "\n";
 			foreach my $module_name (sort keys %{$required_ref}) {
-				say TWELVE
+				print TWELVE
 					. "\"$module_name\" : \""
-					. $required_ref->{$module_name} . '",'
+					. $required_ref->{$module_name} . '",' . "\n"
 					if $required_ref->{$module_name} !~ m/mcpan/;
 			}
 			print NINE . '}';
 		}
-		when ('recommends') {
+		elsif ( $title eq 'recommends') {
 			if ($required_ref) {
-				say ',';
-				say NINE . '"suggests" : {';
+				print ",\n";
+				print NINE . '"suggests" : {' . "\n";
 				foreach my $module_name (sort keys %{$required_ref}) {
-					say TWELVE
+					print TWELVE
 						. "\"$module_name\" : \""
-						. $required_ref->{$module_name} . '",'
+						. $required_ref->{$module_name} . '",' . "\n"
 						if $required_ref->{$module_name} !~ m/mcpan/;
 
 				}
-				say NINE . '}';
+				print NINE . "}\n";
 				print SIX . '}';
 			}
 			else {
@@ -129,24 +124,24 @@ sub body_metajson {
 
 			}
 		}
-		when ('test_develop') {
+		elsif ( $title eq 'test_develop') {
 			if ($required_ref) {
 
-				say ',';
-				say SIX . '"develop" : {';
-				say NINE . '"requires" : {';
+				print ",\n";
+				print SIX . '"develop" : {' . "\n";
+				print NINE . '"requires" : {' . "\n";
 				foreach my $module_name (sort keys %{$required_ref}) {
-					say TWELVE
+					print TWELVE
 						. "\"$module_name\" : \""
-						. $required_ref->{$module_name} . '",'
+						. $required_ref->{$module_name} . '",' . "\n"
 						if $required_ref->{$module_name} !~ m/mcpan/;
 
 				}
-				say NINE . '}';
+				print NINE . "}\n";
 				print SIX . '}';
 			}
 		}
-	}
+#	}
 
 	return;
 }
@@ -156,48 +151,48 @@ sub body_metajson {
 #######
 sub footer_metajson {
 	my $self = shift;
-	my $package_name = shift // NONE;
+	my $package_name = shift || NONE;
 	$package_name =~ s{::}{-}g;
 
 	print "\n";
 
-	say THREE . '},';
+	print THREE . "},\n";
 	my @no_index = $self->no_index;
 	if (@no_index) {
-		say THREE . '"no_index" : {';
-		say SIX . '"directory" : [';
+		print THREE . '"no_index" : {' . "\n";
+		print SIX . '"directory" : [' . "\n";
 		foreach my $no_idx (@no_index) {
-			say NINE . q{"} . $no_idx . q{",};
+			print NINE . q{"} . $no_idx . q{",} . "\n";
 		}
-		say SIX . ']';
+		print SIX . "]\n";
 	}
 
 	if ($self->verbose > 0) {
-		say THREE . '},';
-		say BRIGHT_BLACK THREE . '"resources" : {';
-		say SIX . '"bugtracker" : {';
-		say NINE
+		print THREE . '},' . "\n";
+		print BRIGHT_BLACK THREE . '"resources" : {' . "\n";
+		print SIX . '"bugtracker" : {' . "\n";
+		print NINE
 			. '"web" : "https://github.com/.../'
 			. $package_name
-			. '/issues"';
-		say SIX . '},';
-		say SIX . '"homepage" : "https://github.com/.../' . $package_name . q{",};
-		say SIX . '"repository" : {';
-		say NINE . '"type" : "git",';
-		say NINE . '"url" : "https://github.com/.../' . $package_name . q{.git",};
-		say NINE . '"web" : "https://github.com/.../' . $package_name . q{"};
-		say SIX . '}';
-		say THREE . '},';
-		say THREE . '"x_contributors" : [';
-		say SIX . '"brian d foy (ADOPTME) <brian.d.foy@gmail.com>",';
-		say SIX . '"Fred Bloggs <fred@bloggs.org>"';
-		say THREE . q{]};
+			. '/issues"' . "\n";
+		print SIX . "},\n";
+		print SIX . '"homepage" : "https://github.com/.../' . $package_name . q{",} . "\n";
+		print SIX . '"repository" : {' . "\n";
+		print NINE . '"type" : "git",' . "\n";
+		print NINE . '"url" : "https://github.com/.../' . $package_name . q{.git",} . "\n";
+		print NINE . '"web" : "https://github.com/.../' . $package_name . q{"} . "\n";
+		print SIX . "}\n";
+		print THREE . "},\n";
+		print THREE . '"x_contributors" : [' . "\n";
+		print SIX . '"brian d foy (ADOPTME) <brian.d.foy@gmail.com>",' . "\n";
+		print SIX . '"Fred Bloggs <fred@bloggs.org>"' . "\n";
+		print THREE . q{]} . "\n";
 	}
 	else {
-		say THREE . '}';
+		print THREE . "}\n";
 	}
 
-	say CLEAR . '}';
+	print CLEAR . "}\n";
 	print qq{\n};
 	return;
 }

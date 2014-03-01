@@ -1,6 +1,6 @@
 #!perl
 
-use 5.010001;
+use 5.008000;
 use strict;
 use warnings FATAL => 'all';
 
@@ -47,7 +47,7 @@ use Pod::Usage;
 my $help         = 0;
 my $core         = $config->{core} || 0;
 my $dual_life    = $config->{dual_life} || 0;
-my $verbose      = $config->{verbose} // 1;
+my $verbose      = $config->{verbose} || 1;
 my @format       = $config->{format} || 'dsl';
 my $experimental = 0;
 my $quiet        = $config->{quiet} || 0;
@@ -77,9 +77,9 @@ pod2usage(1) if $help;
 #######
 
 if ($verbose > 0) {
-	say 'Running midgen v' . $VERSION;
-	say 'Stamped -> ' . gmstamp($BASETIME);
-	say 'Honouring $ENV{ANSI_COLORS_DISABLED}' if $ENV{ANSI_COLORS_DISABLED};
+	print 'Running midgen v' . $VERSION . "\n";
+	print 'Stamped -> ' . gmstamp($BASETIME) . "\n";
+	print 'Honouring $ENV{ANSI_COLORS_DISABLED}' ."\n" if $ENV{ANSI_COLORS_DISABLED};
 }
 
 my $midgen = App::Midgen->new(
@@ -120,8 +120,8 @@ if ($write) {
 #######
 if ($verbose > 0) {
 	my $run_time = time - $BASETIME;
-	say 'I just spent ' . $run_time . 's doing all that, for you, enjoy';
-	say '__END__';
+	print 'I just spent ' . $run_time . "s doing all that, for you, enjoy\n";
+	print "__END__\n";
 }
 exit(0);
 

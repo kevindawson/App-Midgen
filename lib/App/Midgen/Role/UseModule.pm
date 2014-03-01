@@ -1,16 +1,15 @@
 package App::Midgen::Role::UseModule;
 
-use v5.10;
 use Moo::Role;
 requires qw( ppi_document debug format xtest _process_found_modules develop );
-
-use PPI;
-use Data::Printer;    # caller_info => 1;
-use Try::Tiny;
 
 our $VERSION = '0.29_09';
 $VERSION = eval $VERSION; ## no critic
 
+use PPI;
+use Data::Printer;    # caller_info => 1;
+use Try::Tiny;
+use Tie::Static qw(static);
 use constant {BLANK => q{ }, TRUE => 1, FALSE => 0, NONE => q{}, TWO => 2,
 	THREE => 3,};
 
@@ -413,7 +412,7 @@ sub _module_names_ppi_sl {
 
 	if ($ppi_sl->isa('PPI::Structure::List')) {
 
-		state $previous_module = undef;
+		static \ my $previous_module;
 		foreach my $ppi_se (@{$ppi_sl->{children}}) {
 			for ( 0..$#{$ppi_se->{children}}) {
 

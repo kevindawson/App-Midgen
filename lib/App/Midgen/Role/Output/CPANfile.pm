@@ -1,24 +1,24 @@
 package App::Midgen::Role::Output::CPANfile;
 
-use v5.10;
+#use v5.10;
 use Moo::Role;
 requires qw( verbose );
 
 # turn off experimental warnings
-no if $] > 5.017010, warnings => 'experimental::smartmatch';
+#no if $] > 5.017010, warnings => 'experimental::smartmatch';
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
 our $VERSION = '0.29_09';
-$VERSION = eval $VERSION; ## no critic
+$VERSION = eval $VERSION;    ## no critic
 
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 use Term::ANSIColor qw( :constants colored );
-use Data::Printer {caller_info => 1, colored => 1,};
-use constant {BLANK => q{ }, NONE => q{}, THREE => 3,};
+use Data::Printer {caller_info => 1,   colored => 1,};
+use constant      {NONE        => q{}, THREE   => 3,};
 use File::Spec;
 
 #######
@@ -26,26 +26,8 @@ use File::Spec;
 #######
 sub header_cpanfile {
 	my $self         = shift;
-	my $package_name = shift // NONE;
-	my $mi_ver       = shift // NONE;
-
-#	if ( $self->verbose > 0 ) {
-#		print BRIGHT_BLACK "\n";
-#		say '# Makefile.PL';
-#		say 'use inc::Module::Install ' . $mi_ver . q{;};
-#
-#		$package_name =~ s{::}{-}g;
-#		say "name '$package_name';";
-#		say 'license \'perl\';';
-#
-#		$package_name =~ tr{-}{/};
-#		say "version_from 'lib/$package_name.pm';";
-#
-#		print "\n";
-#		say 'cpanfile;';
-#		say 'WriteAll;';
-#		print CLEAR "\n";
-#	}
+	my $package_name = shift || NONE;
+	my $mi_ver       = shift || NONE;
 
 	return;
 }
@@ -64,62 +46,61 @@ sub body_cpanfile {
 			$pm_length = length $module_name;
 		}
 	}
-	given ($title) {
-		when ('requires') {
-			print "\n";
 
-			$required_ref->{'perl'} = $App::Midgen::Min_Version;
-			foreach my $module_name (sort keys %{$required_ref}) {
+	if ($title eq 'requires') {
+		print "\n";
 
-				my $mod_name = "'$module_name',";
-				printf "%s %-*s '%s';\n", $title, $pm_length + THREE, $mod_name,
-					$required_ref->{$module_name}
-					if $required_ref->{$module_name} !~ m/mcpan/;
-			}
-		}
-		when ('runtime_recommends') {
-			print "\n";
-			foreach my $module_name (sort keys %{$required_ref}) {
+		$required_ref->{'perl'} = $App::Midgen::Min_Version;
+		foreach my $module_name (sort keys %{$required_ref}) {
 
-				my $mod_name = "'$module_name',";
-				printf "%s %-*s '%s';\n", 'recommends', $pm_length + THREE,
-					$mod_name, $required_ref->{$module_name}
-					if $required_ref->{$module_name} !~ m/mcpan/;
-			}
-		}
-		when ('test_requires') {
-			print "\n";
-			say 'on test => sub {';
-			foreach my $module_name (sort keys %{$required_ref}) {
-				my $mod_name = "'$module_name',";
-				printf "\t%s %-*s '%s';\n", 'requires', $pm_length + THREE,
-					$mod_name, $required_ref->{$module_name} if $required_ref->{$module_name} !~ m/mcpan/;
-
-			}
-			print "\n" if %{$required_ref};
-		}
-		when ('recommends') {
-			foreach my $module_name (sort keys %{$required_ref}) {
-				my $mod_name = "'$module_name',";
-				printf "\t%s %-*s '%s';\n", 'suggests', $pm_length + THREE,
-					$mod_name, $required_ref->{$module_name} if $required_ref->{$module_name} !~ m/mcpan/;
-
-			}
-			say '};';
-		}
-		when ('test_develop') {
-			print "\n";
-			say 'on develop => sub {';
-			foreach my $module_name (sort keys %{$required_ref}) {
-				my $mod_name = "'$module_name',";
-				printf "\t%s %-*s '%s';\n", 'recommends', $pm_length + THREE,
-					$mod_name, $required_ref->{$module_name} if $required_ref->{$module_name} !~ m/mcpan/;
-
-			}
-			say '};';
+			my $mod_name = "'$module_name',";
+			printf "%s %-*s '%s';\n", $title, $pm_length + THREE, $mod_name,
+				$required_ref->{$module_name}
+				if $required_ref->{$module_name} !~ m/mcpan/;
 		}
 	}
+	elsif ($title eq 'runtime_recommends') {
+		print "\n";
+		foreach my $module_name (sort keys %{$required_ref}) {
 
+			my $mod_name = "'$module_name',";
+			printf "%s %-*s '%s';\n", 'recommends', $pm_length + THREE, $mod_name,
+				$required_ref->{$module_name}
+				if $required_ref->{$module_name} !~ m/mcpan/;
+		}
+	}
+	elsif ($title eq 'test_requires') {
+		print "\non test => sub {\n";
+		foreach my $module_name (sort keys %{$required_ref}) {
+			my $mod_name = "'$module_name',";
+			printf "\t%s %-*s '%s';\n", 'requires', $pm_length + THREE, $mod_name,
+				$required_ref->{$module_name}
+				if $required_ref->{$module_name} !~ m/mcpan/;
+
+		}
+		print "\n" if %{$required_ref};
+	}
+	elsif ($title eq 'recommends') {
+		foreach my $module_name (sort keys %{$required_ref}) {
+			my $mod_name = "'$module_name',";
+			printf "\t%s %-*s '%s';\n", 'suggests', $pm_length + THREE, $mod_name,
+				$required_ref->{$module_name}
+				if $required_ref->{$module_name} !~ m/mcpan/;
+
+		}
+		print "};\n";
+	}
+	elsif ($title eq 'test_develop') {
+		print "\non develop => sub {\n";
+		foreach my $module_name (sort keys %{$required_ref}) {
+			my $mod_name = "'$module_name',";
+			printf "\t%s %-*s '%s';\n", 'recommends', $pm_length + THREE,
+				$mod_name, $required_ref->{$module_name}
+				if $required_ref->{$module_name} !~ m/mcpan/;
+
+		}
+		print "};\n";
+	}
 
 	return;
 }
@@ -129,7 +110,7 @@ sub body_cpanfile {
 #######
 sub footer_cpanfile {
 	my $self = shift;
-	my $package_name = shift // NONE;
+	my $package_name = shift || NONE;
 	$package_name =~ s{::}{-}g;
 
 	print "\n";

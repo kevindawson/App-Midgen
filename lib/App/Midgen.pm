@@ -450,13 +450,13 @@ sub _store_modules {
 		if not defined $self->{modules}{$module}{corelist};
 	my $version = $self->get_module_version($module, $require_type);
 
-		if ( $version =~ '!mcpan') {
+		if ( $version eq '!mcpan') {
 			$self->{$require_type}{$module} = colored('!mcpan', 'magenta')
 				if not $self->{skip_not_mcpan_stamp};
 			$self->{modules}{$module}{location} = $require_type;
 			$self->{modules}{$module}{version}  = '!mcpan';
 		}
-		elsif ( $version =~ 'core') {
+		elsif ( $version eq 'core') {
 			$self->{$require_type}{$module} = $version if $self->core;
 			$self->{$require_type}{$module} = '0'      if $self->zero;
 			$self->{modules}{$module}{location} = $require_type;

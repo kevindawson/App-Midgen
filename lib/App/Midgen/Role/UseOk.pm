@@ -1,12 +1,8 @@
 package App::Midgen::Role::UseOk;
 
-use v5.10;
+#use v5.10;
 use Moo::Role;
 requires qw( ppi_document debug format xtest _process_found_modules develop );
-
-use PPI;
-use Try::Tiny;
-use Data::Printer {caller_info => 1, colored => 1,};
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
@@ -14,6 +10,10 @@ use Data::Printer {caller_info => 1, colored => 1,};
 our $VERSION = '0.29_09';
 $VERSION = eval $VERSION; ## no critic
 
+use PPI;
+use Try::Tiny;
+use Data::Printer {caller_info => 1, colored => 1,};
+use Tie::Static qw(static);
 use constant {BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3,};
 
 
@@ -69,7 +69,7 @@ sub xtests_use_ok {
 										foreach my $element (@{$ppi_se->{children}}) {
 
 											# some fudge to remember the module name if falied
-											state $previous_module = undef;
+											static \ my $previous_module;
 											if ( $element->isa('PPI::Token::Quote::Single')
 												|| $element->isa('PPI::Token::Quote::Double'))
 											{
