@@ -1,5 +1,15 @@
 package App::Midgen::Role::Output::METAjson;
 
+use constant {
+	BLANK  => q{ },
+	NONE   => q{},
+	THREE  => q{   },
+	SIX    => q{      },
+	NINE   => q{         },
+	TWELVE => q{            },
+};
+
+
 use Moo::Role;
 requires qw( no_index verbose );
 
@@ -14,14 +24,14 @@ local $OUTPUT_AUTOFLUSH = 1;
 
 use Term::ANSIColor qw( :constants colored );
 use Data::Printer {caller_info => 1, colored => 1,};
-use constant {
-	BLANK  => q{ },
-	NONE   => q{},
-	THREE  => q{   },
-	SIX    => q{      },
-	NINE   => q{         },
-	TWELVE => q{            },
-};
+#use constant {
+#	BLANK  => q{ },
+#	NONE   => q{},
+#	THREE  => q{   },
+#	SIX    => q{      },
+#	NINE   => q{         },
+#	TWELVE => q{            },
+#};
 use File::Spec;
 
 #######

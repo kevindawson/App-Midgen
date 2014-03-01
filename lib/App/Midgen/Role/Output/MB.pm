@@ -1,5 +1,7 @@
 package App::Midgen::Role::Output::MB;
 
+use constant {NONE => q{},};
+
 use Moo::Role;
 
 # Load time and dependencies negate execution time
@@ -11,7 +13,7 @@ $VERSION = eval $VERSION;    ## no critic
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use constant {NONE => q{},};
+#use constant {NONE => q{},};
 use File::Spec;
 
 #######

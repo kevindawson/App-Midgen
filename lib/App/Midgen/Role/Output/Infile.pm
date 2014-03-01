@@ -1,5 +1,7 @@
 package App::Midgen::Role::Output::Infile;
 
+use constant {BLANK => q{ }, NONE => q{}, THREE => 3, EIGHT => 8, NINE => 9, TEN => 10};
+
 use Moo::Role;
 requires qw( core dual_life debug );
 use Try::Tiny;
@@ -15,7 +17,7 @@ local $OUTPUT_AUTOFLUSH = 1;
 
 use Term::ANSIColor qw( :constants colored );
 use Data::Printer {caller_info => 1, colored => 1,};
-use constant {BLANK => q{ }, NONE => q{}, THREE => 3, EIGHT => 8, NINE => 9, TEN => 10};
+#use constant {BLANK => q{ }, NONE => q{}, THREE => 3, EIGHT => 8, NINE => 9, TEN => 10};
 use File::Spec;
 
 #######

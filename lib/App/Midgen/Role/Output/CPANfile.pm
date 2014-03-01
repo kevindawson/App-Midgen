@@ -1,6 +1,7 @@
 package App::Midgen::Role::Output::CPANfile;
 
-#use v5.10;
+use constant {NONE => q{}, THREE => 3,};
+
 use Moo::Role;
 requires qw( verbose );
 
@@ -17,8 +18,9 @@ use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 use Term::ANSIColor qw( :constants colored );
-use Data::Printer {caller_info => 1,   colored => 1,};
-use constant      {NONE        => q{}, THREE   => 3,};
+use Data::Printer {caller_info => 1, colored => 1,};
+
+#use constant      {NONE        => q{}, THREE   => 3,};
 use File::Spec;
 
 #######

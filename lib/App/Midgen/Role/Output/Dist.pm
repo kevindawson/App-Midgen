@@ -1,5 +1,7 @@
 package App::Midgen::Role::Output::Dist;
 
+use constant {NONE => q{},};
+
 use Moo::Role;
 requires qw( no_index verbose );
 
@@ -13,7 +15,7 @@ use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 use Term::ANSIColor qw( :constants colored );
-use constant {NONE => q{},};
+#use constant {NONE => q{},};
 use File::Spec;
 
 #######

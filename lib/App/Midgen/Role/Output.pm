@@ -27,16 +27,16 @@ use Try::Tiny;
 ###
 # fudge for 5.8 - https://travis-ci.org/kevindawson/App-Midgen/jobs/19860976
 ###
-use constant {
-	BLANK  => q{ },
-	NONE   => q{},
-	THREE  => q{   },
-	SIX    => q{      },
-	NINE   => q{         },
-	TWELVE => q{            },
-	EIGHT => 8,
-	TEN => 10,
-};
+#use constant {
+#	BLANK  => q{ },
+#	NONE   => q{},
+#	THREE  => q{   },
+#	SIX    => q{      },
+#	NINE   => q{         },
+#	TWELVE => q{            },
+#	EIGHT => 8,
+#	TEN => 10,
+#};
 ###
 ###
 
