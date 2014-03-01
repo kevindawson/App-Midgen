@@ -43,8 +43,8 @@ BEGIN {
 	use_ok('Perl::MinimumVersion', '1.32');
 	use_ok('Perl::PrereqScanner',  '1.019');
 	use_ok('Pod::Usage',           '1.63');
-	use_ok('Scalar::Util',         '1.38');
 	use_ok('Term::ANSIColor',      '4.02');
+	use_ok('Tie::Static',          '0.04');
 	use_ok('Time::Stamp',          '1.3');
 	use_ok('Try::Tiny',            '0.19');
 	use_ok('Type::Tiny',           '0.038');
