@@ -5,24 +5,27 @@ use warnings FATAL => 'all';
 use English qw( -no_match_vars );
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Test::More tests => 24;
+use Test::More tests => 13;
 
+BEGIN {
+	use_ok( 'App::Midgen', 0.29_11 );
+}
 ######
 # let's check our subs/methods.
 ######
 
-my @subs = qw(
-	find_required_modules find_required_test_modules
-	first_package_name remove_noisy_children run
-	remove_twins found_twins min_version mod_in_dist
-	numify get_module_version
-);
-
-use_ok( 'App::Midgen', @subs );
-
-foreach my $subs (@subs) {
-	can_ok( 'App::Midgen', $subs );
-}
+#my @subs = qw(
+#	find_required_modules find_required_test_modules
+#	first_package_name remove_noisy_children run
+#	remove_twins found_twins min_version mod_in_dist
+#	numify get_module_version
+#);
+#
+#use_ok( 'App::Midgen', @subs );
+#
+#foreach my $subs (@subs) {
+#	can_ok( 'App::Midgen', $subs );
+#}
 
 my @attributes = qw(
 	core debug dual_life experimental zero
