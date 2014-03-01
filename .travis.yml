@@ -7,7 +7,4 @@ perl:
   - "5.12"
   - "5.10"
   - "5.8"
-before_install:
-  - cd perl
-  - perl -V
 
