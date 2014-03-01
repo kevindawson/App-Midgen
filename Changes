@@ -1,5 +1,8 @@
 Revision history for App-Midgen
 
+0.29_11 2014-03-01
+ - rewite to support perl 5.8
+
 0.29_09 2014-03-23
  - hack the version check from Module::Version
  - simplify the installed version check
