@@ -7,7 +7,7 @@ requires qw( ppi_document debug format xtest _process_found_modules develop );
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.29_09';
+our $VERSION = '0.29_11';
 $VERSION = eval $VERSION; ## no critic
 
 use PPI;
@@ -157,7 +157,7 @@ for methods in use_ok in BEGIN blocks, used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.29_09
+version: 0.29_11
 
 =head1 METHODS
 

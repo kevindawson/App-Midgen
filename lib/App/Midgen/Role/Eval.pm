@@ -10,7 +10,7 @@ use Data::Printer {caller_info => 1, colored => 1,};
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.29_09';
+our $VERSION = '0.29_11';
 $VERSION = eval $VERSION;    ## no critic
 
 #use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
@@ -278,7 +278,7 @@ App::Midgen::Roles::Eval - used by L<App::Midgen>
 
 =head1 VERSION
 
-This document describes App::Midgen::Roles version: 0.29_09
+This document describes App::Midgen::Roles version: 0.29_11
 
 =head1 METHODS
 

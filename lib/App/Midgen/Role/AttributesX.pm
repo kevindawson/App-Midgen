@@ -6,7 +6,7 @@ use Moo::Role;
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.29_09';
+our $VERSION = '0.29_11';
 $VERSION = eval $VERSION; ## no critic
 
 use Carp;
@@ -57,7 +57,7 @@ App::Midgen::Role::AttributesX - Package Attributes used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.29_09
+version: 0.29_11
 
 =head1 METHODS
 
