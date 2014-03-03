@@ -6,7 +6,7 @@ use constant {BLANK => q{ }, TRUE => 1, FALSE => 0, NONE => q{}, TWO => 2,
 use Moo::Role;
 requires qw( ppi_document debug format xtest _process_found_modules develop meta2 );
 
-our $VERSION = '0.29_11';
+our $VERSION = '0.29_13';
 $VERSION = eval $VERSION; ## no critic
 
 use PPI;
@@ -467,7 +467,7 @@ includes, used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.29_11
+version: 0.29_13
 
 
 =head1 METHODS

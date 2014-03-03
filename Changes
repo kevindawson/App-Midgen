@@ -1,6 +1,9 @@
 Revision history for App-Midgen
 
 0.29_11 2014-03-01
+ - refactor internals to use meta2 phase-requirements naming internally
+
+0.29_11 2014-03-01
  - rewite to support perl 5.8.1
  - move constant before Moo
  - rewrite with out smartmatch
