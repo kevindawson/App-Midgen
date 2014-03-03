@@ -4,7 +4,7 @@ use constant {BLANK => q{ }, TRUE => 1, FALSE => 0, NONE => q{}, TWO => 2,
 	THREE => 3,};
 
 use Moo::Role;
-requires qw( ppi_document debug format xtest _process_found_modules develop );
+requires qw( ppi_document debug format xtest _process_found_modules develop meta2 );
 
 our $VERSION = '0.29_11';
 $VERSION = eval $VERSION; ## no critic
@@ -20,7 +20,7 @@ use Tie::Static qw(static);
 #######
 sub xtests_use_module {
 	my $self = shift;
-	my $storage_location = shift;
+	my $phase_relationship = shift || NONE;
 
 	my @modules;
 	my @version_strings;
@@ -352,18 +352,12 @@ sub xtests_use_module {
 
 	# if we found a module, process it with the correct catogery
 	if (scalar @modules > 0) {
-		if ($storage_location eq 'runtime_recommends') {
-			if ($self->format =~ /cpanfile|metajson|dist/) {
-				$self->_process_found_modules('runtime_recommends', \@modules);
-
+			if ($self->meta2) {
+				$self->_process_found_modules($phase_relationship, \@modules, __PACKAGE__);
 			}
 			else {
-				$self->_process_found_modules('package_requires', \@modules);
+				$self->_process_found_modules('TestSuggests', \@modules, __PACKAGE__);
 			}
-
-		}
-
-#		$self->_process_found_modules('package_requires', \@modules);
 	}
 	return;
 }

@@ -1,5 +1,7 @@
 package App::Midgen::Role::Attributes;
 
+use constant {TRUE => 1, FALSE => 0,};
+
 use Types::Standard qw( ArrayRef Bool Int Object Str);
 use Moo::Role;
 requires qw( experimental format );
@@ -50,6 +52,23 @@ has 'found_twins' => (
 	},
 );
 
+has 'meta2' => (
+	is      => 'ro',
+	isa     => Bool,
+	lazy    => 1,
+	builder => '_meta2',
+);
+
+sub _meta2 {
+	my $self = shift;
+
+	if ( $self->format =~ m/cpanfile|metajson|dist/ ) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
 has 'numify' => (
 	is      => 'ro',
 	isa     => Bool,
@@ -72,10 +91,10 @@ has 'ppi_document' => (
 
 has 'xtest' => (
 	is      => 'rwp',
-	isa     => Str,
+	isa     => Bool,
 	lazy    => 1,
 	default => sub {
-		'test_requires';
+	return FALSE;
 	},
 );
 

@@ -64,7 +64,9 @@ sub header_eumm {
 sub body_eumm {
 	my $self         = shift;
 	my $title        = shift;
-	my $required_ref = shift;
+	my $required_ref = shift || return;
+
+	return if not %{$required_ref};
 
 	my $pm_length = 0;
 	foreach my $module_name (sort keys %{$required_ref}) {
@@ -74,17 +76,17 @@ sub body_eumm {
 	}
 
 	print THREE. "'MIN_PERL_VERSION' => '$App::Midgen::Min_Version',\n"
-		if $title eq 'requires';
+		if $title eq 'RuntimeRequires';
 
-	return if not %{$required_ref} and $title =~ m{(?:requires)\z};
+#	return if not %{$required_ref} and $title =~ m{(?:requires)\z};
 
-	if ($title eq 'requires') {
+	if ($title eq 'RuntimeRequires') {
 		print THREE. "'PREREQ_PM' => {\n";
 	}
-	elsif ($title eq 'test_requires') {
+	elsif ($title eq 'TestRequires') {
 		print THREE. "'TEST_REQUIRES' => {\n";
 	}
-	elsif ($title eq 'recommends') {
+	elsif ($title eq 'TestSuggests') {
 		$self->_recommends($required_ref);
 		return;
 	}

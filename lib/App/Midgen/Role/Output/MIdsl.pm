@@ -45,8 +45,10 @@ sub body_dsl {
 	my $title        = shift;
 	my $required_ref = shift || return;
 
+	return if not %{$required_ref};
+
 	print 'perl_version ' . $App::Midgen::Min_Version . "\n"
-		if $title eq 'requires';
+		if $title eq 'RuntimeRequires';
 	print "\n";
 
 	my $pm_length = 0;
@@ -55,15 +57,18 @@ sub body_dsl {
 			$pm_length = length $module_name;
 		}
 	}
+	$title =~ s/^Runtime//;
+	$title =~ s/^TestSuggests/recommends/;
+	$title =~ s/^Test/test_/;
 
 	foreach my $module_name (sort keys %{$required_ref}) {
 
 		if ($module_name =~ /^Win32/sxm) {
-			printf "%s %-*s %s %s\n", $title, $pm_length, $module_name,
+			printf "%s %-*s %s %s\n", lc $title, $pm_length, $module_name,
 				$required_ref->{$module_name}, colored('if win32', 'bright_green');
 		}
 		else {
-			printf "%s %-*s %s\n", $title, $pm_length, $module_name,
+			printf "%s %-*s %s\n", lc $title, $pm_length, $module_name,
 				$required_ref->{$module_name};
 		}
 	}

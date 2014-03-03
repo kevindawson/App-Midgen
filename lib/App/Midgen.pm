@@ -1,6 +1,8 @@
 package App::Midgen;
 
 use 5.008001;
+use constant {BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3, TRUE => 1, FALSE => 0,};
+
 use Moo;
 with qw(
 	App::Midgen::Role::Options
@@ -36,7 +38,6 @@ use Perl::PrereqScanner;
 use Term::ANSIColor qw( :constants colored colorstrip );
 use Try::Tiny;
 use Tie::Static qw(static);
-use constant {BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3, TRUE => 1, FALSE => 0,};
 use version;
 
 # stop rlib from Fing all over cwd
@@ -65,18 +66,18 @@ sub run {
 	# Now we have switched to MetaCPAN-Api we can hunt for noisy children in tests
 	if ($self->experimental) {
 
-		$self->remove_noisy_children($self->{package_requires});
-		$self->remove_twins($self->{package_requires});
+		$self->remove_noisy_children($self->{RuntimeRequires});
+		$self->remove_twins($self->{RuntimeRequires});
 
 		# Run a second time if we found any twins, this will sort out twins and triplets etc
-		$self->remove_noisy_children($self->{package_requires}) if $self->found_twins;
+		$self->remove_noisy_children($self->{RuntimeRequires}) if $self->found_twins;
 
-		foreach (qw( test_requires recommends test_develop )) {
+		foreach (qw( TestRequires TestSuggests DevelopRequires )) {
 
 			p $self->{$_} if $self->debug;
 			$self->remove_noisy_children($self->{$_});
 			foreach my $module (keys %{$self->{$_}}) {
-				if ($self->{package_requires}{$module}) {
+				if ($self->{RuntimeRequires}{$module}) {
 					warn $module if $self->debug;
 					try {
 						delete $self->{$_}{$module};
@@ -91,19 +92,16 @@ sub run {
 	# display chosen output format
 	$self->output_header();
 
-	$self->output_main_body('requires',      $self->{package_requires});
-			if ($self->format =~ /cpanfile|metajson|dist/) {
-				$self->output_main_body('runtime_recommends', $self->{runtime_recommends});
-			}
-
-	$self->output_main_body('test_requires', $self->{test_requires});
-	$self->output_main_body('recommends',    $self->{recommends});
-	$self->output_main_body('test_develop',  $self->{test_develop})
-		if $self->develop;
+	$self->output_main_body('RuntimeRequires',      $self->{RuntimeRequires});
+	$self->output_main_body('RuntimeRecommends', $self->{RuntimeRecommends}) if $self->meta2;
+	$self->output_main_body('TestRequires', $self->{TestRequires});
+	$self->output_main_body('TestSuggests',    $self->{TestSuggests});
+	$self->output_main_body('DevelopRequires',  $self->{DevelopRequires}) if $self->meta2;
 
 	$self->output_footer();
 
-	p $self->{modules} if $self->debug;
+#	p $self->{modules} if $self->debug;
+	p $self->{modules} if ($self->verbose == TWO);
 
 	return;
 }
@@ -256,10 +254,10 @@ sub _find_makefile_requires {
 	$self->min_version();
 
 	# do extra test early check for use_module before hand
-	$self->xtests_use_module('runtime_recommends');
+	$self->xtests_use_module('RuntimeRecommends');
 
 	# ToDo add eval/try here -> prereqs { runtime { suggests or recommends {...}}}
-	$self->xtests_eval('runtime_recommends');
+	$self->xtests_eval('RuntimeRecommends');
 
 	my $prereqs = $self->scanner->scan_ppi_document($self->ppi_document);
 	my @modules = $prereqs->required_modules;
@@ -294,7 +292,7 @@ sub _find_makefile_requires {
 		}
 	}
 
-	$self->_process_found_modules('package_requires', \@modules);
+	$self->_process_found_modules('RuntimeRequires', \@modules, 'Perl::PrereqScanner');
 	return;
 }
 
@@ -308,9 +306,9 @@ sub _find_makefile_test_requires {
 	my $filename = $_;
 
 	##p $directorie;
-	my $prerequisites
-		= ($directorie =~ m/xt$/) ? 'test_develop' : 'test_requires';
-	$self->_set_xtest('test_develop') if $directorie =~ m/xt$/;
+	my $phase_relationship
+		= ($directorie =~ m/xt$/) ? 'DevelopRequires' : 'TestSuggests';
+	$self->_set_xtest(TRUE) if $directorie =~ m/xt$/;
 
 	return if $self->is_perlfile($filename) eq FALSE;
 
@@ -324,17 +322,19 @@ sub _find_makefile_test_requires {
 	$self->_set_ppi_document(PPI::Document->new($filename));
 
 	# do extra test early check for Test::Requires before hand
-	$self->xtests_test_requires();
+	$self->xtests_test_requires($phase_relationship);
 
 	# do extra test early check for use_ok in BEGIN blocks before hand
-	$self->xtests_use_ok();
+	$self->xtests_use_ok($phase_relationship);
 
 	# do extra test early to identify eval before hand
-	$self->xtests_eval('test_requires');
+	$self->xtests_eval($phase_relationship);
 
 	# do extra test early check for use_module before hand
-	$self->xtests_use_module('test_requires');
+	$self->xtests_use_module($phase_relationship);
 
+
+	# let's run p-ps for the rest
 	my $prereqs = $self->scanner->scan_ppi_document($self->ppi_document);
 	my @modules = $prereqs->required_modules;
 
@@ -346,17 +346,25 @@ sub _find_makefile_test_requires {
 	}
 
 	if (scalar @modules > 0) {
-		if ($self->format =~ /cpanfile|metajson|dist/) {
-			if ($self->xtest eq 'test_requires') {
-				$self->_process_found_modules('test_requires', \@modules);
-			}
-			elsif ($self->develop && $self->xtest eq 'test_develop') {
-				$self->_process_found_modules('test_develop', \@modules);
-			}
+if ($self->xtest) {
+$self->_process_found_modules($phase_relationship, \@modules, 'Perl::PrereqScanner' ) if $self->meta2;
+$self->_process_found_modules('DevelopRequires', \@modules, 'Perl::PrereqScanner') if not $self->meta2;
+}
+	else {
+			$self->_process_found_modules('TestRequires', \@modules, 'Perl::PrereqScanner');
 		}
-		else {
-			$self->_process_found_modules('test_requires', \@modules);
-		}
+
+#		if ($self->meta2) {
+#			if ($self->xtest) {
+#				$self->_process_found_modules('TestRequires', \@modules, 'Perl::PrereqScanner' );
+#			}
+#			elsif ($self->develop && $self->xtest eq 'DevelopRequires') {
+#				$self->_process_found_modules('DevelopRequires', \@modules, 'Perl::PrereqScanner' );
+#			}
+#		}
+#		else {
+#			$self->_process_found_modules('TestRequires', \@modules, 'Perl::PrereqScanner');
+#		}
 	}
 
 	return;
@@ -370,6 +378,7 @@ sub _process_found_modules {
 	my $self         = shift;
 	my $require_type = shift;
 	my $modules_ref  = shift;
+	my $extra_scanner = shift || 'none';
 
 	foreach my $module (@{$modules_ref}) {
 
@@ -421,13 +430,14 @@ sub _process_found_modules {
 
 		# lets keep track of how many times a module include is found
 		$self->{modules}{$module}{count} += 1;
+#ToDo
 		push @{$self->{modules}{$module}{infiles}},
-			[$self->looking_infile(), $self->{found_version}{$module} || 0];
+			[$self->looking_infile(), $self->{found_version}{$module} || 0, $extra_scanner ];
 
 		# don't process already found modules
-		p $self->{modules}{$module}{location} if $self->debug;
+		p $self->{modules}{$module}{prereqs} if $self->debug;
 
-		next if defined $self->{modules}{$module}{location};
+		next if defined $self->{modules}{$module}{prereqs};
 		p $module if $self->debug;
 
 		# add skip for infile as we don't need to get v-string from metacpan-api
@@ -453,13 +463,13 @@ sub _store_modules {
 		if ( $version eq '!mcpan') {
 			$self->{$require_type}{$module} = colored('!mcpan', 'magenta')
 				if not $self->{skip_not_mcpan_stamp};
-			$self->{modules}{$module}{location} = $require_type;
+			$self->{modules}{$module}{prereqs} = $require_type;
 			$self->{modules}{$module}{version}  = '!mcpan';
 		}
 		elsif ( $version eq 'core') {
 			$self->{$require_type}{$module} = $version if $self->core;
 			$self->{$require_type}{$module} = '0'      if $self->zero;
-			$self->{modules}{$module}{location} = $require_type;
+			$self->{modules}{$module}{prereqs} = $require_type;
 			$self->{modules}{$module}{version} = $version if $self->core;
 		}
 		else {
@@ -467,7 +477,7 @@ sub _store_modules {
 
 				$self->{$require_type}{$module} = colored($version, 'bright_yellow')
 					if ($self->dual_life || $self->core);
-				$self->{modules}{$module}{location} = $require_type
+				$self->{modules}{$module}{prereqs} = $require_type
 					if ($self->dual_life || $self->core);
 				$self->{modules}{$module}{version} = $version
 					if ($self->dual_life || $self->core);
@@ -479,7 +489,7 @@ sub _store_modules {
 					= colored(version->parse($version)->numify, 'yellow')
 					if $self->numify;
 
-				$self->{modules}{$module}{location} = $require_type;
+				$self->{modules}{$module}{prereqs} = $require_type;
 				$self->{modules}{$module}{version}  = $version;
 
 				$self->{$require_type}{$module} = colored($version, 'bright_cyan')
@@ -574,7 +584,7 @@ sub remove_noisy_children {
 							splice @sorted_modules, $inner_index, 1;
 
 							unless ($self->{modules}{$parent_name}) {
-								$self->{modules}{$parent_name}{location} = 'expermental';
+								$self->{modules}{$parent_name}{prereqs} = 'expermental';
 								$self->{modules}{$parent_name}{version}
 									= $required_ref->{$parent_name};
 								$self->{modules}{$parent_name}{count} += 1;
@@ -712,7 +722,7 @@ sub _check_mojo_core {
 		$self->{$require_type}{'Mojolicious'}
 			= colored($mojo_module_ver, 'bright_blue')
 			if !$self->{modules}{'Mojolicious'};
-		$self->{modules}{'Mojolicious'}{location} = $require_type;
+		$self->{modules}{'Mojolicious'}{prereqs} = $require_type;
 		return 1;
 	}
 	else {
@@ -815,11 +825,11 @@ sub mod_in_dist {
 		if ($self->experimental) {
 
 			$self->{$require_type}{$dist} = colored($version, 'bright_cyan')
-				if not defined $self->{modules}{$module}{location};
+				if not defined $self->{modules}{$module}{prereqs};
 		}
 
 		$self->{$require_type}{$module} = colored($version, 'bright_cyan')
-			if not defined $self->{modules}{$module}{location};
+			if not defined $self->{modules}{$module}{prereqs};
 	}
 
 	return;
@@ -857,7 +867,7 @@ __END__
 
 =head1 NAME
 
-App::Midgen - Check B<requires> & B<test_requires> of your package for CPAN inclusion.
+App::Midgen - Check B<RuntimeRequires> & B<TestRequires> of your package for CPAN inclusion.
 
 =head1 VERSION
 

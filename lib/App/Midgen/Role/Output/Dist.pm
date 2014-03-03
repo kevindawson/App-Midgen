@@ -39,10 +39,9 @@ sub header_dist {
 #######
 sub body_dist {
 	my $self         = shift;
-	my $title        = shift;
+	my $title        = shift || return;
 	my $required_ref = shift || return;
 
-	# check if empty
 	return if not %{$required_ref};
 
 	print "\n";
@@ -54,20 +53,20 @@ sub body_dist {
 		}
 	}
 
-	if ($title eq 'requires') {
+	if ($title eq 'RuntimeRequires') {
 		print "[Prereqs]\n";
 		printf "%-*s = %s\n", $pm_length, 'perl', $App::Midgen::Min_Version;
 	}
-	elsif ($title eq 'runtime_recommends') {
+	elsif ($title eq 'RuntimeRecommends') {
 		print "[Prereqs / RuntimeRecommends]\n";
 	}
-	elsif ($title eq 'test_requires') {
+	elsif ($title eq 'TestRequires') {
 		print "[Prereqs / TestRequires]\n";
 	}
-	elsif ($title eq 'recommends') {
+	elsif ($title eq 'TestSuggests') {
 		print "[Prereqs / TestSuggests]\n";
 	}
-	elsif ($title eq 'test_develop') {
+	elsif ($title eq 'DevelopRequires') {
 		print "[Prereqs / DevelopRequires]\n";
 	}
 

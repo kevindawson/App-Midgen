@@ -47,6 +47,8 @@ sub body_mi {
 	my $title        = shift;
 	my $required_ref = shift || return;
 
+	return if not %{$required_ref};
+
 	my $pm_length = 0;
 	foreach my $module_name (sort keys %{$required_ref}) {
 		if (length $module_name > $pm_length) {
@@ -54,8 +56,11 @@ sub body_mi {
 		}
 	}
 
-	print "perl_version '$App::Midgen::Min_Version';\n" if $title eq 'requires';
+	print "perl_version '$App::Midgen::Min_Version';\n" if $title eq 'RuntimeRequires';
 	print "\n";
+	$title =~ s/^Runtime//;
+	$title =~ s/^TestSuggests/recommends/;
+	$title =~ s/^Test/test_/;
 
 	foreach my $module_name (sort keys %{$required_ref}) {
 

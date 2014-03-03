@@ -36,6 +36,9 @@ sub body_mb {
 	my $self         = shift;
 	my $title        = shift;
 	my $required_ref = shift || return;
+
+	return if not %{$required_ref};
+
 	print "\n";
 
 	my $pm_length = 0;
@@ -44,6 +47,11 @@ sub body_mb {
 			$pm_length = length $module_name;
 		}
 	}
+
+	$title =~ s/^Runtime//;
+	$title =~ s/^TestSuggests/recommends/;
+	$title =~ s/^Test/test_/;
+
 	print q{"} . $title . '" => {' . "\n";
 
 	foreach my $module_name (sort keys %{$required_ref}) {
