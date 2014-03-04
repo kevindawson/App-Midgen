@@ -1,7 +1,8 @@
 package App::Midgen;
 
 use 5.008001;
-use constant {BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3, TRUE => 1, FALSE => 0,};
+use constant {BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3, TRUE => 1,
+	FALSE => 0,};
 
 use Moo;
 with qw(
@@ -21,7 +22,7 @@ with qw(
 # use namespace::clean -except => 'meta';
 use version;
 our $VERSION = '0.29_13';
-$VERSION = eval $VERSION; ## no critic
+$VERSION = eval $VERSION;    ## no critic
 
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
@@ -70,7 +71,8 @@ sub run {
 		$self->remove_twins($self->{RuntimeRequires});
 
 		# Run a second time if we found any twins, this will sort out twins and triplets etc
-		$self->remove_noisy_children($self->{RuntimeRequires}) if $self->found_twins;
+		$self->remove_noisy_children($self->{RuntimeRequires})
+			if $self->found_twins;
 
 		foreach (qw( TestRequires TestSuggests DevelopRequires )) {
 
@@ -92,15 +94,17 @@ sub run {
 	# display chosen output format
 	$self->output_header();
 
-	$self->output_main_body('RuntimeRequires',      $self->{RuntimeRequires});
-	$self->output_main_body('RuntimeRecommends', $self->{RuntimeRecommends}) if $self->meta2;
+	$self->output_main_body('RuntimeRequires',   $self->{RuntimeRequires});
+	$self->output_main_body('RuntimeRecommends', $self->{RuntimeRecommends})
+		if $self->meta2;
 	$self->output_main_body('TestRequires', $self->{TestRequires});
-	$self->output_main_body('TestSuggests',    $self->{TestSuggests});
-	$self->output_main_body('DevelopRequires',  $self->{DevelopRequires}) if $self->meta2;
+	$self->output_main_body('TestSuggests', $self->{TestSuggests});
+	$self->output_main_body('Close', {});
+	$self->output_main_body('DevelopRequires', $self->{DevelopRequires})
+		if $self->meta2;
 
 	$self->output_footer();
 
-#	p $self->{modules} if $self->debug;
 	p $self->{modules} if ($self->verbose == TWO);
 
 	return;
@@ -112,7 +116,7 @@ sub run {
 sub _initialise {
 	my $self = shift;
 
-# let's give Output a copy, to stop it being F'up as well, suspect Tiny::Path as-well rlib
+	# let's give Output a copy, to stop it being F'up as well, suspect Tiny::Path as-well rlib
 	warn 'working in dir: ' . $Working_Dir if $self->debug;
 
 	return;
@@ -127,7 +131,7 @@ sub first_package_name {
 	try {
 		find(
 			sub { _find_package_names($self); },
-			File::Spec->catfile($Working_Dir, 'lib' )
+			File::Spec->catfile($Working_Dir, 'lib')
 		);
 	};
 
@@ -146,7 +150,7 @@ sub first_package_name {
 	};
 
 	# I still want to see package name even though infile sets verbose = 0
-	print 'Package: '. $self->distribution_name ."\n"
+	print 'Package: ' . $self->distribution_name . "\n"
 		if $self->verbose
 		or $self->format eq 'infile';
 
@@ -158,7 +162,7 @@ sub first_package_name {
 sub _find_package_names {
 	my $self     = shift;
 	my $filename = $_;
-	static \ my $files_checked;
+	static \my $files_checked;
 	if (defined $files_checked) {
 		return if $files_checked >= THREE;
 	}
@@ -185,7 +189,8 @@ sub find_required_modules {
 	my $self = shift;
 
 	my @posiable_directories_to_search
-		= map { File::Spec->catfile($Working_Dir, $_) } qw( bin share script lib );
+		= map { File::Spec->catfile($Working_Dir, $_) }
+		qw( bin share script lib );
 
 	my @directories_to_search = ();
 	foreach my $directory (@posiable_directories_to_search) {
@@ -241,8 +246,8 @@ sub find_required_test_modules {
 # _find_makefile_requires
 #######
 sub _find_makefile_requires {
-	my $self      = shift;
-	my $filename  = $_;
+	my $self     = shift;
+	my $filename = $_;
 
 	return if $self->is_perlfile($filename) eq FALSE;
 
@@ -269,7 +274,7 @@ sub _find_makefile_requires {
 
 	$self->{skip_not_mcpan_stamp} = 0;
 
-	if ( grep { $_ =~ m/^Dist::Zilla::Role::PluginBundle/ } @modules ) {
+	if (grep { $_ =~ m/^Dist::Zilla::Role::PluginBundle/ } @modules) {
 
 		$self->{skip_not_mcpan_stamp} = 1;
 
@@ -292,7 +297,8 @@ sub _find_makefile_requires {
 		}
 	}
 
-	$self->_process_found_modules('RuntimeRequires', \@modules, 'Perl::PrereqScanner');
+	$self->_process_found_modules('RuntimeRequires', \@modules,
+		'Perl::PrereqScanner');
 	return;
 }
 
@@ -303,7 +309,7 @@ sub _find_makefile_requires {
 sub _find_makefile_test_requires {
 	my $self       = shift;
 	my $directorie = shift;
-	my $filename = $_;
+	my $filename   = $_;
 
 	##p $directorie;
 	my $phase_relationship
@@ -346,25 +352,19 @@ sub _find_makefile_test_requires {
 	}
 
 	if (scalar @modules > 0) {
-if ($self->xtest) {
-$self->_process_found_modules($phase_relationship, \@modules, 'Perl::PrereqScanner' ) if $self->meta2;
-$self->_process_found_modules('DevelopRequires', \@modules, 'Perl::PrereqScanner') if not $self->meta2;
-}
-	else {
-			$self->_process_found_modules('TestRequires', \@modules, 'Perl::PrereqScanner');
+		if ($self->xtest) {
+			$self->_process_found_modules($phase_relationship, \@modules,
+				'Perl::PrereqScanner')
+				if $self->meta2;
+			$self->_process_found_modules('DevelopRequires', \@modules,
+				'Perl::PrereqScanner')
+				if not $self->meta2;
+		}
+		else {
+			$self->_process_found_modules('TestRequires', \@modules,
+				'Perl::PrereqScanner');
 		}
 
-#		if ($self->meta2) {
-#			if ($self->xtest) {
-#				$self->_process_found_modules('TestRequires', \@modules, 'Perl::PrereqScanner' );
-#			}
-#			elsif ($self->develop && $self->xtest eq 'DevelopRequires') {
-#				$self->_process_found_modules('DevelopRequires', \@modules, 'Perl::PrereqScanner' );
-#			}
-#		}
-#		else {
-#			$self->_process_found_modules('TestRequires', \@modules, 'Perl::PrereqScanner');
-#		}
 	}
 
 	return;
@@ -375,9 +375,9 @@ $self->_process_found_modules('DevelopRequires', \@modules, 'Perl::PrereqScanner
 # composed method - _process_found_modules
 #######
 sub _process_found_modules {
-	my $self         = shift;
-	my $require_type = shift;
-	my $modules_ref  = shift;
+	my $self          = shift;
+	my $require_type  = shift;
+	my $modules_ref   = shift;
 	my $extra_scanner = shift || 'none';
 
 	foreach my $module (@{$modules_ref}) {
@@ -393,46 +393,49 @@ sub _process_found_modules {
 
 			my $distribution_name = $self->distribution_name || 'm/t';
 
-				if ( $module =~ /perl/sxm) {
+			if ($module =~ /perl/sxm) {
 
-					# ignore perl we will get it from minperl required
-					next;
-				}
-				elsif ( $module =~ /\A\Q$distribution_name\E/sxm) {
+				# ignore perl we will get it from minperl required
+				next;
+			}
+			elsif ($module =~ /\A\Q$distribution_name\E/sxm) {
 
-					# don't include our own packages here
-					next;
-				}
-				elsif ( $module =~ /^t::/sxm) {
+				# don't include our own packages here
+				next;
+			}
+			elsif ($module =~ /^t::/sxm) {
 
-					# don't include our own test packages here
-					next;
-				}
+				# don't include our own test packages here
+				next;
+			}
 
-				elsif ( $module =~ /Mojo/sxm) {
-					if ($self->experimental) {
-						if ($self->_check_mojo_core($module, $require_type)) {
-							if (not $self->quiet) {
-								print BRIGHT_BLACK;
-								print "swapping out $module for Mojolicious\n";
-								print CLEAR;
-							}
-							next;
+			elsif ($module =~ /Mojo/sxm) {
+				if ($self->experimental) {
+					if ($self->_check_mojo_core($module, $require_type)) {
+						if (not $self->quiet) {
+							print BRIGHT_BLACK;
+							print "swapping out $module for Mojolicious\n";
+							print CLEAR;
 						}
+						next;
 					}
 				}
-				elsif ( $module =~ /^Padre/sxm) {
+			}
+			elsif ($module =~ /^Padre/sxm) {
 
-					# mark all Padre core as just Padre only, for plugins
-					$module = 'Padre';
-				}
+				# mark all Padre core as just Padre only, for plugins
+				$module = 'Padre';
+			}
 		}
 
 		# lets keep track of how many times a module include is found
 		$self->{modules}{$module}{count} += 1;
-#ToDo
+
 		push @{$self->{modules}{$module}{infiles}},
-			[$self->looking_infile(), $self->{found_version}{$module} || 0, $extra_scanner ];
+			[
+			$self->looking_infile(), $self->{found_version}{$module} || 0,
+			$extra_scanner
+			];
 
 		# don't process already found modules
 		p $self->{modules}{$module}{prereqs} if $self->debug;
@@ -460,42 +463,42 @@ sub _store_modules {
 		if not defined $self->{modules}{$module}{corelist};
 	my $version = $self->get_module_version($module, $require_type);
 
-		if ( $version eq '!mcpan') {
-			$self->{$require_type}{$module} = colored('!mcpan', 'magenta')
-				if not $self->{skip_not_mcpan_stamp};
-			$self->{modules}{$module}{prereqs} = $require_type;
-			$self->{modules}{$module}{version}  = '!mcpan';
-		}
-		elsif ( $version eq 'core') {
-			$self->{$require_type}{$module} = $version if $self->core;
-			$self->{$require_type}{$module} = '0'      if $self->zero;
-			$self->{modules}{$module}{prereqs} = $require_type;
-			$self->{modules}{$module}{version} = $version if $self->core;
+	if ($version eq '!mcpan') {
+		$self->{$require_type}{$module} = colored('!mcpan', 'magenta')
+			if not $self->{skip_not_mcpan_stamp};
+		$self->{modules}{$module}{prereqs} = $require_type;
+		$self->{modules}{$module}{version} = '!mcpan';
+	}
+	elsif ($version eq 'core') {
+		$self->{$require_type}{$module} = $version if $self->core;
+		$self->{$require_type}{$module} = '0'      if $self->zero;
+		$self->{modules}{$module}{prereqs} = $require_type;
+		$self->{modules}{$module}{version} = $version if $self->core;
+	}
+	else {
+		if ($self->{modules}{$module}{corelist}) {
+
+			$self->{$require_type}{$module} = colored($version, 'bright_yellow')
+				if ($self->dual_life || $self->core);
+			$self->{modules}{$module}{prereqs} = $require_type
+				if ($self->dual_life || $self->core);
+			$self->{modules}{$module}{version} = $version
+				if ($self->dual_life || $self->core);
+			$self->{modules}{$module}{dual_life} = 1;
 		}
 		else {
-			if ($self->{modules}{$module}{corelist}) {
+			$self->{$require_type}{$module} = colored($version, 'yellow');
+			$self->{$require_type}{$module}
+				= colored(version->parse($version)->numify, 'yellow')
+				if $self->numify;
 
-				$self->{$require_type}{$module} = colored($version, 'bright_yellow')
-					if ($self->dual_life || $self->core);
-				$self->{modules}{$module}{prereqs} = $require_type
-					if ($self->dual_life || $self->core);
-				$self->{modules}{$module}{version} = $version
-					if ($self->dual_life || $self->core);
-				$self->{modules}{$module}{dual_life} = 1;
-			}
-			else {
-				$self->{$require_type}{$module} = colored($version, 'yellow');
-				$self->{$require_type}{$module}
-					= colored(version->parse($version)->numify, 'yellow')
-					if $self->numify;
+			$self->{modules}{$module}{prereqs} = $require_type;
+			$self->{modules}{$module}{version} = $version;
 
-				$self->{modules}{$module}{prereqs} = $require_type;
-				$self->{modules}{$module}{version}  = $version;
-
-				$self->{$require_type}{$module} = colored($version, 'bright_cyan')
-					if $self->{modules}{$module}{'distribution'};
-			}
+			$self->{$require_type}{$module} = colored($version, 'bright_cyan')
+				if $self->{modules}{$module}{'distribution'};
 		}
+	}
 	p $self->{modules}{$module} if $self->debug;
 
 	return;
@@ -673,7 +676,8 @@ sub remove_twins {
 
 				$version = $self->get_module_version($dum_parient);
 
-				if ( version::is_lax($version) ) {
+				if (version::is_lax($version)) {
+
 					#Check parent version against a twins version
 					if ($version eq $required_ref->{$sorted_modules[$n]}) {
 						print $dum_parient . ' -> '
@@ -701,7 +705,7 @@ sub _check_mojo_core {
 
 
 	my $mojo_module_ver;
-	static \ my $mojo_ver;
+	static \my $mojo_ver;
 
 	if (not defined $mojo_ver) {
 		$mojo_ver = $self->get_module_version('Mojolicious');
@@ -745,7 +749,7 @@ sub get_module_version {
 	try {
 		$module =~ s/::/-/g;
 
-# quick n dirty, get version number if module is classed as a distribution in metacpan
+		# quick n dirty, get version number if module is classed as a distribution in metacpan
 		my $mod = $self->mcpan->release(distribution => $module);
 
 		#p $mod;
@@ -794,8 +798,7 @@ sub get_module_version {
 		print BRIGHT_BLACK;
 		print $module
 			. ' Unique Release Sequence Indicator NOT! -> '
-			. $cpan_version
-			. "\n"
+			. $cpan_version . "\n"
 			if $self->verbose >= 1;
 		print CLEAR;
 		$cpan_version = version->parse($cpan_version)->numify;

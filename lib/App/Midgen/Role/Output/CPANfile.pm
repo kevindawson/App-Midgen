@@ -15,7 +15,6 @@ use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 use Term::ANSIColor qw( :constants colored );
-use Data::Printer {caller_info => 1, colored => 1,};
 use File::Spec;
 
 #######
@@ -36,8 +35,6 @@ sub body_cpanfile {
 	my $self         = shift;
 	my $title        = shift || return;
 	my $required_ref = shift || return;
-
-	return if not %{$required_ref};
 
 	my $pm_length = 0;
 	foreach my $module_name (sort keys %{$required_ref}) {
@@ -87,6 +84,8 @@ sub body_cpanfile {
 				if $required_ref->{$module_name} !~ m/mcpan/;
 
 		}
+	}
+	elsif ($title eq 'Close') {
 		print "};\n";
 	}
 	elsif ($title eq 'DevelopRequires') {
