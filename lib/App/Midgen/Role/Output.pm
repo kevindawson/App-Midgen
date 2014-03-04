@@ -161,7 +161,8 @@ sub in_local_lib {
 	my $found_module = shift;
 
 	# exemption for perl :)
-	return $PERL_VERSION if $found_module eq 'perl';
+	# return $PERL_VERSION if $found_module eq 'perl';
+	return $] if $found_module eq 'perl';
 
 	try {
 		# Show installed version-string
