@@ -69,6 +69,11 @@ sub body_mi {
 			printf "%s %-*s => '%s' %s;\n", $title, $pm_length + 2, $sq_key,
 				$required_ref->{$module_name}, colored('if win32', 'bright_green');
 		}
+		elsif ($module_name =~ /XS/sxm) {
+			my $sq_key = "'$module_name'";
+			printf "%s %-*s => '%s' %s;\n", $title, $pm_length + 2, $sq_key,
+				$required_ref->{$module_name}, colored('if can_xs', 'bright_blue');
+		}
 		else {
 			my $sq_key = "'$module_name'";
 			printf "%s %-*s => '%s';\n", $title, $pm_length + 2, $sq_key,

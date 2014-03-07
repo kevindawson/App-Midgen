@@ -67,6 +67,11 @@ sub body_dsl {
 			printf "%s %-*s %s %s\n", lc $title, $pm_length, $module_name,
 				$required_ref->{$module_name}, colored('if win32', 'bright_green');
 		}
+		elsif ($module_name =~ /XS/sxm) {
+			printf "%s %-*s %s %s\n", lc $title, $pm_length, $module_name,
+				$required_ref->{$module_name}, colored('if can_xs', 'bright_blue');
+		}
+
 		else {
 			printf "%s %-*s %s\n", lc $title, $pm_length, $module_name,
 				$required_ref->{$module_name};
