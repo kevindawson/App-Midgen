@@ -34,7 +34,7 @@ BEGIN {
 	use_ok('File::Slurp::Tiny',    '0.003');
 	use_ok('File::Spec',           '3.4');
 	use_ok('Getopt::Long',         '2.42');
-	use_ok('JSON::Tiny',           '0.4');
+	use_ok('JSON::Tiny',           '0.45');
 	use_ok('List::MoreUtils',      '0.33');
 	use_ok('MetaCPAN::API',        '0.43');
 	use_ok('Module::CoreList',     '3.04');

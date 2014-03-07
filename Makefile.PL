@@ -12,7 +12,7 @@ requires Data::Printer              0.35
 requires File::Slurp::Tiny          0.003
 requires File::Spec                 3.4
 requires Getopt::Long               2.42
-requires JSON::Tiny                 0.42
+requires JSON::Tiny                 0.45
 requires List::MoreUtils            0.33
 requires MetaCPAN::API              0.43
 requires Module::CoreList           3.07
