@@ -199,7 +199,9 @@ sub xtests_eval {
 				__PACKAGE__);
 		}
 		else {
-			$self->_process_found_modules('TestSuggests', \@modules, __PACKAGE__);
+			$self->_process_found_modules('TestSuggests', \@modules, __PACKAGE__) if $self->xtest;
+			$self->_process_found_modules('RuntimeRequires', \@modules,
+				__PACKAGE__) if not $self->xtest;
 		}
 	}
 	return;

@@ -356,7 +356,10 @@ sub xtests_use_module {
 				$self->_process_found_modules($phase_relationship, \@modules, __PACKAGE__);
 			}
 			else {
-				$self->_process_found_modules('TestSuggests', \@modules, __PACKAGE__);
+			$self->_process_found_modules('TestSuggests', \@modules, __PACKAGE__) if $self->xtest;
+			$self->_process_found_modules('RuntimeRequires', \@modules,
+				__PACKAGE__) if not $self->xtest;
+
 			}
 	}
 	return;
