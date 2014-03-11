@@ -27,7 +27,7 @@ $VERSION = eval $VERSION;    ## no critic
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Cwd qw(cwd);
+use Cwd qw(getcwd);
 use Data::Printer {caller_info => 1, colored => 1,};
 use File::Find qw(find);
 use File::Spec;
@@ -42,7 +42,7 @@ use Tie::Static qw(static);
 use version;
 
 # stop rlib from Fing all over cwd
-our $Working_Dir = cwd();
+our $Working_Dir = getcwd();
 our $Min_Version = 0;
 
 
