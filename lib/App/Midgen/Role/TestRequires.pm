@@ -12,7 +12,7 @@ use Data::Printer {caller_info => 1, colored => 1,};
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.29_13';
+our $VERSION = '0.30';
 $VERSION = eval $VERSION; ## no critic
 
 
@@ -179,7 +179,7 @@ for methods in use L<Test::Requires> blocks, used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.29_13
+version: 0.30
 
 =head1 METHODS
 

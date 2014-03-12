@@ -11,7 +11,7 @@ requires qw( experimental format );
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.29_13';
+our $VERSION = '0.30';
 $VERSION = eval $VERSION; ## no critic
 
 use Carp;
@@ -121,7 +121,7 @@ App::Midgen::Role::Attributes - Package Attributes used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.29_13
+version: 0.30
 
 =head1 METHODS
 

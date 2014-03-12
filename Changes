@@ -1,11 +1,18 @@
 Revision history for App-Midgen
 
-0.29_11 2014-03-01
- - refactor internals to use meta2 phase-requirements naming internally
+0.30 2014-03-12
+ - bump to 0.30 and out
+
+0.29_13 2014-03-11
+ - switch to getcwd
+ - switch to $] from $PERL_VERSION for perl 5.8 support
+ - update licence year
+ - add if can_xs to mi and midsl
 
 0.29_11 2014-03-01
+ - refactor internals to use meta2 phase-requirements naming internally
  - rewite to support perl 5.8.1
- - move constant before Moo
+ - move use constant before Moo
  - rewrite with out smartmatch
  - ignore sub blocks - false positive in Eval
 

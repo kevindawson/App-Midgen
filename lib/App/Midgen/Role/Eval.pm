@@ -12,7 +12,7 @@ use Data::Printer {caller_info => 1, colored => 1,};
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.29_13';
+our $VERSION = '0.30';
 $VERSION = eval $VERSION;    ## no critic
 
 #######
@@ -200,8 +200,7 @@ sub xtests_eval {
 		}
 		else {
 			$self->_process_found_modules('TestSuggests', \@modules, __PACKAGE__) if $self->xtest;
-			$self->_process_found_modules('RuntimeRequires', \@modules,
-				__PACKAGE__) if not $self->xtest;
+			$self->_process_found_modules('RuntimeRequires', \@modules,	__PACKAGE__) if not $self->xtest;
 		}
 	}
 	return;
@@ -261,7 +260,7 @@ App::Midgen::Roles::Eval - used by L<App::Midgen>
 
 =head1 VERSION
 
-This document describes App::Midgen::Roles version: 0.29_13
+This document describes App::Midgen::Roles version: 0.30
 
 =head1 METHODS
 
