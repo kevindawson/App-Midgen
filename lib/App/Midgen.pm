@@ -1035,7 +1035,7 @@ it under the same terms as Perl 5 itself.
 =head1 SEE ALSO
 
 L<Perl::PrereqScanner>,
-L<Module::Install::DSL>
+L<inc::Module::Install::DSL>
 
 =head1 DISCLAIMER OF WARRANTY
 
