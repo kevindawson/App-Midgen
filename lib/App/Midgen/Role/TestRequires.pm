@@ -156,7 +156,10 @@ sub xtests_test_requires {
 			$self->_process_found_modules($phase_relationship, \@modules, __PACKAGE__, $phase_relationship, );
 		}
 		else {
-			$self->_process_found_modules('TestSuggests', \@modules, __PACKAGE__, 'TestSuggests', );
+			$self->_process_found_modules('TestSuggests', \@modules, __PACKAGE__, 'TestSuggests', ) if not $self->xtest;
+			$self->_process_found_modules('DevelopRequires', \@modules,
+				__PACKAGE__, 'DevelopRequires',) if $self->xtest;
+
 		}
 	}
 	return;
