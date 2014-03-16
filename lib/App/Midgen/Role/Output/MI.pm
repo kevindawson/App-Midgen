@@ -60,6 +60,7 @@ sub body_mi {
 	print "\n";
 	$title =~ s/^Runtime//;
 	$title =~ s/^TestSuggests/recommends/;
+	$title =~ s/^DevelopRequires/recommends/;
 	$title =~ s/^Test/test_/;
 
 	foreach my $module_name (sort keys %{$required_ref}) {

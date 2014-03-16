@@ -95,12 +95,11 @@ sub run {
 	$self->output_header();
 
 	$self->output_main_body('RuntimeRequires',   $self->{RuntimeRequires});
-	$self->output_main_body('RuntimeRecommends', $self->{RuntimeRecommends}) if $self->meta2;
+	$self->output_main_body('RuntimeRecommends', $self->{RuntimeRecommends});
 	$self->output_main_body('TestRequires', $self->{TestRequires});
 	$self->output_main_body('TestSuggests', $self->{TestSuggests});
 	$self->output_main_body('Close', {});
-	$self->output_main_body('DevelopRequires', $self->{DevelopRequires}) if $self->meta2;
-
+	$self->output_main_body('DevelopRequires', $self->{DevelopRequires});
 	$self->output_footer();
 
 	p $self->{modules} if ($self->verbose == TWO);
@@ -407,7 +406,11 @@ sub _process_found_modules {
 				# don't include our own test packages here
 				next;
 			}
+			elsif ($module =~ /^inc::Module::Install/sxm) {
 
+				# don't inc::Module::Install as it is really Module::Install
+				next;
+			}
 			elsif ($module =~ /Mojo/sxm) {
 				if ($self->experimental) {
 					if ($self->_check_mojo_core($module, $require_type)) {

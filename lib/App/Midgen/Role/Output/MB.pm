@@ -50,9 +50,10 @@ sub body_mb {
 
 	$title =~ s/^Runtime//;
 	$title =~ s/^TestSuggests/recommends/;
+	$title =~ s/^DevelopRequires/recommends/;
 	$title =~ s/^Test/test_/;
 
-	print q{"} . $title . '" => {' . "\n";
+	print q{"} . lc $title . '" => {' . "\n";
 
 	foreach my $module_name (sort keys %{$required_ref}) {
 
