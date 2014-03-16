@@ -83,6 +83,13 @@ has 'package_names' => (
 	lazy    => 1,
 );
 
+has 'phase_relationship' => (
+	is      => 'rwp',
+	isa     => Str,
+	lazy    => 1,
+	default => sub { },
+);
+
 has 'ppi_document' => (
 	is   => 'rwp',
 	isa  => Object,
