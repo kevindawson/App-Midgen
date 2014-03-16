@@ -153,10 +153,10 @@ sub xtests_test_requires {
 	if (scalar @modules > 0) {
 
 		if ($self->meta2) {
-			$self->_process_found_modules($phase_relationship, \@modules, __PACKAGE__ );
+			$self->_process_found_modules($phase_relationship, \@modules, __PACKAGE__, $phase_relationship, );
 		}
 		else {
-			$self->_process_found_modules('TestSuggests', \@modules, __PACKAGE__ );
+			$self->_process_found_modules('TestSuggests', \@modules, __PACKAGE__, 'TestSuggests', );
 		}
 	}
 	return;

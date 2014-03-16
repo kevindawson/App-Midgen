@@ -196,11 +196,11 @@ sub xtests_eval {
 
 		if ($self->meta2) {
 			$self->_process_found_modules($phase_relationship, \@modules,
-				__PACKAGE__);
+				__PACKAGE__, $phase_relationship,);
 		}
 		else {
-			$self->_process_found_modules('TestSuggests', \@modules, __PACKAGE__) if $self->xtest;
-			$self->_process_found_modules('RuntimeRequires', \@modules,	__PACKAGE__) if not $self->xtest;
+			$self->_process_found_modules('TestSuggests', \@modules, __PACKAGE__, 'TestSuggests',) if $self->xtest;
+			$self->_process_found_modules('RuntimeRequires', \@modules,	__PACKAGE__, 'RuntimeRequires',) if not $self->xtest;
 		}
 	}
 	return;

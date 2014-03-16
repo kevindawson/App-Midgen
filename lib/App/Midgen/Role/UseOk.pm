@@ -127,10 +127,10 @@ sub xtests_use_ok {
 	if (scalar @modules > 0) {
 
 		if ($self->xtest) {
-			$self->_process_found_modules('DevelopRequires', \@modules, __PACKAGE__ );
+			$self->_process_found_modules('DevelopRequires', \@modules, __PACKAGE__, 'DevelopRequires',);
 		}
 		else {
-			$self->_process_found_modules('TestRequires', \@modules, __PACKAGE__ );
+			$self->_process_found_modules('TestRequires', \@modules, __PACKAGE__, 'TestRequires',);
 		}
 	}
 	return;
