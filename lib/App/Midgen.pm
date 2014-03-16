@@ -16,6 +16,7 @@ with qw(
 	App::Midgen::Role::FindMinVersion
 	App::Midgen::Role::Output
 	App::Midgen::Role::UseModule
+	App::Midgen::Role::Experimental
 );
 
 # Load time and dependencies negate execution time
@@ -31,7 +32,6 @@ use Cwd qw(getcwd);
 use Data::Printer {caller_info => 1, colored => 1,};
 use File::Find qw(find);
 use File::Spec;
-use List::MoreUtils qw(firstidx);
 use MetaCPAN::API;
 use Module::CoreList;
 use PPI;
@@ -95,13 +95,11 @@ sub run {
 	$self->output_header();
 
 	$self->output_main_body('RuntimeRequires',   $self->{RuntimeRequires});
-	$self->output_main_body('RuntimeRecommends', $self->{RuntimeRecommends})
-		if $self->meta2;
+	$self->output_main_body('RuntimeRecommends', $self->{RuntimeRecommends}) if $self->meta2;
 	$self->output_main_body('TestRequires', $self->{TestRequires});
 	$self->output_main_body('TestSuggests', $self->{TestSuggests});
 	$self->output_main_body('Close', {});
-	$self->output_main_body('DevelopRequires', $self->{DevelopRequires})
-		if $self->meta2;
+	$self->output_main_body('DevelopRequires', $self->{DevelopRequires}) if $self->meta2;
 
 	$self->output_footer();
 
@@ -298,7 +296,7 @@ sub _find_makefile_requires {
 	}
 
 	$self->_process_found_modules('RuntimeRequires', \@modules,
-		'Perl::PrereqScanner');
+		'Perl::PrereqScanner', 'RuntimeRequires',);
 	return;
 }
 
@@ -354,15 +352,15 @@ sub _find_makefile_test_requires {
 	if (scalar @modules > 0) {
 		if ($self->xtest) {
 			$self->_process_found_modules($phase_relationship, \@modules,
-				'Perl::PrereqScanner')
+				'Perl::PrereqScanner', $phase_relationship,)
 				if $self->meta2;
 			$self->_process_found_modules('DevelopRequires', \@modules,
-				'Perl::PrereqScanner')
+				'Perl::PrereqScanner', 'DevelopRequires',)
 				if not $self->meta2;
 		}
 		else {
 			$self->_process_found_modules('TestRequires', \@modules,
-				'Perl::PrereqScanner');
+				'Perl::PrereqScanner', 'TestRequires',);
 		}
 
 	}
@@ -379,6 +377,7 @@ sub _process_found_modules {
 	my $require_type  = shift;
 	my $modules_ref   = shift;
 	my $extra_scanner = shift || 'none';
+	my $pr_location = shift || 'none';
 
 	foreach my $module (@{$modules_ref}) {
 
@@ -434,7 +433,7 @@ sub _process_found_modules {
 		push @{$self->{modules}{$module}{infiles}},
 			[
 			$self->looking_infile(), $self->{found_version}{$module} || 0,
-			$extra_scanner
+			$extra_scanner, $pr_location,
 			];
 
 		# don't process already found modules
@@ -531,6 +530,9 @@ sub _in_corelist {
 	return 0;
 }
 
+
+=begin  BlockComment  # BlockCommentNo_1
+
 #######
 # remove_noisy_children
 #######
@@ -616,6 +618,14 @@ sub remove_noisy_children {
 	return;
 }
 
+=end    BlockComment  # BlockCommentNo_1
+
+=cut
+
+
+
+=begin  BlockComment  # BlockCommentNo_3
+
 #######
 # remove_twins
 #######
@@ -694,6 +704,11 @@ sub remove_twins {
 	}
 	return;
 }
+
+=end    BlockComment  # BlockCommentNo_3
+
+=cut
+
 
 #######
 # _check_mojo_core
@@ -838,6 +853,9 @@ sub mod_in_dist {
 	return;
 }
 
+
+=begin  BlockComment  # BlockCommentNo_2
+
 #######
 # composed method degree of separation
 # parent A::B - child A::B::C
@@ -856,6 +874,11 @@ sub degree_separation {
 	# switch around for a positive number
 	return $child_score - $parent_score;
 }
+
+=end    BlockComment  # BlockCommentNo_2
+
+=cut
+
 
 
 no Moo;
