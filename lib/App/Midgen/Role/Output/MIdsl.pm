@@ -73,7 +73,10 @@ sub body_dsl {
 			printf "%s %-*s %s %s\n", lc $title, $pm_length, $module_name,
 				$required_ref->{$module_name}, colored('if can_xs', 'bright_blue');
 		}
-
+		elsif ($module_name eq 'MRO::Compat') {
+			printf "%s %-*s %s %s\n", lc $title, $pm_length, $module_name,
+				$required_ref->{$module_name}, colored('if $] < 5.009005', 'bright_blue');
+		}
 		else {
 			printf "%s %-*s %s\n", lc $title, $pm_length, $module_name,
 				$required_ref->{$module_name};

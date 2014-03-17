@@ -26,7 +26,9 @@ sub header_mi {
 	my $package_name = shift || NONE;
 	my $mi_ver       = shift || NONE;
 
-	print "\nuse inc::Module::Install::DSL "
+	print "\nuse strict;\n";
+	print "use warnings;\n";
+	print "use inc::Module::Install "
 		. colored($mi_ver, 'yellow') . ";\n";
 
 	if ($package_name ne NONE) {
@@ -74,6 +76,11 @@ sub body_mi {
 			my $sq_key = "'$module_name'";
 			printf "%s %-*s => '%s' %s;\n", lc $title, $pm_length + 2, $sq_key,
 				$required_ref->{$module_name}, colored('if can_xs', 'bright_blue');
+		}
+		elsif ($module_name eq 'MRO::Compat') {
+			my $sq_key = "'$module_name'";
+			printf "%s %-*s => '%s' %s;\n", lc $title, $pm_length + 2, $sq_key,
+				$required_ref->{$module_name}, colored('if $] < 5.009005', 'bright_blue');
 		}
 		else {
 			my $sq_key = "'$module_name'";
