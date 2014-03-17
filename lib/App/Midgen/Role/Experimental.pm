@@ -7,7 +7,7 @@ use constant {THREE => 3,};
 
 use Types::Standard qw( Bool );
 use Moo::Role;
-requires qw( ppi_document debug );
+#requires qw( debug );
 
 use Try::Tiny;
 use Data::Printer {caller_info => 1, colored => 1,};
@@ -176,7 +176,7 @@ sub remove_twins {
 					}
 				}
 
-				#Check for vailed parent
+				#Check for valid parent
 				my $version;
 
 				$version = $self->get_module_version($dum_parient);
