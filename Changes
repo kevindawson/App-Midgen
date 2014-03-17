@@ -1,5 +1,11 @@
 Revision history for App-Midgen
 
+0.31_01 2014-03-17
+ - Add phase-requirments to infiles data store
+ - Add pmv mro catch
+ - Add catch for MRO::Compat tidy up
+ - Retain the search phase-relationship for some more huristics
+
 0.30 2014-03-12
  - bump to 0.30 and out
 
