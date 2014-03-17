@@ -153,15 +153,23 @@ sub xtests_test_requires {
 	if (scalar @modules > 0) {
 
 		if ($self->meta2) {
-			$self->_process_found_modules($phase_relationship, \@modules, __PACKAGE__, $phase_relationship, );
+			$self->_process_found_modules($phase_relationship, \@modules,
+				__PACKAGE__, $phase_relationship,);
 		}
 		else {
-			$self->_process_found_modules('TestSuggests', \@modules, __PACKAGE__, 'TestSuggests', ) if not $self->xtest;
-			$self->_process_found_modules('DevelopRequires', \@modules,
-				__PACKAGE__, 'DevelopRequires',) if $self->xtest;
+			$self->_process_found_modules($phase_relationship, \@modules,
+				__PACKAGE__, $phase_relationship,)
+				if ($phase_relationship eq 'RuntimeRequires')
+				or ($phase_relationship eq 'TestRequires');
 
+			$self->_process_found_modules('DevelopRequires', \@modules,
+				__PACKAGE__, 'DevelopRequires')
+				if ($phase_relationship eq 'DevelopRequires')
+				or ($phase_relationship eq 'RuntimeRecommends')
+				or ($phase_relationship eq 'TestSuggests');
 		}
 	}
+
 	return;
 }
 

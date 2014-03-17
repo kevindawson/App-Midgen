@@ -4,13 +4,14 @@ use constant {BLANK => q{ }, TRUE => 1, FALSE => 0, NONE => q{}, TWO => 2,
 	THREE => 3,};
 
 use Moo::Role;
-requires qw( ppi_document debug format xtest _process_found_modules develop meta2 );
+requires
+	qw( ppi_document debug format xtest _process_found_modules develop meta2 );
 
 our $VERSION = '0.30';
-$VERSION = eval $VERSION; ## no critic
+$VERSION = eval $VERSION;    ## no critic
 
 use PPI;
-use Data::Printer;    # caller_info => 1;
+use Data::Printer;           # caller_info => 1;
 use Try::Tiny;
 use Tie::Static qw(static);
 
@@ -79,7 +80,7 @@ sub xtests_use_module {
 						)
 					{
 
-						for ( 0..$#{$chunk->{children}}) {
+						for (0 .. $#{$chunk->{children}}) {
 
 							# find all ppi_sl
 							if ($chunk->{children}[$_]->isa('PPI::Structure::List')) {
@@ -154,7 +155,7 @@ sub xtests_use_module {
 					)
 					)
 				{
-					for ( 0..$#{$chunk->{children}}) {
+					for (0 .. $#{$chunk->{children}}) {
 
 						# find all ppi_sl
 						if ($chunk->{children}[$_]->isa('PPI::Structure::List')) {
@@ -162,7 +163,8 @@ sub xtests_use_module {
 							my $ppi_sl = $chunk->{children}[$_]
 								if $chunk->{children}[$_]->isa('PPI::Structure::List');
 
-							print "Option 2: my \$q = use_module( M::N )...\n" if $self->debug;
+							print "Option 2: my \$q = use_module( M::N )...\n"
+								if $self->debug;
 							$self->_module_names_ppi_sl(\@modules, $ppi_sl);
 
 						}
@@ -237,7 +239,7 @@ sub xtests_use_module {
 							)
 							)
 						{
-							for ( 0..$#{$chunk->{children}}) {
+							for (0 .. $#{$chunk->{children}}) {
 
 								# find all ppi_sl
 								if ($chunk->{children}[$_]->isa('PPI::Structure::List')) {
@@ -245,7 +247,8 @@ sub xtests_use_module {
 									my $ppi_sl = $chunk->{children}[$_]
 										if $chunk->{children}[$_]->isa('PPI::Structure::List');
 
-									print "Option 3: \$q = use_module( M::N )...\n" if $self->debug;
+									print "Option 3: \$q = use_module( M::N )...\n"
+										if $self->debug;
 									$self->_module_names_ppi_sl(\@modules, $ppi_sl);
 								}
 							}
@@ -331,13 +334,14 @@ sub xtests_use_module {
 					)
 					)
 				{
-					for ( 0..$#{$chunk->{children}}) {
+					for (0 .. $#{$chunk->{children}}) {
 
 						# find all ppi_sl
 						if ($chunk->{children}[$_]->isa('PPI::Structure::List')) {
 							my $ppi_sl = $chunk->{children}[$_]
 								if $chunk->{children}[$_]->isa('PPI::Structure::List');
-							print "Option 4: return use_module( M::N )...\n" if $self->debug;
+							print "Option 4: return use_module( M::N )...\n"
+								if $self->debug;
 							$self->_module_names_ppi_sl(\@modules, $ppi_sl);
 
 						}
@@ -347,21 +351,31 @@ sub xtests_use_module {
 		}
 	};
 
-	p @modules if $self->debug;
+	p @modules         if $self->debug;
 	p @version_strings if $self->debug;
 
 	# if we found a module, process it with the correct catogery
-	if (scalar @modules > 0) {
-			if ($self->meta2) {
-				$self->_process_found_modules($phase_relationship, \@modules, __PACKAGE__, $phase_relationship,);
-			}
-			else {
-			$self->_process_found_modules('TestSuggests', \@modules, __PACKAGE__,'TestSuggests',) if $self->xtest;
-			$self->_process_found_modules('RuntimeRequires', \@modules,
-				__PACKAGE__, 'RuntimeRequires',) if not $self->xtest;
 
-			}
+	if (scalar @modules > 0) {
+
+		if ($self->meta2) {
+			$self->_process_found_modules($phase_relationship, \@modules,
+				__PACKAGE__, $phase_relationship,);
+		}
+		else {
+			$self->_process_found_modules($phase_relationship, \@modules,
+				__PACKAGE__, $phase_relationship,)
+				if ($phase_relationship eq 'RuntimeRequires')
+				or ($phase_relationship eq 'TestRequires');
+
+			$self->_process_found_modules('DevelopRequires', \@modules,
+				__PACKAGE__, 'DevelopRequires')
+				if ($phase_relationship eq 'DevelopRequires')
+				or ($phase_relationship eq 'RuntimeRecommends')
+				or ($phase_relationship eq 'TestSuggests');
+		}
 	}
+
 	return;
 }
 
@@ -410,9 +424,9 @@ sub _module_names_ppi_sl {
 
 	if ($ppi_sl->isa('PPI::Structure::List')) {
 
-		static \ my $previous_module;
+		static \my $previous_module;
 		foreach my $ppi_se (@{$ppi_sl->{children}}) {
-			for ( 0..$#{$ppi_se->{children}}) {
+			for (0 .. $#{$ppi_se->{children}}) {
 
 				if ( $ppi_se->{children}[$_]->isa('PPI::Token::Quote::Single')
 					|| $ppi_se->{children}[$_]->isa('PPI::Token::Quote::Double'))
@@ -435,12 +449,13 @@ sub _module_names_ppi_sl {
 					$version_string =~ s/(?:['|"])//g;
 					next if $version_string !~ m/\A[\d|v]/;
 
-					$version_string = version::is_lax($version_string) ? $version_string : 0;
+					$version_string
+						= version::is_lax($version_string) ? $version_string : 0;
 
 					warn 'found version_string - ' . $version_string if $self->debug;
 					try {
-						$self->{found_version}{$previous_module}
-							= $version_string if $previous_module;
+						$self->{found_version}{$previous_module} = $version_string
+							if $previous_module;
 						p $version_string if $self->debug;
 						$previous_module = undef;
 					};

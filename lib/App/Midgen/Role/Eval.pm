@@ -199,10 +199,19 @@ sub xtests_eval {
 				__PACKAGE__, $phase_relationship,);
 		}
 		else {
-			$self->_process_found_modules('TestSuggests', \@modules, __PACKAGE__, 'TestSuggests',) if $self->xtest;
-			$self->_process_found_modules('RuntimeRequires', \@modules,	__PACKAGE__, 'RuntimeRequires',) if not $self->xtest;
+			$self->_process_found_modules($phase_relationship, \@modules,
+				__PACKAGE__, $phase_relationship,)
+				if ($phase_relationship eq 'RuntimeRequires')
+				or ($phase_relationship eq 'TestRequires');
+
+			$self->_process_found_modules('DevelopRequires', \@modules,
+				__PACKAGE__, 'DevelopRequires')
+				if ($phase_relationship eq 'DevelopRequires')
+				or ($phase_relationship eq 'RuntimeRecommends')
+				or ($phase_relationship eq 'TestSuggests');
 		}
 	}
+
 	return;
 }
 
