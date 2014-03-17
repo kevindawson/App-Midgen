@@ -1,4 +1,4 @@
-use inc::Module::Install::DSL 1.08;
+use inc::Module::Install::DSL 1.06;
 
 all_from lib/App/Midgen.pm
 requires_from lib/App/Midgen.pm
