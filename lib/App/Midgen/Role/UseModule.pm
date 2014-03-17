@@ -7,7 +7,7 @@ use Moo::Role;
 requires
 	qw( ppi_document debug format xtest _process_found_modules develop meta2 );
 
-our $VERSION = '0.30';
+our $VERSION = '0.31_01';
 $VERSION = eval $VERSION;    ## no critic
 
 use PPI;
@@ -485,7 +485,7 @@ includes, used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.30
+version: 0.31_01
 
 
 =head1 METHODS
