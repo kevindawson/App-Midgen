@@ -57,7 +57,7 @@ sub run {
 		$self->first_package_name();
 	};
 
-	$self->find_required_modules();
+	$self->find_runtime_modules();
 
 #	p $self->{modules} if ($self->verbose == TWO);
 
@@ -180,9 +180,9 @@ sub _find_package_names {
 
 
 #######
-# find_required_modules
+# find_runtime_modules
 #######
-sub find_required_modules {
+sub find_runtime_modules {
 	my $self = shift;
 
 	my @posiable_directories_to_search
@@ -198,51 +198,16 @@ sub find_required_modules {
 	p @directories_to_search if $self->debug;
 
 	try {
-		find(sub { _find_makefile_requires($self); }, @directories_to_search);
+		find(sub { _find_runtime_requirments($self); }, @directories_to_search);
 	};
 
 	return;
 
 }
 #######
-# find_required_modules
+# _find_runtime_requirments
 #######
-sub find_required_test_modules {
-	my $self = shift;
-
-	# By default we shell only check t\ (to xt\ or not?)
-	my @posiable_directories_to_search;
-	if (not $self->experimental) {
-		@posiable_directories_to_search
-			= map { File::Spec->catfile($Working_Dir, $_) } qw( t );
-	}
-	else {
-		@posiable_directories_to_search
-			= map { File::Spec->catfile($Working_Dir, $_) } qw( t xt );
-	}
-
-	my @directories_to_search = ();
-	foreach my $directory (@posiable_directories_to_search) {
-		if (defined -d $directory) {
-			push @directories_to_search, $directory;
-		}
-	}
-
-	try {
-		foreach my $directorie (@directories_to_search) {
-			find(sub { _find_makefile_test_requires($self, $directorie); },
-				$directorie);
-		}
-	};
-
-	return;
-
-}
-
-#######
-# _find_makefile_requires
-#######
-sub _find_makefile_requires {
+sub _find_runtime_requirments {
 	my $self     = shift;
 	my $filename = $_;
 
@@ -253,7 +218,7 @@ sub _find_makefile_requires {
 	$self->_set_looking_infile(File::Spec->catfile($relative_dir, $filename));
 	$self->_set_ppi_document(PPI::Document->new($filename));
 
-	$self->min_version();
+	$self->min_version(	$self->looking_infile );
 
 	# do extra test early check for use_module before hand
 	$self->xtests_use_module('RuntimeRecommends');
@@ -261,6 +226,7 @@ sub _find_makefile_requires {
 	# ToDo add eval/try here -> prereqs { runtime { suggests or recommends {...}}}
 	$self->xtests_eval('RuntimeRecommends');
 
+	# normal pps -> RuntimeRequires
 	my $prereqs = $self->scanner->scan_ppi_document($self->ppi_document);
 	my @modules = $prereqs->required_modules;
 
@@ -301,6 +267,42 @@ sub _find_makefile_requires {
 
 
 #######
+# find_required_modules
+#######
+sub find_required_test_modules {
+	my $self = shift;
+
+	# By default we shell only check t\ (to xt\ or not?)
+	my @posiable_directories_to_search;
+	if (not $self->experimental) {
+		@posiable_directories_to_search
+			= map { File::Spec->catfile($Working_Dir, $_) } qw( t );
+	}
+	else {
+		@posiable_directories_to_search
+			= map { File::Spec->catfile($Working_Dir, $_) } qw( t xt );
+	}
+
+	my @directories_to_search = ();
+	foreach my $directory (@posiable_directories_to_search) {
+		if (defined -d $directory) {
+			push @directories_to_search, $directory;
+		}
+	}
+
+	try {
+		foreach my $directorie (@directories_to_search) {
+			find(sub { _find_makefile_test_requires($self, $directorie); },
+				$directorie);
+		}
+	};
+
+	return;
+
+}
+
+
+#######
 # _find_makefile_test_requires
 #######
 sub _find_makefile_test_requires {
@@ -322,7 +324,8 @@ sub _find_makefile_test_requires {
 	# Load a Document from a file and check use and require contents
 	$self->_set_ppi_document(PPI::Document->new($filename));
 
-	$self->min_version() if $directorie !~ m/xt$/;
+	# don't scan xt/
+	$self->min_version($filename) if $directorie !~ m/xt$/;
 
 
 	# do extra test early check for Test::Requires before hand
@@ -749,9 +752,10 @@ For more info and sample output see L<wiki|https://github.com/kevindawson/App-Mi
 
 =over 4
 
-=item * find_required_modules
+=item * find_runtime_modules
 
-Search for Includes B<use> and B<require> in package modules
+Search for C<Prereqs RuntimeRecommends> and C<Prereqs RuntimeRequires> in
+package modules
 
 =item * find_required_test_modules
 
