@@ -14,16 +14,21 @@ use Try::Tiny;
 use Term::ANSIColor qw( :constants colored colorstrip );
 use version;
 
-#use Data::Printer {caller_info => 1, colored => 1,};
+has 'mro_skip' => (
+	is => 'rwp',
+	isa => Bool,
+	lazy => 1,
+	default => sub { 0; },
+);
 
-has 'mro_skip' =>
-	(is => 'rwp', isa => Bool, lazy => 1, default => sub { 0; },);
 
 #######
-# find min perl version
+# find min perl version - pmv
 ######
 sub min_version {
-	my $self = shift;
+	my $self     = shift;
+	my $filename = shift;
+	$filename =~ s{^/}{};
 
 	my $dist_min_ver = $App::Midgen::Min_Version;
 	my $object;
@@ -59,24 +64,28 @@ sub min_version {
 
 	try {
 		my $blame = $object->minimum_syntax_reason->element->content;
-#		$blame =~ s/\A[require|use]\s+//;
-#		$blame =~ s/;$//;
-		if ($blame =~ m/mro/) {
+
+		if ($blame =~ m/\bmro[\s|;]/) {
 			$self->_set_mro_skip(TRUE);
-			print BRIGHT_BLACK;
-			print 'Info: PMV blame = ' . $blame . ' -> 5.010 #'
-				. 'suggest manual inspection or -x to skip';
-			print CLEAR. "\n";
+			print BRIGHT_BLACK
+				. 'Info: PMV blame = '
+				. WHITE
+				. $blame
+				. BRIGHT_BLACK
+				. ' -> 5.010 in '
+				. $filename
+				. ' # -x to skip'
+				. CLEAR . "\n";
 		}
 	};
 
 	if ($self->{mro_skip} && $self->{experimental}) {
-		print BRIGHT_BLACK;
-		print 'Warning: PMV blame = '
+		print BRIGHT_BLACK
+			. 'Warning: PMV blame = '
 			. RED . 'mro'
 			. BRIGHT_BLACK . ' -> '
-			. 'skipping this files pmv, suggest -v for file info';
-		print CLEAR. "\n";
+			. 'skipping pmv for this file ^^'
+			. CLEAR . "\n";
 		$self->_set_mro_skip(FALSE);
 		return;
 	}
