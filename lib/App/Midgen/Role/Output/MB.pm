@@ -7,7 +7,7 @@ use Moo::Role;
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.30';
+our $VERSION = '0.31_01';
 $VERSION = eval $VERSION;    ## no critic
 
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
@@ -50,9 +50,10 @@ sub body_mb {
 
 	$title =~ s/^Runtime//;
 	$title =~ s/^TestSuggests/recommends/;
+	$title =~ s/^DevelopRequires/recommends/;
 	$title =~ s/^Test/test_/;
 
-	print q{"} . $title . '" => {' . "\n";
+	print q{"} . lc $title . '" => {' . "\n";
 
 	foreach my $module_name (sort keys %{$required_ref}) {
 
@@ -104,7 +105,7 @@ used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.30
+version: 0.31_01
 
 =head1 DESCRIPTION
 

@@ -8,7 +8,7 @@ requires qw( no_index verbose );
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.30';
+our $VERSION = '0.31_01';
 $VERSION = eval $VERSION;    ## no critic
 
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
@@ -57,8 +57,10 @@ sub body_dsl {
 			$pm_length = length $module_name;
 		}
 	}
+
 	$title =~ s/^Runtime//;
 	$title =~ s/^TestSuggests/recommends/;
+	$title =~ s/^DevelopRequires/recommends/;
 	$title =~ s/^Test/test_/;
 
 	foreach my $module_name (sort keys %{$required_ref}) {
@@ -71,7 +73,10 @@ sub body_dsl {
 			printf "%s %-*s %s %s\n", lc $title, $pm_length, $module_name,
 				$required_ref->{$module_name}, colored('if can_xs', 'bright_blue');
 		}
-
+		elsif ($module_name eq 'MRO::Compat') {
+			printf "%s %-*s %s %s\n", lc $title, $pm_length, $module_name,
+				$required_ref->{$module_name}, colored('if $] < 5.009005', 'bright_blue');
+		}
 		else {
 			printf "%s %-*s %s\n", lc $title, $pm_length, $module_name,
 				$required_ref->{$module_name};
@@ -130,7 +135,7 @@ used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.30
+version: 0.31_01
 
 =head1 DESCRIPTION
 

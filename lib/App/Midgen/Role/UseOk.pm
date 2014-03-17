@@ -8,7 +8,7 @@ requires qw( ppi_document debug format xtest _process_found_modules develop meta
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.30';
+our $VERSION = '0.31_01';
 $VERSION = eval $VERSION; ## no critic
 
 use PPI;
@@ -126,13 +126,24 @@ sub xtests_use_ok {
 	# if we found a module, process it with the correct catogery
 	if (scalar @modules > 0) {
 
-		if ($self->xtest) {
-			$self->_process_found_modules('DevelopRequires', \@modules, __PACKAGE__ );
+		if ($self->meta2) {
+			$self->_process_found_modules($phase_relationship, \@modules,
+				__PACKAGE__, $phase_relationship,);
 		}
 		else {
-			$self->_process_found_modules('TestRequires', \@modules, __PACKAGE__ );
+			$self->_process_found_modules($phase_relationship, \@modules,
+				__PACKAGE__, $phase_relationship,)
+				if ($phase_relationship eq 'RuntimeRequires')
+				or ($phase_relationship eq 'TestRequires');
+
+			$self->_process_found_modules('DevelopRequires', \@modules,
+				__PACKAGE__, $phase_relationship,)
+				if ($phase_relationship eq 'DevelopRequires')
+				or ($phase_relationship eq 'RuntimeRecommends')
+				or ($phase_relationship eq 'TestSuggests');
 		}
 	}
+
 	return;
 }
 
@@ -153,7 +164,7 @@ for methods in use_ok in BEGIN blocks, used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.30
+version: 0.31_01
 
 =head1 METHODS
 

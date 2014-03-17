@@ -16,12 +16,13 @@ with qw(
 	App::Midgen::Role::FindMinVersion
 	App::Midgen::Role::Output
 	App::Midgen::Role::UseModule
+	App::Midgen::Role::Experimental
 );
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 use version;
-our $VERSION = '0.30';
+our $VERSION = '0.31_01';
 $VERSION = eval $VERSION;    ## no critic
 
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
@@ -31,7 +32,6 @@ use Cwd qw(getcwd);
 use Data::Printer {caller_info => 1, colored => 1,};
 use File::Find qw(find);
 use File::Spec;
-use List::MoreUtils qw(firstidx);
 use MetaCPAN::API;
 use Module::CoreList;
 use PPI;
@@ -57,11 +57,9 @@ sub run {
 		$self->first_package_name();
 	};
 
-	$self->find_required_modules();
-
-#	p $self->{modules} if ($self->verbose == TWO);
-
-	$self->find_required_test_modules();
+	$self->find_runtime_modules();
+	$self->find_test_modules();
+	$self->find_develop_modules() if $self->experimental;
 
 
 	# Now we have switched to MetaCPAN-Api we can hunt for noisy children in tests
@@ -95,14 +93,11 @@ sub run {
 	$self->output_header();
 
 	$self->output_main_body('RuntimeRequires',   $self->{RuntimeRequires});
-	$self->output_main_body('RuntimeRecommends', $self->{RuntimeRecommends})
-		if $self->meta2;
+	$self->output_main_body('RuntimeRecommends', $self->{RuntimeRecommends});
 	$self->output_main_body('TestRequires', $self->{TestRequires});
 	$self->output_main_body('TestSuggests', $self->{TestSuggests});
 	$self->output_main_body('Close', {});
-	$self->output_main_body('DevelopRequires', $self->{DevelopRequires})
-		if $self->meta2;
-
+	$self->output_main_body('DevelopRequires', $self->{DevelopRequires});
 	$self->output_footer();
 
 	p $self->{modules} if ($self->verbose == TWO);
@@ -183,9 +178,9 @@ sub _find_package_names {
 
 
 #######
-# find_required_modules
+# find_runtime_modules
 #######
-sub find_required_modules {
+sub find_runtime_modules {
 	my $self = shift;
 
 	my @posiable_directories_to_search
@@ -201,51 +196,16 @@ sub find_required_modules {
 	p @directories_to_search if $self->debug;
 
 	try {
-		find(sub { _find_makefile_requires($self); }, @directories_to_search);
+		find(sub { _find_runtime_requirments($self); }, @directories_to_search);
 	};
 
 	return;
 
 }
 #######
-# find_required_modules
+# _find_runtime_requirments
 #######
-sub find_required_test_modules {
-	my $self = shift;
-
-	# By default we shell only check t\ (to xt\ or not?)
-	my @posiable_directories_to_search;
-	if (not $self->experimental) {
-		@posiable_directories_to_search
-			= map { File::Spec->catfile($Working_Dir, $_) } qw( t );
-	}
-	else {
-		@posiable_directories_to_search
-			= map { File::Spec->catfile($Working_Dir, $_) } qw( t xt );
-	}
-
-	my @directories_to_search = ();
-	foreach my $directory (@posiable_directories_to_search) {
-		if (defined -d $directory) {
-			push @directories_to_search, $directory;
-		}
-	}
-
-	try {
-		foreach my $directorie (@directories_to_search) {
-			find(sub { _find_makefile_test_requires($self, $directorie); },
-				$directorie);
-		}
-	};
-
-	return;
-
-}
-
-#######
-# _find_makefile_requires
-#######
-sub _find_makefile_requires {
+sub _find_runtime_requirments {
 	my $self     = shift;
 	my $filename = $_;
 
@@ -256,7 +216,7 @@ sub _find_makefile_requires {
 	$self->_set_looking_infile(File::Spec->catfile($relative_dir, $filename));
 	$self->_set_ppi_document(PPI::Document->new($filename));
 
-	$self->min_version();
+	$self->min_version(	$self->looking_infile );
 
 	# do extra test early check for use_module before hand
 	$self->xtests_use_module('RuntimeRecommends');
@@ -264,6 +224,7 @@ sub _find_makefile_requires {
 	# ToDo add eval/try here -> prereqs { runtime { suggests or recommends {...}}}
 	$self->xtests_eval('RuntimeRecommends');
 
+	# normal pps -> RuntimeRequires
 	my $prereqs = $self->scanner->scan_ppi_document($self->ppi_document);
 	my @modules = $prereqs->required_modules;
 
@@ -298,15 +259,75 @@ sub _find_makefile_requires {
 	}
 
 	$self->_process_found_modules('RuntimeRequires', \@modules,
-		'Perl::PrereqScanner');
+		'Perl::PrereqScanner', 'RuntimeRequires',);
 	return;
 }
 
 
 #######
-# _find_makefile_test_requires
+# find_test_modules
 #######
-sub _find_makefile_test_requires {
+sub find_test_modules {
+	my $self = shift;
+
+	# By default we shell only check t\ (to xt\ or not?)
+#	my @posiable_directories_to_search;
+#	if (not $self->experimental) {
+#		@posiable_directories_to_search
+#			= map { File::Spec->catfile($Working_Dir, $_) } qw( t );
+#	}
+#	else {
+	my @posiable_directories_to_search = map { File::Spec->catfile($Working_Dir, $_) } qw( t );
+#	}
+
+	my @directories_to_search = ();
+	foreach my $directory (@posiable_directories_to_search) {
+		if (defined -d $directory) {
+			push @directories_to_search, $directory;
+		}
+	}
+
+	try {
+		foreach my $directorie (@directories_to_search) {
+			find(sub { _find_test_develop_requirments($self, $directorie); },
+				$directorie);
+		}
+	};
+
+	return;
+
+}
+#######
+# find_develop_modules
+#######
+sub find_develop_modules {
+	my $self = shift;
+
+	my @posiable_directories_to_search = map { File::Spec->catfile($Working_Dir, $_) } qw( xt );
+
+	my @directories_to_search = ();
+	foreach my $directory (@posiable_directories_to_search) {
+		if (defined -d $directory) {
+			push @directories_to_search, $directory;
+		}
+	}
+
+	try {
+		foreach my $directorie (@directories_to_search) {
+			find(sub { _find_test_develop_requirments($self, $directorie); },
+				$directorie);
+		}
+	};
+
+	return;
+
+}
+
+
+#######
+# _find_test_develop_requirments 
+#######
+sub _find_test_develop_requirments {
 	my $self       = shift;
 	my $directorie = shift;
 	my $filename   = $_;
@@ -322,10 +343,12 @@ sub _find_makefile_test_requires {
 	$relative_dir =~ s/$Working_Dir//;
 	$self->_set_looking_infile(File::Spec->catfile($relative_dir, $filename));
 
-	$self->min_version() if not $self->experimental;
-
 	# Load a Document from a file and check use and require contents
 	$self->_set_ppi_document(PPI::Document->new($filename));
+
+	# don't scan xt/ for pmv
+	$self->min_version($filename) if $directorie !~ m/xt$/;
+
 
 	# do extra test early check for Test::Requires before hand
 	$self->xtests_test_requires($phase_relationship);
@@ -354,15 +377,15 @@ sub _find_makefile_test_requires {
 	if (scalar @modules > 0) {
 		if ($self->xtest) {
 			$self->_process_found_modules($phase_relationship, \@modules,
-				'Perl::PrereqScanner')
+				'Perl::PrereqScanner', $phase_relationship,)
 				if $self->meta2;
 			$self->_process_found_modules('DevelopRequires', \@modules,
-				'Perl::PrereqScanner')
+				'Perl::PrereqScanner', 'DevelopRequires',)
 				if not $self->meta2;
 		}
 		else {
 			$self->_process_found_modules('TestRequires', \@modules,
-				'Perl::PrereqScanner');
+				'Perl::PrereqScanner', 'TestRequires',);
 		}
 
 	}
@@ -379,6 +402,7 @@ sub _process_found_modules {
 	my $require_type  = shift;
 	my $modules_ref   = shift;
 	my $extra_scanner = shift || 'none';
+	my $pr_location = shift || 'none';
 
 	foreach my $module (@{$modules_ref}) {
 
@@ -408,7 +432,11 @@ sub _process_found_modules {
 				# don't include our own test packages here
 				next;
 			}
+			elsif ($module =~ /^inc::Module::Install/sxm) {
 
+				# don't inc::Module::Install as it is really Module::Install
+				next;
+			}
 			elsif ($module =~ /Mojo/sxm) {
 				if ($self->experimental) {
 					if ($self->_check_mojo_core($module, $require_type)) {
@@ -434,7 +462,7 @@ sub _process_found_modules {
 		push @{$self->{modules}{$module}{infiles}},
 			[
 			$self->looking_infile(), $self->{found_version}{$module} || 0,
-			$extra_scanner
+			$extra_scanner, $pr_location,
 			];
 
 		# don't process already found modules
@@ -531,169 +559,6 @@ sub _in_corelist {
 	return 0;
 }
 
-#######
-# remove_noisy_children
-#######
-sub remove_noisy_children {
-	my $self = shift;
-	my $required_ref = shift || return;
-	my @sorted_modules;
-
-	foreach my $module_name (sort keys %{$required_ref}) {
-		push @sorted_modules, $module_name;
-	}
-
-	p @sorted_modules if $self->debug;
-
-	foreach my $parent_name (@sorted_modules) {
-		my $outer_index = firstidx { $_ eq $parent_name } @sorted_modules;
-
-		# inc so we don't end up with parent eq child
-		$outer_index++;
-		foreach my $inner_index ($outer_index .. $#sorted_modules) {
-			my $child_name = $sorted_modules[$inner_index];
-
-			# we just caught an undef
-			next if not defined $child_name;
-			if ($child_name =~ /^ $parent_name ::/x) {
-
-				my $valied_seperation = 1;
-
-				# as we only do this against -x, why not be extra vigilant
-				$valied_seperation = THREE
-					if $parent_name =~ /^Dist::Zilla|Moose|MooseX|Moo|Mouse/;
-
-				# Checking for one degree of separation
-				# ie A::B -> A::B::C is ok but A::B::C::D is not
-				if ($self->degree_separation($parent_name, $child_name)
-					<= $valied_seperation)
-				{
-
-					# Test for same version number
-					if (colorstrip($required_ref->{$parent_name}) eq
-						colorstrip($required_ref->{$child_name}))
-					{
-						if (not $self->quiet) {
-							if ($self->verbose) {
-								print BRIGHT_BLACK;
-								print 'delete miscreant noisy child '
-									. $child_name . ' => '
-									. $required_ref->{$child_name};
-								print CLEAR. "\n";
-							}
-						}
-						try {
-							delete $required_ref->{$child_name};
-							splice @sorted_modules, $inner_index, 1;
-
-							unless ($self->{modules}{$parent_name}) {
-								$self->{modules}{$parent_name}{prereqs} = 'expermental';
-								$self->{modules}{$parent_name}{version}
-									= $required_ref->{$parent_name};
-								$self->{modules}{$parent_name}{count} += 1;
-							}
-						};
-						p @sorted_modules if $self->debug;
-
-						# we need to redo as we just deleted a child
-						redo;
-
-					}
-					else {
-
-						# not my child so lets try the next one
-						next;
-					}
-				}
-			}
-			else {
-
-				# no more like the parent so lets start again
-				last;
-			}
-		}
-	}
-	return;
-}
-
-#######
-# remove_twins
-#######
-sub remove_twins {
-	my $self = shift;
-	my $required_ref = shift || return;
-	my @sorted_modules;
-	foreach my $module_name (sort keys %{$required_ref}) {
-		push @sorted_modules, $module_name;
-	}
-
-	p @sorted_modules if $self->debug;
-
-	# exit if only 1 Module found
-	return if $#sorted_modules == 0;
-
-	my $n = 0;
-	while ($sorted_modules[$n]) {
-
-		my $dum_name    = $sorted_modules[$n];
-		my $dum_parient = $dum_name;
-		$dum_parient =~ s/(::\w+)$//;
-
-		my $dee_parient;
-		my $dee_name;
-		if (($n + 1) <= $#sorted_modules) {
-			$n++;
-			$dee_name    = $sorted_modules[$n];
-			$dee_parient = $dee_name;
-			$dee_parient =~ s/(::\w+)$//;
-		}
-
-		# Checking for same patient and score
-		if ( $dum_parient eq $dee_parient
-			&& $self->degree_separation($dum_name, $dee_name) == 0)
-		{
-
-			# Test for same version number
-			if ($required_ref->{$sorted_modules[$n - 1]} eq
-				$required_ref->{$sorted_modules[$n]})
-			{
-				if (not $self->quiet) {
-					if ($self->verbose) {
-						print BRIGHT_BLACK;
-
-						# stdout - 'i have found twins';
-						print $dum_name . ' => '
-							. $required_ref->{$sorted_modules[$n - 1]};
-						print BRIGHT_BLACK ' <-twins-> '
-							. $dee_name . ' => '
-							. $required_ref->{$sorted_modules[$n]};
-						print CLEAR "\n";
-					}
-				}
-
-				#Check for vailed parent
-				my $version;
-
-				$version = $self->get_module_version($dum_parient);
-
-				if (version::is_lax($version)) {
-
-					#Check parent version against a twins version
-					if ($version eq $required_ref->{$sorted_modules[$n]}) {
-						print $dum_parient . ' -> '
-							. $version
-							. " is the parent of these twins\n"
-							if $self->verbose;
-						$required_ref->{$dum_parient} = $version;
-						$self->_set_found_twins(1);
-					}
-				}
-			}
-		}
-		$n++ if ($n == $#sorted_modules);
-	}
-	return;
-}
 
 #######
 # _check_mojo_core
@@ -838,25 +703,6 @@ sub mod_in_dist {
 	return;
 }
 
-#######
-# composed method degree of separation
-# parent A::B - child A::B::C
-#######
-sub degree_separation {
-	my $self   = shift;
-	my $parent = shift;
-	my $child  = shift;
-
-	# Use of implicit split to @_ is deprecated
-	my $parent_score = @{[split /::/, $parent]};
-	my $child_score  = @{[split /::/, $child]};
-	warn 'parent - ' . $parent . ' score - ' . $parent_score if $self->debug;
-	warn 'child - ' . $child . ' score - ' . $child_score    if $self->debug;
-
-	# switch around for a positive number
-	return $child_score - $parent_score;
-}
-
 
 no Moo;
 
@@ -874,7 +720,7 @@ App::Midgen - Check B<RuntimeRequires> & B<TestRequires> of your package for CPA
 
 =head1 VERSION
 
-This document describes App::Midgen version: 0.30
+This document describes App::Midgen version: 0.31_01
 
 =head1 SYNOPSIS
 
@@ -928,18 +774,20 @@ For more info and sample output see L<wiki|https://github.com/kevindawson/App-Mi
 
 =over 4
 
-=item * degree_separation
+=item * find_runtime_modules
 
-now a separate Method, returns an integer.
+Search for C<Prereqs RuntimeRecommends> and C<Prereqs RuntimeRequires> in
+package modules C<script\>, C<bin\>, C<lib\>, C<share\> with B<UseModule>
+and B<Eval> followed by B<PPS>.
 
-=item * find_required_modules
+=item * find_test_modules
 
-Search for Includes B<use> and B<require> in package modules
+Search for C<Prereqs TestSuggests> and C<Prereqs TestRequire> in B<t\> scripts,
+with B<UseOk> and B<TestRequires> followed by B<PPS>.
 
-=item * find_required_test_modules
+=item * find_develop_modules
 
-Search for Includes B<use> and B<require> in test scripts,
-also B<use_ok>, I<plus some other patterns along the way.>
+Search for C<Prereqs DevelopRequire> in C<xt\> using all available scanners.
 
 =item * first_package_name
 
@@ -952,16 +800,6 @@ side affect of re-factoring, helps with code readability
 =item * mod_in_dist
 
 Check if module is in a distribution and use that version number, rather than 'undef'
-
-=item * remove_noisy_children
-
-Parent A::B has noisy Children A::B::C and A::B::D all with same version number.
-
-=item * remove_twins
-
-Twins E::F::G and E::F::H  have a parent E::F with same version number,
- so we add a parent E::F and re-test for noisy children,
- catching triplets along the way.
 
 =item * run
 

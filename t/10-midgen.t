@@ -17,7 +17,7 @@ BEGIN {
 ######
 
 my @subs = qw(
-	find_required_modules find_required_test_modules
+	find_runtime_modules find_required_test_modules
 	first_package_name remove_noisy_children run
 	remove_twins found_twins min_version mod_in_dist
 	numify get_module_version

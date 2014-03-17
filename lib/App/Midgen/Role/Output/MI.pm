@@ -8,7 +8,7 @@ requires qw( no_index verbose );
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.30';
+our $VERSION = '0.31_01';
 $VERSION = eval $VERSION;    ## no critic
 
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
@@ -26,7 +26,9 @@ sub header_mi {
 	my $package_name = shift || NONE;
 	my $mi_ver       = shift || NONE;
 
-	print "\nuse inc::Module::Install::DSL "
+	print "\nuse strict;\n";
+	print "use warnings;\n";
+	print "use inc::Module::Install "
 		. colored($mi_ver, 'yellow') . ";\n";
 
 	if ($package_name ne NONE) {
@@ -60,6 +62,7 @@ sub body_mi {
 	print "\n";
 	$title =~ s/^Runtime//;
 	$title =~ s/^TestSuggests/recommends/;
+	$title =~ s/^DevelopRequires/recommends/;
 	$title =~ s/^Test/test_/;
 
 	foreach my $module_name (sort keys %{$required_ref}) {
@@ -73,6 +76,11 @@ sub body_mi {
 			my $sq_key = "'$module_name'";
 			printf "%s %-*s => '%s' %s;\n", lc $title, $pm_length + 2, $sq_key,
 				$required_ref->{$module_name}, colored('if can_xs', 'bright_blue');
+		}
+		elsif ($module_name eq 'MRO::Compat') {
+			my $sq_key = "'$module_name'";
+			printf "%s %-*s => '%s' %s;\n", lc $title, $pm_length + 2, $sq_key,
+				$required_ref->{$module_name}, colored('if $] < 5.009005', 'bright_blue');
 		}
 		else {
 			my $sq_key = "'$module_name'";
@@ -147,7 +155,7 @@ used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.30
+version: 0.31_01
 
 =head1 DESCRIPTION
 
