@@ -6,7 +6,7 @@ use warnings FATAL => 'all';
 use English qw( -no_match_vars );
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Test::More tests => 24;
+use Test::More tests => 25;
 
 BEGIN {
 	use_ok( 'App::Midgen' );
@@ -17,7 +17,7 @@ BEGIN {
 ######
 
 my @subs = qw(
-	find_runtime_modules find_required_test_modules
+	find_runtime_modules find_test_modules find_develop_modules
 	first_package_name remove_noisy_children run
 	remove_twins found_twins min_version mod_in_dist
 	numify get_module_version
