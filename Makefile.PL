@@ -1,4 +1,4 @@
-use inc::Module::Install::DSL 1.06;
+use inc::Module::Install::DSL 1.08;
 
 all_from lib/App/Midgen.pm
 requires_from lib/App/Midgen.pm
@@ -26,7 +26,7 @@ requires Term::ANSIColor            4.02
 requires Tie::Static                0.04
 requires Time::Stamp                1.3
 requires Try::Tiny                  0.19
-requires Type::Tiny                 0.038
+requires Type::Tiny                 0.04
 requires Types::Standard            0.038
 requires constant                   1.27
 # requires lib                        0.63
