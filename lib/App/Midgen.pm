@@ -58,10 +58,8 @@ sub run {
 	};
 
 	$self->find_runtime_modules();
-
-#	p $self->{modules} if ($self->verbose == TWO);
-
-	$self->find_required_test_modules();
+	$self->find_test_modules();
+	$self->find_develop_modules() if $self->experimental;
 
 
 	# Now we have switched to MetaCPAN-Api we can hunt for noisy children in tests
@@ -267,21 +265,20 @@ sub _find_runtime_requirments {
 
 
 #######
-# find_required_modules
+# find_test_modules
 #######
-sub find_required_test_modules {
+sub find_test_modules {
 	my $self = shift;
 
 	# By default we shell only check t\ (to xt\ or not?)
-	my @posiable_directories_to_search;
-	if (not $self->experimental) {
-		@posiable_directories_to_search
-			= map { File::Spec->catfile($Working_Dir, $_) } qw( t );
-	}
-	else {
-		@posiable_directories_to_search
-			= map { File::Spec->catfile($Working_Dir, $_) } qw( t xt );
-	}
+#	my @posiable_directories_to_search;
+#	if (not $self->experimental) {
+#		@posiable_directories_to_search
+#			= map { File::Spec->catfile($Working_Dir, $_) } qw( t );
+#	}
+#	else {
+	my @posiable_directories_to_search = map { File::Spec->catfile($Working_Dir, $_) } qw( t );
+#	}
 
 	my @directories_to_search = ();
 	foreach my $directory (@posiable_directories_to_search) {
@@ -292,7 +289,32 @@ sub find_required_test_modules {
 
 	try {
 		foreach my $directorie (@directories_to_search) {
-			find(sub { _find_makefile_test_requires($self, $directorie); },
+			find(sub { _find_test_develop_requirments($self, $directorie); },
+				$directorie);
+		}
+	};
+
+	return;
+
+}
+#######
+# find_develop_modules
+#######
+sub find_develop_modules {
+	my $self = shift;
+
+	my @posiable_directories_to_search = map { File::Spec->catfile($Working_Dir, $_) } qw( xt );
+
+	my @directories_to_search = ();
+	foreach my $directory (@posiable_directories_to_search) {
+		if (defined -d $directory) {
+			push @directories_to_search, $directory;
+		}
+	}
+
+	try {
+		foreach my $directorie (@directories_to_search) {
+			find(sub { _find_test_develop_requirments($self, $directorie); },
 				$directorie);
 		}
 	};
@@ -303,9 +325,9 @@ sub find_required_test_modules {
 
 
 #######
-# _find_makefile_test_requires
+# _find_test_develop_requirments 
 #######
-sub _find_makefile_test_requires {
+sub _find_test_develop_requirments {
 	my $self       = shift;
 	my $directorie = shift;
 	my $filename   = $_;
@@ -324,7 +346,7 @@ sub _find_makefile_test_requires {
 	# Load a Document from a file and check use and require contents
 	$self->_set_ppi_document(PPI::Document->new($filename));
 
-	# don't scan xt/
+	# don't scan xt/ for pmv
 	$self->min_version($filename) if $directorie !~ m/xt$/;
 
 
@@ -755,12 +777,17 @@ For more info and sample output see L<wiki|https://github.com/kevindawson/App-Mi
 =item * find_runtime_modules
 
 Search for C<Prereqs RuntimeRecommends> and C<Prereqs RuntimeRequires> in
-package modules
+package modules C<script\>, C<bin\>, C<lib\>, C<share\> with B<UseModule>
+and B<Eval> followed by B<PPS>.
 
-=item * find_required_test_modules
+=item * find_test_modules
 
-Search for Includes B<use> and B<require> in test scripts,
-also B<use_ok>, I<plus some other patterns along the way.>
+Search for C<Prereqs TestSuggests> and C<Prereqs TestRequire> in B<t\> scripts,
+with B<UseOk> and B<TestRequires> followed by B<PPS>.
+
+=item * find_develop_modules
+
+Search for C<Prereqs DevelopRequire> in C<xt\> using all available scanners.
 
 =item * first_package_name
 
