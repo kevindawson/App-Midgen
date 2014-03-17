@@ -1,17 +1,23 @@
 package App::Midgen::Role::FindMinVersion;
 
-use constant {TWO => 2,};
+use constant {TWO => 2, TRUE => 1, FALSE => 0,};
 
 use Types::Standard qw( Bool );
 use Moo::Role;
-requires qw( ppi_document debug );
+requires qw( ppi_document debug experimental verbose );
 
 our $VERSION = '0.30';
-$VERSION = eval $VERSION; ## no critic
+$VERSION = eval $VERSION;    ## no critic
 
 use Perl::MinimumVersion;
 use Try::Tiny;
+use Term::ANSIColor qw( :constants colored colorstrip );
 use version;
+
+#use Data::Printer {caller_info => 1, colored => 1,};
+
+has 'mro_skip' =>
+	(is => 'rwp', isa => Bool, lazy => 1, default => sub { 0; },);
 
 #######
 # find min perl version
@@ -51,15 +57,41 @@ sub min_version {
 			: version->parse($object->minimum_syntax_version);
 	};
 
-	print "min_version - $dist_min_ver\n" if ($self->verbose == TWO);
+	try {
+		my $blame = $object->minimum_syntax_reason->element->content;
+#		$blame =~ s/\A[require|use]\s+//;
+#		$blame =~ s/;$//;
+		if ($blame =~ m/mro/) {
+			$self->_set_mro_skip(TRUE);
+			print BRIGHT_BLACK;
+			print 'Info: PMV blame = ' . $blame . ' -> 5.010 #'
+				. 'suggest manual inspection or -x to skip';
+			print CLEAR. "\n";
+		}
+	};
 
-	$App::Midgen::Min_Version = version->parse($dist_min_ver)->numify;
+	if ($self->{mro_skip} && $self->{experimental}) {
+		print BRIGHT_BLACK;
+		print 'Warning: PMV blame = '
+			. RED . 'mro'
+			. BRIGHT_BLACK . ' -> '
+			. 'skipping this files pmv, suggest -v for file info';
+		print CLEAR. "\n";
+		$self->_set_mro_skip(FALSE);
+		return;
+	}
+	else {
+		print "min_version - $dist_min_ver\n" if ($self->{verbose} == TWO);
+		$App::Midgen::Min_Version = version->parse($dist_min_ver)->numify;
+	}
+
 	return;
 }
 
 no Moo::Role;
 
 1;
+
 
 __END__
 
