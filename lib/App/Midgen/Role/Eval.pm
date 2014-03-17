@@ -205,7 +205,7 @@ sub xtests_eval {
 				or ($phase_relationship eq 'TestRequires');
 
 			$self->_process_found_modules('DevelopRequires', \@modules,
-				__PACKAGE__, 'DevelopRequires')
+				__PACKAGE__, $phase_relationship,)
 				if ($phase_relationship eq 'DevelopRequires')
 				or ($phase_relationship eq 'RuntimeRecommends')
 				or ($phase_relationship eq 'TestSuggests');
