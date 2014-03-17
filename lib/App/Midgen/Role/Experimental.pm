@@ -240,8 +240,6 @@ Twins E::F::G and E::F::H  have a parent E::F with same version number,
 
 =back
 
-=over 4
-
 =head1 AUTHOR
 
 See L<App::Midgen>
