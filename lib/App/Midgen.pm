@@ -17,6 +17,7 @@ with qw(
 	App::Midgen::Role::Output
 	App::Midgen::Role::UseModule
 	App::Midgen::Role::Experimental
+	App::Midgen::Role::Heuristics
 );
 
 # Load time and dependencies negate execution time
@@ -61,6 +62,7 @@ sub run {
 	$self->find_test_modules();
 	$self->find_develop_modules() if $self->experimental;
 
+	$self->double_bubble($self->{RuntimeRequires}, $self->{RuntimeRecommends});
 
 	# Now we have switched to MetaCPAN-Api we can hunt for noisy children in tests
 	if ($self->experimental) {
