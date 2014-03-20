@@ -58,11 +58,14 @@ sub run {
 		$self->first_package_name();
 	};
 
+
 	$self->find_runtime_modules();
 	$self->find_test_modules();
 	$self->find_develop_modules() if $self->experimental;
 
-	$self->double_bubble($self->{RuntimeRequires}, $self->{RuntimeRecommends});
+	#now for some Heuristics :)
+	$self->recast_to_runtimerequires($self->{RuntimeRequires}, $self->{RuntimeRecommends});
+	$self->recast_to_testrequires($self->{TestRequires}, $self->{TestSuggests});
 
 	# Now we have switched to MetaCPAN-Api we can hunt for noisy children in tests
 	if ($self->experimental) {
@@ -93,12 +96,11 @@ sub run {
 
 	# display chosen output format
 	$self->output_header();
-
 	$self->output_main_body('RuntimeRequires',   $self->{RuntimeRequires});
-	$self->output_main_body('RuntimeRecommends', $self->{RuntimeRecommends});
+	$self->output_main_body('RuntimeRecommends', $self->{RuntimeRecommends}) if $self->{meta2};
 	$self->output_main_body('TestRequires', $self->{TestRequires});
-	$self->output_main_body('TestSuggests', $self->{TestSuggests});
-	$self->output_main_body('Close', {});
+	$self->output_main_body('TestSuggests', $self->{TestSuggests}) if $self->{meta2};
+	$self->output_main_body('Close', {}) if $self->{meta2};
 	$self->output_main_body('DevelopRequires', $self->{DevelopRequires});
 	$self->output_footer();
 
@@ -272,29 +274,27 @@ sub _find_runtime_requirments {
 sub find_test_modules {
 	my $self = shift;
 
-	# By default we shell only check t\ (to xt\ or not?)
-#	my @posiable_directories_to_search;
-#	if (not $self->experimental) {
-#		@posiable_directories_to_search
-#			= map { File::Spec->catfile($Working_Dir, $_) } qw( t );
+#	my @directories_to_search = ();
+#	foreach my $directory ( 't' ) {
+#		if (defined -d $directory) {
+#			push @directories_to_search, $directory;
+#		}
 #	}
-#	else {
-	my @posiable_directories_to_search = map { File::Spec->catfile($Working_Dir, $_) } qw( t );
-#	}
+#
+#	try {
+#		foreach my $directorie (@directories_to_search) {
+#			find(sub { _find_test_develop_requirments($self, $directorie); },
+#				$directorie);
+#		}
+#	};
+#
+	my $directory = 't';
+	if (defined -d $directory) {
 
-	my @directories_to_search = ();
-	foreach my $directory (@posiable_directories_to_search) {
-		if (defined -d $directory) {
-			push @directories_to_search, $directory;
-		}
+		find(sub { _find_test_develop_requirments($self, $directory); },
+			$directory);
+
 	}
-
-	try {
-		foreach my $directorie (@directories_to_search) {
-			find(sub { _find_test_develop_requirments($self, $directorie); },
-				$directorie);
-		}
-	};
 
 	return;
 
@@ -305,22 +305,28 @@ sub find_test_modules {
 sub find_develop_modules {
 	my $self = shift;
 
-	my @posiable_directories_to_search = map { File::Spec->catfile($Working_Dir, $_) } qw( xt );
+#	my @posiable_directories_to_search = map { File::Spec->catfile($Working_Dir, $_) } qw( xt );
+#
+#	my @directories_to_search = ();
+#	foreach my $directory (@posiable_directories_to_search) {
+#		if (defined -d $directory) {
+#			push @directories_to_search, $directory;
+#		}
+#	}
+#
+#	try {
+#		foreach my $directorie (@directories_to_search) {
+#			find(sub { _find_test_develop_requirments($self, $directorie); },
+#				$directorie);
+#		}
+#	};
+	my $directory = 'xt';
+	if (defined -d $directory) {
 
-	my @directories_to_search = ();
-	foreach my $directory (@posiable_directories_to_search) {
-		if (defined -d $directory) {
-			push @directories_to_search, $directory;
-		}
+		find(sub { _find_test_develop_requirments($self, $directory); },
+			$directory);
+
 	}
-
-	try {
-		foreach my $directorie (@directories_to_search) {
-			find(sub { _find_test_develop_requirments($self, $directorie); },
-				$directorie);
-		}
-	};
-
 	return;
 
 }

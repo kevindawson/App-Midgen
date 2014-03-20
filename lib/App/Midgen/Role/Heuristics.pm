@@ -14,10 +14,10 @@ use Data::Printer {caller_info => 1, colored => 1,};
 
 
 #######
-# composed method degree of separation
-# double-bubble
+# correct incorrectly cast modules as RuntimeRecommends and re-cast as RuntimeRequires
+# recast_to_runtimerequires
 #######
-sub double_bubble {
+sub recast_to_runtimerequires {
 	my $self           = shift;
 	my $requires_ref   = shift || return;
 	my $recommends_ref = shift || return;
@@ -30,21 +30,22 @@ sub double_bubble {
 
 	foreach my $module (@runtime_recommends) {
 
+		# an ode to negitave logic :)
 		try {
 			unless ($self->{modules}{$module}{dual_life}
 				or $self->{modules}{$module}{corelist} == 1
 				or $self->{modules}{$module}{version} eq '!mcpan'
 				or $self->{modules}{$module}{count} == 1)
 			{
-				if ($self->shuffle($module, $self->{modules}{$module}{infiles})) {
+				if ($self->_rc_requires($module, $self->{modules}{$module}{infiles})) {
 
-					# add to RuntimeRequires
+					# add to RuntimeRequires bucket
 					$requires_ref->{$module} = $recommends_ref->{$module};
 
-					# delete from RuntimeRecommends
+					# delete from RuntimeRecommends bucket
 					delete $recommends_ref->{$module};
 
-					# update infiles
+					# update modules bucket
 					$self->{modules}{$module}{prereqs} = 'RuntimeRequires';
 
 					p $self->{modules}{$module} if $self->debug;
@@ -64,9 +65,9 @@ sub double_bubble {
 
 
 #######
-# composed method
+# composed method _rc_requires
 #######
-sub shuffle {
+sub _rc_requires {
 	my $self = shift;
 	my ($module, $infile) = @_;
 
@@ -74,20 +75,109 @@ sub shuffle {
 
 		# next if in a test dir
 		next if $infile->[$index][0] =~ m/\A\/x?t/;
+
+		# ignore RuntimeRecommends
 		next if $infile->[$index][3] eq 'RuntimeRecommends';
 
+		# find RuntimeRequires which are not from same file
 		if ($infile->[$index][3] eq 'RuntimeRequires'
 			and ($infile->[$index][0] ne $infile->[$index - 1][0]))
 		{
-			p $module if $self->debug;
-			p $infile->[$index] if $self->debug;
+			p $module;# if $self->debug;
+			p $infile->[$index];# if $self->debug;
 
+			# found
 			return TRUE;
 		}
 	}
 
 	return FALSE;
 }
+
+
+
+#######
+# correct incorrectly cast modules as TestSuggests and re-cast as TestRequires
+# recast_to_testrequires
+#######
+sub recast_to_testrequires {
+	my $self           = shift;
+	my $requires_ref   = shift || return;
+	my $suggests_ref = shift || return;
+
+	#extract module names to check from RuntimeRecommends bucket
+	my @test_suggests;
+	foreach my $current_suggests (sort keys %{$suggests_ref}) {
+		push @test_suggests, $current_suggests;
+	}
+
+	foreach my $module (@test_suggests) {
+
+		# an ode to negitave logic :)
+		try {
+			unless ($self->{modules}{$module}{dual_life}
+				or $self->{modules}{$module}{corelist} == 1
+				or $self->{modules}{$module}{version} eq '!mcpan'
+				or $self->{modules}{$module}{count} == 1)
+			{
+				if ($self->_rc_tests($module, $self->{modules}{$module}{infiles})) {
+
+					# add to RuntimeRequires bucket
+					$requires_ref->{$module} = $suggests_ref->{$module};
+
+					# delete from RuntimeRecommends bucket
+					delete $suggests_ref->{$module};
+
+					# update modules bucket
+					$self->{modules}{$module}{prereqs} = 'TestRequires';
+
+					p $self->{modules}{$module} if $self->debug;
+				}
+			}
+		};
+	}
+
+	return;
+}
+
+## this may help for future hacking
+#    [0] "/lib/Module/Install/Admin/Metadata.pm",
+#    [1] 0,
+#    [2] "Perl::PrereqScanner",
+#    [3] "RuntimeRequires"
+
+
+#######
+# composed method _rc_requires
+#######
+sub _rc_tests {
+	my $self = shift;
+	my ($module, $infile) = @_;
+
+	foreach my $index (0 .. $#{$infile}) {
+
+		# next if in a test dir
+		next if $infile->[$index][0] !~ m/\At/;
+
+		# ignore RuntimeRecommends
+		next if $infile->[$index][3] eq 'TestSuggests';
+
+		# find RuntimeRequires which are not from same file
+		if ($infile->[$index][3] eq 'TestRequires'
+			and ($infile->[$index][0] ne $infile->[$index - 1][0]))
+		{
+			p $module;# if $self->debug;
+			p $infile->[$index];# if $self->debug;
+
+			# found
+			return TRUE;
+		}
+	}
+
+	return FALSE;
+}
+
+
 
 
 no Moo::Role;
@@ -112,19 +202,13 @@ version: 0.31_01
 
 =over 4
 
-=item * degree_separation
+=item * recast_to_runtimerequires
 
-now a separate Method, returns an integer.
+Correct incorrectly cast modules as RuntimeRecommends and re-cast as RuntimeRequires
 
-=item * remove_noisy_children
+=item * recast_to_testrequires
 
-Parent A::B has noisy Children A::B::C and A::B::D all with same version number.
-
-=item * remove_twins
-
-Twins E::F::G and E::F::H  have a parent E::F with same version number,
- so we add a parent E::F and re-test for noisy children,
- catching triplets along the way.
+Correct incorrectly cast modules as TestSuggests and re-cast as TestRequires
 
 =item * run
 
