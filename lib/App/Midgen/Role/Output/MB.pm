@@ -48,10 +48,8 @@ sub body_mb {
 		}
 	}
 
-	$title =~ s/^Runtime//;
-	$title =~ s/^TestSuggests/recommends/;
-	$title =~ s/^DevelopRequires/recommends/;
-	$title =~ s/^Test/test_/;
+	$title =~ s/^RuntimeRequires/requires/;
+	$title =~ s/^TestRequires/test_requires/;
 
 	print q{"} . lc $title . '" => {' . "\n";
 

@@ -26,8 +26,9 @@ sub header_dsl {
 	my $mi_ver       = shift || NONE; # defined shift ? shift : NONE - don't work as per perl5100delta.pod
 
 	$package_name =~ s{::}{/}g;
-
-	print "\nuse inc::Module::Install::DSL "
+	print "\nuse strict;\n";
+	print "use warnings;\n";
+	print "use inc::Module::Install::DSL "
 		. colored($mi_ver, 'yellow') . ";\n";
 	if ($package_name ne NONE) {
 		print "all_from lib/$package_name.pm\n";
@@ -58,23 +59,21 @@ sub body_dsl {
 		}
 	}
 
-	$title =~ s/^Runtime//;
-	$title =~ s/^TestSuggests/recommends/;
-	$title =~ s/^DevelopRequires/recommends/;
-	$title =~ s/^Test/test_/;
+	$title =~ s/^RuntimeRequires/requires/;
+	$title =~ s/^TestRequires/test_requires/;
 
 	foreach my $module_name (sort keys %{$required_ref}) {
 
 		if ($module_name =~ /^Win32/sxm) {
-			printf "%s %-*s %s %s\n", lc $title, $pm_length, $module_name,
+			printf "%s %-*s %s %s\n", $title, $pm_length, $module_name,
 				$required_ref->{$module_name}, colored('if win32', 'bright_green');
 		}
 		elsif ($module_name =~ /XS/sxm) {
-			printf "%s %-*s %s %s\n", lc $title, $pm_length, $module_name,
+			printf "%s %-*s %s %s\n", $title, $pm_length, $module_name,
 				$required_ref->{$module_name}, colored('if can_xs', 'bright_blue');
 		}
 		elsif ($module_name eq 'MRO::Compat') {
-			printf "%s %-*s %s %s\n", lc $title, $pm_length, $module_name,
+			printf "%s %-*s %s %s\n", $title, $pm_length, $module_name,
 				$required_ref->{$module_name}, colored('if $] < 5.009005', 'bright_blue');
 		}
 		else {

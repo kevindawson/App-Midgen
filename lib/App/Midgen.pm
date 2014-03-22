@@ -64,7 +64,8 @@ sub run {
 	$self->find_develop_modules() if $self->experimental;
 
 	#now for some Heuristics :)
-	$self->recast_to_runtimerequires($self->{RuntimeRequires}, $self->{RuntimeRecommends});
+	$self->recast_to_runtimerequires($self->{RuntimeRequires},
+		$self->{RuntimeRecommends});
 	$self->recast_to_testrequires($self->{TestRequires}, $self->{TestSuggests});
 
 	# Now we have switched to MetaCPAN-Api we can hunt for noisy children in tests
@@ -93,15 +94,34 @@ sub run {
 		}
 	}
 
-
 	# display chosen output format
 	$self->output_header();
 	$self->output_main_body('RuntimeRequires',   $self->{RuntimeRequires});
-	$self->output_main_body('RuntimeRecommends', $self->{RuntimeRecommends}) if $self->{meta2};
+	$self->output_main_body('RuntimeRecommends', $self->{RuntimeRecommends})
+		if $self->meta2;
 	$self->output_main_body('TestRequires', $self->{TestRequires});
-	$self->output_main_body('TestSuggests', $self->{TestSuggests}) if $self->{meta2};
-	$self->output_main_body('Close', {}) if $self->{meta2};
-	$self->output_main_body('DevelopRequires', $self->{DevelopRequires});
+	if ($self->meta2) {
+		$self->output_main_body('TestSuggests', $self->{TestSuggests});
+		$self->output_main_body('Close', {});
+		$self->output_main_body('DevelopRequires', $self->{DevelopRequires});
+	}
+	else {
+
+		# concatenate hashes
+		try {
+			%{$self->{recommends}} = (%{$self->{RuntimeRecommends}},);
+		};
+		try {
+			%{$self->{recommends}}
+				= (%{$self->{recommends}}, %{$self->{TestSuggests}},);
+		};
+		try {
+			%{$self->{recommends}}
+				= (%{$self->{recommends}}, %{$self->{DevelopRequires}},);
+		};
+		$self->output_main_body('recommends', $self->{recommends});
+	}
+
 	$self->output_footer();
 
 	p $self->{modules} if ($self->verbose == TWO);
@@ -220,8 +240,6 @@ sub _find_runtime_requirments {
 	$self->_set_looking_infile(File::Spec->catfile($relative_dir, $filename));
 	$self->_set_ppi_document(PPI::Document->new($filename));
 
-	$self->min_version(	$self->looking_infile );
-
 	# do extra test early check for use_module before hand
 	$self->xtests_use_module('RuntimeRecommends');
 
@@ -231,6 +249,9 @@ sub _find_runtime_requirments {
 	# normal pps -> RuntimeRequires
 	my $prereqs = $self->scanner->scan_ppi_document($self->ppi_document);
 	my @modules = $prereqs->required_modules;
+
+	#run pmv now
+	$self->min_version(	$self->looking_infile );
 
 	foreach my $mod_ver (@modules) {
 		$self->{found_version}{$mod_ver}
@@ -274,20 +295,6 @@ sub _find_runtime_requirments {
 sub find_test_modules {
 	my $self = shift;
 
-#	my @directories_to_search = ();
-#	foreach my $directory ( 't' ) {
-#		if (defined -d $directory) {
-#			push @directories_to_search, $directory;
-#		}
-#	}
-#
-#	try {
-#		foreach my $directorie (@directories_to_search) {
-#			find(sub { _find_test_develop_requirments($self, $directorie); },
-#				$directorie);
-#		}
-#	};
-#
 	my $directory = 't';
 	if (defined -d $directory) {
 
@@ -305,21 +312,6 @@ sub find_test_modules {
 sub find_develop_modules {
 	my $self = shift;
 
-#	my @posiable_directories_to_search = map { File::Spec->catfile($Working_Dir, $_) } qw( xt );
-#
-#	my @directories_to_search = ();
-#	foreach my $directory (@posiable_directories_to_search) {
-#		if (defined -d $directory) {
-#			push @directories_to_search, $directory;
-#		}
-#	}
-#
-#	try {
-#		foreach my $directorie (@directories_to_search) {
-#			find(sub { _find_test_develop_requirments($self, $directorie); },
-#				$directorie);
-#		}
-#	};
 	my $directory = 'xt';
 	if (defined -d $directory) {
 

@@ -60,26 +60,25 @@ sub body_mi {
 
 	print "perl_version '$App::Midgen::Min_Version';\n" if $title eq 'RuntimeRequires';
 	print "\n";
-	$title =~ s/^Runtime//;
-	$title =~ s/^TestSuggests/recommends/;
-	$title =~ s/^DevelopRequires/recommends/;
-	$title =~ s/^Test/test_/;
+
+	$title =~ s/^RuntimeRequires/requires/;
+	$title =~ s/^TestRequires/test_requires/;
 
 	foreach my $module_name (sort keys %{$required_ref}) {
 
 		if ($module_name =~ /^Win32/sxm) {
 			my $sq_key = "'$module_name'";
-			printf "%s %-*s => '%s' %s;\n", lc $title, $pm_length + 2, $sq_key,
+			printf "%s %-*s => '%s' %s;\n", $title, $pm_length + 2, $sq_key,
 				$required_ref->{$module_name}, colored('if win32', 'bright_green');
 		}
 		elsif ($module_name =~ /XS/sxm) {
 			my $sq_key = "'$module_name'";
-			printf "%s %-*s => '%s' %s;\n", lc $title, $pm_length + 2, $sq_key,
+			printf "%s %-*s => '%s' %s;\n", $title, $pm_length + 2, $sq_key,
 				$required_ref->{$module_name}, colored('if can_xs', 'bright_blue');
 		}
 		elsif ($module_name eq 'MRO::Compat') {
 			my $sq_key = "'$module_name'";
-			printf "%s %-*s => '%s' %s;\n", lc $title, $pm_length + 2, $sq_key,
+			printf "%s %-*s => '%s' %s;\n", $title, $pm_length + 2, $sq_key,
 				$required_ref->{$module_name}, colored('if $] < 5.009005', 'bright_blue');
 		}
 		else {
