@@ -1,6 +1,6 @@
 package App::Midgen::Role::Heuristics;
 
-our $VERSION = '0.31_01';
+our $VERSION = '0.31_03';
 $VERSION = eval $VERSION;    ## no critic
 
 use constant {TRUE => 1, FALSE => 0,};
@@ -208,7 +208,7 @@ App::Midgen::Roles::Heuristics - used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.31_01
+version: 0.31_03
 
 =head1 METHODS
 

@@ -9,7 +9,7 @@ requires
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.31_01';
+our $VERSION = '0.31_03';
 $VERSION = eval $VERSION;    ## no critic
 
 use PPI;
@@ -154,7 +154,7 @@ for methods in use_ok in BEGIN blocks, used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.31_01
+version: 0.31_03
 
 =head1 METHODS
 

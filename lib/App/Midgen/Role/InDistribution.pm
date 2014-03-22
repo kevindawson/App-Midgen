@@ -6,7 +6,7 @@ use Types::Standard qw( Bool );
 use Moo::Role;
 requires qw( ppi_document debug );
 
-our $VERSION = '0.31_01';
+our $VERSION = '0.31_03';
 $VERSION = eval $VERSION;    ## no critic
 
 
@@ -85,7 +85,7 @@ App::Midgen::Roles::InDistribution - used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.31_01
+version: 0.31_03
 
 =head1 METHODS
 
