@@ -251,7 +251,7 @@ sub _find_runtime_requirments {
 	my @modules = $prereqs->required_modules;
 
 	#run pmv now
-	$self->min_version(	$self->looking_infile );
+	$self->min_version(	$self->looking_infile ) if $self->format ne 'infile';
 
 	foreach my $mod_ver (@modules) {
 		$self->{found_version}{$mod_ver}
@@ -347,7 +347,7 @@ sub _find_test_develop_requirments {
 	$self->_set_ppi_document(PPI::Document->new($filename));
 
 	# don't scan xt/ for pmv
-	$self->min_version($filename) if $directorie !~ m/xt$/;
+	$self->min_version($filename) if $directorie !~ m/xt$/ or $self->format ne 'infile';
 
 
 	# do extra test early check for Test::Requires before hand
