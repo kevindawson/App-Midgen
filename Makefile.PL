@@ -36,7 +36,7 @@ test_requires Test::CheckDeps 0.01
 test_requires Test::More      1.001002
 test_requires Test::Requires  0.07
 
-recommends ExtUtils::MakeMaker        6.88
+recommends ExtUtils::MakeMaker        6.68
 recommends File::Spec::Functions      3.4
 recommends List::Util                 1.38
 recommends Test::Pod                  1.48
