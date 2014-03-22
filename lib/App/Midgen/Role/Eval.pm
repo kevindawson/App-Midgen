@@ -193,23 +193,9 @@ sub xtests_eval {
 
 	# if we found a module, process it with the correct catogery
 	if (scalar @modules > 0) {
+		$self->_process_found_modules($phase_relationship, \@modules,
+			__PACKAGE__, $phase_relationship,);
 
-		if ($self->meta2) {
-			$self->_process_found_modules($phase_relationship, \@modules,
-				__PACKAGE__, $phase_relationship,);
-		}
-		else {
-			$self->_process_found_modules($phase_relationship, \@modules,
-				__PACKAGE__, $phase_relationship,)
-				if ($phase_relationship eq 'RuntimeRequires')
-				or ($phase_relationship eq 'TestRequires');
-
-			$self->_process_found_modules('DevelopRequires', \@modules,
-				__PACKAGE__, $phase_relationship,)
-				if ($phase_relationship eq 'DevelopRequires')
-				or ($phase_relationship eq 'RuntimeRecommends')
-				or ($phase_relationship eq 'TestSuggests');
-		}
 	}
 
 	return;
