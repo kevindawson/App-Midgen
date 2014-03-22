@@ -13,6 +13,7 @@ use Perl::MinimumVersion;
 use Try::Tiny;
 use Term::ANSIColor qw( :constants colored colorstrip );
 use version;
+use Data::Printer {caller_info => 1, colored => 1,};
 
 has 'mro_skip' => (
 	is => 'rwp',
@@ -80,14 +81,25 @@ sub min_version {
 	};
 
 	if ($self->{mro_skip} && $self->{experimental}) {
-		print BRIGHT_BLACK
-			. 'Warning: PMV blame = '
-			. RED . 'mro'
-			. BRIGHT_BLACK . ' -> '
-			. 'skipping pmv for this file ^^'
-			. CLEAR . "\n";
-		$self->_set_mro_skip(FALSE);
-		return;
+		if (defined $self->{modules}{'MRO::Compat'}) {
+			foreach my $index (0 .. $#{$self->{modules}{'MRO::Compat'}{infiles}}) {
+				if ($self->{modules}{'MRO::Compat'}{infiles}->[$index][0] eq '/'
+					. $filename)
+				{
+					print BRIGHT_BLACK
+						. 'Warning: '
+						. RED . 'mro'
+						. BRIGHT_BLACK . ' & '
+						. RED
+						. 'MRO::Compat'
+						. BRIGHT_BLACK
+						. ' found in the same file ^^, hence skipping pmv.'
+						. CLEAR . "\n";
+					$self->_set_mro_skip(FALSE);
+					return;
+				}
+			}
+		}
 	}
 	else {
 		print "min_version - $dist_min_ver\n" if ($self->{verbose} == TWO);
