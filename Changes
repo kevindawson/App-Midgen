@@ -1,5 +1,15 @@
 Revision history for App-Midgen
 
+0.31_05 2014-03-22
+ - add MRO::Compat meta-1.x recast
+ - tweak logic to ignore mro - MRO::Compact regardless
+ - add skip to ignore unknown modules in t/
+
+0.31_03 2014-03-22
+ - add heuristics catach for runtimerecommends -> runtimerequires
+ - add heuristics catach for testsuggests -> testrequires
+ - do phase_relationship ajustment before calling output formats
+
 0.31_01 2014-03-17
  - Add phase-requirments to infiles data store
  - Add pmv mro catch
