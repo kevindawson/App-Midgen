@@ -11,6 +11,7 @@ requires qw( debug );
 
 use Try::Tiny;
 use Data::Printer {caller_info => 1, colored => 1,};
+use Term::ANSIColor qw( :constants colored colorstrip );
 
 
 #######
@@ -37,7 +38,8 @@ sub recast_to_runtimerequires {
 				or $self->{modules}{$module}{version} eq '!mcpan'
 				or $self->{modules}{$module}{count} == 1)
 			{
-				if ($self->_rc_requires($module, $self->{modules}{$module}{infiles})) {
+				if ($self->_rc_requires($module, $self->{modules}{$module}{infiles}))
+				{
 
 					# add to RuntimeRequires bucket
 					$requires_ref->{$module} = $recommends_ref->{$module};
@@ -48,6 +50,11 @@ sub recast_to_runtimerequires {
 					# update modules bucket
 					$self->{modules}{$module}{prereqs} = 'RuntimeRequires';
 
+					print BRIGHT_BLACK
+						. 'Info: re-cast module '
+						. $module
+						. ' to RuntimeRequires'
+						. CLEAR . "\n";
 					p $self->{modules}{$module} if $self->debug;
 				}
 			}
@@ -83,8 +90,8 @@ sub _rc_requires {
 		if ($infile->[$index][3] eq 'RuntimeRequires'
 			and ($infile->[$index][0] ne $infile->[$index - 1][0]))
 		{
-			p $module;# if $self->debug;
-			p $infile->[$index];# if $self->debug;
+			p $module if $self->debug;
+			p $infile->[$index] if $self->debug;
 
 			# found
 			return TRUE;
@@ -131,6 +138,11 @@ sub recast_to_testrequires {
 					# update modules bucket
 					$self->{modules}{$module}{prereqs} = 'TestRequires';
 
+					print BRIGHT_BLACK
+						. 'Info: re-cast module '
+						. $module
+						. ' to TestRequires'
+						. CLEAR . "\n";
 					p $self->{modules}{$module} if $self->debug;
 				}
 			}
@@ -166,8 +178,8 @@ sub _rc_tests {
 		if ($infile->[$index][3] eq 'TestRequires'
 			and ($infile->[$index][0] ne $infile->[$index - 1][0]))
 		{
-			p $module;# if $self->debug;
-			p $infile->[$index];# if $self->debug;
+			p $module if $self->debug;
+			p $infile->[$index] if $self->debug;
 
 			# found
 			return TRUE;
