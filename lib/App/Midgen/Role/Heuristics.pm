@@ -7,7 +7,7 @@ use constant {TRUE => 1, FALSE => 0,};
 
 use Types::Standard qw( Bool );
 use Moo::Role;
-requires qw( debug );
+requires qw( debug meta2 );
 
 use Try::Tiny;
 use Data::Printer {caller_info => 1, colored => 1,};
@@ -30,6 +30,19 @@ sub recast_to_runtimerequires {
 	}
 
 	foreach my $module (@runtime_recommends) {
+
+		#2nd part of mro - MRO::Compat catch
+		if ($module eq 'MRO::Compat' and not $self->{meta2}) {
+
+			# add to RuntimeRequires bucket
+			$requires_ref->{$module} = $recommends_ref->{$module};
+
+			# delete from RuntimeRecommends bucket
+			delete $recommends_ref->{$module};
+
+			# update modules bucket
+			$self->{modules}{$module}{prereqs} = 'RuntimeRequires';
+		}
 
 		# an ode to negitave logic :)
 		try {
