@@ -28,8 +28,7 @@ sub header_mi {
 
 	print "\nuse strict;\n";
 	print "use warnings;\n";
-	print "use inc::Module::Install "
-		. colored($mi_ver, 'yellow') . ";\n";
+	print "use inc::Module::Install " . colored($mi_ver, 'yellow') . ";\n";
 
 	if ($package_name ne NONE) {
 		$package_name =~ s{::}{-}g;
@@ -37,7 +36,8 @@ sub header_mi {
 		$package_name =~ tr{-}{/};
 		print "all_from 'lib/$package_name.pm';\n";
 	}
-	print "\n";
+
+	print BRIGHT_BLACK . "license 'perl';" . CLEAR . "\n";
 
 	return;
 }
@@ -66,6 +66,10 @@ sub body_mi {
 
 	foreach my $module_name (sort keys %{$required_ref}) {
 
+		next
+			if $title eq 'test_requires'
+			&& $required_ref->{$module_name} =~ m/mcpan/;
+
 		if ($module_name =~ /^Win32/sxm) {
 			my $sq_key = "'$module_name'";
 			printf "%s %-*s => '%s' %s;\n", $title, $pm_length + 2, $sq_key,
@@ -79,7 +83,8 @@ sub body_mi {
 		elsif ($module_name eq 'MRO::Compat') {
 			my $sq_key = "'$module_name'";
 			printf "%s %-*s => '%s' %s;\n", $title, $pm_length + 2, $sq_key,
-				$required_ref->{$module_name}, colored('if $] < 5.009005', 'bright_blue');
+				$required_ref->{$module_name},
+				colored('if $] < 5.009005', 'bright_blue');
 		}
 		else {
 			my $sq_key = "'$module_name'";

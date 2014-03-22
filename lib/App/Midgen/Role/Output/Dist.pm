@@ -71,6 +71,11 @@ sub body_dist {
 	}
 
 	foreach my $module_name (sort keys %{$required_ref}) {
+
+		next
+			if $title eq 'TestRequires'
+			&& $required_ref->{$module_name} =~ m/mcpan/;
+
 		printf "%-*s = %s\n", $pm_length, $module_name,
 			$required_ref->{$module_name};
 	}

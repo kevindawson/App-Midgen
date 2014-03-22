@@ -86,12 +86,16 @@ sub body_eumm {
 	elsif ($title eq 'TestRequires') {
 		print THREE. "'TEST_REQUIRES' => {\n";
 	}
-	elsif ($title eq 'TestSuggests') {
+	elsif ($title eq 'recommends') {
 		$self->_recommends($required_ref);
 		return;
 	}
 
 	foreach my $module_name (sort keys %{$required_ref}) {
+
+		next
+			if $title eq 'TestRequires'
+			&& $required_ref->{$module_name} =~ m/mcpan/;
 
 		my $sq_key = q{'} . $module_name . q{'};
 		printf SIX. " %-*s => '%s',\n", $pm_length + 2, $sq_key,

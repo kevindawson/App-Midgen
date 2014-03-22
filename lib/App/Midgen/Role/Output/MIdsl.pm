@@ -35,7 +35,8 @@ sub header_dsl {
 		print "requires_from lib/$package_name.pm\n";
 	}
 
-	print "\n";
+	print BRIGHT_BLACK . "license perl" . CLEAR . "\n";
+
 	return;
 }
 #######
@@ -64,6 +65,10 @@ sub body_dsl {
 
 	foreach my $module_name (sort keys %{$required_ref}) {
 
+		next
+			if $title eq 'test_requires'
+			&& $required_ref->{$module_name} =~ m/mcpan/;
+
 		if ($module_name =~ /^Win32/sxm) {
 			printf "%s %-*s %s %s\n", $title, $pm_length, $module_name,
 				$required_ref->{$module_name}, colored('if win32', 'bright_green');
@@ -74,7 +79,8 @@ sub body_dsl {
 		}
 		elsif ($module_name eq 'MRO::Compat') {
 			printf "%s %-*s %s %s\n", $title, $pm_length, $module_name,
-				$required_ref->{$module_name}, colored('if $] < 5.009005', 'bright_blue');
+				$required_ref->{$module_name},
+				colored('if $] < 5.009005', 'bright_blue');
 		}
 		else {
 			printf "%s %-*s %s\n", lc $title, $pm_length, $module_name,

@@ -55,6 +55,10 @@ sub body_mb {
 
 	foreach my $module_name (sort keys %{$required_ref}) {
 
+		next
+			if $title eq 'test_requires'
+			&& $required_ref->{$module_name} =~ m/mcpan/;
+
 		my $sq_key = "\"$module_name\"";
 		printf "\t %-*s => \"%s\",\n", $pm_length + 2, $sq_key,
 			$required_ref->{$module_name};
