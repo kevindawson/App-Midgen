@@ -250,8 +250,6 @@ sub _find_runtime_requirments {
 	my $prereqs = $self->scanner->scan_ppi_document($self->ppi_document);
 	my @modules = $prereqs->required_modules;
 
-	#run pmv now
-	$self->min_version(	$self->looking_infile ) if $self->format ne 'infile';
 
 	foreach my $mod_ver (@modules) {
 		$self->{found_version}{$mod_ver}
@@ -285,6 +283,10 @@ sub _find_runtime_requirments {
 
 	$self->_process_found_modules('RuntimeRequires', \@modules,
 		'Perl::PrereqScanner', 'RuntimeRequires',);
+
+	#run pmv now
+	$self->min_version(	$self->looking_infile ) if $self->format ne 'infile';
+
 	return;
 }
 
