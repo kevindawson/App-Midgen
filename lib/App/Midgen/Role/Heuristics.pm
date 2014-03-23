@@ -34,6 +34,8 @@ sub recast_to_runtimerequires {
 		#2nd part of mro - MRO::Compat catch
 		if ( $module eq 'MRO::Compat' and  $self->meta2 == FALSE ) {
 
+			print "recasting - $module\n" if $self->debug;
+
 			# add to RuntimeRequires bucket
 			$requires_ref->{$module} = $recommends_ref->{$module};
 
