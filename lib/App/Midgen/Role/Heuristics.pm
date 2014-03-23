@@ -32,7 +32,7 @@ sub recast_to_runtimerequires {
 	foreach my $module (@runtime_recommends) {
 
 		#2nd part of mro - MRO::Compat catch
-		if ($module eq 'MRO::Compat' and not $self->{meta2}) {
+		if ( $module eq 'MRO::Compat' and  $self->meta2 == FALSE ) {
 
 			# add to RuntimeRequires bucket
 			$requires_ref->{$module} = $recommends_ref->{$module};

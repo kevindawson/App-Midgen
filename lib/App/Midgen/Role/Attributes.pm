@@ -63,9 +63,9 @@ sub _meta2 {
 	my $self = shift;
 
 	if ( $self->format =~ m/cpanfile|metajson|dist/ ) {
-		return 1;
+		return TRUE;
 	} else {
-		return 0;
+		return FALSE;
 	}
 }
 
