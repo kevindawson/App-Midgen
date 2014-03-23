@@ -70,19 +70,14 @@ sub min_version {
 			$self->_set_mro_skip(TRUE);
 			print BRIGHT_BLACK
 				. 'Info: PMV blame = '
-#				. WHITE
 				. $blame
-#				. BRIGHT_BLACK
 				. ' -> 5.010 in '
 				. $filename
-#				. ' # -x to skip'
 				. CLEAR . "\n";
 		}
 	};
 
-#	if ($self->{mro_skip} && $self->{experimental}) {
-	if ($self->{mro_skip}) {
-
+	if ($self->mro_skip) {
 		if (defined $self->{modules}{'MRO::Compat'}) {
 			foreach my $index (0 .. $#{$self->{modules}{'MRO::Compat'}{infiles}}) {
 				if ($self->{modules}{'MRO::Compat'}{infiles}->[$index][0] eq '/'
