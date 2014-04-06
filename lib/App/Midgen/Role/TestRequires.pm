@@ -3,7 +3,8 @@ package App::Midgen::Role::TestRequires;
 use constant {BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3,};
 
 use Moo::Role;
-requires qw( ppi_document develop debug verbose format xtest _process_found_modules meta2 );
+requires
+	qw( ppi_document develop debug verbose format xtest _process_found_modules meta2 );
 
 use PPI;
 use Try::Tiny;
@@ -13,7 +14,7 @@ use Data::Printer {caller_info => 1,};
 # use namespace::clean -except => 'meta';
 
 our $VERSION = '0.31_07';
-$VERSION = eval $VERSION; ## no critic
+$VERSION = eval $VERSION;    ## no critic
 
 
 #######
@@ -70,7 +71,7 @@ sub xtests_test_requires {
 					)
 				{
 
-					foreach ( 0 .. $#{$hunk->{children}}) {
+					foreach (0 .. $#{$hunk->{children}}) {
 
 						# looking for use Test::Requires { 'Test::Pod' => '1.46' };
 						if ($hunk->{children}[$_]->isa('PPI::Structure::Constructor')) {
@@ -78,7 +79,7 @@ sub xtests_test_requires {
 							my $ppi_sc = $hunk->{children}[$_]
 								if $hunk->{children}[$_]->isa('PPI::Structure::Constructor');
 
-							foreach ( 0 .. $#{$ppi_sc->{children}}) {
+							foreach (0 .. $#{$ppi_sc->{children}}) {
 
 								if ($ppi_sc->{children}[$_]->isa('PPI::Statement')) {
 
@@ -110,7 +111,10 @@ sub xtests_test_requires {
 											$version_string =~ s/(?:'|")//g;
 											if ($version_string =~ m/\A(?:[0-9])/) {
 
-												$version_string = version::is_lax($version_string) ? $version_string : 0;
+												$version_string
+													= version::is_lax($version_string)
+													? $version_string
+													: 0;
 
 												print "found version string - $version_string\n"
 													if $self->debug;
@@ -154,27 +158,20 @@ sub xtests_test_requires {
 	p @modules         if $self->debug;
 	p @version_strings if $self->debug;
 
-	# if we found a module, process it with the correct phase-relationship
-#	if (scalar @modules > 0) {
-#		$self->_process_found_modules($phase_relationship, \@modules,
-#			__PACKAGE__, $phase_relationship,);
-#
-#	}
+	if (scalar @modules > 0) {
 
-if (scalar @modules > 0) {
-
-	for (0 .. $#modules) {
-		print "Info: TestRequires -> Sending $modules[$_] - $version_strings[$_]\n" if ($self->verbose == TWO);
-
-#ToDo
-		try {
-			$self->_process_found_modules(
-				$phase_relationship, $modules[$_], $version_strings[$_],
-				__PACKAGE__,         $phase_relationship,
-			);
-		};
+		for (0 .. $#modules) {
+			print
+				"Info: TestRequires -> Sending $modules[$_] - $version_strings[$_]\n"
+				if ($self->verbose == TWO);
+			try {
+				$self->_process_found_modules(
+					$phase_relationship, $modules[$_], $version_strings[$_],
+					__PACKAGE__,         $phase_relationship,
+				);
+			};
+		}
 	}
-}
 	return;
 }
 

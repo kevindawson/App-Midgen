@@ -11,7 +11,7 @@ our $VERSION = '0.31_07';
 $VERSION = eval $VERSION;    ## no critic
 
 use PPI;
-use Data::Printer;           # caller_info => 1;
+use Data::Printer {caller_info => 1,};
 use Try::Tiny;
 use Tie::Static qw(static);
 
@@ -89,7 +89,8 @@ sub xtests_use_module {
 									if $chunk->{children}[$_]->isa('PPI::Structure::List');
 
 								print "Option 1: use_module( M::N )...\n" if $self->debug;
-								$self->_module_names_ppi_sl( $ppi_sl, \@modules, \@version_strings);
+								$self->_module_names_ppi_sl($ppi_sl, \@modules,
+									\@version_strings);
 							}
 						}
 					}
@@ -163,8 +164,10 @@ sub xtests_use_module {
 							my $ppi_sl = $chunk->{children}[$_]
 								if $chunk->{children}[$_]->isa('PPI::Structure::List');
 
-							print "Option 2: my \$q = use_module( M::N )...\n" if $self->debug;
-							$self->_module_names_ppi_sl( $ppi_sl, \@modules, \@version_strings);
+							print "Option 2: my \$q = use_module( M::N )...\n"
+								if $self->debug;
+							$self->_module_names_ppi_sl($ppi_sl, \@modules,
+								\@version_strings);
 
 
 						}
@@ -247,8 +250,10 @@ sub xtests_use_module {
 									my $ppi_sl = $chunk->{children}[$_]
 										if $chunk->{children}[$_]->isa('PPI::Structure::List');
 
-									print "Option 3: \$q = use_module( M::N )...\n" if $self->debug;
-									$self->_module_names_ppi_sl( $ppi_sl, \@modules, \@version_strings);
+									print "Option 3: \$q = use_module( M::N )...\n"
+										if $self->debug;
+									$self->_module_names_ppi_sl($ppi_sl, \@modules,
+										\@version_strings);
 
 								}
 							}
@@ -340,8 +345,10 @@ sub xtests_use_module {
 						if ($chunk->{children}[$_]->isa('PPI::Structure::List')) {
 							my $ppi_sl = $chunk->{children}[$_]
 								if $chunk->{children}[$_]->isa('PPI::Structure::List');
-							print "Option 4: return use_module( M::N )...\n" if $self->debug;
-							$self->_module_names_ppi_sl( $ppi_sl, \@modules, \@version_strings,);
+							print "Option 4: return use_module( M::N )...\n"
+								if $self->debug;
+							$self->_module_names_ppi_sl($ppi_sl, \@modules,
+								\@version_strings,);
 
 
 						}
@@ -355,27 +362,19 @@ sub xtests_use_module {
 	@version_strings = map { defined $_ ? $_ : 0 } @version_strings;
 	p @modules         if $self->debug;
 	p @version_strings if $self->debug;
-if (scalar @modules > 0) {
+	if (scalar @modules > 0) {
 
-	for (0 .. $#modules) {
-		print "Info: UseModule -> Sending $modules[$_] - $version_strings[$_]\n" if ($self->verbose == TWO);
-
-#ToDo
-		try {
-			$self->_process_found_modules(
-				$phase_relationship, $modules[$_], $version_strings[$_],
-				__PACKAGE__,         $phase_relationship,
-			);
-		};
+		for (0 .. $#modules) {
+			print "Info: UseModule -> Sending $modules[$_] - $version_strings[$_]\n"
+				if ($self->verbose == TWO);
+			try {
+				$self->_process_found_modules(
+					$phase_relationship, $modules[$_], $version_strings[$_],
+					__PACKAGE__,         $phase_relationship,
+				);
+			};
+		}
 	}
-}
-
-	# if we found a module, process it with the correct catogery
-#	if (scalar @modules > 0) {
-#		$self->_process_found_modules($phase_relationship, \@modules,
-#			__PACKAGE__, $phase_relationship,);
-#
-#	}
 
 	return;
 }
@@ -454,11 +453,12 @@ sub _module_names_ppi_sl {
 					$version_string
 						= version::is_lax($version_string) ? $version_string : 0;
 
-					print "Info: UseModule found version_string - $version_string\n" if $self->debug;
+					print "Info: UseModule found version_string - $version_string\n"
+						if $self->debug;
 
 					try {
-							if ( $previous_module ) {
-						$self->{found_version}{$previous_module} = $version_string;
+						if ($previous_module) {
+							$self->{found_version}{$previous_module} = $version_string;
 							$mv_ref->[$#{$mn_ref}] = $version_string;
 						}
 						p $version_string if $self->debug;
@@ -468,8 +468,6 @@ sub _module_names_ppi_sl {
 			}
 		}
 	}
-
-
 }
 
 

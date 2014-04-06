@@ -99,7 +99,8 @@ sub xtests_eval {
 
 									$self->_eval_info($ppi_sb, \$module_name, \$version_string);
 
-									print "Option3 $module_name - $version_string\n" if $self->debug;
+									print "Option3 $module_name - $version_string\n"
+										if $self->debug;
 
 
 									if (version::is_lax($version_string)) {
@@ -112,7 +113,6 @@ sub xtests_eval {
 										push @version_strings, $version_string;
 										$self->{found_version}{$module_name} = $version_string;
 									}
-
 								}
 							}
 						}
@@ -243,18 +243,19 @@ sub xtests_eval {
 	p @modules         if $self->debug;
 	p @version_strings if $self->debug;
 
-if (scalar @modules > 0) {
-	for (0 .. $#modules) {
-		print "Info: Eval -> Sending $modules[$_] - $version_strings[$_]\n" if ($self->verbose == TWO);
+	if (scalar @modules > 0) {
+		for (0 .. $#modules) {
+			print "Info: Eval -> Sending $modules[$_] - $version_strings[$_]\n"
+				if ($self->verbose == TWO);
 
-		try {
-			$self->_process_found_modules(
-				$phase_relationship, $modules[$_], $version_strings[$_],
-				__PACKAGE__,         $phase_relationship,
-			);
-		};
+			try {
+				$self->_process_found_modules(
+					$phase_relationship, $modules[$_], $version_strings[$_],
+					__PACKAGE__,         $phase_relationship,
+				);
+			};
+		}
 	}
-}
 	return;
 }
 

@@ -1,10 +1,10 @@
 package App::Midgen::Role::Output::Infile;
 
 use constant {
-	BLANK => q{ }, 
-	NONE => q{}, 
-	THREE => 3, 
-	EIGHT => 8, 
+	BLANK => q{ },
+	NONE => q{},
+	THREE => 3,
+	EIGHT => 8,
 	NINE => 9,
 	TEN => 10
 };

@@ -16,13 +16,14 @@ use PPI;
 use Try::Tiny;
 use Data::Printer {caller_info => 1,};
 use Tie::Static qw(static);
+
 #use List::MoreUtils qw( lastidx );
 
 #######
 # composed method - _xtests_in_single_quote
 #######
 sub xtests_use_ok {
-	my $self               = shift;
+	my $self = shift;
 	my $phase_relationship = shift || NONE;
 	my @modules;
 	my @version_strings;
@@ -108,21 +109,14 @@ sub xtests_use_ok {
 												print "found version_string - $version_string\n"
 													if $self->debug;
 												try {
-#													$self->{found_version}{$previous_module}
-#														= $version_string
-#														if $previous_module;
-														
-							if ( $previous_module ) {
-						$self->{found_version}{$previous_module} = $version_string;
-							# we want the lastidex as that should be the correct match assuming duplicates
-#							$version_strings[ lastidx { $_ eq $previous_module } @modules ] = $version_string;
-$version_strings[$#modules] = $version_string;
-
-						}
+													if ($previous_module) {
+														$self->{found_version}{$previous_module}
+															= $version_string;
+														$version_strings[$#modules] = $version_string;
+													}
 
 													$previous_module = undef;
 												};
-
 											}
 										}
 									}
@@ -135,14 +129,6 @@ $version_strings[$#modules] = $version_string;
 		}
 	}
 
-
-	# if we found a module, process it with the correct catogery
-#	if (scalar @modules > 0) {
-#		$self->_process_found_modules($phase_relationship, \@modules,
-#			__PACKAGE__, $phase_relationship,);
-#
-#	}
-
 	@version_strings = map { defined $_ ? $_ : 0 } @version_strings;
 	p @modules         if $self->debug;
 	p @version_strings if $self->debug;
@@ -150,12 +136,13 @@ $version_strings[$#modules] = $version_string;
 	if (scalar @modules > 0) {
 
 		for (0 .. $#modules) {
-			print "Info: UseOk -> Sending $modules[$_] - $version_strings[$_]\n" if ($self->verbose == TWO);
-
-#ToDo
+			print "Info: UseOk -> Sending $modules[$_] - $version_strings[$_]\n"
+				if ($self->verbose == TWO);
 			try {
-				$self->_process_found_modules($phase_relationship, $modules[$_], $version_strings[$_],
-					__PACKAGE__, $phase_relationship,);
+				$self->_process_found_modules(
+					$phase_relationship, $modules[$_], $version_strings[$_],
+					__PACKAGE__,         $phase_relationship,
+				);
 			};
 		}
 	}
