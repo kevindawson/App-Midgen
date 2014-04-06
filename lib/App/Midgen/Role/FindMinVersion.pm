@@ -6,14 +6,14 @@ use Types::Standard qw( Bool );
 use Moo::Role;
 requires qw( ppi_document debug experimental verbose );
 
-our $VERSION = '0.31_05';
+our $VERSION = '0.32';
 $VERSION = eval $VERSION;    ## no critic
 
 use Perl::MinimumVersion;
 use Try::Tiny;
 use Term::ANSIColor qw( :constants colored colorstrip );
 use version;
-use Data::Printer {caller_info => 1, colored => 1,};
+use Data::Printer {caller_info => 1,};
 
 has 'mro_skip' => (
 	is => 'rwp',
@@ -123,7 +123,7 @@ App::Midgen::Roles::FindMinVersion - used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.31_05
+version: 0.32
 
 =head1 METHODS
 

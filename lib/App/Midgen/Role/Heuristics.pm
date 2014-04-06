@@ -1,16 +1,16 @@
 package App::Midgen::Role::Heuristics;
 
-our $VERSION = '0.31_05';
+our $VERSION = '0.32';
 $VERSION = eval $VERSION;    ## no critic
 
-use constant {TRUE => 1, FALSE => 0,};
+use constant {TRUE => 1, FALSE => 0, TWO => 2};
 
 use Types::Standard qw( Bool );
 use Moo::Role;
-requires qw( debug meta2 );
+requires qw( debug meta2 format );
 
 use Try::Tiny;
-use Data::Printer {caller_info => 1, colored => 1,};
+use Data::Printer {caller_info => 1,};
 use Term::ANSIColor qw( :constants colored colorstrip );
 
 
@@ -34,7 +34,7 @@ sub recast_to_runtimerequires {
 		#2nd part of mro - MRO::Compat catch
 		if ( $module eq 'MRO::Compat' and  $self->meta2 == FALSE ) {
 
-			print "recasting - $module\n" if $self->debug;
+			print "recasting - $module\n" if ($self->verbose == TWO);
 
 			# add to RuntimeRequires bucket
 			$requires_ref->{$module} = $recommends_ref->{$module};
@@ -70,7 +70,7 @@ sub recast_to_runtimerequires {
 						. $module
 						. ' to RuntimeRequires'
 						. CLEAR . "\n";
-					p $self->{modules}{$module} if $self->debug;
+					p $self->{modules}{$module} if ($self->verbose == TWO);
 				}
 			}
 		};
@@ -204,7 +204,22 @@ sub _rc_tests {
 	return FALSE;
 }
 
+#######
+# remove_inc_mi
+# just some belt n braces tidying up
+#######
+sub remove_inc_mi {
+	my $self = shift;
 
+	if ($self->{format} eq 'dsl') {
+		delete $self->{modules}{'inc::Module::Install::DSL'};
+	}
+	if ($self->{format} eq 'mi') {
+		delete $self->{modules}{'inc::Module::Install'};
+	}
+
+	return;
+}
 
 
 no Moo::Role;
@@ -223,7 +238,7 @@ App::Midgen::Roles::Heuristics - used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.31_05
+version: 0.32
 
 =head1 METHODS
 
@@ -237,7 +252,7 @@ Correct incorrectly cast modules as RuntimeRecommends and re-cast as RuntimeRequ
 
 Correct incorrectly cast modules as TestSuggests and re-cast as TestRequires
 
-=item * run
+=item * remove_inc_mi
 
 =back
 

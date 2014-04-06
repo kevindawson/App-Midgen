@@ -1,18 +1,18 @@
 package App::Midgen::Role::Eval;
 
-use constant {NONE => q{},};
-
+use constant {NONE => q{}, TWO => 2,};
 use Moo::Role;
 requires
-	qw( ppi_document debug format xtest _process_found_modules develop meta2 );
+	qw( ppi_document debug verbose format xtest _process_found_modules develop meta2 );
 
 use Try::Tiny;
-use Data::Printer {caller_info => 1, colored => 1,};
+use Data::Printer {caller_info => 1,};
+use List::Util qw(any first);
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.31_05';
+our $VERSION = '0.32';
 $VERSION = eval $VERSION;    ## no critic
 
 #######
@@ -22,6 +22,165 @@ sub xtests_eval {
 	my $self = shift;
 	my $phase_relationship = shift || NONE;
 
+	my @modules;
+	my @version_strings;
+
+#PPI::Document
+#  PPI::Statement::Sub
+#    PPI::Token::Word  	'sub'
+#    PPI::Token::Whitespace  	' '
+#    PPI::Token::Word  	'_assert_ssl'
+#    PPI::Token::Whitespace  	' '
+#    PPI::Structure::Block  	{ ... }
+#      PPI::Token::Whitespace  	'\n'
+#      PPI::Token::Whitespace  	'\t\t'
+#      PPI::Statement
+#        PPI::Token::Word  	'eval'
+#        PPI::Token::Whitespace  	' '
+#        PPI::Structure::Block  	{ ... }
+#          PPI::Token::Whitespace  	' '
+#          PPI::Statement::Include
+#            PPI::Token::Word  	'require'
+#            PPI::Token::Whitespace  	' '
+#            PPI::Token::Word  	'IO::Socket::SSL'
+#            PPI::Token::Structure  	';'
+#          PPI::Token::Whitespace  	' '
+#          PPI::Statement
+#            PPI::Token::Word  	'IO::Socket::SSL'
+#            PPI::Token::Operator  	'->'
+#            PPI::Token::Word  	'VERSION'
+#            PPI::Structure::List  	( ... )
+#              PPI::Statement::Expression
+#                PPI::Token::Number::Float  	'1.44'
+#          PPI::Token::Whitespace  	' '
+#        PPI::Token::Structure  	';'
+#      PPI::Token::Whitespace  	'\n'
+
+	try {
+
+		my @chunks3 = @{$self->ppi_document->find('PPI::Statement::Sub')};
+
+		foreach my $chunk (@chunks3) {
+			if (
+				$chunk->find(
+					sub {
+						$_[1]->isa('PPI::Token::Word')
+							and $_[1]->content =~ m{\A(?:sub)\z};
+					}
+				)
+				)
+			{
+				my $module_name;
+				my $version_string;
+				for (0 .. $#{$chunk->{children}}) {
+					if ($chunk->{children}[$_]->isa('PPI::Structure::Block')) {
+						my $ppi_sb = $chunk->{children}[$_]
+							if $chunk->{children}[$_]->isa('PPI::Structure::Block');
+						for (0 .. $#{$ppi_sb->{children}}) {
+							if ($ppi_sb->{children}[$_]->isa('PPI::Statement')) {
+								my $ppi_s = $ppi_sb->{children}[$_]
+									if $ppi_sb->{children}[$_]->isa('PPI::Statement');
+								my @chunks3 = @{$ppi_s->{children}};
+								if (
+									any {
+										$_->isa('PPI::Token::Word')
+											and $_->content =~ m{\A(?:eval|try)\z};
+									}
+									@{$ppi_s->{children}}
+									)
+								{
+									my @ppisb = first {
+										$_->isa('PPI::Structure::Block');
+									}
+									@{$ppi_s->{children}};
+
+									# extract first Structure::Block
+									my $ppi_sb = $ppisb[0];
+
+									$self->eval_info($ppi_sb, \$module_name, \$version_string);
+
+									print "Option3 $module_name - $version_string\n" if $self->debug;
+
+
+									if (version::is_lax($version_string)) {
+
+										push @modules, $module_name;
+										$version_string
+											= version::is_lax($version_string)
+											? $version_string
+											: 0;
+										push @version_strings, $version_string;
+										$self->{found_version}{$module_name} = $version_string;
+									}
+
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	};
+
+
+#PPI::Document
+#  PPI::Statement
+#    PPI::Token::Word  	'eval'
+#    PPI::Token::Whitespace  	' '
+#    PPI::Structure::Block  	{ ... }
+#      PPI::Statement::Include
+#        PPI::Token::Word  	'require'
+#        PPI::Token::Whitespace  	' '
+#        PPI::Token::Word  	'PAR::Dist'
+#        PPI::Token::Structure  	';'
+#      PPI::Token::Whitespace  	' '
+#      PPI::Statement
+#        PPI::Token::Word  	'PAR::Dist'
+#        PPI::Token::Operator  	'->'
+#        PPI::Token::Word  	'VERSION'
+#        PPI::Structure::List  	( ... )
+#          PPI::Statement::Expression
+#            PPI::Token::Number::Float  	'0.17'
+
+	try {
+		my @chunks2 = @{$self->ppi_document->find('PPI::Statement')};
+		foreach my $chunk (@chunks2) {
+			if (
+				$chunk->find(
+					sub {
+						$_[1]->isa('PPI::Token::Word')
+							and $_[1]->content =~ m{\A(?:eval|try)\z};
+					}
+				)
+				)
+			{
+				for (0 .. $#{$chunk->{children}}) {
+
+					my $module_name;
+					my $version_string;
+
+					if ($chunk->{children}[$_]->isa('PPI::Structure::Block')) {
+
+						my $ppi_sb = $chunk->{children}[$_]
+							if $chunk->{children}[$_]->isa('PPI::Structure::Block');
+
+						$self->eval_info($ppi_sb, \$module_name, \$version_string);
+						print "Option2 $module_name - $version_string\n" if $self->debug;
+					}
+					if (version::is_lax($version_string)) {
+
+						push @modules, $module_name;
+						$version_string
+							= version::is_lax($version_string) ? $version_string : 0;
+						push @version_strings, $version_string;
+						$self->{found_version}{$module_name} = $version_string;
+					}
+				}
+			}
+		}
+	};
+
+
 	#PPI::Document
 	#  PPI::Statement
 	#    PPI::Token::Word  	'eval'
@@ -29,8 +188,6 @@ sub xtests_eval {
 	#    PPI::Token::Quote::Double  	'"require Test::Kwalitee::Extra $mod_ver"'
 	#    PPI::Token::Structure  	';'
 	#
-	my @modules;
-	my @version_strings;
 
 	try {
 		my @chunks1 = @{$self->ppi_document->find('PPI::Statement')};
@@ -83,121 +240,21 @@ sub xtests_eval {
 		}
 	};
 
-
-#PPI::Document
-#  PPI::Statement
-#    PPI::Token::Word  	'eval'
-#    PPI::Token::Whitespace  	' '
-#    PPI::Structure::Block  	{ ... }
-#      PPI::Statement::Include
-#        PPI::Token::Word  	'require'
-#        PPI::Token::Whitespace  	' '
-#        PPI::Token::Word  	'PAR::Dist'
-#        PPI::Token::Structure  	';'
-#      PPI::Token::Whitespace  	' '
-#      PPI::Statement
-#        PPI::Token::Word  	'PAR::Dist'
-#        PPI::Token::Operator  	'->'
-#        PPI::Token::Word  	'VERSION'
-#        PPI::Structure::List  	( ... )
-#          PPI::Statement::Expression
-#            PPI::Token::Number::Float  	'0.17'
-
-	try {
-		my @chunks2 = @{$self->ppi_document->find('PPI::Statement')};
-
-		foreach my $chunk (@chunks2) {
-			if (
-				$chunk->find(
-					sub {
-						$_[1]->isa('PPI::Token::Word')
-							and $_[1]->content =~ m{\A(?:eval|try)\z};
-					}
-				)
-				)
-			{
-
-				for (0 .. $#{$chunk->{children}}) {
-
-					my $module_name;
-					my $version_string;
-
-					if ($chunk->{children}[$_]->isa('PPI::Structure::Block')) {
-
-						my $ppi_sb = $chunk->{children}[$_]
-							if $chunk->{children}[$_]->isa('PPI::Structure::Block');
-
-						for (0 .. $#{$ppi_sb->{children}}) {
-
-							if ($ppi_sb->{children}[$_]->isa('PPI::Statement::Include')) {
-
-								my $ppi_si = $ppi_sb->{children}[$_]
-									if $ppi_sb->{children}[$_]->isa('PPI::Statement::Include');
-
-								if ( $ppi_si->{children}[0]->isa('PPI::Token::Word')
-									&& $ppi_si->{children}[0]->content eq 'require')
-								{
-
-									$module_name = $ppi_si->{children}[2]->content
-										if $ppi_si->{children}[2]->isa('PPI::Token::Word');
-
-									# check for first char upper in module name
-									$module_name
-										= ($module_name =~ m/\A(?:[A-Z])/) ? $module_name : undef;
-
-									p $module_name if $self->debug;
-								}
-							}
-
-							if ($ppi_sb->{children}[$_]->isa('PPI::Statement')) {
-
-								my $ppi_s = $ppi_sb->{children}[$_]
-									if $ppi_sb->{children}[$_]->isa('PPI::Statement');
-
-								if (
-									(
-										    $ppi_s->{children}[0]->isa('PPI::Token::Word')
-										and $ppi_s->{children}[0]->content eq $module_name
-									)
-									&& (  $ppi_s->{children}[2]->isa('PPI::Token::Word')
-										and $ppi_s->{children}[2]->content eq 'VERSION')
-									)
-								{
-
-									my $ppi_sl = $ppi_s->{children}[3]
-										if $ppi_s->{children}[3]->isa('PPI::Structure::List');
-
-									$version_string
-										= $ppi_sl->{children}[0]->{children}[0]->content;
-
-									p $version_string if $self->debug;
-
-								}
-							}
-						}
-					}
-					if (version::is_lax($version_string)) {
-
-						push @modules, $module_name;
-						$version_string
-							= version::is_lax($version_string) ? $version_string : 0;
-						$self->{found_version}{$module_name} = $version_string;
-					}
-				}
-			}
-		}
-	};
-
 	p @modules         if $self->debug;
 	p @version_strings if $self->debug;
 
-	# if we found a module, process it with the correct catogery
-	if (scalar @modules > 0) {
-		$self->_process_found_modules($phase_relationship, \@modules,
-			__PACKAGE__, $phase_relationship,);
+if (scalar @modules > 0) {
+	for (0 .. $#modules) {
+		print "Info: Eval -> Sending $modules[$_] - $version_strings[$_]\n" if ($self->verbose == TWO);
 
+		try {
+			$self->_process_found_modules(
+				$phase_relationship, $modules[$_], $version_strings[$_],
+				__PACKAGE__,         $phase_relationship,
+			);
+		};
 	}
-
+}
 	return;
 }
 
@@ -218,10 +275,11 @@ sub _mod_ver {
 		$module_name =~ s/\s+(?:[\$|\w|\n]+)$//;
 		$module_name =~ s/\s+$//;
 
-#		$module_name =~ m/\A(?<m_n>[\w|:]+)\b/;
-#		$module_name = $+{m_n};
 		$module_name =~ m/\A([\w|:]+)\b/;
 		$module_name = $1;
+
+		# exit if already found by this extra scanner
+		return if $self->{found_version}{$module_name};
 
 		# check for first char upper in module name
 		push @{$modules}, $module_name if $module_name =~ m/\A(?:[A-Z])/;
@@ -234,6 +292,51 @@ sub _mod_ver {
 		$version_string = version::is_lax($version_string) ? $version_string : 0;
 		push @{$version_strings}, $version_string;
 		$self->{found_version}{$module_name} = $version_string;
+		print "Option1 $module_name - $version_string\n" if $self->debug;
+	}
+
+	return;
+}
+
+
+#######
+# composed Method
+#######
+sub eval_info {
+	my ($self, $ppi_sb, $mn_ref, $vs_ref) = @_;
+
+	for (0 .. $#{$ppi_sb->{children}}) {
+
+		# find module name
+		if ($ppi_sb->{children}[$_]->isa('PPI::Statement::Include')) {
+			my $ppi_si = $ppi_sb->{children}[$_]
+				if $ppi_sb->{children}[$_]->isa('PPI::Statement::Include');
+			if ( $ppi_si->{children}[0]->isa('PPI::Token::Word')
+				&& $ppi_si->{children}[0]->content eq 'require')
+			{
+				${$mn_ref} = $ppi_si->{children}[2]->content
+					if $ppi_si->{children}[2]->isa('PPI::Token::Word');
+			}
+		}
+
+		# find version string if we previously found a name
+		if ($ppi_sb->{children}[$_]->isa('PPI::Statement')) {
+			my $ppi_s = $ppi_sb->{children}[$_]
+				if $ppi_sb->{children}[$_]->isa('PPI::Statement');
+			if (
+				(
+					    $ppi_s->{children}[0]->isa('PPI::Token::Word')
+					and $ppi_s->{children}[0]->content eq ${$mn_ref}
+				)
+				&& (  $ppi_s->{children}[2]->isa('PPI::Token::Word')
+					and $ppi_s->{children}[2]->content eq 'VERSION')
+				)
+			{
+				my $ppi_sl = $ppi_s->{children}[3]
+					if $ppi_s->{children}[3]->isa('PPI::Structure::List');
+				${$vs_ref} = $ppi_sl->{children}[0]->{children}[0]->content;
+			}
+		}
 	}
 
 	return;
@@ -255,7 +358,7 @@ App::Midgen::Roles::Eval - used by L<App::Midgen>
 
 =head1 VERSION
 
-This document describes App::Midgen::Roles version: 0.31_05
+This document describes App::Midgen::Roles version: 0.32
 
 =head1 METHODS
 

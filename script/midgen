@@ -4,12 +4,12 @@ use 5.008001;
 use strict;
 use warnings FATAL => 'all';
 
-our $VERSION = '0.31_05';
+our $VERSION = '0.32';
 
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Data::Printer {caller_info => 1, colored => 1,};
+use Data::Printer {caller_info => 1,};
 
 # we are doing this so we can run from git during development
 # perl ~/GitHub/App-Midgen/script/midgen
@@ -136,7 +136,7 @@ midgen - Check B<requires> & B<test_requires> of your package for CPAN inclusion
 
 =head1 VERSION
 
-This document describes midgen version: 0.31_05
+This document describes midgen version: 0.32
 
 =head1 SYNOPSIS
 

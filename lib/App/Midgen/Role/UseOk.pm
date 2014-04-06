@@ -4,26 +4,28 @@ use constant {BLANK => q{ }, NONE => q{}, TWO => 2, THREE => 3,};
 
 use Moo::Role;
 requires
-	qw( ppi_document debug format xtest _process_found_modules develop meta2 );
+	qw( ppi_document debug verbose format xtest _process_found_modules develop meta2 );
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.31_05';
+our $VERSION = '0.32';
 $VERSION = eval $VERSION;    ## no critic
 
 use PPI;
 use Try::Tiny;
-use Data::Printer {caller_info => 1, colored => 1,};
+use Data::Printer {caller_info => 1,};
 use Tie::Static qw(static);
-
+#use List::MoreUtils qw( lastidx );
 
 #######
 # composed method - _xtests_in_single_quote
 #######
 sub xtests_use_ok {
-	my $self = shift;
+	my $self               = shift;
 	my $phase_relationship = shift || NONE;
+	my @modules;
+	my @version_strings;
 
 	#PPI::Document
 	#  PPI::Statement::Scheduled
@@ -42,8 +44,6 @@ sub xtests_use_ok {
 	#            PPI::Token::Whitespace  	' '
 	#            PPI::Token::Quote::Single  	''2.30''
 
-	my @modules;
-	my @version_strings;
 	my @chunks =
 
 		map  { [$_->schildren] }
@@ -81,8 +81,9 @@ sub xtests_use_ok {
 												$module =~ s/['|"]$//;
 												if ($module =~ m/\A[A-Z]/) {
 
-													warn 'found module - ' . $module if $self->debug;
+													print "found module - $module\n" if $self->debug;
 													push @modules, $module;
+													$version_strings[$#modules] = undef;
 													$previous_module = $module;
 												}
 											}
@@ -104,12 +105,20 @@ sub xtests_use_ok {
 													? $version_string
 													: 0;
 
-												warn 'found version_string - ' . $version_string
+												print "found version_string - $version_string\n"
 													if $self->debug;
 												try {
-													$self->{found_version}{$previous_module}
-														= $version_string
-														if $previous_module;
+#													$self->{found_version}{$previous_module}
+#														= $version_string
+#														if $previous_module;
+														
+							if ( $previous_module ) {
+						$self->{found_version}{$previous_module} = $version_string;
+							# we want the lastidex as that should be the correct match assuming duplicates
+#							$version_strings[ lastidx { $_ eq $previous_module } @modules ] = $version_string;
+$version_strings[$#modules] = $version_string;
+
+						}
 
 													$previous_module = undef;
 												};
@@ -128,12 +137,28 @@ sub xtests_use_ok {
 
 
 	# if we found a module, process it with the correct catogery
+#	if (scalar @modules > 0) {
+#		$self->_process_found_modules($phase_relationship, \@modules,
+#			__PACKAGE__, $phase_relationship,);
+#
+#	}
+
+	@version_strings = map { defined $_ ? $_ : 0 } @version_strings;
+	p @modules         if $self->debug;
+	p @version_strings if $self->debug;
+
 	if (scalar @modules > 0) {
-		$self->_process_found_modules($phase_relationship, \@modules,
-			__PACKAGE__, $phase_relationship,);
 
+		for (0 .. $#modules) {
+			print "Info: UseOk -> Sending $modules[$_] - $version_strings[$_]\n" if ($self->verbose == TWO);
+
+#ToDo
+			try {
+				$self->_process_found_modules($phase_relationship, $modules[$_], $version_strings[$_],
+					__PACKAGE__, $phase_relationship,);
+			};
+		}
 	}
-
 	return;
 }
 
@@ -154,7 +179,7 @@ for methods in use_ok in BEGIN blocks, used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.31_05
+version: 0.32
 
 =head1 METHODS
 

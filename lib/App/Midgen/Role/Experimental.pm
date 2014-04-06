@@ -1,6 +1,6 @@
 package App::Midgen::Role::Experimental;
 
-our $VERSION = '0.31_05';
+our $VERSION = '0.32';
 $VERSION = eval $VERSION;    ## no critic
 
 use constant {THREE => 3,};
@@ -10,7 +10,7 @@ use Moo::Role;
 #requires qw( debug );
 
 use Try::Tiny;
-use Data::Printer {caller_info => 1, colored => 1,};
+use Data::Printer {caller_info => 1,};
 use Term::ANSIColor qw( :constants colored colorstrip );
 use List::MoreUtils qw(firstidx);
 
@@ -216,7 +216,7 @@ App::Midgen::Roles::Experimental - used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.31_05
+version: 0.32
 
 =head1 METHODS
 

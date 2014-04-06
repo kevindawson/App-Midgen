@@ -23,14 +23,14 @@ with qw(
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 use version;
-our $VERSION = '0.31_05';
+our $VERSION = '0.32';
 $VERSION = eval $VERSION;    ## no critic
 
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
 use Cwd qw(getcwd);
-use Data::Printer {caller_info => 1, colored => 1,};
+use Data::Printer {caller_info => 1,};
 use File::Find qw(find);
 use File::Spec;
 use MetaCPAN::API;
@@ -123,6 +123,9 @@ sub run {
 	}
 
 	$self->output_footer();
+
+	#now for tidy-up Heuristics :)
+	$self->remove_inc_mi() if ( $self->{format} eq 'dsl' or 'mi' );
 
 	p $self->{modules} if ($self->verbose == TWO);
 
@@ -281,11 +284,18 @@ sub _find_runtime_requirments {
 		}
 	}
 
-	$self->_process_found_modules('RuntimeRequires', \@modules,
-		'Perl::PrereqScanner', 'RuntimeRequires',);
+	if (scalar @modules > 0) {
+		for (0 .. $#modules) {
+			try {
+				$self->_process_found_modules('RuntimeRequires', $modules[$_],
+					$prereqs->requirements_for_module($modules[$_]),
+					'Perl::PrereqScanner', 'RuntimeRequires',);
+			};
+		}
+	}
 
 	#run pmv now
-	$self->min_version(	$self->looking_infile ) if $self->format ne 'infile';
+	$self->min_version($self->looking_infile) if $self->format ne 'infile';
 
 	return;
 }
@@ -349,7 +359,9 @@ sub _find_test_develop_requirments {
 	$self->_set_ppi_document(PPI::Document->new($filename));
 
 	# don't scan xt/ for pmv
-	$self->min_version($filename) if $directorie !~ m/xt$/ or $self->format ne 'infile';
+	$self->min_version($filename)
+		if $directorie !~ m/xt$/
+		or $self->format ne 'infile';
 
 
 	# do extra test early check for Test::Requires before hand
@@ -377,21 +389,31 @@ sub _find_test_develop_requirments {
 	}
 
 	if (scalar @modules > 0) {
-		if ($self->xtest) {
-			$self->_process_found_modules($phase_relationship, \@modules,
-				'Perl::PrereqScanner', $phase_relationship,)
-				if $self->meta2;
-			$self->_process_found_modules('DevelopRequires', \@modules,
-				'Perl::PrereqScanner', 'DevelopRequires',)
-				if not $self->meta2;
-		}
-		else {
-			$self->_process_found_modules('TestRequires', \@modules,
-				'Perl::PrereqScanner', 'TestRequires',);
-		}
+		for (0 .. $#modules) {
 
+			if ($self->xtest) {
+				try {
+					$self->_process_found_modules($phase_relationship, $modules[$_],
+						$prereqs->requirements_for_module($modules[$_]),
+						'Perl::PrereqScanner', $phase_relationship,)
+						if $self->meta2;
+				};
+				try {
+					$self->_process_found_modules('DevelopRequires', $modules[$_],
+						$prereqs->requirements_for_module($modules[$_]),
+						'Perl::PrereqScanner', 'DevelopRequires',)
+						if not $self->meta2;
+				};
+			}
+			else {
+				try {
+					$self->_process_found_modules('TestRequires', $modules[$_],
+						$prereqs->requirements_for_module($modules[$_]),
+						'Perl::PrereqScanner', 'TestRequires',);
+				};
+			}
+		}
 	}
-
 	return;
 }
 
@@ -402,81 +424,78 @@ sub _find_test_develop_requirments {
 sub _process_found_modules {
 	my $self          = shift;
 	my $require_type  = shift;
-	my $modules_ref   = shift;
+	my $module        = shift;
+	my $version       = shift || 0;
 	my $extra_scanner = shift || 'none';
-	my $pr_location = shift || 'none';
+	my $pr_location   = shift || 'none';
 
-	foreach my $module (@{$modules_ref}) {
+	p $module       if $self->debug;
+	p $version      if $self->debug;
+	p $require_type if $self->debug;
 
-		p $module       if $self->debug;
-		p $require_type if $self->debug;
+	#deal with ''
+	next if $module eq NONE;
 
-		#deal with ''
-		next if $module eq NONE;
+	# let's show every thing we can find infile
+	if ($self->format ne 'infile') {
 
-		# let's show every thing we can find infile
-		if ($self->format ne 'infile') {
+		my $distribution_name = $self->distribution_name || 'm/t';
 
-			my $distribution_name = $self->distribution_name || 'm/t';
+		if ($module =~ /perl/sxm) {
 
-			if ($module =~ /perl/sxm) {
+			# ignore perl we will get it from minperl required
+			next;
+		}
+		elsif ($module =~ /\A\Q$distribution_name\E/sxm) {
 
-				# ignore perl we will get it from minperl required
-				next;
-			}
-			elsif ($module =~ /\A\Q$distribution_name\E/sxm) {
+			# don't include our own packages here
+			next;
+		}
+		elsif ($module =~ /^t::/sxm) {
 
-				# don't include our own packages here
-				next;
-			}
-			elsif ($module =~ /^t::/sxm) {
+			# don't include our own test packages here
+			next;
+		}
+		elsif ($module =~ /^inc::Module::Install/sxm) {
 
-				# don't include our own test packages here
-				next;
-			}
-			elsif ($module =~ /^inc::Module::Install/sxm) {
-
-				# don't inc::Module::Install as it is really Module::Install
-				next;
-			}
-			elsif ($module =~ /Mojo/sxm) {
-				if ($self->experimental) {
-					if ($self->_check_mojo_core($module, $require_type)) {
-						if (not $self->quiet) {
-							print BRIGHT_BLACK;
-							print "swapping out $module for Mojolicious\n";
-							print CLEAR;
-						}
-						next;
+			# don't inc::Module::Install as it is really Module::Install
+			next;
+		}
+		elsif ($module =~ /Mojo/sxm) {
+			if ($self->experimental) {
+				if ($self->_check_mojo_core($module, $require_type)) {
+					if (not $self->quiet) {
+						print BRIGHT_BLACK;
+						print "swapping out $module for Mojolicious\n";
+						print CLEAR;
 					}
+					next;
 				}
 			}
-			elsif ($module =~ /^Padre/sxm) {
-
-				# mark all Padre core as just Padre only, for plugins
-				$module = 'Padre';
-			}
 		}
+		elsif ($module =~ /^Padre/sxm) {
 
-		# lets keep track of how many times a module include is found
-		$self->{modules}{$module}{count} += 1;
-
-		push @{$self->{modules}{$module}{infiles}},
-			[
-			$self->looking_infile(), $self->{found_version}{$module} || 0,
-			$extra_scanner, $pr_location,
-			];
-
-		# don't process already found modules
-		p $self->{modules}{$module}{prereqs} if $self->debug;
-
-		next if defined $self->{modules}{$module}{prereqs};
-		p $module if $self->debug;
-
-		# add skip for infile as we don't need to get v-string from metacpan-api
-		$self->_store_modules($require_type, $module)
-			if $self->format ne 'infile';
+			# mark all Padre core as just Padre only, for plugins
+			$module = 'Padre';
+		}
 	}
+
+	# lets keep track of how many times a module include is found
+	$self->{modules}{$module}{count} += 1;
+	try {
+		push @{$self->{modules}{$module}{infiles}},
+			[$self->looking_infile(), $version, $extra_scanner, $pr_location,];
+	};
+
+	# don't process already found modules
+	p $self->{modules}{$module}{prereqs} if $self->debug;
+
+	next if defined $self->{modules}{$module}{prereqs};
+	p $module if $self->debug;
+
+	# add skip for infile as we don't need to get v-string from metacpan-api
+	$self->_store_modules($require_type, $module) if $self->format ne 'infile';
+
 	return;
 }
 
@@ -515,6 +534,9 @@ sub _store_modules {
 			$self->{modules}{$module}{version} = $version
 				if ($self->dual_life || $self->core);
 			$self->{modules}{$module}{dual_life} = 1;
+			$self->{modules}{$module}{prereqs} = $require_type;
+			$self->{modules}{$module}{version} = $version;
+
 		}
 		else {
 			$self->{$require_type}{$module} = colored($version, 'yellow');
@@ -570,7 +592,6 @@ sub _check_mojo_core {
 	my $mojo_module  = shift;
 	my $require_type = shift;
 
-
 	my $mojo_module_ver;
 	static \my $mojo_ver;
 
@@ -611,6 +632,7 @@ sub get_module_version {
 	my $cpan_version;
 	my $found = 0;
 	my $dist;
+
 	p $module if $self->debug;
 
 	try {
@@ -618,10 +640,7 @@ sub get_module_version {
 
 		# quick n dirty, get version number if module is classed as a distribution in metacpan
 		my $mod = $self->mcpan->release(distribution => $module);
-
-		#p $mod;
 		$cpan_version = $mod->{version_numified};
-
 		p $cpan_version if $self->debug;
 
 		$found = 1;
@@ -643,8 +662,12 @@ sub get_module_version {
 				my $mod = $self->mcpan->release(distribution => $dist);
 
 				# This is where we add a dist version to a knackered module
-				$cpan_version                           = $mod->{version_numified};
-				$found                                  = 1;
+				$cpan_version = $mod->{version_numified};
+				$found        = 1;
+
+				#skip saving inc::Module::Install from Role-Output
+#				return $cpan_version if $module =~ m/^inc::/;
+
 				$self->{modules}{$module}{distribution} = $dist;
 				$self->mod_in_dist($dist, $module, $require_type,
 					$mod->{version_numified})
@@ -722,7 +745,7 @@ App::Midgen - Check B<RuntimeRequires> & B<TestRequires> of your package for CPA
 
 =head1 VERSION
 
-This document describes App::Midgen version: 0.31_05
+This document describes App::Midgen version: 0.32
 
 =head1 SYNOPSIS
 
