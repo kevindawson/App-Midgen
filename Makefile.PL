@@ -1,11 +1,11 @@
-use inc::Module::Install::DSL 1.06;
+use inc::Module::Install::DSL 1.08;
 
 all_from lib/App/Midgen.pm
 requires_from lib/App/Midgen.pm
 
 perl_version 5.008001
 
-requires Carp                       1.32
+requires Carp                       1.3301
 requires Cwd                        3.4
 requires Class::XSAccessor          1.19 if can_xs
 requires Data::Printer              0.35
@@ -15,25 +15,24 @@ requires Getopt::Long               2.42
 requires JSON::Tiny                 0.45
 requires List::MoreUtils            0.33
 requires MetaCPAN::API              0.43
-requires Module::CoreList           3.07
+requires Module::CoreList           3.09
 requires Moo                        1.004002
 requires PPI                        1.215
 requires PPI::XS                    0.902 if can_xs
 requires Perl::MinimumVersion       1.32
 requires Perl::PrereqScanner        1.019
 requires Pod::Usage                 1.63
-requires Term::ANSIColor            4.02
+requires Term::ANSIColor            4.03
 requires Tie::Static                0.04
 requires Time::Stamp                1.3
-requires Try::Tiny                  0.19
-requires Type::Tiny                 0.04
-requires Types::Standard            0.038
+requires Try::Tiny                  0.2
+requires Type::Tiny                 0.042
 requires constant                   1.27
 # requires lib                        0.63
 requires version                    0.9908
 
 test_requires Test::CheckDeps 0.01
-test_requires Test::More      1.001002
+test_requires Test::More      1.001003
 test_requires Test::Requires  0.07
 
 recommends ExtUtils::MakeMaker        6.68

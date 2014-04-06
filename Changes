@@ -1,6 +1,6 @@
 Revision history for App-Midgen
 
-0.32 2014-04-06
+0.31_07 2014-04-06
  - fix issue with 2nd part of mro catch to only recast for meta1
  - re-write parts of Eval
  - various tweaks to tidy up the display of found data via verbose

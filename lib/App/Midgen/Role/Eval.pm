@@ -7,12 +7,12 @@ requires
 
 use Try::Tiny;
 use Data::Printer {caller_info => 1,};
-use List::Util qw(any first);
+use List::MoreUtils qw(any firstidx);
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.32';
+our $VERSION = '0.31_07';
 $VERSION = eval $VERSION;    ## no critic
 
 #######
@@ -89,7 +89,7 @@ sub xtests_eval {
 									@{$ppi_s->{children}}
 									)
 								{
-									my @ppisb = first {
+									my @ppisb = firstidx {
 										$_->isa('PPI::Structure::Block');
 									}
 									@{$ppi_s->{children}};
@@ -97,7 +97,7 @@ sub xtests_eval {
 									# extract first Structure::Block
 									my $ppi_sb = $ppisb[0];
 
-									$self->eval_info($ppi_sb, \$module_name, \$version_string);
+									$self->_eval_info($ppi_sb, \$module_name, \$version_string);
 
 									print "Option3 $module_name - $version_string\n" if $self->debug;
 
@@ -164,7 +164,7 @@ sub xtests_eval {
 						my $ppi_sb = $chunk->{children}[$_]
 							if $chunk->{children}[$_]->isa('PPI::Structure::Block');
 
-						$self->eval_info($ppi_sb, \$module_name, \$version_string);
+						$self->_eval_info($ppi_sb, \$module_name, \$version_string);
 						print "Option2 $module_name - $version_string\n" if $self->debug;
 					}
 					if (version::is_lax($version_string)) {
@@ -302,7 +302,7 @@ sub _mod_ver {
 #######
 # composed Method
 #######
-sub eval_info {
+sub _eval_info {
 	my ($self, $ppi_sb, $mn_ref, $vs_ref) = @_;
 
 	for (0 .. $#{$ppi_sb->{children}}) {
@@ -358,7 +358,7 @@ App::Midgen::Roles::Eval - used by L<App::Midgen>
 
 =head1 VERSION
 
-This document describes App::Midgen::Roles version: 0.32
+This document describes App::Midgen::Roles version: 0.31_07
 
 =head1 METHODS
 
