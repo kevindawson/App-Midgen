@@ -16,7 +16,7 @@ requires qw( format distribution_name get_module_version verbose );
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.31_07';
+our $VERSION = '0.32';
 $VERSION = eval $VERSION;    ## no critic
 
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
@@ -174,6 +174,7 @@ sub in_local_lib {
 		# module not installed in local-lib
 		return colored('Missing  ', 'red');
 	};
+	#return; don't follow pbp as it F's-up
 }
 
 
@@ -193,7 +194,7 @@ App::Midgen::Role::Output - A collection of output orientated methods used by L<
 
 =head1 VERSION
 
-version: 0.31_07
+version: 0.32
 
 =head1 DESCRIPTION
 

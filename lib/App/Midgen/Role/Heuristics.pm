@@ -1,6 +1,6 @@
 package App::Midgen::Role::Heuristics;
 
-our $VERSION = '0.31_07';
+our $VERSION = '0.32';
 $VERSION = eval $VERSION;    ## no critic
 
 use constant {TRUE => 1, FALSE => 0, TWO => 2};
@@ -90,8 +90,7 @@ sub recast_to_runtimerequires {
 # composed method _rc_requires
 #######
 sub _rc_requires {
-	my $self = shift;
-	my ($module, $infile) = @_;
+	my ($self, $module, $infile) = @_;
 
 	foreach my $index (0 .. $#{$infile}) {
 
@@ -178,8 +177,7 @@ sub recast_to_testrequires {
 # composed method _rc_requires
 #######
 sub _rc_tests {
-	my $self = shift;
-	my ($module, $infile) = @_;
+	my ($self, $module, $infile) = @_;
 
 	foreach my $index (0 .. $#{$infile}) {
 
@@ -238,7 +236,7 @@ App::Midgen::Roles::Heuristics - used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.31_07
+version: 0.32
 
 =head1 METHODS
 
