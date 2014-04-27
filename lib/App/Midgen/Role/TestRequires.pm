@@ -95,7 +95,7 @@ sub xtests_test_requires {
 										{
 											my $module_name = $element->content;
 											$module_name =~ s/(?:'|")//g;
-											if ($module_name =~ m/\A(?:\w)/) {
+											if ($module_name =~ m/\A(?:[a-zA-Z])/) {
 												print "found module - $module_name\n" if $self->debug;
 												push @modules, $module_name;
 												$version_strings[$#modules] = undef;

@@ -276,7 +276,7 @@ sub _find_runtime_requirments {
 
 				next if $module =~ m/^Dist::Zilla::Role::PluginBundle/;
 				next if $module =~ m{\A[-|:|\d]};
-				next if $module !~ m{\A(?:\w)};
+				next if $module !~ m{\A(?:[[a-zA-Z])};
 				next if $module =~ m{[.|$|\\|/|\-|\[|%|@|]};
 				next if $module eq NONE;
 

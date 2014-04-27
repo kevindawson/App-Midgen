@@ -433,7 +433,7 @@ sub _module_names_ppi_sl {
 				{
 					my $module = $ppi_se->{children}[$_]->content;
 					$module =~ s/(?:['|"])//g;
-					if ($module =~ m{\A(?:\w)}) {
+					if ($module =~ m{\A(?:[a-zA-Z])}) {
 						print "found module - $module\n" if $self->debug;
 						push @{$mn_ref}, $module;
 						$mv_ref->[$#{$mn_ref}] = undef;
@@ -448,7 +448,7 @@ sub _module_names_ppi_sl {
 				{
 					my $version_string = $ppi_se->{children}[$_]->content;
 					$version_string =~ s/(?:['|"])//g;
-					next if $version_string !~ m/\A[\d|v]/;
+					next if $version_string !~ m{\A[\d|v]};
 
 					$version_string
 						= version::is_lax($version_string) ? $version_string : 0;

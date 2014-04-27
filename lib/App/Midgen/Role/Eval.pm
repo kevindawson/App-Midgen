@@ -266,7 +266,7 @@ sub xtests_eval {
 sub _mod_ver {
 	my ($self, $modules, $version_strings, $eval_include) = @_;
 
-	if ($eval_include =~ /^\s*[use|require|no]/) {
+	if ($eval_include =~ /^\s*(?:use|require|no)/) {
 
 		$eval_include =~ s/^\s*(?:use|require|no)\s*//;
 
@@ -283,13 +283,13 @@ sub _mod_ver {
 		return if $self->{found_version}{$module_name};
 
 		# check for first char upper in module name
-		push @{$modules}, $module_name if $module_name =~ m{\A(?:\w)};
+		push @{$modules}, $module_name if $module_name =~ m{\A(?:[a-zA-Z])};
 
 
 		my $version_string = $eval_include;
 		$version_string =~ s/$module_name\s*//;
 		$version_string =~ s/\s*$//;
-		$version_string =~ s/[A-Z_a-z]|\s|\$|s|:|;//g;
+		$version_string =~ s/[a-zA-Z]|\s|\$|s|:|;//g;
 
 		$version_string = version::is_lax($version_string) ? $version_string : 0;
 		push @{$version_strings}, $version_string;

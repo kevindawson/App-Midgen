@@ -78,9 +78,9 @@ sub xtests_use_ok {
 											{
 
 												my $module = $element->content;
-												$module =~ s/^['|"]//;
-												$module =~ s/['|"]$//;
-												if ($module =~ m{\A(?:\w)}) {
+												$module =~ s/^(?:['|"])//;
+												$module =~ s/(?:['|"])$//;
+												if ($module =~ m{\A(?:[[a-zA-Z])}) {
 
 													print "found module - $module\n" if $self->debug;
 													push @modules, $module;
@@ -97,9 +97,9 @@ sub xtests_use_ok {
 
 												my $version_string = $element->content;
 
-												$version_string =~ s/^['|"]//;
-												$version_string =~ s/['|"]$//;
-												next if $version_string !~ m/\A[\d|v]/;
+												$version_string =~ s/^(?:['|"])//;
+												$version_string =~ s/(?:['|"])$//;
+												next if $version_string !~ m{\A(?:[\d|v])};
 
 												$version_string
 													= version::is_lax($version_string)
