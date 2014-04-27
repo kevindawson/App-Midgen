@@ -13,7 +13,7 @@ use Data::Printer {caller_info => 1,};
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.32';
+our $VERSION = '0.33_01';
 $VERSION = eval $VERSION;    ## no critic
 
 
@@ -95,7 +95,7 @@ sub xtests_test_requires {
 										{
 											my $module_name = $element->content;
 											$module_name =~ s/(?:'|")//g;
-											if ($module_name =~ m/\A(?:[A-Z])/) {
+											if ($module_name =~ m/\A(?:\w)/) {
 												print "found module - $module_name\n" if $self->debug;
 												push @modules, $module_name;
 												$version_strings[$#modules] = undef;
@@ -192,7 +192,7 @@ for methods in use L<Test::Requires> blocks, used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.32
+version: 0.33_01
 
 =head1 METHODS
 

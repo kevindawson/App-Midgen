@@ -15,7 +15,7 @@ requires qw( verbose );
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.32';
+our $VERSION = '0.33_01';
 $VERSION = eval $VERSION;    ## no critic
 
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
@@ -204,7 +204,7 @@ used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.32
+version: 0.33_01
 
 =head1 DESCRIPTION
 

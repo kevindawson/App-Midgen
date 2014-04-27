@@ -23,7 +23,7 @@ with qw(
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 use version;
-our $VERSION = '0.32';
+our $VERSION = '0.33_01';
 $VERSION = eval $VERSION;    ## no critic
 
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
@@ -275,7 +275,8 @@ sub _find_runtime_requirments {
 				$module =~ s/[']$//;
 
 				next if $module =~ m/^Dist::Zilla::Role::PluginBundle/;
-				next if $module =~ m{\A[-|:|\d|a-z]};
+				next if $module =~ m{\A[-|:|\d]};
+				next if $module !~ m{\A(?:\w)};
 				next if $module =~ m{[.|$|\\|/|\-|\[|%|@|]};
 				next if $module eq NONE;
 
@@ -563,24 +564,24 @@ sub _in_corelist {
 	my $self   = shift;
 	my $module = shift;
 
-	#return 1 if defined $self->{modules}{$module}{corelist};
+	#return TRUE (1) if defined $self->{modules}{$module}{corelist};
 
 	# hash with core modules to process regardless
 	my $ignore_core = {'File::Path' => 1, 'Test::More' => 1,};
 
 	if (!$ignore_core->{$module}) {
 
-		if (Module::CoreList->first_release($module)) {
+		if ( Module::CoreList->first_release($module) ) {
 			$self->{modules}{$module}{corelist} = 1;
-			return 1;
+			return TRUE;
 		}
 		else {
 			$self->{modules}{$module}{corelist} = 0;
-			return 0;
+			return FALSE;
 		}
 	}
 
-	return 0;
+	return FALSE;
 }
 
 
@@ -745,7 +746,7 @@ App::Midgen - Check B<RuntimeRequires> & B<TestRequires> of your package for CPA
 
 =head1 VERSION
 
-This document describes App::Midgen version: 0.32
+This document describes App::Midgen version: 0.33_01
 
 =head1 SYNOPSIS
 

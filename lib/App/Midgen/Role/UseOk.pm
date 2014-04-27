@@ -9,7 +9,7 @@ requires
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.32';
+our $VERSION = '0.33_01';
 $VERSION = eval $VERSION;    ## no critic
 
 use PPI;
@@ -80,7 +80,7 @@ sub xtests_use_ok {
 												my $module = $element->content;
 												$module =~ s/^['|"]//;
 												$module =~ s/['|"]$//;
-												if ($module =~ m/\A[A-Z]/) {
+												if ($module =~ m{\A(?:\w)}) {
 
 													print "found module - $module\n" if $self->debug;
 													push @modules, $module;
@@ -166,7 +166,7 @@ for methods in use_ok in BEGIN blocks, used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.32
+version: 0.33_01
 
 =head1 METHODS
 

@@ -12,7 +12,7 @@ use List::MoreUtils qw(any firstidx);
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.32';
+our $VERSION = '0.33_01';
 $VERSION = eval $VERSION;    ## no critic
 
 #######
@@ -283,7 +283,8 @@ sub _mod_ver {
 		return if $self->{found_version}{$module_name};
 
 		# check for first char upper in module name
-		push @{$modules}, $module_name if $module_name =~ m/\A(?:[A-Z])/;
+		push @{$modules}, $module_name if $module_name =~ m{\A(?:\w)};
+
 
 		my $version_string = $eval_include;
 		$version_string =~ s/$module_name\s*//;
@@ -359,7 +360,7 @@ App::Midgen::Roles::Eval - used by L<App::Midgen>
 
 =head1 VERSION
 
-This document describes App::Midgen::Roles version: 0.32
+This document describes App::Midgen::Roles version: 0.33_01
 
 =head1 METHODS
 
