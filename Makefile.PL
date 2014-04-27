@@ -14,8 +14,8 @@ requires File::Spec                 3.4
 requires Getopt::Long               2.42
 requires JSON::Tiny                 0.45
 requires List::MoreUtils            0.33
-requires MetaCPAN::API              0.43
-requires Module::CoreList           3.09
+requires MetaCPAN::API              0.44
+requires Module::CoreList           3.1
 requires Moo                        1.004002
 requires PPI                        1.215
 requires PPI::XS                    0.902 if can_xs
@@ -25,7 +25,7 @@ requires Pod::Usage                 1.63
 requires Term::ANSIColor            4.03
 requires Tie::Static                0.04
 requires Time::Stamp                1.3
-requires Try::Tiny                  0.2
+requires Try::Tiny                  0.21
 requires Type::Tiny                 0.042
 requires constant                   1.27
 # requires lib                        0.63

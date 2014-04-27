@@ -28,7 +28,7 @@ BEGIN {
 	use_ok('App::Midgen::Role::Output::MIdsl');
 	use_ok('App::Midgen::Role::Output::MI');
 
-	use_ok('Carp',                 '1.32');
+	use_ok('Carp',                 '1.3301');
 	use_ok('Cwd',                  '3.4');
 	use_ok('Data::Printer',        '0.35');
 	use_ok('File::Slurp::Tiny',    '0.003');
@@ -36,25 +36,25 @@ BEGIN {
 	use_ok('Getopt::Long',         '2.42');
 	use_ok('JSON::Tiny',           '0.45');
 	use_ok('List::MoreUtils',      '0.33');
-	use_ok('MetaCPAN::API',        '0.43');
-	use_ok('Module::CoreList',     '3.07');
+	use_ok('MetaCPAN::API',        '0.44');
+	use_ok('Module::CoreList',     '3.1');
 	use_ok('Moo',                  '1.004002');
 	use_ok('PPI',                  '1.215');
 	use_ok('Perl::MinimumVersion', '1.32');
 	use_ok('Perl::PrereqScanner',  '1.019');
 	use_ok('Pod::Usage',           '1.63');
-	use_ok('Term::ANSIColor',      '4.02');
+	use_ok('Term::ANSIColor',      '4.03');
 	use_ok('Tie::Static',          '0.04');
 	use_ok('Time::Stamp',          '1.3');
-	use_ok('Try::Tiny',            '0.19');
-	use_ok('Type::Tiny',           '0.04');
+	use_ok('Try::Tiny',            '0.21');
+	use_ok('Type::Tiny',           '0.042');
 	use_ok('constant',             '1.27');
 
 #  use_ok('lib',                  '0.63');
 	use_ok('version', '0.9908');
 
 	use_ok('Test::CheckDeps', '0.01');
-	use_ok('Test::More',      '1.001002');
+	use_ok('Test::More',      '1.001003');
 	use_ok('Test::Requires',  '0.07');
 }
 
