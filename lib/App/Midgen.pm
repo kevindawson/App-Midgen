@@ -33,10 +33,8 @@ use Cwd qw(getcwd);
 use Data::Printer {caller_info => 1,};
 use File::Find qw(find);
 use File::Spec;
-use MetaCPAN::API;
 use Module::CoreList;
 use PPI;
-use Perl::PrereqScanner;
 use Term::ANSIColor qw( :constants colored colorstrip );
 use Try::Tiny;
 use Tie::Static qw(static);
@@ -161,9 +159,15 @@ sub first_package_name {
 
 	# We will assume the first package found is our Package Name, pot lock :)
 	# due to Milla not being a dist we go and get dist-name
+
 	try {
-		my $mcpan_module_info = $self->mcpan->module($self->package_names->[0]);
-		my $distribution_name = $mcpan_module_info->{distribution};
+		my $is_package_name = $self->package_names->[0];
+		$is_package_name =~ s{::}{-}g;
+
+		# MetaCPAN::Client expects hyphens in distribution search
+		my $mcpan_dist_info = $self->mcpan->distribution($is_package_name);
+		my $distribution_name = $mcpan_dist_info->name();
+
 		$distribution_name =~ s{-}{::}g;
 		$self->_set_distribution_name($distribution_name);
 	}
@@ -624,7 +628,7 @@ sub _check_mojo_core {
 }
 
 #######
-# get module version using metacpan_api
+# get module version using metacpan_client (mc)
 #######
 sub get_module_version {
 	my $self         = shift;
@@ -632,48 +636,42 @@ sub get_module_version {
 	my $require_type = shift || undef;
 	my $cpan_version;
 	my $found = 0;
-	my $dist;
+	my $mc;
 
 	p $module if $self->debug;
 
 	try {
-		$module =~ s/::/-/g;
 
-		# quick n dirty, get version number if module is classed as a distribution in metacpan
-		my $mod = $self->mcpan->release(distribution => $module);
-		$cpan_version = $mod->{version_numified};
+		$mc = $self->mcpan->module($module);
+
+		$cpan_version = $mc->version_numified();
 		p $cpan_version if $self->debug;
 
 		$found = 1;
-	}
-	catch {
-		try {
-			$module =~ s/-/::/g;
-			my $mcpan_module_info = $self->mcpan->module($module);
-			$dist = $mcpan_module_info->{distribution};
+	};
+	try {
+		my $dist_name = $mc->distribution();
+		$dist_name =~ s/-/::/g;
+
+		if ($dist_name eq 'perl') {
 
 			# mark all perl core modules with either 'core' or '0'
-			if ($dist eq 'perl') {
-				$cpan_version = 'core';
-				$found        = 1;
-			}
-		};
-		if ($found == 0) {
-			try {
-				my $mod = $self->mcpan->release(distribution => $dist);
+			$cpan_version = 'core';
+			$found        = 1;
+		}
+		elsif ($module =~ m/^inc::/) {
 
-				# This is where we add a dist version to a knackered module
-				$cpan_version = $mod->{version_numified};
-				$found        = 1;
+			#skip saving inc::Module::Install from Role-Output
+			return $cpan_version;
+		}
+		elsif ($dist_name ne $module) {
 
-				#skip saving inc::Module::Install from Role-Output
-#				return $cpan_version if $module =~ m/^inc::/;
-
-				$self->{modules}{$module}{distribution} = $dist;
-				$self->mod_in_dist($dist, $module, $require_type,
-					$mod->{version_numified})
-					if $require_type;
-			}
+			# This is where we add a dist version to a knackered module
+			$self->{modules}{$module}{distribution} = $dist_name;
+			$self->mod_in_dist($dist_name, $module, $require_type,
+				$mc->version_numified())
+				if $require_type;
+			$found = 1;
 		}
 	}
 	finally {
@@ -681,6 +679,7 @@ sub get_module_version {
 		$cpan_version = '!mcpan' if $found == 0;
 	};
 
+	# the following my note be needed any more due to developments in MetaCPAN 
 	# scientific numbers in a version string, O what fun.
 	if ($cpan_version =~ m/\d+e/) {
 

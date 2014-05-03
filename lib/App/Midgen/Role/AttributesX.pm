@@ -2,6 +2,8 @@ package App::Midgen::Role::AttributesX;
 
 use Types::Standard qw( InstanceOf );
 use Moo::Role;
+use MetaCPAN::Client;
+use Perl::PrereqScanner;
 
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
@@ -17,15 +19,15 @@ use Carp;
 
 has 'mcpan' => (
 	is      => 'ro',
-	isa     => InstanceOf [ 'MetaCPAN::API', ],
+	isa     => InstanceOf [ 'MetaCPAN::Client', ],
 	lazy    => 1,
 	builder => '_build_mcpan',
-	handles => [qw( module release )],
+	handles => [qw( distribution module )],
 );
 
 sub _build_mcpan {
 	my $self = shift;
-	return MetaCPAN::API->new();
+	return MetaCPAN::Client->new();
 }
 
 has 'scanner' => (
@@ -69,7 +71,7 @@ none as such, but we do have
 
 =item * mcpan
 
-accessor to MetaCPAN::API object
+accessor to MetaCPAN::Clinet object
 
 =item * scanner
 
