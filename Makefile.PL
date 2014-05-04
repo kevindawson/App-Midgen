@@ -28,7 +28,7 @@ requires Time::Stamp          1.3
 requires Try::Tiny            0.22
 requires Type::Tiny           0.042
 requires constant             1.27
-requires lib                  0.63
+# requires lib                  0.63
 requires version              0.9908
 
 test_requires Test::CheckDeps 0.01
