@@ -6,18 +6,21 @@ use warnings FATAL => 'all';
 use English qw( -no_match_vars );    # Avoids regex performance penalty
 local $OUTPUT_AUTOFLUSH = 1;
 
-use Test::More tests => 43;
+use Test::More tests => 46;
 
 BEGIN {
 	use_ok('App::Midgen');
-	use_ok('App::Midgen::Role::Options');
 	use_ok('App::Midgen::Role::Attributes');
 	use_ok('App::Midgen::Role::AttributesX');
-	use_ok('App::Midgen::Role::InDistribution');
-	use_ok('App::Midgen::Role::TestRequires');
-	use_ok('App::Midgen::Role::UseOk');
 	use_ok('App::Midgen::Role::Eval');
+	use_ok('App::Midgen::Role::Experimental');
 	use_ok('App::Midgen::Role::FindMinVersion');
+	use_ok('App::Midgen::Role::Heuristics');
+	use_ok('App::Midgen::Role::InDistribution');
+	use_ok('App::Midgen::Role::Options');
+	use_ok('App::Midgen::Role::TestRequires');
+	use_ok('App::Midgen::Role::UseModule');
+	use_ok('App::Midgen::Role::UseOk');
 	use_ok('App::Midgen::Role::Output');
 	use_ok('App::Midgen::Role::Output::CPANfile');
 	use_ok('App::Midgen::Role::Output::Dist');
@@ -36,11 +39,11 @@ BEGIN {
 	use_ok('Getopt::Long',         '2.42');
 	use_ok('JSON::Tiny',           '0.45');
 	use_ok('List::MoreUtils',      '0.33');
-	use_ok('MetaCPAN::API',        '0.44');
+	use_ok('MetaCPAN::Client',     '1.003000');
 	use_ok('Module::CoreList',     '3.1');
 	use_ok('Moo',                  '1.004002');
 	use_ok('PPI',                  '1.215');
-	use_ok('Perl::MinimumVersion', '1.32');
+	use_ok('Perl::MinimumVersion', '1.35');
 	use_ok('Perl::PrereqScanner',  '1.019');
 	use_ok('Pod::Usage',           '1.63');
 	use_ok('Term::ANSIColor',      '4.03');
