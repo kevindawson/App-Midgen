@@ -1,12 +1,12 @@
 package App::Midgen::Role::FindMinVersion;
 
-use constant {TWO => 2, TRUE => 1, FALSE => 0,};
+use constant { ONE => 1, TWO => 2, TRUE => 1, FALSE => 0,};
 
 use Types::Standard qw( Bool );
 use Moo::Role;
 requires qw( ppi_document debug experimental verbose );
 
-our $VERSION = '0.33_03';
+our $VERSION = '0.33_05';
 $VERSION = eval $VERSION;    ## no critic
 
 use Perl::MinimumVersion;
@@ -73,7 +73,7 @@ sub min_version {
 				. $blame
 				. ' -> 5.010 in '
 				. $filename
-				. CLEAR . "\n";
+				. CLEAR . "\n" if ($self->verbose >= ONE);
 		}
 	};
 
@@ -123,7 +123,7 @@ App::Midgen::Roles::FindMinVersion - used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.33_03
+version: 0.33_05
 
 =head1 METHODS
 

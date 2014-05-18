@@ -6,7 +6,7 @@ use Types::Standard qw( Bool );
 use Moo::Role;
 requires qw( ppi_document debug );
 
-our $VERSION = '0.33_03';
+our $VERSION = '0.33_05';
 $VERSION = eval $VERSION;    ## no critic
 
 
@@ -41,7 +41,11 @@ sub _confirm_perlfile {
 	my $self     = shift;
 	my $filename = shift;
 
+	# ignore dirs - bug found by farabi, azawawi++
+	return FALSE if -d $filename;
+
 	$self->_set_ppi_document(PPI::Document->new($filename));
+
 	my $ppi_tc = $self->ppi_document->find('PPI::Token::Comment');
 
 	my $a_pl_file = 0;
@@ -51,6 +55,7 @@ sub _confirm_perlfile {
 		# check first token-comment for a she-bang
 		$a_pl_file = 1 if $ppi_tc->[0]->content =~ m/^#!.*perl.*$/;
 	}
+
 
 	if ($self->ppi_document->find('PPI::Statement::Package') || $a_pl_file) {
 		if ($self->verbose >= TWO) {
@@ -85,7 +90,7 @@ App::Midgen::Roles::InDistribution - used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.33_03
+version: 0.33_05
 
 =head1 METHODS
 

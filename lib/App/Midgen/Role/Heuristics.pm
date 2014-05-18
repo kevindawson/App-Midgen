@@ -1,9 +1,9 @@
 package App::Midgen::Role::Heuristics;
 
-our $VERSION = '0.33_03';
+our $VERSION = '0.33_05';
 $VERSION = eval $VERSION;    ## no critic
 
-use constant {TRUE => 1, FALSE => 0, TWO => 2};
+use constant {TRUE => 1, FALSE => 0, ONE => 1, TWO => 2};
 
 use Types::Standard qw( Bool );
 use Moo::Role;
@@ -69,7 +69,7 @@ sub recast_to_runtimerequires {
 						. 'Info: re-cast module '
 						. $module
 						. ' to RuntimeRequires'
-						. CLEAR . "\n";
+						. CLEAR . "\n" if ($self->verbose >= ONE);
 					p $self->{modules}{$module} if ($self->verbose == TWO);
 				}
 			}
@@ -156,7 +156,7 @@ sub recast_to_testrequires {
 						. 'Info: re-cast module '
 						. $module
 						. ' to TestRequires'
-						. CLEAR . "\n";
+						. CLEAR . "\n" if ($self->verbose >= ONE);
 					p $self->{modules}{$module} if $self->debug;
 				}
 			}
@@ -236,7 +236,7 @@ App::Midgen::Roles::Heuristics - used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.33_03
+version: 0.33_05
 
 =head1 METHODS
 

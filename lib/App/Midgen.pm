@@ -23,7 +23,7 @@ with qw(
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 use version;
-our $VERSION = '0.33_03';
+our $VERSION = '0.33_05';
 $VERSION = eval $VERSION;    ## no critic
 
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
@@ -240,8 +240,8 @@ sub _find_runtime_requirments {
 	my $self     = shift;
 	my $filename = $_;
 
-	return if $self->is_perlfile($filename) eq FALSE;
-
+	return if $self->is_perlfile($filename) == FALSE;
+ 
 	my $relative_dir = $File::Find::dir;
 	$relative_dir =~ s/$Working_Dir//;
 	$self->_set_looking_infile(File::Spec->catfile($relative_dir, $filename));
@@ -354,7 +354,7 @@ sub _find_test_develop_requirments {
 		= ($directorie =~ m/xt$/) ? 'DevelopRequires' : 'TestSuggests';
 	$self->_set_xtest(TRUE) if $directorie =~ m/xt$/;
 
-	return if $self->is_perlfile($filename) eq FALSE;
+	return if $self->is_perlfile($filename) == FALSE;
 
 	my $relative_dir = $File::Find::dir;
 	$relative_dir =~ s/$Working_Dir//;
@@ -636,21 +636,21 @@ sub get_module_version {
 	my $require_type = shift || undef;
 	my $cpan_version;
 	my $found = 0;
-	my $mc;
+	my $mcc;
 
 	p $module if $self->debug;
 
 	try {
 
-		$mc = $self->mcpan->module($module);
+		$mcc = $self->mcpan->module($module);
 
-		$cpan_version = $mc->version_numified();
+		$cpan_version = $mcc->version_numified();
 		p $cpan_version if $self->debug;
 
 		$found = 1;
 	};
 	try {
-		my $dist_name = $mc->distribution();
+		my $dist_name = $mcc->distribution();
 		$dist_name =~ s/-/::/g;
 
 		if ($dist_name eq 'perl') {
@@ -669,7 +669,7 @@ sub get_module_version {
 			# This is where we add a dist version to a knackered module
 			$self->{modules}{$module}{distribution} = $dist_name;
 			$self->mod_in_dist($dist_name, $module, $require_type,
-				$mc->version_numified())
+				$mcc->version_numified())
 				if $require_type;
 			$found = 1;
 		}
@@ -745,7 +745,7 @@ App::Midgen - Check B<RuntimeRequires> & B<TestRequires> of your package for CPA
 
 =head1 VERSION
 
-This document describes App::Midgen version: 0.33_03
+This document describes App::Midgen version: 0.33_05
 
 =head1 SYNOPSIS
 
