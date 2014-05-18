@@ -1,5 +1,12 @@
 Revision history for App-Midgen
 
+0.33_05 2014-05-18
+ - ignore dirs - bug found by farabi, azawawi++
+ - Info: now only if verbose >= 1
+
+0.33_03 2014-05-03
+ - conversion to using MetaCPAN::Client
+
 0.33_01 2014-04-27
  - tweak regexs to allow lower case modules
 
