@@ -12,14 +12,14 @@ requires Data::Printer        0.35
 requires File::Slurp::Tiny    0.003
 requires File::Spec           3.4
 requires Getopt::Long         2.42
-requires JSON::Tiny           0.45
+requires JSON::Tiny           0.48
 requires List::MoreUtils      0.33
 requires MetaCPAN::Client     1.003
 requires Module::CoreList     3.1
 requires Moo                  1.004002
 requires PPI                  1.215
 requires PPI::XS              0.902 if can_xs
-requires Perl::MinimumVersion 1.35
+requires Perl::MinimumVersion 1.37
 requires Perl::PrereqScanner  1.019
 requires Pod::Usage           1.63
 requires Term::ANSIColor      4.03

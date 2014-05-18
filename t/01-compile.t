@@ -43,13 +43,13 @@ BEGIN {
 	use_ok('Module::CoreList',     '3.1');
 	use_ok('Moo',                  '1.004002');
 	use_ok('PPI',                  '1.215');
-	use_ok('Perl::MinimumVersion', '1.35');
+	use_ok('Perl::MinimumVersion', '1.37');
 	use_ok('Perl::PrereqScanner',  '1.019');
 	use_ok('Pod::Usage',           '1.63');
 	use_ok('Term::ANSIColor',      '4.03');
 	use_ok('Tie::Static',          '0.04');
 	use_ok('Time::Stamp',          '1.3');
-	use_ok('Try::Tiny',            '0.21');
+	use_ok('Try::Tiny',            '0.22');
 	use_ok('Type::Tiny',           '0.042');
 	use_ok('constant',             '1.27');
 
