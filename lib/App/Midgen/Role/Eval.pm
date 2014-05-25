@@ -12,7 +12,7 @@ use List::MoreUtils qw(any firstidx);
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.33_05';
+our $VERSION = '0.34';
 $VERSION = eval $VERSION;    ## no critic
 
 #######
@@ -360,7 +360,7 @@ App::Midgen::Roles::Eval - used by L<App::Midgen>
 
 =head1 VERSION
 
-This document describes App::Midgen::Roles version: 0.33_05
+This document describes App::Midgen::Roles version: 0.34
 
 =head1 METHODS
 

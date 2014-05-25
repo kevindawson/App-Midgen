@@ -6,17 +6,17 @@ requires_from lib/App/Midgen.pm
 perl_version 5.008001
 
 requires Carp                 1.3301
-requires Cwd                  3.4
+requires Cwd                  3.47
 requires Class::XSAccessor    1.19 if can_xs
 requires Data::Printer        0.35
 requires File::Slurp::Tiny    0.003
-requires File::Spec           3.4
+requires File::Spec           3.47
 requires Getopt::Long         2.42
-requires JSON::Tiny           0.48
+requires JSON::Tiny           0.49
 requires List::MoreUtils      0.33
 requires MetaCPAN::Client     1.003
 requires Module::CoreList     3.1
-requires Moo                  1.004002
+requires Moo                  1.004005
 requires PPI                  1.215
 requires PPI::XS              0.902 if can_xs
 requires Perl::MinimumVersion 1.37
@@ -36,7 +36,7 @@ test_requires Test::More      1.001003
 test_requires Test::Requires  0.07
 
 recommends ExtUtils::MakeMaker   6.68
-recommends File::Spec::Functions 3.4
+recommends File::Spec::Functions 3.47
 recommends List::Util            1.38
 recommends Test::Pod             1.48
 recommends Test::Pod::Coverage   1.08

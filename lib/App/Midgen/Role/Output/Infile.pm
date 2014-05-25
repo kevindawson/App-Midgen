@@ -16,7 +16,7 @@ use Try::Tiny;
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.33_05';
+our $VERSION = '0.34';
 $VERSION = eval $VERSION;    ## no critic
 
 use English qw( -no_match_vars );
@@ -144,7 +144,7 @@ used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.33_05
+version: 0.34
 
 =head1 DESCRIPTION
 

@@ -32,16 +32,16 @@ BEGIN {
 	use_ok('App::Midgen::Role::Output::MI');
 
 	use_ok('Carp',                 '1.3301');
-	use_ok('Cwd',                  '3.4');
+	use_ok('Cwd',                  '3.47');
 	use_ok('Data::Printer',        '0.35');
 	use_ok('File::Slurp::Tiny',    '0.003');
-	use_ok('File::Spec',           '3.4');
+	use_ok('File::Spec',           '3.47');
 	use_ok('Getopt::Long',         '2.42');
-	use_ok('JSON::Tiny',           '0.45');
+	use_ok('JSON::Tiny',           '0.49');
 	use_ok('List::MoreUtils',      '0.33');
 	use_ok('MetaCPAN::Client',     '1.003000');
 	use_ok('Module::CoreList',     '3.1');
-	use_ok('Moo',                  '1.004002');
+	use_ok('Moo',                  '1.004005');
 	use_ok('PPI',                  '1.215');
 	use_ok('Perl::MinimumVersion', '1.37');
 	use_ok('Perl::PrereqScanner',  '1.019');
