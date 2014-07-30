@@ -211,7 +211,7 @@ sub xtests_eval {
 					{
 						my $eval_line = $chunk->{children}[$_]->content;
 
-						$eval_line =~ s/(?:'|"|{|})//g;
+#						$eval_line =~ s/(?:'|"|{|})//g;
 						my @eval_includes = split /;/, $eval_line;
 
 						foreach my $eval_include (@eval_includes) {
@@ -266,9 +266,9 @@ sub xtests_eval {
 sub _mod_ver {
 	my ($self, $modules, $version_strings, $eval_include) = @_;
 
-	if ($eval_include =~ /^\s*(?:use|require|no)/) {
+	if ($eval_include =~ /^\b(?:use|require|no)/) {
 
-		$eval_include =~ s/^\s*(?:use|require|no)\s*//;
+		$eval_include =~ s/^\b(?:use|require|no)\s*//;
 
 		my $module_name = $eval_include;
 
