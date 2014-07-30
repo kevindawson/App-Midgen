@@ -46,7 +46,7 @@ sub header_metajson {
 		print THREE . '"meta-spec" : {' . "\n";
 		print SIX . '"url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",' . "\n";
 		print SIX . '"version" : "2"' . "\n";
-		print THREE . '},';
+		print THREE . "},\n";
 	}
 	print CLEAR THREE . '"name" : "' . $package_name . q{",} . "\n";
 
