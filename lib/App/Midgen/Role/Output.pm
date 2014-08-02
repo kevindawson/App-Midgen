@@ -141,7 +141,7 @@ sub no_index {
 
 	#ToDo add more options as and when
 	my @dirs_to_check
-		= qw( corpus eg examples fbp inc maint misc privinc share t xt );
+		= qw( corpus eg examples fatlib fbp inc local maint misc perl5 privinc share t xt );
 	my @dirs_found;
 
 	foreach my $dir (@dirs_to_check) {
