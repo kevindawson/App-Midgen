@@ -23,7 +23,7 @@ with qw(
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 use version;
-our $VERSION = '0.34';
+our $VERSION = '0.35_03';
 $VERSION = eval $VERSION;    ## no critic
 
 use English qw( -no_match_vars );    # Avoids reg-ex performance penalty
@@ -745,7 +745,7 @@ App::Midgen - Check B<RuntimeRequires> & B<TestRequires> of your package for CPA
 
 =head1 VERSION
 
-This document describes App::Midgen version: 0.34
+This document describes App::Midgen version: 0.35_03
 
 =head1 SYNOPSIS
 

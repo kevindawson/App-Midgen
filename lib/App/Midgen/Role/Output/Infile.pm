@@ -16,7 +16,7 @@ use Try::Tiny;
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.34';
+our $VERSION = '0.35_03';
 $VERSION = eval $VERSION;    ## no critic
 
 use English qw( -no_match_vars );
@@ -55,6 +55,7 @@ sub footer_infile {
 	# Let's work out our padding
 	my $pm_length  = 0;
 	my $dir_length = 0;
+
 	foreach my $module_name (sort keys %{$self->{modules}}) {
 
 		if (length $module_name > $pm_length) {
@@ -144,7 +145,7 @@ used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.34
+version: 0.35_03
 
 =head1 DESCRIPTION
 

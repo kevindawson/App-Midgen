@@ -8,7 +8,7 @@ use Perl::PrereqScanner;
 # Load time and dependencies negate execution time
 # use namespace::clean -except => 'meta';
 
-our $VERSION = '0.34';
+our $VERSION = '0.35_03';
 $VERSION = eval $VERSION; ## no critic
 
 use Carp;
@@ -59,7 +59,7 @@ App::Midgen::Role::AttributesX - Package Attributes used by L<App::Midgen>
 
 =head1 VERSION
 
-version: 0.34
+version: 0.35_03
 
 =head1 METHODS
 

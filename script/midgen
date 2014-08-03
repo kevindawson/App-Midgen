@@ -4,7 +4,7 @@ use 5.008001;
 use strict;
 use warnings FATAL => 'all';
 
-our $VERSION = '0.34';
+our $VERSION = '0.35_03';
 
 use English qw( -no_match_vars );
 local $OUTPUT_AUTOFLUSH = 1;
@@ -44,6 +44,7 @@ use Getopt::Long;
 Getopt::Long::Configure('bundling');
 use Pod::Usage;
 my $help         = 0;
+my $author       = $config->{author} || 0;
 my $core         = $config->{core} || 0;
 my $dual_life    = $config->{dual_life} || 0;
 my $verbose      = $config->{verbose} || 1;
@@ -55,6 +56,7 @@ my $debug        = 0;
 my $write        = 0;
 GetOptions(
 	'verbose|v+'     => \$verbose,
+	'author|a!'      => \$author,
 	'core|c!'        => \$core,
 	'dual_life|l!'   => \$dual_life,
 	'help|h|?'       => \$help,
@@ -83,6 +85,7 @@ if ($verbose > 0) {
 }
 
 my $midgen = App::Midgen->new(
+	author       => $author,
 	core         => $core,
 	dual_life    => $dual_life,
 	verbose      => $verbose,
@@ -103,10 +106,12 @@ $midgen->run();
 if ($write) {
 	my $midgenrc_data = $json->encode(
 		{
+			author    => $author,
 			core      => $core,
 			dual_life => $dual_life,
 			format    => $format[-1],
 			quiet     => $quiet,
+			verbose   => $verbose,
 			zero      => $zero,
 		}
 	);
@@ -137,7 +142,7 @@ midgen - Check B<requires> & B<test_requires> of your package for CPAN inclusion
 
 =head1 VERSION
 
-This document describes midgen version: 0.34
+This document describes midgen version: 0.35_03
 
 =head1 SYNOPSIS
 
@@ -167,6 +172,7 @@ Prints a help message and exits.
    --format         change output format
    --dual_life      show dual-life modules
    --core           show all perl core modules
+   --author         scan author/release tests
    --verbose        show detailed progress of files we are processing
    --experimental   this feature under development
    --zero           show a 0 instead of core
@@ -192,6 +198,12 @@ Shows modules that are in Perl core and CPAN, some modules have a version
  number eg; constant, Carp.
 
  midgen -l
+
+=item B<--author or -a>
+
+Scan for author/release test in xt/
+
+ midgen -a
 
 =item B<--core or -c>
 
