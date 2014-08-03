@@ -201,7 +201,7 @@ Shows modules that are in Perl core and CPAN, some modules have a version
 
 =item B<--author or -a>
 
-Scan for author/release test in xt/
+Scan for author/release test in xt/ directory if you have one.
 
  midgen -a
 
@@ -223,7 +223,7 @@ Show file names that we are checking, as we go.
 This experimental feature turns on extra passing, that removes twins
 and noisy_children, replacing them with there parent(dist),
 giving a minimalist output, you might conceive this as controversial,
-if so don't enable it. It also scans xt/ directory if you have one.
+if so don't enable it. 
 If you find it to noisy you can add a '-q' for --quiet.
 
  midgen -x
