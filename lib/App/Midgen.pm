@@ -59,7 +59,7 @@ sub run {
 
 	$self->find_runtime_modules();
 	$self->find_test_modules();
-	$self->find_develop_modules() if $self->experimental;
+	$self->find_develop_modules() if $self->author;
 
 	#now for some Heuristics :)
 	$self->recast_to_runtimerequires($self->{RuntimeRequires},

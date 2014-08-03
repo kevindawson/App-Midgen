@@ -15,6 +15,13 @@ use Carp;
 # cmd line options
 #######
 
+has 'author' => (
+	is       => 'ro',
+	isa      => Bool,
+	default  => sub {0},
+	required => 1,
+);
+
 has 'core' => (
 	is       => 'ro',
 	isa      => Bool,
