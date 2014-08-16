@@ -741,7 +741,7 @@ __END__
 
 =head1 NAME
 
-App::Midgen - Check B<RuntimeRequires> & B<TestRequires> of your package for CPAN inclusion.
+App::Midgen - generate dependency lists from perl code in various output formats.
 
 =head1 VERSION
 
